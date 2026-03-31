@@ -4,7 +4,13 @@ import {
   CheckCircle2, Brain, Flame, Target, Heart, Lock,
 } from "lucide-react";
 
-const steps = [
+type StepOption = { value: string; label: string; desc: string; emoji: string };
+type Step = {
+  id: string; question: string; subtitle: string; icon: React.ReactNode; iconColor: string;
+  type?: "number"; placeholder?: string; prefix?: string; options?: StepOption[];
+};
+
+const steps: Step[] = [
   {
     id: "weakness",
     question: "בכנות, מהי החולשה הפסיכולוגית הכי גדולה ששורפת לך חשבונות?",
@@ -49,7 +55,7 @@ const steps = [
     subtitle: "זה קו האדום שלך. ברגע שתגיע אליו — אני נועל הכל. בלי פשרות.",
     icon: <Lock className="h-5 w-5" />,
     iconColor: "destructive",
-    type: "number" as const,
+    type: "number",
     placeholder: "300",
     prefix: "$",
   },
