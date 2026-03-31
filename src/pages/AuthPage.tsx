@@ -7,7 +7,7 @@ import {
   Bot,
   Zap,
   Lock,
-  Candlestick,
+  CandlestickChart,
   FlaskConical,
   Mic,
   Newspaper,
