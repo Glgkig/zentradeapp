@@ -288,72 +288,54 @@ const brokerInitials: Record<string, string> = {
   "Forex.com": "FX",
 };
 
-const BrokerSettings = () => {
-  const [apiKeys, setApiKeys] = useState<Record<string, string>>({});
-
-  return (
-    <SettingsCard title="חיבורים לברוקר ו-API" subtitle="נהל חיבורי API לפלטפורמות המסחר שלך" icon={<Plug className="h-4 w-4" />}>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-        {brokers.map((b) => (
-          <div
-            key={b.name}
-            className={`group relative rounded-2xl border p-4 transition-all duration-200 hover:scale-[1.01] ${
+const BrokerSettings = () => (
+  <SettingsCard title="חיבורים לברוקר ו-API" subtitle="נהל חיבורי API לפלטפורמות המסחר שלך" icon={<Plug className="h-4 w-4" />}>
+    <div className="rounded-xl border border-border overflow-hidden divide-y divide-border/60">
+      {brokers.map((b) => (
+        <div
+          key={b.name}
+          className={`flex items-center justify-between gap-3 px-3 py-2.5 md:px-4 md:py-3 transition-all hover:bg-muted/15 ${
+            b.connected ? "bg-accent/[0.02]" : ""
+          }`}
+        >
+          {/* Right: Logo + Name + Status */}
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-[10px] font-bold ${
               b.connected
-                ? "border-accent/25 bg-accent/[0.04] shadow-[0_0_20px_hsl(160_60%_45%/0.05)]"
-                : "border-border bg-muted/10 hover:border-primary/20 hover:bg-primary/[0.02]"
-            }`}
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2.5">
-                <div className={`flex h-10 w-10 items-center justify-center rounded-xl border text-xs font-bold ${
-                  b.connected
-                    ? "border-accent/20 bg-accent/10 text-accent"
-                    : "border-border bg-muted/30 text-muted-foreground"
-                }`}>
-                  {brokerInitials[b.name] || b.name.slice(0, 2)}
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-foreground">{b.name}</p>
-                  <div className="flex items-center gap-1 mt-0.5">
-                    <span className={`h-1.5 w-1.5 rounded-full ${b.connected ? "bg-accent" : "bg-muted-foreground/40"}`} />
-                    <span className={`text-[9px] font-medium ${b.connected ? "text-accent" : "text-muted-foreground/60"}`}>
-                      {b.connected ? `מחובר • ${b.account}` : "מנותק"}
-                    </span>
-                  </div>
-                </div>
+                ? "border-accent/20 bg-accent/10 text-accent"
+                : "border-border bg-muted/30 text-muted-foreground"
+            }`}>
+              {brokerInitials[b.name]}
+            </div>
+            <div className="min-w-0">
+              <p className="text-[11px] md:text-xs font-semibold text-foreground truncate">{b.name}</p>
+              <div className="flex items-center gap-1 mt-0.5">
+                <span className={`relative flex h-1.5 w-1.5 shrink-0 ${b.connected ? "" : ""}`}>
+                  {!b.connected && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive/50 opacity-60" />}
+                  <span className={`relative inline-flex h-1.5 w-1.5 rounded-full ${b.connected ? "bg-accent" : "bg-destructive/60"}`} />
+                </span>
+                <span className={`text-[9px] font-medium ${b.connected ? "text-accent" : "text-muted-foreground/50"}`}>
+                  {b.connected ? `מחובר • ${b.account}` : "מנותק"}
+                </span>
               </div>
             </div>
-
-            {/* API Key Input */}
-            {!b.connected && (
-              <div className="mb-3">
-                <input
-                  type="password"
-                  placeholder="הזן מפתח API"
-                  value={apiKeys[b.name] || ""}
-                  onChange={(e) => setApiKeys({ ...apiKeys, [b.name]: e.target.value })}
-                  className="w-full rounded-lg border border-border bg-muted/20 px-3 py-2 text-[10px] md:text-xs text-foreground placeholder:text-muted-foreground/30 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all"
-                />
-              </div>
-            )}
-
-            {/* Action Button */}
-            <button
-              className={`w-full rounded-lg py-2 text-[10px] md:text-xs font-semibold transition-all ${
-                b.connected
-                  ? "border border-accent/25 bg-accent/10 text-accent hover:bg-accent/20"
-                  : "bg-primary text-primary-foreground shadow-[0_0_12px_hsl(217_72%_53%/0.15)] hover:shadow-[0_0_20px_hsl(217_72%_53%/0.25)] hover:bg-primary/90"
-              }`}
-            >
-              {b.connected ? "מחובר ✓" : "התחבר"}
-            </button>
           </div>
-        ))}
-      </div>
-    </SettingsCard>
-  );
-};
+
+          {/* Left: Action */}
+          <button
+            className={`shrink-0 rounded-lg px-3 py-1.5 text-[10px] md:text-[11px] font-semibold transition-all ${
+              b.connected
+                ? "border border-accent/20 text-accent hover:bg-accent/10"
+                : "border border-primary/25 text-primary hover:bg-primary/10"
+            }`}
+          >
+            {b.connected ? "מחובר ✓" : "הגדר חיבור"}
+          </button>
+        </div>
+      ))}
+    </div>
+  </SettingsCard>
+);
 
 /* ===== Category D: Notifications ===== */
 const NotificationSettings = () => (
