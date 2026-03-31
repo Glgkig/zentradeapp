@@ -4,9 +4,6 @@ import {
   CheckCircle2, AlertTriangle, Volume2, Mail, Smartphone,
 } from "lucide-react";
 
-import logoMt5 from "@/assets/logos/mt5.png";
-import logoBinance from "@/assets/logos/binance.png";
-import logoTradeLocker from "@/assets/logos/tradelocker.png";
 
 const tabs = [
   { id: "account", label: "חשבון והעדפות", icon: User },
@@ -268,51 +265,95 @@ const RulesSettings = () => (
 
 /* ===== Category C: Broker Connections ===== */
 const brokers = [
-  { name: "TradeLocker", logo: logoTradeLocker, connected: true, account: "TL-7842" },
-  { name: "MetaTrader 5", logo: logoMt5, connected: false, account: null },
-  { name: "Binance", logo: logoBinance, connected: false, account: null },
+  { name: "TradingView", connected: false, account: null },
+  { name: "TradeLocker", connected: true, account: "TL-7842" },
+  { name: "MetaTrader 5 (MT5)", connected: false, account: null },
+  { name: "Binance", connected: true, account: "BN-3291" },
+  { name: "TopstepX", connected: false, account: null },
+  { name: "Rithmic", connected: false, account: null },
+  { name: "NinjaTrader", connected: false, account: null },
+  { name: "Interactive Brokers", connected: false, account: null },
+  { name: "Forex.com", connected: false, account: null },
 ];
 
-const BrokerSettings = () => (
-  <SettingsCard title="חיבורים לברוקר" subtitle="נהל חיבורי API לפלטפורמות המסחר שלך" icon={<Plug className="h-4 w-4" />}>
-    <div className="space-y-3">
-      {brokers.map((b) => (
-        <div
-          key={b.name}
-          className={`flex items-center justify-between rounded-xl border p-3.5 md:p-4 transition-all ${
-            b.connected
-              ? "border-accent/25 bg-accent/[0.04]"
-              : "border-border bg-muted/20"
-          }`}
-        >
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-card border border-border p-1.5">
-              <img src={b.logo} alt={b.name} className="h-7 w-7 object-contain" />
-            </div>
-            <div>
-              <p className="text-xs md:text-sm font-semibold text-foreground">{b.name}</p>
-              {b.connected && (
-                <p className="text-[10px] text-accent flex items-center gap-1 mt-0.5">
-                  <CheckCircle2 className="h-3 w-3" />
-                  מחובר • {b.account}
-                </p>
-              )}
-            </div>
-          </div>
-          <button
-            className={`rounded-lg px-4 py-2 text-xs font-semibold transition-all ${
+const brokerInitials: Record<string, string> = {
+  "TradingView": "TV",
+  "TradeLocker": "TL",
+  "MetaTrader 5 (MT5)": "M5",
+  "Binance": "BN",
+  "TopstepX": "TX",
+  "Rithmic": "RI",
+  "NinjaTrader": "NT",
+  "Interactive Brokers": "IB",
+  "Forex.com": "FX",
+};
+
+const BrokerSettings = () => {
+  const [apiKeys, setApiKeys] = useState<Record<string, string>>({});
+
+  return (
+    <SettingsCard title="חיבורים לברוקר ו-API" subtitle="נהל חיבורי API לפלטפורמות המסחר שלך" icon={<Plug className="h-4 w-4" />}>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        {brokers.map((b) => (
+          <div
+            key={b.name}
+            className={`group relative rounded-2xl border p-4 transition-all duration-200 hover:scale-[1.01] ${
               b.connected
-                ? "border border-accent/25 bg-accent/10 text-accent hover:bg-accent/20"
-                : "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90"
+                ? "border-accent/25 bg-accent/[0.04] shadow-[0_0_20px_hsl(160_60%_45%/0.05)]"
+                : "border-border bg-muted/10 hover:border-primary/20 hover:bg-primary/[0.02]"
             }`}
           >
-            {b.connected ? "מחובר ✓" : "התחבר"}
-          </button>
-        </div>
-      ))}
-    </div>
-  </SettingsCard>
-);
+            {/* Header */}
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2.5">
+                <div className={`flex h-10 w-10 items-center justify-center rounded-xl border text-xs font-bold ${
+                  b.connected
+                    ? "border-accent/20 bg-accent/10 text-accent"
+                    : "border-border bg-muted/30 text-muted-foreground"
+                }`}>
+                  {brokerInitials[b.name] || b.name.slice(0, 2)}
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-foreground">{b.name}</p>
+                  <div className="flex items-center gap-1 mt-0.5">
+                    <span className={`h-1.5 w-1.5 rounded-full ${b.connected ? "bg-accent" : "bg-muted-foreground/40"}`} />
+                    <span className={`text-[9px] font-medium ${b.connected ? "text-accent" : "text-muted-foreground/60"}`}>
+                      {b.connected ? `מחובר • ${b.account}` : "מנותק"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* API Key Input */}
+            {!b.connected && (
+              <div className="mb-3">
+                <input
+                  type="password"
+                  placeholder="הזן מפתח API"
+                  value={apiKeys[b.name] || ""}
+                  onChange={(e) => setApiKeys({ ...apiKeys, [b.name]: e.target.value })}
+                  className="w-full rounded-lg border border-border bg-muted/20 px-3 py-2 text-[10px] md:text-xs text-foreground placeholder:text-muted-foreground/30 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all"
+                />
+              </div>
+            )}
+
+            {/* Action Button */}
+            <button
+              className={`w-full rounded-lg py-2 text-[10px] md:text-xs font-semibold transition-all ${
+                b.connected
+                  ? "border border-accent/25 bg-accent/10 text-accent hover:bg-accent/20"
+                  : "bg-primary text-primary-foreground shadow-[0_0_12px_hsl(217_72%_53%/0.15)] hover:shadow-[0_0_20px_hsl(217_72%_53%/0.25)] hover:bg-primary/90"
+              }`}
+            >
+              {b.connected ? "מחובר ✓" : "התחבר"}
+            </button>
+          </div>
+        ))}
+      </div>
+    </SettingsCard>
+  );
+};
 
 /* ===== Category D: Notifications ===== */
 const NotificationSettings = () => (
