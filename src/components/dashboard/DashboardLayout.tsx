@@ -38,6 +38,7 @@ const brokers = [
 ];
 
 const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
+  const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [brokerModal, setBrokerModal] = useState(false);
