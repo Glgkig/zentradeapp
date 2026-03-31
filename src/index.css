@@ -112,3 +112,8 @@
 .animate-marquee:hover {
   animation-play-state: paused;
 }
+
+select option {
+  background-color: hsl(222, 40%, 8%);
+  color: hsl(210, 20%, 92%);
+}
