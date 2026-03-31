@@ -218,50 +218,72 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
       {/* ===== Broker Connection Modal ===== */}
       {brokerModal && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" onClick={() => setBrokerModal(false)} />
-          <div className="relative w-full max-w-lg rounded-2xl border border-border bg-card shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-md animate-in fade-in duration-300"
+            onClick={() => setBrokerModal(false)}
+          />
+          <div className="relative w-full max-w-lg rounded-2xl border border-border/60 bg-secondary/95 backdrop-blur-xl shadow-[0_25px_60px_rgba(0,0,0,0.5),0_0_40px_hsl(217_72%_53%/0.06)] animate-in fade-in slide-in-from-bottom-4 duration-400">
+            {/* Glow accent */}
+            <div className="absolute -top-px left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-border px-5 py-4">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/15">
-                  <Plug className="h-4 w-4 text-primary" />
+            <div className="flex items-center justify-between border-b border-border/40 px-5 py-4">
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <div className="absolute inset-[-3px] rounded-xl bg-primary/10 animate-pulse" style={{ animationDuration: "3s" }} />
+                  <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-primary/15 border border-primary/25">
+                    <Plug className="h-4 w-4 text-primary" />
+                  </div>
                 </div>
                 <div>
                   <h2 className="text-sm font-bold text-foreground">חיבורי ברוקר ו-API</h2>
-                  <p className="text-[10px] text-muted-foreground">חבר את פלטפורמת המסחר שלך</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">חבר את פלטפורמת המסחר שלך ל-ZenTrade</p>
                 </div>
               </div>
               <button
                 onClick={() => setBrokerModal(false)}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-all"
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-border/40 bg-muted/20 text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-all"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
+            {/* Connected count bar */}
+            <div className="flex items-center justify-between px-5 py-2.5 border-b border-border/30 bg-muted/5">
+              <span className="text-[10px] text-muted-foreground">
+                <span className="text-accent font-semibold">{brokers.filter(b => b.connected).length}</span> מתוך {brokers.length} פלטפורמות מחוברות
+              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+                <span className="text-[9px] text-accent font-medium">מוכן למסחר</span>
+              </div>
+            </div>
+
             {/* Broker List */}
-            <div className="max-h-[60vh] overflow-y-auto divide-y divide-border/50">
-              {brokers.map((b) => (
+            <div className="max-h-[55vh] overflow-y-auto">
+              {brokers.map((b, i) => (
                 <div
                   key={b.name}
-                  className={`flex items-center justify-between gap-3 px-5 py-3 transition-all hover:bg-muted/10 ${
-                    b.connected ? "bg-accent/[0.02]" : ""
-                  }`}
+                  className={`flex items-center justify-between gap-3 px-5 py-3.5 transition-all duration-150 hover:bg-primary/[0.03] ${
+                    i < brokers.length - 1 ? "border-b border-border/20" : ""
+                  } ${b.connected ? "bg-accent/[0.02]" : ""}`}
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border text-[10px] font-bold ${
-                      b.connected ? "border-accent/20 bg-accent/10 text-accent" : "border-border bg-muted/30 text-muted-foreground"
+                    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border text-[10px] font-bold tracking-wide transition-all ${
+                      b.connected
+                        ? "border-accent/25 bg-accent/10 text-accent shadow-[0_0_10px_hsl(160_60%_45%/0.08)]"
+                        : "border-border/60 bg-muted/20 text-muted-foreground"
                     }`}>
                       {b.initials}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs font-semibold text-foreground truncate">{b.name}</p>
-                      <div className="flex items-center gap-1 mt-0.5">
+                      <p className="text-[11px] md:text-xs font-semibold text-foreground truncate">{b.name}</p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
                         <span className="relative flex h-1.5 w-1.5 shrink-0">
-                          {!b.connected && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive/50 opacity-60" />}
-                          <span className={`relative inline-flex h-1.5 w-1.5 rounded-full ${b.connected ? "bg-accent" : "bg-destructive/60"}`} />
+                          {!b.connected && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive/40 opacity-60" />}
+                          <span className={`relative inline-flex h-1.5 w-1.5 rounded-full ${b.connected ? "bg-accent" : "bg-muted-foreground/30"}`} />
                         </span>
-                        <span className={`text-[9px] font-medium ${b.connected ? "text-accent" : "text-muted-foreground/50"}`}>
+                        <span className={`text-[9px] font-medium ${b.connected ? "text-accent" : "text-muted-foreground/40"}`}>
                           {b.connected ? `מחובר • ${b.account}` : "מנותק"}
                         </span>
                       </div>
@@ -269,16 +291,27 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                   </div>
 
                   <button
-                    className={`shrink-0 rounded-lg px-3 py-1.5 text-[10px] font-semibold transition-all ${
+                    className={`shrink-0 rounded-lg px-3.5 py-1.5 text-[10px] font-semibold transition-all duration-200 ${
                       b.connected
-                        ? "border border-accent/20 text-accent hover:bg-accent/10"
-                        : "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_10px_hsl(217_72%_53%/0.1)]"
+                        ? "border border-accent/20 bg-accent/[0.06] text-accent hover:bg-accent/15"
+                        : "border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 hover:shadow-[0_0_12px_hsl(217_72%_53%/0.12)]"
                     }`}
                   >
-                    {b.connected ? "מחובר ✓" : "התחבר"}
+                    {b.connected ? "מחובר ✓" : "הגדר חיבור"}
                   </button>
                 </div>
               ))}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="border-t border-border/30 px-5 py-3 flex items-center justify-between">
+              <p className="text-[9px] text-muted-foreground/40">החיבורים מוצפנים ומאובטחים בתקן AES-256</p>
+              <button
+                onClick={() => setBrokerModal(false)}
+                className="rounded-lg border border-border/40 bg-muted/15 px-3 py-1.5 text-[10px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-all"
+              >
+                סגור
+              </button>
             </div>
           </div>
         </div>
