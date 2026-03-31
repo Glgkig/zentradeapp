@@ -251,9 +251,7 @@ const JournalPage = () => {
               {expanded && (
                 <div className="border-t border-border/15 bg-gradient-to-b from-muted/[0.04] to-transparent px-4 md:px-6 py-5 animate-in slide-in-from-top-2 fade-in duration-300">
                   {/* Chart */}
-                  <div className="relative rounded-2xl border border-border/20 bg-[hsl(222,47%,4%)] overflow-hidden mb-5 h-52 md:h-72">
-                    <TradingViewChart trade={t} />
-                  </div>
+                  <TradeChartContainer trade={t} />
 
                   {/* Detail Grid */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-5">
