@@ -89,7 +89,7 @@ const ProtectionPage = () => {
                   value={drawdownLimit}
                   onChange={(e) => setDrawdownLimit(e.target.value)}
                   disabled={hardLock}
-                  className="w-full rounded-xl border border-border/20 bg-muted/8 px-4 pr-8 py-3 text-sm font-bold text-foreground placeholder:text-muted-foreground/20 outline-none focus:border-primary/30 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="w-full rounded-xl border border-border/20 bg-[hsl(222,40%,8%)] px-4 pr-8 py-3 text-sm font-bold text-foreground placeholder:text-muted-foreground/20 outline-none focus:border-primary/30 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                   placeholder="500"
                 />
               </div>
@@ -150,7 +150,7 @@ const ProtectionPage = () => {
                 <select
                   value={maxTrades}
                   onChange={(e) => setMaxTrades(e.target.value)}
-                  className="w-full rounded-xl border border-border/20 bg-muted/8 px-4 py-3 text-sm font-bold text-foreground appearance-none outline-none focus:border-primary/30 transition-all"
+                  className="w-full rounded-xl border border-border/20 bg-[hsl(222,40%,8%)] px-4 py-3 text-sm font-bold text-foreground appearance-none outline-none focus:border-primary/30 transition-all"
                 >
                   {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
                     <option key={n} value={n}>{n} עסקאות</option>
@@ -211,7 +211,7 @@ const ProtectionPage = () => {
                   <select
                     value={newsBuffer}
                     onChange={(e) => setNewsBuffer(e.target.value)}
-                    className="w-full rounded-xl border border-border/20 bg-muted/8 px-4 py-3 text-sm font-bold text-foreground appearance-none outline-none focus:border-primary/30 transition-all"
+                    className="w-full rounded-xl border border-border/20 bg-[hsl(222,40%,8%)] px-4 py-3 text-sm font-bold text-foreground appearance-none outline-none focus:border-primary/30 transition-all"
                   >
                     <option value="15">15 דקות</option>
                     <option value="30">30 דקות</option>
