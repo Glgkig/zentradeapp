@@ -347,16 +347,18 @@ const AuthPage = () => {
             {/* Photo */}
             <div className="w-full lg:w-[35%] flex justify-center">
               <div className="relative">
-                <img
-                  src={founderPhoto}
-                  alt="מייסד ZenTrade"
-                  className="w-64 h-64 lg:w-72 lg:h-72 rounded-2xl object-cover shadow-xl shadow-black/20 border border-border"
-                  loading="lazy"
-                  width={640}
-                  height={800}
-                />
+                <div className="rounded-2xl p-[2px] bg-gradient-to-br from-primary/50 via-primary/20 to-accent/30 shadow-xl shadow-primary/10">
+                  <img
+                    src={founderPhoto}
+                    alt="יהונתן, מייסד ZenTrade"
+                    className="w-64 h-64 lg:w-72 lg:h-72 rounded-2xl object-cover"
+                    loading="lazy"
+                    width={640}
+                    height={800}
+                  />
+                </div>
                 <div className="absolute -bottom-3 -left-3 rounded-xl bg-primary/10 border border-primary/20 px-3 py-1.5">
-                  <span className="text-[11px] font-medium text-primary">מייסד & CEO</span>
+                  <span className="text-[11px] font-medium text-primary">מייסד ZenTrade</span>
                 </div>
               </div>
             </div>
@@ -366,21 +368,24 @@ const AuthPage = () => {
               <div className="rounded-2xl border border-border bg-secondary/30 p-8">
                 <Quote className="h-8 w-8 text-primary/30 mb-4" />
                 <p className="text-sm leading-[2] text-foreground/85">
-                  אני סוחר כמוך. עברתי את כל השלבים — את הלילות הלבנים, את ההפסדים הכואבים של עסקאות נקמה, את מחיקת החשבונות בגלל חוסר משמעת.
+                  קוראים לי יהונתן, ואני המייסד של ZenTrade. במשך 5 השנים האחרונות הייתי עמוק בתוך השוחות של המסחר היומי. עברתי הכל – את הלילות הלבנים, את ההפסדים הכואבים של עסקאות נקמה, ואת התסכול המטורף של לדעת שיש לי אסטרטגיה מנצחת, אבל הפסיכולוגיה (הפומו והלחץ) פשוט שורפת לי את החשבון פעם אחר פעם.
                 </p>
                 <p className="mt-4 text-sm leading-[2] text-foreground/85">
-                  ZenTrade נולדה לא כדי למכור לך אשליה של עושר מהיר, אלא כדי לתת לך את הכלי שאני הייתי חייב כדי לשרוד. מתוך האכפתיות הזאת בניתי את שומר הראש הדיגיטלי שלך.
+                  הבנתי שסוחרים לא צריכים עוד אינדיקטור או עוד קורס, הם צריכים הגנה מעצמם. בניתי את ZenTrade מתוך כאב אישי עמוק ומתוך שליחות אמיתית: לתת לך את &#39;שומר הראש&#39; הטכנולוגי שאני כל כך הייתי צריך שיהיה לי.
+                </p>
+                <p className="mt-4 text-sm leading-[2] text-foreground/85">
+                  אני לא פה כדי למכור לך אשליות של התעשרות מהירה. אני פה כדי לדאוג שאתה תפסיק להפסיד בגלל טעויות אנוש, תגן על ההון שלך, ותתחיל לסחור עם שקט נפשי של מכונה.
                 </p>
                 <p className="mt-4 text-sm leading-[2] text-primary font-medium">
-                  ZenTrade היא הבית שלך להצלחה מבוססת משמעת.
+                  זה הבית של הסוחרים הממושמעים.
                 </p>
                 <div className="mt-6 pt-6 border-t border-border flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <span className="text-sm font-bold text-primary">א.כ</span>
+                    <span className="text-sm font-bold text-primary">י.</span>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-foreground">אלכס כהן</p>
-                    <p className="text-[11px] text-muted-foreground">מייסד ZenTrade • סוחר מקצועי מ-2016</p>
+                    <p className="text-sm font-semibold text-foreground">יהונתן</p>
+                    <p className="text-[11px] text-muted-foreground">מייסד ZenTrade • סוחר יומי מ-2021</p>
                   </div>
                 </div>
               </div>
