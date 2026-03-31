@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import {
   LayoutDashboard, BookOpen, Bot, ShieldCheck,
-  LogOut, ChevronDown, Plug, Menu, X, Settings, Sun, Moon,
+  LogOut, ChevronDown, Plug, Menu, X, Settings, Sun, Moon, Zap,
   Crosshair, PieChart, History, CheckCircle2,
 } from "lucide-react";
 import SettingsPage from "@/pages/SettingsPage";
