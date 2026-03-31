@@ -4,6 +4,8 @@ import {
   LogOut, ChevronDown, Plug, Menu, X, Settings, Sun, Moon,
 } from "lucide-react";
 import SettingsPage from "@/pages/SettingsPage";
+import HomeDashboard from "@/components/dashboard/HomeDashboard";
+import OnboardingModal from "@/components/dashboard/OnboardingModal";
 
 const navItems = [
   { id: "dashboard", label: "דשבורד ראשי", icon: LayoutDashboard },
@@ -17,6 +19,9 @@ const navItems = [
 const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   const [activeNav, setActiveNav] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    return localStorage.getItem("zentrade-onboarded") !== "true";
+  });
   const [dark, setDark] = useState(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("zentrade-theme") !== "light";
@@ -29,7 +34,13 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
     localStorage.setItem("zentrade-theme", dark ? "dark" : "light");
   }, [dark]);
 
+  const completeOnboarding = () => {
+    localStorage.setItem("zentrade-onboarded", "true");
+    setShowOnboarding(false);
+  };
+
   const renderContent = () => {
+    if (activeNav === "dashboard") return <HomeDashboard userName="יהונתן" />;
     if (activeNav === "settings") return <SettingsPage />;
     return children || (
       <div className="flex h-full items-center justify-center">
@@ -176,6 +187,9 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
           {renderContent()}
         </main>
       </div>
+      {showOnboarding && (
+        <OnboardingModal userName="יהונתן" onComplete={completeOnboarding} />
+      )}
     </div>
   );
 };
