@@ -8,6 +8,7 @@ import SettingsPage from "@/pages/SettingsPage";
 import SetupsPage from "@/pages/SetupsPage";
 import StatsPage from "@/pages/StatsPage";
 import JournalPage from "@/pages/JournalPage";
+import MentorPage from "@/pages/MentorPage";
 import HomeDashboard from "@/components/dashboard/HomeDashboard";
 import OnboardingModal from "@/components/dashboard/OnboardingModal";
 
