@@ -113,7 +113,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   return (
     <div className="flex h-screen w-full overflow-hidden" dir="rtl">
       {/* ===== Desktop Sidebar (hidden on mobile) ===== */}
-      <aside className="hidden md:flex h-full w-[260px] flex-col border-l border-border bg-sidebar/80 backdrop-blur-xl shrink-0">
+      <aside className="hidden md:flex h-full w-[260px] flex-col border-l border-border/15 bg-sidebar/80 backdrop-blur-xl shrink-0">
         {/* Brand */}
         <div className="flex items-center border-b border-border px-5 py-5">
           <div className="flex items-center gap-2.5">
