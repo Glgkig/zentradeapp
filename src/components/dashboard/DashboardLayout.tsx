@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, BookOpen, Bot, ShieldCheck,
   LogOut, ChevronDown, Plug, Menu, X, Settings, Sun, Moon, Zap,
@@ -37,6 +38,7 @@ const brokers = [
 ];
 
 const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
+  const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [brokerModal, setBrokerModal] = useState(false);
@@ -160,7 +162,10 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
 
         {/* Sidebar Footer */}
         <div className="border-t border-border px-3 py-4">
-          <button className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:bg-destructive/10 hover:text-destructive">
+          <button
+            onClick={() => navigate("/")}
+            className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:bg-destructive/10 hover:text-destructive"
+          >
             <LogOut className="h-[18px] w-[18px]" />
             התנתק
           </button>
@@ -273,7 +278,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                       <div className="mx-3 my-1 border-t border-border/10" />
 
                       <button
-                        onClick={() => { setUserMenu(false); }}
+                        onClick={() => { setUserMenu(false); navigate("/"); }}
                         className="w-full flex items-center gap-2.5 px-4 py-2.5 text-right hover:bg-destructive/8 transition-colors"
                       >
                         <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-destructive/8 border border-destructive/10">
