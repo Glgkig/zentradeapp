@@ -632,7 +632,17 @@ const MiniStat = ({ label, value }: { label: string; value: string }) => (
 );
 
 const FadingCarousel = () => {
-  const exchanges = ["MetaTrader 5", "Binance", "TradeLocker", "TradingView", "Rithmic", "Interactive Brokers", "TopstepX", "Forex.com"];
+  const exchanges = [
+    { name: "MetaTrader 5", logo: logoMt5 },
+    { name: "Binance", logo: logoBinance },
+    { name: "TradeLocker", logo: logoTradeLocker },
+    { name: "TradingView", logo: logoTradingView },
+    { name: "Rithmic", logo: logoRithmic },
+    { name: "Interactive Brokers", logo: logoIbkr },
+    { name: "TopstepX", logo: logoTopstep },
+    { name: "Forex.com", logo: logoForex },
+    { name: "NinjaTrader", logo: logoNinjaTrader },
+  ];
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
@@ -644,22 +654,21 @@ const FadingCarousel = () => {
 
   return (
     <div className="mt-10">
-      <div className="relative h-24 flex items-center justify-center">
-        {exchanges.map((name, i) => (
+      <div className="relative h-28 flex items-center justify-center">
+        {exchanges.map((ex, i) => (
           <div
-            key={name}
-            className={`absolute flex items-center gap-3 transition-all duration-700 ${
+            key={ex.name}
+            className={`absolute flex items-center gap-4 transition-all duration-700 ${
               i === activeIndex ? "opacity-100 scale-100" : "opacity-0 scale-90"
             }`}
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 border border-primary/20">
-              <Zap className="h-6 w-6 text-primary" />
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-card border border-border p-2 shadow-md">
+              <img src={ex.logo} alt={ex.name} className="h-10 w-10 object-contain" loading="lazy" width={512} height={512} />
             </div>
-            <span className="font-heading text-2xl font-bold text-foreground">{name}</span>
+            <span className="font-heading text-2xl font-bold text-foreground">{ex.name}</span>
           </div>
         ))}
       </div>
-      {/* Dots */}
       <div className="flex items-center justify-center gap-2 mt-4">
         {exchanges.map((_, i) => (
           <button
