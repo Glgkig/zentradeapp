@@ -150,7 +150,7 @@ const ProtectionPage = () => {
                 <select
                   value={maxTrades}
                   onChange={(e) => setMaxTrades(e.target.value)}
-                  className="w-full rounded-xl border border-border/20 bg-muted/8 px-4 py-3 text-sm font-bold text-foreground appearance-none outline-none focus:border-primary/30 transition-all"
+                  className="w-full rounded-xl border border-border/20 bg-[hsl(222,40%,8%)] px-4 py-3 text-sm font-bold text-foreground appearance-none outline-none focus:border-primary/30 transition-all"
                 >
                   {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
                     <option key={n} value={n}>{n} עסקאות</option>
