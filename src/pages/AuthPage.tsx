@@ -345,7 +345,7 @@ const AuthPage = () => {
 
           <div className="flex flex-col lg:flex-row gap-10 items-center">
             {/* Story */}
-            <div className="w-full lg:w-[65%]">
+            <div className="w-full">
               <div className="rounded-2xl border border-border bg-secondary/30 p-8">
                 <Quote className="h-8 w-8 text-primary/30 mb-4" />
                 <p className="text-sm leading-[2] text-foreground/85">
