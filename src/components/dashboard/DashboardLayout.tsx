@@ -278,7 +278,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                       <div className="mx-3 my-1 border-t border-border/10" />
 
                       <button
-                        onClick={() => { setUserMenu(false); }}
+                        onClick={() => { setUserMenu(false); navigate("/"); }}
                         className="w-full flex items-center gap-2.5 px-4 py-2.5 text-right hover:bg-destructive/8 transition-colors"
                       >
                         <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-destructive/8 border border-destructive/10">
