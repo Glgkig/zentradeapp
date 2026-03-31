@@ -13,6 +13,7 @@ import MentorPage from "@/pages/MentorPage";
 import HomeDashboard from "@/components/dashboard/HomeDashboard";
 import OnboardingModal from "@/components/dashboard/OnboardingModal";
 import BacktestingPage from "@/pages/BacktestingPage";
+import ProtectionPage from "@/pages/ProtectionPage";
 
 const navItems = [
   { id: "dashboard", label: "דשבורד ראשי", icon: LayoutDashboard },
