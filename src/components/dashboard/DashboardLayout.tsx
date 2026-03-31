@@ -4,6 +4,8 @@ import {
   LogOut, ChevronDown, Plug, Menu, X, Settings, Sun, Moon,
 } from "lucide-react";
 import SettingsPage from "@/pages/SettingsPage";
+import HomeDashboard from "@/components/dashboard/HomeDashboard";
+import OnboardingModal from "@/components/dashboard/OnboardingModal";
 
 const navItems = [
   { id: "dashboard", label: "דשבורד ראשי", icon: LayoutDashboard },
