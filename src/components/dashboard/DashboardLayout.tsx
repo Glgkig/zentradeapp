@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, BookOpen, Bot, ShieldCheck,
   LogOut, ChevronDown, Plug, Menu, X, Settings, Sun, Moon, Zap,
