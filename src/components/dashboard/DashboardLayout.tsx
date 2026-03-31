@@ -11,6 +11,7 @@ import JournalPage from "@/pages/JournalPage";
 import MentorPage from "@/pages/MentorPage";
 import HomeDashboard from "@/components/dashboard/HomeDashboard";
 import OnboardingModal from "@/components/dashboard/OnboardingModal";
+import BacktestingPage from "@/pages/BacktestingPage";
 
 const navItems = [
   { id: "dashboard", label: "דשבורד ראשי", icon: LayoutDashboard },
@@ -66,6 +67,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
     if (activeNav === "journal") return <JournalPage />;
     if (activeNav === "settings") return <SettingsPage />;
     if (activeNav === "mentor") return <MentorPage />;
+    if (activeNav === "backtesting") return <BacktestingPage />;
     return children || (
       <div className="flex h-full items-center justify-center">
         <div className="text-center">
