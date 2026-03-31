@@ -1,150 +1,79 @@
 import { useState } from "react";
 import {
-  Mic, Play, ChevronDown, ChevronUp, Filter, Calendar,
-  ArrowUpRight, ArrowDownRight, Brain, AlertTriangle, CheckCircle2,
-  TrendingUp, Target, Shield, Clock, Zap, Volume2, RefreshCw,
-  Search, BarChart3,
+  Mic, Play, ChevronDown, ChevronUp, Calendar,
+  ArrowUpRight, ArrowDownRight, Brain, AlertTriangle,
+  Target, Clock, Volume2, RefreshCw,
+  Search, BarChart3, Sparkles, TrendingUp, Award,
 } from "lucide-react";
 
 /* ===== Trade Data ===== */
 const trades = [
   {
-    id: 1,
-    pair: "EUR/USD",
-    dir: "Long" as const,
-    entry: 1.0842,
-    exit: 1.0887,
-    pnl: 450,
-    entryTime: "09:32",
-    exitTime: "11:15",
-    date: "30/03/2026",
-    grade: "A+",
-    psyTag: "לפי תוכנית המסחר",
-    psyType: "good" as const,
-    hasAudio: true,
-    autoSync: true,
-    rr: "1:3.2",
-    lots: 0.5,
+    id: 1, pair: "EUR/USD", dir: "Long" as const, entry: 1.0842, exit: 1.0887,
+    pnl: 450, entryTime: "09:32", exitTime: "11:15", date: "30/03/2026",
+    grade: "A+", psyTag: "לפי תוכנית המסחר", psyType: "good" as const,
+    hasAudio: true, autoSync: true, rr: "1:3.2", lots: 0.5,
     aiNote: "עסקה מצוינת. נכנסת לפי הסטאפ, שמרת על הסטופ, ונתת לרווח לרוץ. ככה סוחרים ממושמעים.",
     slMoved: false,
   },
   {
-    id: 2,
-    pair: "GBP/USD",
-    dir: "Short" as const,
-    entry: 1.2715,
-    exit: 1.2680,
-    pnl: 280,
-    entryTime: "14:05",
-    exitTime: "15:42",
-    date: "30/03/2026",
-    grade: "B",
-    psyTag: "הזזת סטופ-לוס",
-    psyType: "warning" as const,
-    hasAudio: false,
-    autoSync: true,
-    rr: "1:2.1",
-    lots: 0.3,
+    id: 2, pair: "GBP/USD", dir: "Short" as const, entry: 1.2715, exit: 1.2680,
+    pnl: 280, entryTime: "14:05", exitTime: "15:42", date: "30/03/2026",
+    grade: "B", psyTag: "הזזת סטופ-לוס", psyType: "warning" as const,
+    hasAudio: false, autoSync: true, rr: "1:2.1", lots: 0.3,
     aiNote: "זיהיתי שהזזת את הסטופ-לוס פעם אחת במהלך העסקה. למרות שהרווחת, זו התנהגות מסוכנת שנוגדת את הסטאפ שהגדרת.",
     slMoved: true,
   },
   {
-    id: 3,
-    pair: "XAU/USD",
-    dir: "Long" as const,
-    entry: 2185.40,
-    exit: 2178.20,
-    pnl: -360,
-    entryTime: "16:22",
-    exitTime: "16:48",
-    date: "29/03/2026",
-    grade: "F",
-    psyTag: "מסחר נקמה",
-    psyType: "danger" as const,
-    hasAudio: true,
-    autoSync: true,
-    rr: "-1:1.8",
-    lots: 0.8,
+    id: 3, pair: "XAU/USD", dir: "Long" as const, entry: 2185.40, exit: 2178.20,
+    pnl: -360, entryTime: "16:22", exitTime: "16:48", date: "29/03/2026",
+    grade: "F", psyTag: "מסחר נקמה", psyType: "danger" as const,
+    hasAudio: true, autoSync: true, rr: "-1:1.8", lots: 0.8,
     aiNote: "עסקה זו נפתחה 4 דקות אחרי הפסד קודם. זהו מסחר נקמה קלאסי. הגדלת את הלוט פי 2.6 מהרגיל. המערכת הייתה צריכה לנעול אותך.",
     slMoved: true,
   },
   {
-    id: 4,
-    pair: "BTC/USD",
-    dir: "Long" as const,
-    entry: 87420,
-    exit: 88150,
-    pnl: 730,
-    entryTime: "10:10",
-    exitTime: "13:55",
-    date: "29/03/2026",
-    grade: "A",
-    psyTag: "לפי תוכנית המסחר",
-    psyType: "good" as const,
-    hasAudio: false,
-    autoSync: true,
-    rr: "1:2.8",
-    lots: 0.1,
+    id: 4, pair: "BTC/USD", dir: "Long" as const, entry: 87420, exit: 88150,
+    pnl: 730, entryTime: "10:10", exitTime: "13:55", date: "29/03/2026",
+    grade: "A", psyTag: "לפי תוכנית המסחר", psyType: "good" as const,
+    hasAudio: false, autoSync: true, rr: "1:2.8", lots: 0.1,
     aiNote: "סבלנות מצוינת. חיכית לאישור ונכנסת בזמן הנכון. הסטופ נשמר במקום.",
     slMoved: false,
   },
   {
-    id: 5,
-    pair: "NAS100",
-    dir: "Short" as const,
-    entry: 18542,
-    exit: 18610,
-    pnl: -204,
-    entryTime: "15:31",
-    exitTime: "15:58",
-    date: "28/03/2026",
-    grade: "D",
-    psyTag: "כניסה מוקדמת מפומו",
-    psyType: "danger" as const,
-    hasAudio: true,
-    autoSync: false,
-    rr: "-1:1",
-    lots: 0.4,
+    id: 5, pair: "NAS100", dir: "Short" as const, entry: 18542, exit: 18610,
+    pnl: -204, entryTime: "15:31", exitTime: "15:58", date: "28/03/2026",
+    grade: "D", psyTag: "כניסה מוקדמת מפומו", psyType: "danger" as const,
+    hasAudio: true, autoSync: false, rr: "-1:1", lots: 0.4,
     aiNote: "נכנסת לפני אישור הנר. זיהיתי דפוס FOMO — הכניסה בוצעה 12 שניות אחרי תנועה חדה. תמיד תחכה לסגירת נר.",
     slMoved: false,
   },
   {
-    id: 6,
-    pair: "EUR/JPY",
-    dir: "Long" as const,
-    entry: 162.45,
-    exit: 163.10,
-    pnl: 520,
-    entryTime: "08:15",
-    exitTime: "10:30",
-    date: "28/03/2026",
-    grade: "A",
-    psyTag: "לפי תוכנית המסחר",
-    psyType: "good" as const,
-    hasAudio: false,
-    autoSync: true,
-    rr: "1:3.5",
-    lots: 0.3,
+    id: 6, pair: "EUR/JPY", dir: "Long" as const, entry: 162.45, exit: 163.10,
+    pnl: 520, entryTime: "08:15", exitTime: "10:30", date: "28/03/2026",
+    grade: "A", psyTag: "לפי תוכנית המסחר", psyType: "good" as const,
+    hasAudio: false, autoSync: true, rr: "1:3.5", lots: 0.3,
     aiNote: "ביצוע מושלם. הסטאפ עבד כמתוכנן, יחס R:R מעולה.",
     slMoved: false,
   },
 ];
 
-const gradeColors: Record<string, string> = {
-  "A+": "text-accent border-accent/25 bg-accent/10",
-  "A": "text-accent border-accent/25 bg-accent/10",
-  "B": "text-primary border-primary/25 bg-primary/10",
-  "C": "text-yellow-400 border-yellow-400/25 bg-yellow-400/10",
-  "D": "text-orange-400 border-orange-400/25 bg-orange-400/10",
-  "F": "text-destructive border-destructive/25 bg-destructive/10",
+const gradeConfig: Record<string, { color: string; glow: string }> = {
+  "A+": { color: "text-accent", glow: "shadow-[0_0_12px_hsl(var(--accent)/0.3)]" },
+  "A":  { color: "text-accent", glow: "shadow-[0_0_12px_hsl(var(--accent)/0.3)]" },
+  "B":  { color: "text-primary", glow: "shadow-[0_0_12px_hsl(var(--primary)/0.3)]" },
+  "C":  { color: "text-yellow-400", glow: "" },
+  "D":  { color: "text-orange-400", glow: "" },
+  "F":  { color: "text-destructive", glow: "shadow-[0_0_12px_hsl(var(--destructive)/0.3)]" },
 };
 
-const psyColors = {
-  good: "text-accent/80 bg-accent/[0.06] border-accent/15",
-  warning: "text-yellow-400/80 bg-yellow-400/[0.06] border-yellow-400/15",
-  danger: "text-destructive/80 bg-destructive/[0.06] border-destructive/15",
+const psyStyles = {
+  good: "text-accent/90 bg-accent/8 border-accent/20",
+  warning: "text-yellow-400/90 bg-yellow-400/8 border-yellow-400/20",
+  danger: "text-destructive/90 bg-destructive/8 border-destructive/20",
 };
 
+/* ===== Page ===== */
 const JournalPage = () => {
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [assetFilter, setAssetFilter] = useState("all");
@@ -162,202 +91,228 @@ const JournalPage = () => {
 
   return (
     <div className="mx-auto max-w-[1280px]">
-      {/* Header + Filters */}
-      <div className="mb-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+      {/* ── Hero Header ── */}
+      <div className="relative mb-6 rounded-2xl border border-border/40 bg-gradient-to-bl from-secondary/60 via-secondary/30 to-transparent p-5 md:p-7 overflow-hidden">
+        {/* Decorative glow */}
+        <div className="absolute -top-20 -left-20 w-60 h-60 rounded-full bg-primary/[0.07] blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-16 -right-16 w-48 h-48 rounded-full bg-accent/[0.05] blur-3xl pointer-events-none" />
+
+        <div className="relative flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
-            <h1 className="font-heading text-lg md:text-xl font-bold text-foreground">יומן מסחר חכם</h1>
-            <p className="text-[11px] md:text-xs text-muted-foreground mt-0.5">כל העסקאות מנותחות אוטומטית ע״י ה-AI</p>
+            <div className="flex items-center gap-2 mb-1.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/15 border border-primary/20">
+                <Sparkles className="h-4 w-4 text-primary" />
+              </div>
+              <h1 className="font-heading text-xl md:text-2xl font-extrabold text-foreground tracking-tight">
+                יומן מסחר חכם
+              </h1>
+            </div>
+            <p className="text-[11px] md:text-xs text-muted-foreground/70 leading-relaxed max-w-sm">
+              כל העסקאות מנותחות אוטומטית ע״י ה-AI — תובנות, דפוסים פסיכולוגיים, וציוני משמעת
+            </p>
           </div>
-          <button className="flex items-center gap-1.5 self-start rounded-lg bg-primary/15 border border-primary/25 px-3 py-2 text-[11px] font-semibold text-primary hover:bg-primary/25 transition-all">
-            <Mic className="h-3.5 w-3.5" />
-            הקלט יומן קולי +
+          <button className="group flex items-center gap-2 self-start rounded-xl bg-primary/10 border border-primary/20 px-4 py-2.5 text-[11px] font-bold text-primary hover:bg-primary/20 hover:border-primary/30 transition-all duration-300">
+            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary/20 group-hover:bg-primary/30 transition-colors">
+              <Mic className="h-3 w-3" />
+            </div>
+            הקלט יומן קולי
           </button>
         </div>
 
-        {/* Filters Row */}
-        <div className="flex flex-wrap gap-2">
-          <select
-            value={assetFilter}
-            onChange={(e) => setAssetFilter(e.target.value)}
-            className="rounded-lg border border-border bg-muted/15 px-3 py-1.5 text-[10px] md:text-[11px] text-foreground appearance-none focus:border-primary focus:outline-none transition-all"
-          >
+        {/* Filters */}
+        <div className="relative flex flex-wrap gap-2 mt-5 pt-4 border-t border-border/20">
+          <FilterSelect value={assetFilter} onChange={setAssetFilter}>
             <option value="all">כל הנכסים</option>
             {[...new Set(trades.map(t => t.pair))].map(p => (
               <option key={p} value={p}>{p}</option>
             ))}
-          </select>
+          </FilterSelect>
 
-          <select
-            value={psyFilter}
-            onChange={(e) => setPsyFilter(e.target.value)}
-            className="rounded-lg border border-border bg-muted/15 px-3 py-1.5 text-[10px] md:text-[11px] text-foreground appearance-none focus:border-primary focus:outline-none transition-all"
-          >
+          <FilterSelect value={psyFilter} onChange={setPsyFilter}>
             <option value="all">כל העסקאות</option>
             <option value="mistakes">טעויות פסיכולוגיות</option>
             <option value="plan">לפי תוכנית</option>
-          </select>
+          </FilterSelect>
 
-          <button className="rounded-lg border border-border bg-muted/15 px-3 py-1.5 text-[10px] md:text-[11px] text-muted-foreground flex items-center gap-1.5 hover:text-foreground transition-all">
+          <button className="rounded-xl border border-border/30 bg-muted/10 px-3.5 py-2 text-[10px] md:text-[11px] text-muted-foreground/60 flex items-center gap-1.5 hover:text-foreground hover:border-border/50 transition-all duration-300">
             <Calendar className="h-3 w-3" />
             טווח תאריכים
           </button>
         </div>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-3 gap-2 md:gap-3 mb-4">
-        <div className="rounded-xl border border-border bg-secondary/20 p-3 md:p-4 text-center">
-          <p className={`text-base md:text-xl font-bold ${weekPnl >= 0 ? "text-accent" : "text-destructive"}`}>
-            {weekPnl >= 0 ? "+" : ""}{weekPnl.toLocaleString()}$
-          </p>
-          <p className="text-[8px] md:text-[10px] text-muted-foreground mt-0.5">P&L שבועי</p>
-        </div>
-        <div className="rounded-xl border border-border bg-secondary/20 p-3 md:p-4 text-center">
-          <p className="text-base md:text-xl font-bold text-foreground">{winRate}%</p>
-          <p className="text-[8px] md:text-[10px] text-muted-foreground mt-0.5">אחוז הצלחה</p>
-        </div>
-        <div className="rounded-xl border border-border bg-secondary/20 p-3 md:p-4 text-center">
-          <p className="text-base md:text-xl font-bold text-primary">A-</p>
-          <p className="text-[8px] md:text-[10px] text-muted-foreground mt-0.5">ציון משמעת AI</p>
-        </div>
+      {/* ── Summary Strip ── */}
+      <div className="grid grid-cols-3 gap-2.5 md:gap-3 mb-6">
+        <SummaryCard
+          value={`${weekPnl >= 0 ? "+" : ""}${weekPnl.toLocaleString()}$`}
+          label="P&L שבועי"
+          icon={<TrendingUp className="h-3.5 w-3.5" />}
+          accent={weekPnl >= 0 ? "accent" : "destructive"}
+        />
+        <SummaryCard
+          value={`${winRate}%`}
+          label="אחוז הצלחה"
+          icon={<Target className="h-3.5 w-3.5" />}
+          accent="primary"
+        />
+        <SummaryCard
+          value="A-"
+          label="ציון משמעת AI"
+          icon={<Award className="h-3.5 w-3.5" />}
+          accent="primary"
+        />
       </div>
 
-      {/* Trade List */}
+      {/* ── Trade List ── */}
       <div className="space-y-2">
         {filtered.map((t) => {
           const expanded = expandedId === t.id;
+          const gc = gradeConfig[t.grade] || gradeConfig["C"];
+
           return (
-            <div key={t.id} className="rounded-xl border border-border/60 bg-secondary/20 overflow-hidden transition-all">
-              {/* Collapsed Row */}
+            <div
+              key={t.id}
+              className={`group rounded-2xl border overflow-hidden transition-all duration-300 ${
+                expanded
+                  ? "border-border/50 bg-secondary/40 shadow-lg shadow-background/50"
+                  : "border-border/25 bg-secondary/15 hover:border-border/40 hover:bg-secondary/25"
+              }`}
+            >
+              {/* Row */}
               <button
                 onClick={() => setExpandedId(expanded ? null : t.id)}
-                className="w-full flex items-center gap-2 md:gap-3 px-3 md:px-4 py-3 md:py-3.5 text-right hover:bg-muted/10 transition-all"
+                className="w-full flex items-center gap-2.5 md:gap-3 px-3.5 md:px-5 py-3.5 md:py-4 text-right transition-all"
               >
-                {/* Asset + Direction */}
-                <div className="flex items-center gap-2 min-w-0 shrink-0">
-                  <div className={`flex h-8 w-8 md:h-9 md:w-9 shrink-0 items-center justify-center rounded-lg border ${
-                    t.dir === "Long" ? "border-accent/20 bg-accent/8" : "border-destructive/20 bg-destructive/8"
-                  }`}>
-                    {t.dir === "Long"
-                      ? <ArrowUpRight className="h-3.5 w-3.5 text-accent" />
-                      : <ArrowDownRight className="h-3.5 w-3.5 text-destructive" />
-                    }
-                  </div>
-                  <div className="text-right min-w-0">
-                    <p className="text-[11px] md:text-xs font-bold text-foreground truncate">{t.pair}</p>
-                    <p className="text-[8px] md:text-[9px] text-muted-foreground/50">{t.date} • {t.entryTime}</p>
-                  </div>
+                {/* Direction Icon */}
+                <div className={`flex h-9 w-9 md:h-10 md:w-10 shrink-0 items-center justify-center rounded-xl border backdrop-blur-sm ${
+                  t.dir === "Long"
+                    ? "border-accent/15 bg-accent/8"
+                    : "border-destructive/15 bg-destructive/8"
+                }`}>
+                  {t.dir === "Long"
+                    ? <ArrowUpRight className="h-4 w-4 text-accent" />
+                    : <ArrowDownRight className="h-4 w-4 text-destructive" />
+                  }
+                </div>
+
+                {/* Pair + Date */}
+                <div className="text-right min-w-0">
+                  <p className="text-xs md:text-[13px] font-bold text-foreground tracking-wide">{t.pair}</p>
+                  <p className="text-[8px] md:text-[9px] text-muted-foreground/40 mt-0.5 font-medium">{t.date} · {t.entryTime}</p>
                 </div>
 
                 {/* P&L */}
                 <div className="mr-auto md:mr-0 md:flex-1 text-left md:text-center">
-                  <p className={`text-xs md:text-sm font-bold ${t.pnl > 0 ? "text-accent" : "text-destructive"}`}>
+                  <p className={`text-sm md:text-base font-extrabold tracking-tight ${t.pnl > 0 ? "text-accent" : "text-destructive"}`}>
                     {t.pnl > 0 ? "+" : ""}{t.pnl}$
                   </p>
+                  <p className="text-[7px] md:text-[8px] text-muted-foreground/30 font-medium">R:R {t.rr}</p>
                 </div>
 
-                {/* Grade Badge */}
-                <span className={`hidden sm:flex shrink-0 rounded-md border px-2 py-0.5 text-[9px] font-bold ${gradeColors[t.grade]}`}>
+                {/* Grade */}
+                <div className={`hidden sm:flex shrink-0 h-8 w-8 items-center justify-center rounded-xl border border-border/20 bg-muted/20 text-[10px] font-black ${gc.color} ${gc.glow}`}>
                   {t.grade}
-                </span>
+                </div>
 
                 {/* Psy Tag */}
-                <span className={`hidden md:flex shrink-0 rounded-md border px-2 py-0.5 text-[8px] font-medium ${psyColors[t.psyType]}`}>
+                <span className={`hidden md:flex shrink-0 rounded-lg border px-2.5 py-1 text-[8px] font-semibold ${psyStyles[t.psyType]}`}>
                   {t.psyTag}
                 </span>
 
-                {/* Icons */}
-                <div className="hidden sm:flex items-center gap-1.5 shrink-0">
+                {/* Indicators */}
+                <div className="hidden sm:flex items-center gap-1 shrink-0">
                   {t.hasAudio && (
-                    <span className="flex h-5 w-5 items-center justify-center rounded bg-primary/10 text-primary">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary/8 border border-primary/15 text-primary/60">
                       <Volume2 className="h-2.5 w-2.5" />
                     </span>
                   )}
                   {t.autoSync && (
-                    <span className="flex h-5 w-5 items-center justify-center rounded bg-muted/30 text-muted-foreground">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-muted/20 border border-border/15 text-muted-foreground/40">
                       <RefreshCw className="h-2.5 w-2.5" />
                     </span>
                   )}
                 </div>
 
-                {/* Expand */}
-                <div className="shrink-0 text-muted-foreground/40">
-                  {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                {/* Chevron */}
+                <div className={`shrink-0 transition-transform duration-300 ${expanded ? "rotate-180" : ""} text-muted-foreground/30`}>
+                  <ChevronDown className="h-4 w-4" />
                 </div>
               </button>
 
-              {/* Mobile badges (below main row) */}
-              <div className="flex sm:hidden items-center gap-1.5 px-3 pb-2 -mt-1">
-                <span className={`rounded-md border px-1.5 py-0.5 text-[8px] font-bold ${gradeColors[t.grade]}`}>{t.grade}</span>
-                <span className={`rounded-md border px-1.5 py-0.5 text-[7px] font-medium ${psyColors[t.psyType]}`}>{t.psyTag}</span>
-                {t.hasAudio && <Volume2 className="h-3 w-3 text-primary/50" />}
-                {t.autoSync && <RefreshCw className="h-3 w-3 text-muted-foreground/30" />}
+              {/* Mobile badges */}
+              <div className="flex sm:hidden items-center gap-1.5 px-3.5 pb-2.5 -mt-1">
+                <span className={`rounded-lg border px-2 py-0.5 text-[8px] font-black ${gc.color} bg-muted/15 border-border/20`}>{t.grade}</span>
+                <span className={`rounded-lg border px-2 py-0.5 text-[7px] font-semibold ${psyStyles[t.psyType]}`}>{t.psyTag}</span>
+                {t.hasAudio && <Volume2 className="h-3 w-3 text-primary/40" />}
+                {t.autoSync && <RefreshCw className="h-3 w-3 text-muted-foreground/25" />}
               </div>
 
-              {/* Expanded Detail */}
+              {/* ── Expanded Detail ── */}
               {expanded && (
-                <div className="border-t border-border/30 bg-muted/[0.03] px-3 md:px-5 py-4 animate-in slide-in-from-top-2 fade-in duration-200">
-                  {/* Chart Placeholder */}
-                  <div className="relative rounded-xl border border-border/40 bg-muted/10 overflow-hidden mb-4 h-32 md:h-44">
+                <div className="border-t border-border/15 bg-gradient-to-b from-muted/[0.04] to-transparent px-4 md:px-6 py-5 animate-in slide-in-from-top-2 fade-in duration-300">
+                  {/* Chart */}
+                  <div className="relative rounded-2xl border border-border/20 bg-muted/[0.06] overflow-hidden mb-5 h-36 md:h-48">
                     <TradeChart bull={t.pnl > 0} />
-                    <div className="absolute top-2 right-2 flex items-center gap-1.5">
-                      <span className="rounded bg-background/80 backdrop-blur-sm px-1.5 py-0.5 text-[8px] font-bold text-foreground border border-border/30">{t.pair}</span>
-                      <span className={`rounded backdrop-blur-sm px-1.5 py-0.5 text-[8px] font-bold border ${
-                        t.dir === "Long" ? "bg-accent/20 text-accent border-accent/20" : "bg-destructive/20 text-destructive border-destructive/20"
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent pointer-events-none" />
+                    <div className="absolute top-3 right-3 flex items-center gap-1.5">
+                      <span className="rounded-lg bg-background/70 backdrop-blur-md px-2 py-1 text-[9px] font-bold text-foreground border border-border/20">{t.pair}</span>
+                      <span className={`rounded-lg backdrop-blur-md px-2 py-1 text-[9px] font-bold border ${
+                        t.dir === "Long" ? "bg-accent/15 text-accent border-accent/15" : "bg-destructive/15 text-destructive border-destructive/15"
                       }`}>{t.dir}</span>
                     </div>
-                    {/* Entry/Exit markers */}
-                    <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between">
-                      <span className="rounded bg-primary/20 backdrop-blur-sm px-1.5 py-0.5 text-[7px] font-semibold text-primary border border-primary/20">
+                    <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between">
+                      <span className="rounded-lg bg-primary/15 backdrop-blur-md px-2.5 py-1 text-[8px] font-bold text-primary border border-primary/15">
                         כניסה: {t.entry}
                       </span>
-                      <span className={`rounded backdrop-blur-sm px-1.5 py-0.5 text-[7px] font-semibold border ${
-                        t.pnl > 0 ? "bg-accent/20 text-accent border-accent/20" : "bg-destructive/20 text-destructive border-destructive/20"
+                      <span className={`rounded-lg backdrop-blur-md px-2.5 py-1 text-[8px] font-bold border ${
+                        t.pnl > 0 ? "bg-accent/15 text-accent border-accent/15" : "bg-destructive/15 text-destructive border-destructive/15"
                       }`}>
                         יציאה: {t.exit}
                       </span>
                     </div>
                   </div>
 
-                  {/* Trade Details Grid */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+                  {/* Detail Grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-5">
                     {[
                       { label: "שעת כניסה", value: t.entryTime, icon: <Clock className="h-3 w-3" /> },
                       { label: "שעת יציאה", value: t.exitTime, icon: <Clock className="h-3 w-3" /> },
                       { label: "R:R", value: t.rr, icon: <Target className="h-3 w-3" /> },
                       { label: "לוט", value: t.lots.toString(), icon: <BarChart3 className="h-3 w-3" /> },
                     ].map((d) => (
-                      <div key={d.label} className="rounded-lg border border-border/30 bg-muted/10 p-2.5">
-                        <div className="flex items-center gap-1 text-muted-foreground/50 mb-1">
+                      <div key={d.label} className="rounded-xl border border-border/15 bg-muted/[0.05] p-3">
+                        <div className="flex items-center gap-1.5 text-muted-foreground/40 mb-1.5">
                           {d.icon}
-                          <span className="text-[8px]">{d.label}</span>
+                          <span className="text-[8px] font-medium">{d.label}</span>
                         </div>
-                        <p className="text-[11px] font-bold text-foreground">{d.value}</p>
+                        <p className="text-xs font-bold text-foreground">{d.value}</p>
                       </div>
                     ))}
                   </div>
 
                   {/* AI Analysis */}
-                  <div className={`rounded-xl border p-3.5 flex items-start gap-2.5 ${
+                  <div className={`rounded-2xl border p-4 flex items-start gap-3 ${
                     t.psyType === "good"
-                      ? "border-accent/15 bg-accent/[0.03]"
+                      ? "border-accent/12 bg-accent/[0.03]"
                       : t.psyType === "warning"
-                        ? "border-yellow-400/15 bg-yellow-400/[0.03]"
-                        : "border-destructive/15 bg-destructive/[0.03]"
+                        ? "border-yellow-400/12 bg-yellow-400/[0.03]"
+                        : "border-destructive/12 bg-destructive/[0.03]"
                   }`}>
-                    <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${
-                      t.psyType === "good" ? "bg-accent/15" : t.psyType === "warning" ? "bg-yellow-400/15" : "bg-destructive/15"
+                    <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${
+                      t.psyType === "good" ? "bg-accent/12" : t.psyType === "warning" ? "bg-yellow-400/12" : "bg-destructive/12"
                     }`}>
-                      <Brain className={`h-3.5 w-3.5 ${
+                      <Brain className={`h-4 w-4 ${
                         t.psyType === "good" ? "text-accent" : t.psyType === "warning" ? "text-yellow-400" : "text-destructive"
                       }`} />
                     </div>
-                    <div>
-                      <p className="text-[10px] font-semibold text-foreground mb-1">ניתוח ה-AI:</p>
-                      <p className="text-[9px] md:text-[10px] text-muted-foreground leading-[1.8]">{t.aiNote}</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-bold text-foreground/80 mb-1.5 flex items-center gap-1.5">
+                        <Sparkles className="h-3 w-3 text-primary/50" />
+                        ניתוח ה-AI
+                      </p>
+                      <p className="text-[10px] md:text-[11px] text-muted-foreground/80 leading-[1.9]">{t.aiNote}</p>
                       {t.slMoved && (
-                        <div className="mt-2 flex items-center gap-1 text-[8px] text-destructive/70">
+                        <div className="mt-2.5 flex items-center gap-1.5 rounded-lg bg-destructive/8 border border-destructive/10 px-2.5 py-1.5 text-[8px] text-destructive/80 font-medium">
                           <AlertTriangle className="h-3 w-3" />
                           סטופ-לוס הוזז במהלך העסקה
                         </div>
@@ -365,20 +320,20 @@ const JournalPage = () => {
                     </div>
                   </div>
 
-                  {/* Audio Playback */}
+                  {/* Audio */}
                   {t.hasAudio && (
-                    <div className="mt-3 flex items-center gap-3 rounded-lg border border-primary/15 bg-primary/[0.03] px-3 py-2.5">
-                      <button className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/15 border border-primary/25 text-primary hover:bg-primary/25 transition-all">
-                        <Play className="h-3 w-3 mr-[-1px]" />
+                    <div className="mt-4 flex items-center gap-3 rounded-2xl border border-primary/10 bg-primary/[0.03] px-4 py-3">
+                      <button className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/12 border border-primary/20 text-primary hover:bg-primary/20 transition-all duration-300">
+                        <Play className="h-3.5 w-3.5 mr-[-1px]" />
                       </button>
                       <div className="flex-1">
-                        <div className="flex items-end gap-[2px] h-4">
-                          {Array.from({ length: 40 }, (_, i) => (
-                            <div key={i} className="flex-1 rounded-full bg-primary/30" style={{ height: `${20 + Math.random() * 80}%` }} />
+                        <div className="flex items-end gap-[2px] h-5">
+                          {Array.from({ length: 45 }, (_, i) => (
+                            <div key={i} className="flex-1 rounded-full bg-primary/25" style={{ height: `${15 + Math.random() * 85}%` }} />
                           ))}
                         </div>
                       </div>
-                      <span className="text-[9px] text-muted-foreground shrink-0">0:42</span>
+                      <span className="text-[9px] text-muted-foreground/50 shrink-0 font-medium">0:42</span>
                     </div>
                   )}
                 </div>
@@ -388,29 +343,64 @@ const JournalPage = () => {
         })}
       </div>
 
+      {/* Empty State */}
       {filtered.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <Search className="h-8 w-8 text-muted-foreground/30 mb-3" />
-          <p className="text-sm text-muted-foreground/50">אין עסקאות שמתאימות לפילטר</p>
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted/15 border border-border/20 mb-4">
+            <Search className="h-6 w-6 text-muted-foreground/25" />
+          </div>
+          <p className="text-sm text-muted-foreground/40 font-medium">אין עסקאות שמתאימות לפילטר</p>
         </div>
       )}
     </div>
   );
 };
 
-/* Mini chart for expanded view */
+/* ── Sub-Components ── */
+
+const FilterSelect = ({ value, onChange, children }: { value: string; onChange: (v: string) => void; children: React.ReactNode }) => (
+  <select
+    value={value}
+    onChange={(e) => onChange(e.target.value)}
+    className="rounded-xl border border-border/25 bg-muted/10 px-3.5 py-2 text-[10px] md:text-[11px] text-foreground/80 font-medium appearance-none focus:border-primary/40 focus:outline-none transition-all duration-300 hover:bg-muted/20"
+  >
+    {children}
+  </select>
+);
+
+const SummaryCard = ({ value, label, icon, accent }: { value: string; label: string; icon: React.ReactNode; accent: string }) => (
+  <div className="relative rounded-2xl border border-border/25 bg-secondary/20 p-3.5 md:p-5 text-center overflow-hidden group hover:border-border/40 transition-all duration-300">
+    <div className={`absolute -top-8 -right-8 w-20 h-20 rounded-full blur-2xl pointer-events-none opacity-30 ${
+      accent === "accent" ? "bg-accent/20" : accent === "destructive" ? "bg-destructive/20" : "bg-primary/20"
+    }`} />
+    <div className="relative">
+      <div className={`flex items-center justify-center gap-1 mb-1 ${
+        accent === "accent" ? "text-accent" : accent === "destructive" ? "text-destructive" : "text-primary"
+      }`}>
+        {icon}
+      </div>
+      <p className={`text-lg md:text-2xl font-extrabold tracking-tight ${
+        accent === "accent" ? "text-accent" : accent === "destructive" ? "text-destructive" : "text-foreground"
+      }`}>
+        {value}
+      </p>
+      <p className="text-[8px] md:text-[9px] text-muted-foreground/40 mt-1 font-medium tracking-wide">{label}</p>
+    </div>
+  </div>
+);
+
 const TradeChart = ({ bull }: { bull: boolean }) => {
-  const bars = Array.from({ length: 50 }, (_, i) => ({
-    h: 20 + Math.random() * 50,
-    up: bull ? (i > 25 ? Math.random() > 0.3 : Math.random() > 0.5) : (i > 25 ? Math.random() > 0.6 : Math.random() > 0.4),
+  const bars = Array.from({ length: 55 }, (_, i) => ({
+    h: 15 + Math.random() * 55,
+    up: bull ? (i > 25 ? Math.random() > 0.25 : Math.random() > 0.5) : (i > 25 ? Math.random() > 0.65 : Math.random() > 0.4),
   }));
 
   return (
-    <div className="flex items-end gap-[1.5px] h-full px-4 pb-8 pt-8">
+    <div className="flex items-end gap-[1.5px] h-full px-5 pb-10 pt-10">
       {bars.map((b, i) => (
         <div
           key={i}
-          className={`flex-1 rounded-[0.5px] ${b.up ? "bg-accent/30" : "bg-destructive/25"}`}
+          className={`flex-1 rounded-[1px] transition-all ${b.up ? "bg-accent/25" : "bg-destructive/20"}`}
           style={{ height: `${b.h}%` }}
         />
       ))}
