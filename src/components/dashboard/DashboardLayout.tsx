@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   LayoutDashboard, BookOpen, Bot, FlaskConical, ShieldCheck,
-  LogOut, ChevronDown, Plug, Menu, X,
+  LogOut, ChevronDown, Plug, Menu, X, Settings, Sun, Moon,
 } from "lucide-react";
+import SettingsPage from "@/pages/SettingsPage";
 
 const navItems = [
   { id: "dashboard", label: "דשבורד ראשי", icon: LayoutDashboard },
@@ -10,11 +11,40 @@ const navItems = [
   { id: "mentor", label: "מנטור AI", icon: Bot },
   { id: "backtesting", label: "בקטסטינג", icon: FlaskConical },
   { id: "protection", label: "הגדרות הגנה", icon: ShieldCheck },
+  { id: "settings", label: "הגדרות", icon: Settings },
 ];
 
 const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   const [activeNav, setActiveNav] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [dark, setDark] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("zentrade-theme") !== "light";
+    }
+    return true;
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("light", !dark);
+    localStorage.setItem("zentrade-theme", dark ? "dark" : "light");
+  }, [dark]);
+
+  const renderContent = () => {
+    if (activeNav === "settings") return <SettingsPage />;
+    return children || (
+      <div className="flex h-full items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20">
+            <LayoutDashboard className="h-8 w-8 text-primary/60" />
+          </div>
+          <p className="font-heading text-lg font-semibold text-foreground/60">
+            {navItems.find((n) => n.id === activeNav)?.label}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">התוכן ייבנה בשלב הבא</p>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="flex h-screen w-full overflow-hidden" dir="rtl">
@@ -101,7 +131,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             </h1>
           </div>
 
-          {/* Center: AI Status + Connect Broker */}
+          {/* Left: AI Status + Connect Broker + Theme + Profile */}
           <div className="flex items-center gap-2 md:gap-3">
             {/* AI Status Badge */}
             <div className="hidden sm:flex items-center gap-2 rounded-full border border-accent/25 bg-accent/8 px-3 py-1.5">
@@ -116,6 +146,15 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             <button className="flex items-center gap-1.5 rounded-lg border border-border bg-muted/30 px-3 py-1.5 text-[11px] font-medium text-foreground transition-all hover:bg-muted/60 hover:border-border/80 md:px-4 md:py-2 md:text-xs">
               <Plug className="h-3.5 w-3.5 text-primary" />
               <span className="hidden sm:inline">חבר ברוקר</span>
+            </button>
+
+            {/* Theme Toggle */}
+            <button
+              onClick={() => setDark(!dark)}
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-muted/20 text-muted-foreground transition-all hover:bg-muted/50 hover:text-foreground"
+              title={dark ? "מצב בהיר" : "מצב כהה"}
+            >
+              {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
 
             {/* User Profile */}
@@ -134,19 +173,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
 
         {/* Main Content Area */}
         <main className="flex-1 overflow-y-auto bg-background p-4 md:p-6">
-          {children || (
-            <div className="flex h-full items-center justify-center">
-              <div className="text-center">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20">
-                  <LayoutDashboard className="h-8 w-8 text-primary/60" />
-                </div>
-                <p className="font-heading text-lg font-semibold text-foreground/60">
-                  {navItems.find((n) => n.id === activeNav)?.label}
-                </p>
-                <p className="mt-1 text-xs text-muted-foreground">התוכן ייבנה בשלב הבא</p>
-              </div>
-            </div>
-          )}
+          {renderContent()}
         </main>
       </div>
     </div>
