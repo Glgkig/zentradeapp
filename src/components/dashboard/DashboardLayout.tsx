@@ -19,6 +19,9 @@ const navItems = [
 const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   const [activeNav, setActiveNav] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    return localStorage.getItem("zentrade-onboarded") !== "true";
+  });
   const [dark, setDark] = useState(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("zentrade-theme") !== "light";
@@ -31,7 +34,13 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
     localStorage.setItem("zentrade-theme", dark ? "dark" : "light");
   }, [dark]);
 
+  const completeOnboarding = () => {
+    localStorage.setItem("zentrade-onboarded", "true");
+    setShowOnboarding(false);
+  };
+
   const renderContent = () => {
+    if (activeNav === "dashboard") return <HomeDashboard userName="יהונתן" />;
     if (activeNav === "settings") return <SettingsPage />;
     return children || (
       <div className="flex h-full items-center justify-center">
