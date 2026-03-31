@@ -402,9 +402,36 @@ const generateCandles = (id: number, bull: boolean, tf: string) => {
 };
 
 type TradeData = typeof trades[0];
+const TIMEFRAMES = ["5m", "15m", "1H", "4H", "1D"] as const;
 
-const TradingViewChart = ({ trade }: { trade: TradeData }) => {
-  const candles = generateCandles(trade.id, trade.pnl > 0);
+const TradeChartContainer = ({ trade }: { trade: TradeData }) => {
+  const [tf, setTf] = useState("1H");
+
+  return (
+    <div className="relative rounded-2xl border border-border/20 bg-[hsl(0,0%,3%)] overflow-hidden mb-5 h-56 md:h-80">
+      {/* Timeframe selector */}
+      <div className="absolute top-2.5 left-2.5 flex items-center gap-0.5 z-20">
+        {TIMEFRAMES.map((t) => (
+          <button
+            key={t}
+            onClick={(e) => { e.stopPropagation(); setTf(t); }}
+            className={`rounded-md px-2 py-0.5 text-[7px] font-bold border transition-all duration-200 cursor-pointer ${
+              tf === t
+                ? "bg-primary/20 text-primary border-primary/25 shadow-[0_0_8px_hsl(var(--primary)/0.15)]"
+                : "bg-[hsl(0,0%,8%)] text-muted-foreground/40 border-[hsl(0,0%,12%)] hover:text-muted-foreground/60 hover:bg-[hsl(0,0%,10%)]"
+            }`}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
+      <TradingViewChart trade={trade} timeframe={tf} />
+    </div>
+  );
+};
+
+const TradingViewChart = ({ trade, timeframe }: { trade: TradeData; timeframe: string }) => {
+  const candles = useMemo(() => generateCandles(trade.id, trade.pnl > 0, timeframe), [trade.id, trade.pnl, timeframe]);
   const allPrices = candles.flatMap(c => [c.h, c.l]);
   const minP = Math.min(...allPrices);
   const maxP = Math.max(...allPrices);
