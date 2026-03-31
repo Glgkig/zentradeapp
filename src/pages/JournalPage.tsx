@@ -376,20 +376,23 @@ const seededRandom = (seed: number) => {
   return x - Math.floor(x);
 };
 
-const generateCandles = (id: number, bull: boolean) => {
-  const count = 60;
+const generateCandles = (id: number, bull: boolean, tf: string) => {
+  const tfSeed = tf === "15m" ? 1 : tf === "1H" ? 2 : tf === "4H" ? 3 : tf === "1D" ? 4 : 5;
+  const seed = id * 100 + tfSeed * 7;
+  const count = tf === "15m" ? 80 : tf === "1H" ? 60 : tf === "4H" ? 45 : 30;
   const candles: { o: number; h: number; l: number; c: number }[] = [];
-  let price = 50 + seededRandom(id * 100) * 20;
+  let price = 50 + seededRandom(seed) * 20;
+  const vol = tf === "15m" ? 0.6 : tf === "1H" ? 1.0 : tf === "4H" ? 1.4 : 2.0;
 
   for (let i = 0; i < count; i++) {
     const trend = bull
-      ? (i < 20 ? -0.1 : i < 35 ? 0.5 : i < 50 ? 0.3 : -0.1)
-      : (i < 20 ? 0.2 : i < 35 ? -0.4 : i < 50 ? -0.3 : 0.1);
-    const volatility = 0.8 + seededRandom(id * 1000 + i * 7) * 1.5;
-    const change = (seededRandom(id * 500 + i * 13) - 0.45 + trend * 0.3) * volatility;
+      ? (i < count * 0.3 ? -0.1 : i < count * 0.6 ? 0.5 : i < count * 0.8 ? 0.3 : -0.1)
+      : (i < count * 0.3 ? 0.2 : i < count * 0.6 ? -0.4 : i < count * 0.8 ? -0.3 : 0.1);
+    const volatility = (0.8 + seededRandom(seed * 10 + i * 7) * 1.5) * vol;
+    const change = (seededRandom(seed * 5 + i * 13) - 0.45 + trend * 0.3) * volatility;
     const o = price;
     const c = price + change;
-    const wick = seededRandom(id * 300 + i * 17) * 0.8;
+    const wick = seededRandom(seed * 3 + i * 17) * 0.8 * vol;
     const h = Math.max(o, c) + wick;
     const l = Math.min(o, c) - wick;
     candles.push({ o, h, l, c });
