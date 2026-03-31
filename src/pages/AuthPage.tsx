@@ -5,6 +5,15 @@ import {
   CheckCircle2, TrendingUp, Quote, ChevronLeft,
 } from "lucide-react";
 import founderPhoto from "@/assets/founder-photo.jpg";
+import logoMt5 from "@/assets/logos/mt5.png";
+import logoBinance from "@/assets/logos/binance.png";
+import logoTradeLocker from "@/assets/logos/tradelocker.png";
+import logoTradingView from "@/assets/logos/tradingview.png";
+import logoRithmic from "@/assets/logos/rithmic.png";
+import logoIbkr from "@/assets/logos/ibkr.png";
+import logoTopstep from "@/assets/logos/topstep.png";
+import logoForex from "@/assets/logos/forexcom.png";
+import logoNinjaTrader from "@/assets/logos/ninjatrader.png";
 
 /* ===== Main Page ===== */
 const AuthPage = () => {
