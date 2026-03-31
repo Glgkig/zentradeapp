@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Mic, Play, ChevronDown, ChevronUp, Calendar,
   ArrowUpRight, ArrowDownRight, Brain, AlertTriangle,
