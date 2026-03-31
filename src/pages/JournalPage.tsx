@@ -571,24 +571,15 @@ const TradingViewChart = ({ trade, timeframe }: { trade: TradeData; timeframe: s
       </svg>
 
       {/* Overlays */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[hsl(222,47%,4%)]/70 via-transparent to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[hsl(0,0%,3%)]/60 via-transparent to-transparent pointer-events-none" />
 
       {/* Top labels */}
       <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 z-10">
-        <span className="rounded-md bg-background/60 backdrop-blur-md px-2 py-0.5 text-[9px] font-bold text-foreground border border-border/15">{trade.pair}</span>
+        <span className="rounded-md bg-[hsl(0,0%,6%)]/80 backdrop-blur-md px-2 py-0.5 text-[9px] font-bold text-foreground border border-[hsl(0,0%,15%)]">{trade.pair}</span>
         <span className={`rounded-md backdrop-blur-md px-2 py-0.5 text-[9px] font-bold border ${
           trade.dir === "Long" ? "bg-accent/15 text-accent border-accent/10" : "bg-destructive/15 text-destructive border-destructive/10"
         }`}>{trade.dir}</span>
         <span className="rounded-md bg-yellow-400/10 backdrop-blur-md px-2 py-0.5 text-[8px] font-semibold text-yellow-400/70 border border-yellow-400/10">EMA 12</span>
-      </div>
-
-      {/* Top-left timeframe */}
-      <div className="absolute top-2.5 left-2.5 flex items-center gap-1 z-10">
-        {["15m", "1H", "4H"].map((tf, i) => (
-          <span key={tf} className={`rounded-md px-1.5 py-0.5 text-[7px] font-bold border ${
-            i === 1 ? "bg-primary/15 text-primary border-primary/15" : "bg-muted/20 text-muted-foreground/40 border-border/10"
-          }`}>{tf}</span>
-        ))}
       </div>
 
       {/* Bottom entry/exit badges */}
