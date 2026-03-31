@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import {
-  LayoutDashboard, BookOpen, Bot, FlaskConical, ShieldCheck,
+  LayoutDashboard, BookOpen, Bot, ShieldCheck,
   LogOut, ChevronDown, Plug, Menu, X, Settings, Sun, Moon,
-  Crosshair, PieChart, History,
+  Crosshair, PieChart, History, CheckCircle2,
 } from "lucide-react";
 import SettingsPage from "@/pages/SettingsPage";
 import SetupsPage from "@/pages/SetupsPage";
@@ -21,9 +21,22 @@ const navItems = [
   { id: "settings", label: "הגדרות", icon: Settings },
 ];
 
+const brokers = [
+  { name: "TradingView", initials: "TV", connected: false, account: null },
+  { name: "TradeLocker", initials: "TL", connected: true, account: "TL-7842" },
+  { name: "MetaTrader 5", initials: "M5", connected: false, account: null },
+  { name: "Binance", initials: "BN", connected: true, account: "BN-3291" },
+  { name: "TopstepX", initials: "TX", connected: false, account: null },
+  { name: "Rithmic", initials: "RI", connected: false, account: null },
+  { name: "NinjaTrader", initials: "NT", connected: false, account: null },
+  { name: "Interactive Brokers", initials: "IB", connected: false, account: null },
+  { name: "Forex.com", initials: "FX", connected: false, account: null },
+];
+
 const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   const [activeNav, setActiveNav] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [brokerModal, setBrokerModal] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(() => {
     return localStorage.getItem("zentrade-onboarded") !== "true";
   });
@@ -121,6 +134,21 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               </button>
             );
           })}
+
+          {/* Broker Connect Button */}
+          <div className="pt-2 mt-2 border-t border-border/40">
+            <button
+              onClick={() => {
+                setBrokerModal(true);
+                setSidebarOpen(false);
+              }}
+              className="group flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-muted-foreground transition-all duration-200 hover:bg-primary/8 hover:text-primary"
+            >
+              <Plug className="h-[18px] w-[18px] text-muted-foreground group-hover:text-primary transition-colors" />
+              חבר ברוקר
+              <span className="mr-auto rounded bg-accent/15 px-1.5 py-0.5 text-[8px] font-bold text-accent">2</span>
+            </button>
+          </div>
         </nav>
 
         {/* Sidebar Footer */}
@@ -136,7 +164,6 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top Header */}
         <header className="flex items-center justify-between border-b border-border bg-sidebar/50 backdrop-blur-lg px-4 py-3 md:px-6">
-          {/* Right side: mobile hamburger + page title */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -149,7 +176,6 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             </h1>
           </div>
 
-          {/* Left: AI Status + Connect Broker + Theme + Profile */}
           <div className="flex items-center gap-2 md:gap-3">
             {/* AI Status Badge */}
             <div className="hidden sm:flex items-center gap-2 rounded-full border border-accent/25 bg-accent/8 px-3 py-1.5">
@@ -159,12 +185,6 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               </span>
               <span className="text-[11px] font-medium text-accent">סטטוס AI: פעיל</span>
             </div>
-
-            {/* Connect Broker */}
-            <button className="flex items-center gap-1.5 rounded-lg border border-border bg-muted/30 px-3 py-1.5 text-[11px] font-medium text-foreground transition-all hover:bg-muted/60 hover:border-border/80 md:px-4 md:py-2 md:text-xs">
-              <Plug className="h-3.5 w-3.5 text-primary" />
-              <span className="hidden sm:inline">חבר ברוקר</span>
-            </button>
 
             {/* Theme Toggle */}
             <button
@@ -194,6 +214,76 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
           {renderContent()}
         </main>
       </div>
+
+      {/* ===== Broker Connection Modal ===== */}
+      {brokerModal && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" onClick={() => setBrokerModal(false)} />
+          <div className="relative w-full max-w-lg rounded-2xl border border-border bg-card shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-border px-5 py-4">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/15">
+                  <Plug className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <h2 className="text-sm font-bold text-foreground">חיבורי ברוקר ו-API</h2>
+                  <p className="text-[10px] text-muted-foreground">חבר את פלטפורמת המסחר שלך</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setBrokerModal(false)}
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-all"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Broker List */}
+            <div className="max-h-[60vh] overflow-y-auto divide-y divide-border/50">
+              {brokers.map((b) => (
+                <div
+                  key={b.name}
+                  className={`flex items-center justify-between gap-3 px-5 py-3 transition-all hover:bg-muted/10 ${
+                    b.connected ? "bg-accent/[0.02]" : ""
+                  }`}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border text-[10px] font-bold ${
+                      b.connected ? "border-accent/20 bg-accent/10 text-accent" : "border-border bg-muted/30 text-muted-foreground"
+                    }`}>
+                      {b.initials}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-foreground truncate">{b.name}</p>
+                      <div className="flex items-center gap-1 mt-0.5">
+                        <span className="relative flex h-1.5 w-1.5 shrink-0">
+                          {!b.connected && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive/50 opacity-60" />}
+                          <span className={`relative inline-flex h-1.5 w-1.5 rounded-full ${b.connected ? "bg-accent" : "bg-destructive/60"}`} />
+                        </span>
+                        <span className={`text-[9px] font-medium ${b.connected ? "text-accent" : "text-muted-foreground/50"}`}>
+                          {b.connected ? `מחובר • ${b.account}` : "מנותק"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    className={`shrink-0 rounded-lg px-3 py-1.5 text-[10px] font-semibold transition-all ${
+                      b.connected
+                        ? "border border-accent/20 text-accent hover:bg-accent/10"
+                        : "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_10px_hsl(217_72%_53%/0.1)]"
+                    }`}
+                  >
+                    {b.connected ? "מחובר ✓" : "התחבר"}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {showOnboarding && (
         <OnboardingModal userName="יהונתן" onComplete={completeOnboarding} />
       )}
