@@ -372,21 +372,217 @@ const SummaryCard = ({ value, label, icon, accent }: { value: string; label: str
   </div>
 );
 
-const TradeChart = ({ bull }: { bull: boolean }) => {
-  const bars = Array.from({ length: 55 }, (_, i) => ({
-    h: 15 + Math.random() * 55,
-    up: bull ? (i > 25 ? Math.random() > 0.25 : Math.random() > 0.5) : (i > 25 ? Math.random() > 0.65 : Math.random() > 0.4),
-  }));
+/* ── Realistic TradingView-Style Chart ── */
+const seededRandom = (seed: number) => {
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+};
+
+const generateCandles = (id: number, bull: boolean) => {
+  const count = 60;
+  const candles: { o: number; h: number; l: number; c: number }[] = [];
+  let price = 50 + seededRandom(id * 100) * 20;
+
+  for (let i = 0; i < count; i++) {
+    const trend = bull
+      ? (i < 20 ? -0.1 : i < 35 ? 0.5 : i < 50 ? 0.3 : -0.1)
+      : (i < 20 ? 0.2 : i < 35 ? -0.4 : i < 50 ? -0.3 : 0.1);
+    const volatility = 0.8 + seededRandom(id * 1000 + i * 7) * 1.5;
+    const change = (seededRandom(id * 500 + i * 13) - 0.45 + trend * 0.3) * volatility;
+    const o = price;
+    const c = price + change;
+    const wick = seededRandom(id * 300 + i * 17) * 0.8;
+    const h = Math.max(o, c) + wick;
+    const l = Math.min(o, c) - wick;
+    candles.push({ o, h, l, c });
+    price = c;
+  }
+  return candles;
+};
+
+type TradeData = typeof trades[0];
+
+const TradingViewChart = ({ trade }: { trade: TradeData }) => {
+  const candles = generateCandles(trade.id, trade.pnl > 0);
+  const allPrices = candles.flatMap(c => [c.h, c.l]);
+  const minP = Math.min(...allPrices);
+  const maxP = Math.max(...allPrices);
+  const range = maxP - minP || 1;
+
+  const toY = (p: number) => 90 - ((p - minP) / range) * 75;
+
+  // Key levels
+  const entryIdx = 18 + Math.floor(seededRandom(trade.id * 77) * 5);
+  const exitIdx = 45 + Math.floor(seededRandom(trade.id * 33) * 8);
+  const entryPrice = candles[entryIdx]?.c ?? 50;
+  const exitPrice = candles[Math.min(exitIdx, candles.length - 1)]?.c ?? 50;
+
+  // Support/resistance zones
+  const supportLevel = minP + range * (0.15 + seededRandom(trade.id * 55) * 0.1);
+  const resistanceLevel = maxP - range * (0.1 + seededRandom(trade.id * 44) * 0.1);
+
+  // EMA line
+  const emaPoints = candles.reduce<number[]>((acc, c, i) => {
+    if (i === 0) return [c.c];
+    const k = 2 / (12 + 1);
+    acc.push(c.c * k + acc[i - 1] * (1 - k));
+    return acc;
+  }, []);
+  const emaPath = emaPoints.map((p, i) => {
+    const x = 2 + (i / (candles.length - 1)) * 96;
+    return `${i === 0 ? "M" : "L"}${x},${toY(p)}`;
+  }).join(" ");
+
+  const candleW = 96 / candles.length;
 
   return (
-    <div className="flex items-end gap-[1.5px] h-full px-5 pb-10 pt-10">
-      {bars.map((b, i) => (
-        <div
-          key={i}
-          className={`flex-1 rounded-[1px] transition-all ${b.up ? "bg-accent/25" : "bg-destructive/20"}`}
-          style={{ height: `${b.h}%` }}
+    <div className="relative w-full h-full">
+      {/* Grid */}
+      <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
+        {/* Horizontal grid lines */}
+        {[20, 35, 50, 65, 80].map(y => (
+          <line key={y} x1="0" y1={y} x2="100" y2={y} stroke="hsl(220,20%,18%)" strokeWidth="0.15" strokeDasharray="1,1" />
+        ))}
+        {/* Vertical grid lines */}
+        {[15, 30, 45, 60, 75, 90].map(x => (
+          <line key={x} x1={x} y1="0" x2={x} y2="100" stroke="hsl(220,20%,18%)" strokeWidth="0.15" strokeDasharray="1,1" />
+        ))}
+
+        {/* Support zone */}
+        <rect x="0" y={toY(supportLevel + range * 0.03)} width="100" height={Math.abs(toY(supportLevel) - toY(supportLevel + range * 0.03))} fill="hsl(160,60%,45%)" opacity="0.04" />
+        <line x1="0" y1={toY(supportLevel)} x2="100" y2={toY(supportLevel)} stroke="hsl(160,60%,45%)" strokeWidth="0.2" strokeDasharray="1.5,1" opacity="0.3" />
+
+        {/* Resistance zone */}
+        <rect x="0" y={toY(resistanceLevel)} width="100" height={Math.abs(toY(resistanceLevel - range * 0.03) - toY(resistanceLevel))} fill="hsl(0,72%,51%)" opacity="0.04" />
+        <line x1="0" y1={toY(resistanceLevel)} x2="100" y2={toY(resistanceLevel)} stroke="hsl(0,72%,51%)" strokeWidth="0.2" strokeDasharray="1.5,1" opacity="0.3" />
+
+        {/* EMA line */}
+        <path d={emaPath} fill="none" stroke="hsl(45,100%,60%)" strokeWidth="0.3" opacity="0.4" />
+
+        {/* Candles */}
+        {candles.map((c, i) => {
+          const x = 2 + i * candleW;
+          const cx = x + candleW * 0.5;
+          const isUp = c.c >= c.o;
+          const color = isUp ? "hsl(160,60%,45%)" : "hsl(0,72%,51%)";
+          const bodyTop = toY(Math.max(c.o, c.c));
+          const bodyH = Math.max(0.4, Math.abs(toY(c.o) - toY(c.c)));
+
+          return (
+            <g key={i}>
+              {/* Wick */}
+              <line x1={cx} y1={toY(c.h)} x2={cx} y2={toY(c.l)} stroke={color} strokeWidth="0.15" opacity="0.7" />
+              {/* Body */}
+              <rect
+                x={x + candleW * 0.15}
+                y={bodyTop}
+                width={candleW * 0.7}
+                height={bodyH}
+                fill={isUp ? color : color}
+                opacity={isUp ? 0.85 : 0.75}
+                rx="0.1"
+              />
+            </g>
+          );
+        })}
+
+        {/* Entry marker */}
+        <line
+          x1={2 + entryIdx * candleW + candleW * 0.5}
+          y1={toY(entryPrice) - 1}
+          x2={2 + entryIdx * candleW + candleW * 0.5}
+          y2={toY(entryPrice) + 1}
+          stroke="hsl(217,72%,53%)"
+          strokeWidth="0.3"
         />
-      ))}
+        <circle
+          cx={2 + entryIdx * candleW + candleW * 0.5}
+          cy={toY(entryPrice)}
+          r="0.8"
+          fill="hsl(217,72%,53%)"
+          opacity="0.9"
+        />
+        {/* Entry horizontal line */}
+        <line
+          x1={2 + entryIdx * candleW + candleW * 0.5}
+          y1={toY(entryPrice)}
+          x2="98"
+          y2={toY(entryPrice)}
+          stroke="hsl(217,72%,53%)"
+          strokeWidth="0.15"
+          strokeDasharray="0.8,0.5"
+          opacity="0.5"
+        />
+
+        {/* Exit marker */}
+        <line
+          x1={2 + Math.min(exitIdx, candles.length - 1) * candleW + candleW * 0.5}
+          y1={toY(exitPrice) - 1}
+          x2={2 + Math.min(exitIdx, candles.length - 1) * candleW + candleW * 0.5}
+          y2={toY(exitPrice) + 1}
+          stroke={trade.pnl > 0 ? "hsl(160,60%,45%)" : "hsl(0,72%,51%)"}
+          strokeWidth="0.3"
+        />
+        <circle
+          cx={2 + Math.min(exitIdx, candles.length - 1) * candleW + candleW * 0.5}
+          cy={toY(exitPrice)}
+          r="0.8"
+          fill={trade.pnl > 0 ? "hsl(160,60%,45%)" : "hsl(0,72%,51%)"}
+          opacity="0.9"
+        />
+
+        {/* Trade zone highlight */}
+        <rect
+          x={2 + entryIdx * candleW}
+          y="5"
+          width={(Math.min(exitIdx, candles.length - 1) - entryIdx) * candleW}
+          height="90"
+          fill={trade.pnl > 0 ? "hsl(160,60%,45%)" : "hsl(0,72%,51%)"}
+          opacity="0.03"
+        />
+      </svg>
+
+      {/* Overlays */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[hsl(222,47%,4%)]/70 via-transparent to-transparent pointer-events-none" />
+
+      {/* Top labels */}
+      <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 z-10">
+        <span className="rounded-md bg-background/60 backdrop-blur-md px-2 py-0.5 text-[9px] font-bold text-foreground border border-border/15">{trade.pair}</span>
+        <span className={`rounded-md backdrop-blur-md px-2 py-0.5 text-[9px] font-bold border ${
+          trade.dir === "Long" ? "bg-accent/15 text-accent border-accent/10" : "bg-destructive/15 text-destructive border-destructive/10"
+        }`}>{trade.dir}</span>
+        <span className="rounded-md bg-yellow-400/10 backdrop-blur-md px-2 py-0.5 text-[8px] font-semibold text-yellow-400/70 border border-yellow-400/10">EMA 12</span>
+      </div>
+
+      {/* Top-left timeframe */}
+      <div className="absolute top-2.5 left-2.5 flex items-center gap-1 z-10">
+        {["15m", "1H", "4H"].map((tf, i) => (
+          <span key={tf} className={`rounded-md px-1.5 py-0.5 text-[7px] font-bold border ${
+            i === 1 ? "bg-primary/15 text-primary border-primary/15" : "bg-muted/20 text-muted-foreground/40 border-border/10"
+          }`}>{tf}</span>
+        ))}
+      </div>
+
+      {/* Bottom entry/exit badges */}
+      <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between z-10">
+        <span className="rounded-lg bg-primary/15 backdrop-blur-md px-2.5 py-1 text-[8px] font-bold text-primary border border-primary/15 flex items-center gap-1">
+          <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+          כניסה: {trade.entry}
+        </span>
+        <span className={`rounded-lg backdrop-blur-md px-2.5 py-1 text-[8px] font-bold border flex items-center gap-1 ${
+          trade.pnl > 0 ? "bg-accent/15 text-accent border-accent/15" : "bg-destructive/15 text-destructive border-destructive/15"
+        }`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${trade.pnl > 0 ? "bg-accent" : "bg-destructive"}`} />
+          יציאה: {trade.exit}
+        </span>
+      </div>
+
+      {/* Right-side price scale */}
+      <div className="absolute top-4 bottom-8 right-0 w-8 flex flex-col justify-between items-end pr-1.5 z-10 pointer-events-none">
+        {[maxP, maxP - range * 0.25, maxP - range * 0.5, maxP - range * 0.75, minP].map((p, i) => (
+          <span key={i} className="text-[6px] text-muted-foreground/25 font-mono">{p.toFixed(1)}</span>
+        ))}
+      </div>
     </div>
   );
 };
