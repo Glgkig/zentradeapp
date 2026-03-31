@@ -344,25 +344,6 @@ const AuthPage = () => {
           </div>
 
           <div className="flex flex-col lg:flex-row gap-10 items-center">
-            {/* Photo */}
-            <div className="w-full lg:w-[35%] flex justify-center">
-              <div className="relative">
-                <div className="rounded-2xl p-[2px] bg-gradient-to-br from-primary/50 via-primary/20 to-accent/30 shadow-xl shadow-primary/10">
-                  <img
-                    src={founderPhoto}
-                    alt="יהונתן, מייסד ZenTrade"
-                    className="w-64 h-64 lg:w-72 lg:h-72 rounded-2xl object-cover"
-                    loading="lazy"
-                    width={640}
-                    height={800}
-                  />
-                </div>
-                <div className="absolute -bottom-3 -left-3 rounded-xl bg-primary/10 border border-primary/20 px-3 py-1.5">
-                  <span className="text-[11px] font-medium text-primary">מייסד ZenTrade</span>
-                </div>
-              </div>
-            </div>
-
             {/* Story */}
             <div className="w-full lg:w-[65%]">
               <div className="rounded-2xl border border-border bg-secondary/30 p-8">
