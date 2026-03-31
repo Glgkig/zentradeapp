@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import {
-  Shield, BookOpen, BarChart3, ChevronDown, Bot, Zap, Lock,
+  Shield, BarChart3, ChevronDown, Bot, Zap, Lock, X,
   FlaskConical, Mic, Newspaper, ArrowUp, Activity, AlertTriangle,
-  CheckCircle2, TrendingUp, Quote, ChevronLeft,
+  CheckCircle2, TrendingUp, Quote,
 } from "lucide-react";
-import founderPhoto from "@/assets/founder-photo.jpg";
 import logoMt5 from "@/assets/logos/mt5.png";
 import logoBinance from "@/assets/logos/binance.png";
 import logoTradeLocker from "@/assets/logos/tradelocker.png";
@@ -17,108 +16,75 @@ import logoNinjaTrader from "@/assets/logos/ninjatrader.png";
 
 /* ===== Main Page ===== */
 const AuthPage = () => {
-  const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-  };
-
-  const scrollToTop = () => {
-    document.getElementById("auth-top")?.scrollIntoView({ behavior: "smooth" });
-  };
+  const openModal = () => setShowModal(true);
+  const closeModal = () => setShowModal(false);
 
   return (
     <div className="min-h-screen" dir="rtl">
+      {/* ===== Sticky Navbar ===== */}
+      <nav className="fixed top-0 right-0 left-0 z-40 border-b border-border/50 bg-background/80 backdrop-blur-lg">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
+          <span className="font-heading text-lg font-bold text-foreground">ZenTrade</span>
+          <button
+            onClick={openModal}
+            className="rounded-lg bg-primary px-5 py-2 text-xs font-semibold text-primary-foreground transition-all hover:bg-primary/90 active:scale-[0.97]"
+          >
+            התחברות / הרשמה
+          </button>
+        </div>
+      </nav>
+
       {/* ================================================ */}
-      {/* S1 — Welcome Home: Auth + AI Chat                */}
+      {/* S1 — Full-Width Hero                              */}
       {/* ================================================ */}
-      <section id="auth-top" className="relative flex min-h-screen flex-col lg:flex-row">
-        {/* Right — Auth Form */}
-        <div className="flex w-full items-center justify-center px-6 py-16 lg:w-[42%] lg:py-0">
-          <div className="w-full max-w-sm">
-            <div className="mb-10">
-              <h1 className="font-heading text-2xl font-bold text-foreground tracking-tight">ZenTrade</h1>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {isLogin ? "התחבר לחשבון שלך" : "צור חשבון חדש"}
-              </p>
+      <section className="relative flex min-h-screen flex-col lg:flex-row items-center pt-16">
+        {/* Right — Typography & CTA */}
+        <div className="flex w-full flex-col items-center justify-center px-6 py-20 lg:w-1/2 lg:items-start lg:px-16 lg:py-0">
+          <div className="max-w-lg text-center lg:text-right">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/20 px-4 py-1.5">
+              <Shield className="h-4 w-4 text-primary" />
+              <span className="text-xs font-medium text-primary">AI Trading Bodyguard</span>
             </div>
+            <h1 className="font-heading text-4xl font-extrabold leading-tight text-foreground lg:text-5xl">
+              שומר הראש
+              <br />
+              <span className="text-primary">הדיגיטלי שלך</span>
+            </h1>
+            <p className="mt-5 text-base leading-relaxed text-muted-foreground lg:text-lg">
+              המערכת ששומרת על המשמעת שלך, מונעת הפסדים מיותרים, ונותנת לך לסחור עם שקט נפשי מלא.
+            </p>
 
-            <div className="rounded-2xl bg-card p-7 shadow-xl shadow-black/20">
-              {/* Toggle */}
-              <div className="mb-6 flex gap-1 rounded-xl bg-card-foreground/5 p-1">
-                {["התחברות", "הרשמה"].map((label, idx) => {
-                  const active = idx === 0 ? isLogin : !isLogin;
-                  return (
-                    <button
-                      key={label}
-                      onClick={() => setIsLogin(idx === 0)}
-                      className={`flex-1 rounded-lg py-2 text-sm font-medium transition-all duration-200 ${
-                        active
-                          ? "bg-primary text-primary-foreground shadow-sm"
-                          : "text-card-foreground/50 hover:text-card-foreground/70"
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  );
-                })}
-              </div>
+            <button
+              onClick={openModal}
+              className="mt-8 inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-4 text-base font-bold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/35 active:scale-[0.97]"
+            >
+              <Shield className="h-5 w-5" />
+              התחל לסחור עם שומר ראש
+            </button>
+            <p className="mt-3 text-xs text-muted-foreground/50">ללא כרטיס אשראי • הגדרה תוך 2 דקות</p>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {!isLogin && (
-                  <FormField label="שם מלא">
-                    <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="הכנס את שמך" className="auth-input" />
-                  </FormField>
-                )}
-                <FormField label="אימייל">
-                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" dir="ltr" className="auth-input text-left" />
-                </FormField>
-                <FormField label="סיסמה">
-                  <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" dir="ltr" className="auth-input text-left" />
-                </FormField>
-
-                {isLogin && (
-                  <div className="text-left">
-                    <button type="button" className="text-xs text-primary hover:underline">שכחת סיסמה?</button>
-                  </div>
-                )}
-
-                <button type="submit" className="w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow-md active:scale-[0.98]">
-                  {isLogin ? "היכנס לבית שלך" : "צור חשבון"}
-                </button>
-              </form>
-
-              {/* Divider */}
-              <div className="my-5 flex items-center gap-3">
-                <div className="h-px flex-1 bg-card-foreground/10" />
-                <span className="text-[11px] text-card-foreground/35">או המשך עם</span>
-                <div className="h-px flex-1 bg-card-foreground/10" />
-              </div>
-
-              {/* Social */}
-              <div className="flex gap-3">
-                <SocialButton icon={<GoogleIcon />} label="Google" />
-                <SocialButton icon={<AppleIcon />} label="Apple" />
-              </div>
-
-              <p className="mt-5 text-center text-xs text-card-foreground/40">
-                {isLogin ? "אין לך חשבון?" : "כבר יש לך חשבון?"}{" "}
-                <button onClick={() => setIsLogin(!isLogin)} className="text-primary hover:underline font-medium">
-                  {isLogin ? "הירשם עכשיו" : "התחבר"}
-                </button>
-              </p>
+            {/* Trust stats */}
+            <div className="mt-10 grid grid-cols-3 gap-4">
+              {[
+                { value: "+12K", label: "סוחרים פעילים" },
+                { value: "94%", label: "שביעות רצון" },
+                { value: "-38%", label: "הפסדים מיותרים", accent: true },
+              ].map((s) => (
+                <div key={s.label} className="rounded-xl border border-border bg-secondary/50 p-3 text-center">
+                  <p className={`font-heading text-xl font-bold ${s.accent ? "text-accent" : "text-foreground"}`}>{s.value}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{s.label}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Left — AI Mentor Chat */}
-        <div className="relative hidden w-[58%] items-center justify-center lg:flex">
+        {/* Left — AI Chat Bubble */}
+        <div className="relative hidden w-1/2 items-center justify-center lg:flex">
           <div className="absolute inset-0 bg-gradient-to-bl from-primary/[0.06] via-transparent to-accent/[0.03]" />
-          <div className="relative z-10 max-w-lg px-12">
-            {/* AI Chat Bubble */}
+          <div className="relative z-10 max-w-md px-8">
             <div className="flex items-start gap-4">
               <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20">
                 <Bot className="h-7 w-7 text-primary" />
@@ -143,26 +109,11 @@ const AuthPage = () => {
                     </span>
                   </p>
                 </div>
-                {/* Typing indicator */}
                 <div className="mt-2 flex items-center gap-1 px-2">
                   <TypingDots />
                   <span className="text-[10px] text-muted-foreground/40 mr-2">מקליד...</span>
                 </div>
               </div>
-            </div>
-
-            {/* Trust stats */}
-            <div className="mt-10 grid grid-cols-3 gap-4">
-              {[
-                { value: "+12K", label: "סוחרים פעילים" },
-                { value: "94%", label: "שביעות רצון" },
-                { value: "-38%", label: "הפסדים מיותרים", accent: true },
-              ].map((s) => (
-                <div key={s.label} className="rounded-xl border border-border bg-secondary/50 p-3 text-center">
-                  <p className={`font-heading text-xl font-bold ${s.accent ? "text-accent" : "text-foreground"}`}>{s.value}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{s.label}</p>
-                </div>
-              ))}
             </div>
           </div>
         </div>
@@ -184,13 +135,11 @@ const AuthPage = () => {
               תראה איך הביטחון הכלכלי שלך נראה מבפנים
             </h2>
             <p className="mt-3 max-w-2xl mx-auto text-sm text-muted-foreground leading-relaxed">
-              האפליקציה תוכננה על ידי סוחרים עבור סוחרים — כדי לספק חוויה לוגית, מהירה ומקצועית. כל פיקסל כאן נבנה כדי לעזור לך לקבל החלטות טובות יותר.
+              האפליקציה תוכננה על ידי סוחרים עבור סוחרים — כדי לספק חוויה לוגית, מהירה ומקצועית.
             </p>
           </div>
 
-          {/* Dashboard Mockup */}
           <div className="mt-12 rounded-2xl border border-border bg-secondary/40 overflow-hidden shadow-2xl shadow-black/30">
-            {/* Top Bar */}
             <div className="flex items-center justify-between border-b border-border px-5 py-3 bg-muted/20">
               <div className="flex items-center gap-3">
                 <span className="font-heading text-sm font-bold text-foreground">ZenTrade</span>
@@ -209,9 +158,7 @@ const AuthPage = () => {
               </div>
             </div>
 
-            {/* Dashboard Content */}
             <div className="grid grid-cols-12 gap-4 p-5">
-              {/* Main Column */}
               <div className="col-span-12 lg:col-span-8 space-y-4">
                 <div className="grid grid-cols-4 gap-3">
                   <DashStat label="רווח יומי" value="+$1,247" sub="+8.3%" positive />
@@ -220,7 +167,6 @@ const AuthPage = () => {
                   <DashStat label="Profit Factor" value="2.4" sub="מצוין" positive />
                 </div>
 
-                {/* Chart */}
                 <div className="rounded-xl border border-border bg-muted/20 p-5">
                   <div className="mb-4 flex items-center justify-between">
                     <span className="text-xs font-medium text-foreground">Equity Curve — 30 ימים</span>
@@ -236,7 +182,6 @@ const AuthPage = () => {
                   </div>
                 </div>
 
-                {/* Trades Table */}
                 <div className="rounded-xl border border-border bg-muted/20 p-4">
                   <p className="text-xs font-medium text-foreground mb-3">עסקאות אחרונות</p>
                   <div className="space-y-2">
@@ -253,9 +198,7 @@ const AuthPage = () => {
                 </div>
               </div>
 
-              {/* Side Column */}
               <div className="col-span-12 lg:col-span-4 space-y-4">
-                {/* AI Stress Meter */}
                 <div className="rounded-xl border border-border bg-muted/20 p-4">
                   <div className="flex items-center gap-2 mb-3">
                     <Activity className="h-4 w-4 text-primary" />
@@ -270,7 +213,6 @@ const AuthPage = () => {
                   </div>
                 </div>
 
-                {/* Drawdown */}
                 <div className="rounded-xl border border-border bg-muted/20 p-4">
                   <div className="flex items-center gap-2 mb-3">
                     <Shield className="h-4 w-4 text-primary" />
@@ -286,28 +228,22 @@ const AuthPage = () => {
                   <p className="text-[10px] text-accent mt-2">✓ בטווח בטוח</p>
                 </div>
 
-                {/* Alert */}
                 <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
                   <div className="flex items-start gap-2">
                     <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
                     <div>
                       <p className="text-xs font-semibold text-destructive">Trade Blocked</p>
-                      <p className="text-[10px] text-muted-foreground mt-0.5">
-                        Daily Drawdown Limit Reached.<br />Go rest. 🛑
-                      </p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">Daily Drawdown Limit Reached.<br />Go rest. 🛑</p>
                     </div>
                   </div>
                 </div>
 
-                {/* AI Suggestion */}
                 <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
                   <div className="flex items-start gap-2">
                     <Bot className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                     <div>
                       <p className="text-xs font-semibold text-primary">המלצת AI</p>
-                      <p className="text-[10px] text-muted-foreground mt-0.5">
-                        ביצעת 3 עסקאות מוצלחות. מומלץ לעצור כאן ולנצל את היום הטוב. 🎯
-                      </p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">ביצעת 3 עסקאות מוצלחות. מומלץ לעצור כאן ולנצל את היום הטוב. 🎯</p>
                     </div>
                   </div>
                 </div>
@@ -326,13 +262,12 @@ const AuthPage = () => {
             מתחבר בלייב לבורסות המובילות
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">חיבור API ישיר ואוטומטי לכל פלטפורמת מסחר</p>
-
           <FadingCarousel />
         </div>
       </section>
 
       {/* ================================================ */}
-      {/* S4 — Founder's Story                             */}
+      {/* S4 — Founder's Story + Mid-Page CTA              */}
       {/* ================================================ */}
       <section className="border-t border-border px-6 py-20 lg:py-28">
         <div className="mx-auto max-w-5xl">
@@ -343,34 +278,41 @@ const AuthPage = () => {
             </h2>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-10 items-center">
-            {/* Story */}
-            <div className="w-full">
-              <div className="rounded-2xl border border-border bg-secondary/30 p-8">
-                <Quote className="h-8 w-8 text-primary/30 mb-4" />
-                <p className="text-sm leading-[2] text-foreground/85">
-                  קוראים לי יהונתן, ואני המייסד של ZenTrade. במשך 5 השנים האחרונות הייתי עמוק בתוך השוחות של המסחר היומי. עברתי הכל – את הלילות הלבנים, את ההפסדים הכואבים של עסקאות נקמה, ואת התסכול המטורף של לדעת שיש לי אסטרטגיה מנצחת, אבל הפסיכולוגיה (הפומו והלחץ) פשוט שורפת לי את החשבון פעם אחר פעם.
-                </p>
-                <p className="mt-4 text-sm leading-[2] text-foreground/85">
-                  הבנתי שסוחרים לא צריכים עוד אינדיקטור או עוד קורס, הם צריכים הגנה מעצמם. בניתי את ZenTrade מתוך כאב אישי עמוק ומתוך שליחות אמיתית: לתת לך את &#39;שומר הראש&#39; הטכנולוגי שאני כל כך הייתי צריך שיהיה לי.
-                </p>
-                <p className="mt-4 text-sm leading-[2] text-foreground/85">
-                  אני לא פה כדי למכור לך אשליות של התעשרות מהירה. אני פה כדי לדאוג שאתה תפסיק להפסיד בגלל טעויות אנוש, תגן על ההון שלך, ותתחיל לסחור עם שקט נפשי של מכונה.
-                </p>
-                <p className="mt-4 text-sm leading-[2] text-primary font-medium">
-                  זה הבית של הסוחרים הממושמעים.
-                </p>
-                <div className="mt-6 pt-6 border-t border-border flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <span className="text-sm font-bold text-primary">י.</span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">יהונתן</p>
-                    <p className="text-[11px] text-muted-foreground">מייסד ZenTrade • סוחר יומי מ-2021</p>
-                  </div>
+          <div className="w-full">
+            <div className="rounded-2xl border border-border bg-secondary/30 p-8">
+              <Quote className="h-8 w-8 text-primary/30 mb-4" />
+              <p className="text-sm leading-[2] text-foreground/85">
+                קוראים לי יהונתן, ואני המייסד של ZenTrade. במשך 5 השנים האחרונות הייתי עמוק בתוך השוחות של המסחר היומי. עברתי הכל – את הלילות הלבנים, את ההפסדים הכואבים של עסקאות נקמה, ואת התסכול המטורף של לדעת שיש לי אסטרטגיה מנצחת, אבל הפסיכולוגיה (הפומו והלחץ) פשוט שורפת לי את החשבון פעם אחר פעם.
+              </p>
+              <p className="mt-4 text-sm leading-[2] text-foreground/85">
+                הבנתי שסוחרים לא צריכים עוד אינדיקטור או עוד קורס, הם צריכים הגנה מעצמם. בניתי את ZenTrade מתוך כאב אישי עמוק ומתוך שליחות אמיתית: לתת לך את &#39;שומר הראש&#39; הטכנולוגי שאני כל כך הייתי צריך שיהיה לי.
+              </p>
+              <p className="mt-4 text-sm leading-[2] text-foreground/85">
+                אני לא פה כדי למכור לך אשליות של התעשרות מהירה. אני פה כדי לדאוג שאתה תפסיק להפסיד בגלל טעויות אנוש, תגן על ההון שלך, ותתחיל לסחור עם שקט נפשי של מכונה.
+              </p>
+              <p className="mt-4 text-sm leading-[2] text-primary font-medium">
+                זה הבית של הסוחרים הממושמעים.
+              </p>
+              <div className="mt-6 pt-6 border-t border-border flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <span className="text-sm font-bold text-primary">י.</span>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">יהונתן</p>
+                  <p className="text-[11px] text-muted-foreground">מייסד ZenTrade • סוחר יומי מ-2021</p>
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Mid-Page CTA */}
+          <div className="mt-14 text-center">
+            <button
+              onClick={openModal}
+              className="inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 hover:shadow-xl active:scale-[0.97]"
+            >
+              התחברות / הרשמה
+            </button>
           </div>
         </div>
       </section>
@@ -387,9 +329,7 @@ const AuthPage = () => {
             </h2>
           </div>
 
-          {/* Bento Grid */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {/* Card 1 — API (large) */}
             <BentoCard className="lg:col-span-2" icon={<Zap className="h-5 w-5" />} iconColor="primary" title="חיבור API ישיר">
               <p className="text-sm text-muted-foreground mb-4">יבוא אוטומטי מלא. שכח מאקסלים. הכל מסתנכרן בלייב עם הברוקר שלך.</p>
               <div className="rounded-xl border border-border bg-muted/20 p-3">
@@ -407,7 +347,6 @@ const AuthPage = () => {
               </div>
             </BentoCard>
 
-            {/* Card 2 — Prop Firm */}
             <BentoCard icon={<Lock className="h-5 w-5" />} iconColor="destructive" title="הגנת Prop Firm">
               <p className="text-sm text-muted-foreground mb-4">הגנה קשיחה על חשבונות ממומנים. ה-AI נועל אותך כשאתה מתקרב להפסד היומי המקסימלי.</p>
               <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-3 text-center">
@@ -417,9 +356,8 @@ const AuthPage = () => {
               </div>
             </BentoCard>
 
-            {/* Card 3 — Omni-Candle */}
             <BentoCard icon={<BarChart3 className="h-5 w-5" />} iconColor="accent" title="Omni-Candle AI Vision">
-              <p className="text-sm text-muted-foreground mb-4">ה-AI מנתח נרות יפנים ו-Heikin Ashi בלייב כדי לזהות מלכודות, Fakeouts ותבניות פריצה.</p>
+              <p className="text-sm text-muted-foreground mb-4">ה-AI מנתח נרות יפנים ו-Heikin Ashi בלייב כדי לזהות מלכודות ותבניות פריצה.</p>
               <div className="rounded-xl border border-border bg-muted/20 p-3">
                 <div className="flex items-end gap-[2px] h-16 mb-2">
                   {candleMockup.map((c, i) => (
@@ -435,9 +373,8 @@ const AuthPage = () => {
               </div>
             </BentoCard>
 
-            {/* Card 4 — Backtesting */}
             <BentoCard icon={<FlaskConical className="h-5 w-5" />} iconColor="primary" title="AI Backtesting">
-              <p className="text-sm text-muted-foreground mb-4">תריץ את האסטרטגיה שלך על שנים של דאטה. ה-AI ינתח ויציע שיפורים כדי למקסם רווחים.</p>
+              <p className="text-sm text-muted-foreground mb-4">תריץ את האסטרטגיה שלך על שנים של דאטה. ה-AI ינתח ויציע שיפורים.</p>
               <div className="rounded-xl border border-border bg-muted/20 p-3">
                 <div className="grid grid-cols-2 gap-2 text-center">
                   <MiniStat label="Profit Factor" value="2.8" />
@@ -448,9 +385,8 @@ const AuthPage = () => {
               </div>
             </BentoCard>
 
-            {/* Card 5 — Voice Journal */}
             <BentoCard icon={<Mic className="h-5 w-5" />} iconColor="accent" title="יומן קולי רגשי">
-              <p className="text-sm text-muted-foreground mb-4">פשוט תדבר. ה-AI מנתח את רמת הלחץ בקול שלך ומוודא שאתה לא סוחר מתוך פאניקה.</p>
+              <p className="text-sm text-muted-foreground mb-4">פשוט תדבר. ה-AI מנתח את רמת הלחץ בקול שלך.</p>
               <div className="rounded-xl border border-border bg-muted/20 p-3">
                 <div className="flex items-center gap-1 h-10">
                   {waveform.map((h, i) => (
@@ -461,7 +397,6 @@ const AuthPage = () => {
               </div>
             </BentoCard>
 
-            {/* Card 6 — News Guard */}
             <BentoCard icon={<Newspaper className="h-5 w-5" />} iconColor="primary" title="Economic News Guard">
               <p className="text-sm text-muted-foreground mb-4">יומן כלכלי חכם שמונע כניסה לעסקאות לפני הודעות CPI/FOMC.</p>
               <div className="rounded-xl border border-border bg-muted/20 p-3 space-y-1.5">
@@ -478,7 +413,7 @@ const AuthPage = () => {
       </section>
 
       {/* ================================================ */}
-      {/* S6 — Final Hook & Footer                         */}
+      {/* S6 — Final Hook & Footer CTA                     */}
       {/* ================================================ */}
       <section className="border-t border-border px-6 py-24 lg:py-32 bg-gradient-to-b from-background to-secondary/20">
         <div className="mx-auto max-w-2xl text-center">
@@ -497,8 +432,8 @@ const AuthPage = () => {
             הצטרף לאלפי סוחרים שכבר סוחרים בביטחון, במשמעת ובשקט נפשי מלא.
           </p>
           <button
-            onClick={scrollToTop}
-            className="mt-10 inline-flex items-center gap-2 rounded-xl bg-primary px-10 py-4 text-base font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30 active:scale-[0.98]"
+            onClick={openModal}
+            className="mt-10 inline-flex items-center gap-2 rounded-xl bg-primary px-10 py-4 text-base font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30 active:scale-[0.97]"
           >
             <ArrowUp className="h-5 w-5" />
             פתח חשבון מוגן עכשיו
@@ -519,28 +454,159 @@ const AuthPage = () => {
           <span className="text-xs text-muted-foreground">© 2026 ZenTrade. כל הזכויות שמורות.</span>
         </div>
       </footer>
+
+      {/* ================================================ */}
+      {/* AUTH MODAL                                        */}
+      {/* ================================================ */}
+      {showModal && <AuthModal onClose={closeModal} />}
+    </div>
+  );
+};
+
+/* ===== Auth Modal ===== */
+const AuthModal = ({ onClose }: { onClose: () => void }) => {
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" dir="rtl">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-background/70 backdrop-blur-md animate-in fade-in duration-300"
+        onClick={onClose}
+      />
+
+      {/* Modal */}
+      <div className="relative z-10 w-full max-w-md animate-in zoom-in-95 fade-in duration-300">
+        <div className="rounded-2xl border border-primary/20 bg-secondary/95 backdrop-blur-xl p-7 shadow-2xl shadow-primary/10">
+          {/* Close */}
+          <button
+            onClick={onClose}
+            className="absolute top-4 left-4 rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+          >
+            <X className="h-5 w-5" />
+          </button>
+
+          {/* Header */}
+          <div className="text-center mb-6">
+            <h2 className="font-heading text-xl font-bold text-foreground">ZenTrade</h2>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {isLogin ? "התחבר לחשבון שלך" : "צור חשבון חדש"}
+            </p>
+          </div>
+
+          {/* Toggle */}
+          <div className="mb-6 flex gap-1 rounded-xl bg-muted p-1">
+            {["התחברות", "הרשמה"].map((label, idx) => {
+              const active = idx === 0 ? isLogin : !isLogin;
+              return (
+                <button
+                  key={label}
+                  onClick={() => setIsLogin(idx === 0)}
+                  className={`flex-1 rounded-lg py-2 text-sm font-medium transition-all duration-200 ${
+                    active
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Social SSO First */}
+          <div className="space-y-2.5 mb-5">
+            <button className="flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-muted/30 py-3 text-sm font-medium text-foreground transition-all hover:bg-muted/60 hover:border-border/80">
+              <GoogleIcon />
+              המשך עם Google
+            </button>
+            <button className="flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-muted/30 py-3 text-sm font-medium text-foreground transition-all hover:bg-muted/60 hover:border-border/80">
+              <AppleIcon />
+              המשך עם Apple
+            </button>
+          </div>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3 mb-5">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-[11px] text-muted-foreground">או עם אימייל</span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-3.5">
+            {!isLogin && (
+              <div>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">שם מלא</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="הכנס את שמך"
+                  className="w-full rounded-lg border border-border bg-muted/30 px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                />
+              </div>
+            )}
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">אימייל</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@example.com"
+                dir="ltr"
+                className="w-full rounded-lg border border-border bg-muted/30 px-3.5 py-2.5 text-sm text-foreground text-left placeholder:text-muted-foreground/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">סיסמה</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                dir="ltr"
+                className="w-full rounded-lg border border-border bg-muted/30 px-3.5 py-2.5 text-sm text-foreground text-left placeholder:text-muted-foreground/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+              />
+            </div>
+
+            {isLogin && (
+              <div className="text-left">
+                <button type="button" className="text-xs text-primary hover:underline">שכחת סיסמה?</button>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 hover:shadow-xl active:scale-[0.98]"
+            >
+              {isLogin ? "היכנס לבית שלך" : "צור חשבון"}
+            </button>
+          </form>
+
+          <p className="mt-5 text-center text-xs text-muted-foreground/60">
+            {isLogin ? "אין לך חשבון?" : "כבר יש לך חשבון?"}{" "}
+            <button onClick={() => setIsLogin(!isLogin)} className="text-primary hover:underline font-medium">
+              {isLogin ? "הירשם עכשיו" : "התחבר"}
+            </button>
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
 
 /* ===== Sub-Components ===== */
 
-const FormField = ({ label, children }: { label: string; children: React.ReactNode }) => (
-  <div>
-    <label className="mb-1 block text-xs font-medium text-card-foreground/60">{label}</label>
-    {children}
-  </div>
-);
-
-const SocialButton = ({ icon, label }: { icon: React.ReactNode; label: string }) => (
-  <button className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-card-foreground/10 py-2.5 text-sm text-card-foreground/70 transition-all hover:bg-card-foreground/[0.03] hover:border-card-foreground/20">
-    {icon}
-    {label}
-  </button>
-);
-
 const GoogleIcon = () => (
-  <svg className="h-4 w-4" viewBox="0 0 24 24">
+  <svg className="h-5 w-5" viewBox="0 0 24 24">
     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
     <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
@@ -549,7 +615,7 @@ const GoogleIcon = () => (
 );
 
 const AppleIcon = () => (
-  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
     <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
   </svg>
 );
