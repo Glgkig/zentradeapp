@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import {
   LayoutDashboard, BookOpen, Bot, ShieldCheck,
-  LogOut, ChevronDown, Plug, Menu, X, Settings, Sun, Moon,
+  LogOut, ChevronDown, Plug, Menu, X, Settings, Sun, Moon, Zap,
   Crosshair, PieChart, History, CheckCircle2,
 } from "lucide-react";
 import SettingsPage from "@/pages/SettingsPage";
@@ -40,6 +40,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   const [activeNav, setActiveNav] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [brokerModal, setBrokerModal] = useState(false);
+  const [userMenu, setUserMenu] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(() => {
     return localStorage.getItem("zentrade-onboarded") !== "true";
   });
@@ -202,16 +203,89 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             </button>
 
             {/* User Profile */}
-            <button className="flex items-center gap-2 rounded-xl border border-border bg-muted/20 px-2.5 py-1.5 transition-all hover:bg-muted/40 md:px-3">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/15 text-xs font-bold text-primary md:h-8 md:w-8">
-                י
-              </div>
-              <div className="hidden md:block text-right">
-                <p className="text-xs font-semibold text-foreground leading-none">יהונתן</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">חשבון Pro</p>
-              </div>
-              <ChevronDown className="h-3.5 w-3.5 text-muted-foreground hidden md:block" />
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setUserMenu(!userMenu)}
+                className="flex items-center gap-2 rounded-xl border border-border bg-muted/20 px-2.5 py-1.5 transition-all hover:bg-muted/40 md:px-3"
+              >
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/15 text-xs font-bold text-primary md:h-8 md:w-8">
+                  י
+                </div>
+                <div className="hidden md:block text-right">
+                  <p className="text-xs font-semibold text-foreground leading-none">יהונתן</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">חשבון Pro</p>
+                </div>
+                <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground hidden md:block transition-transform duration-200 ${userMenu ? "rotate-180" : ""}`} />
+              </button>
+
+              {/* Dropdown */}
+              {userMenu && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setUserMenu(false)} />
+                  <div className="absolute left-0 md:left-auto md:right-0 top-full mt-2 w-56 z-50 rounded-2xl border border-border/30 bg-secondary/95 backdrop-blur-xl shadow-2xl shadow-background/60 animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden">
+                    {/* User info */}
+                    <div className="px-4 py-3.5 border-b border-border/15">
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/15 text-sm font-bold text-primary">י</div>
+                        <div>
+                          <p className="text-[12px] font-bold text-foreground">יהונתן</p>
+                          <p className="text-[9px] text-muted-foreground/50">yonatan@email.com</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Plan badge */}
+                    <div className="px-4 py-2.5 border-b border-border/15">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] text-muted-foreground/50">תוכנית נוכחית</span>
+                        <span className="rounded-md bg-primary/10 border border-primary/15 px-2 py-0.5 text-[9px] font-bold text-primary">Pro</span>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="py-1.5">
+                      <button
+                        onClick={() => { setUserMenu(false); }}
+                        className="w-full flex items-center gap-2.5 px-4 py-2.5 text-right hover:bg-primary/8 transition-colors"
+                      >
+                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent/8 border border-accent/10">
+                          <Zap className="h-3 w-3 text-accent" />
+                        </div>
+                        <div>
+                          <p className="text-[11px] font-semibold text-foreground/80">שדרג חשבון</p>
+                          <p className="text-[8px] text-muted-foreground/35">עבור לתוכנית Premium</p>
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={() => { setUserMenu(false); setActiveNav("settings"); }}
+                        className="w-full flex items-center gap-2.5 px-4 py-2.5 text-right hover:bg-muted/15 transition-colors"
+                      >
+                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-muted/15 border border-border/10">
+                          <Settings className="h-3 w-3 text-muted-foreground/50" />
+                        </div>
+                        <div>
+                          <p className="text-[11px] font-semibold text-foreground/80">הגדרות</p>
+                          <p className="text-[8px] text-muted-foreground/35">ניהול חשבון ופרופיל</p>
+                        </div>
+                      </button>
+
+                      <div className="mx-3 my-1 border-t border-border/10" />
+
+                      <button
+                        onClick={() => { setUserMenu(false); }}
+                        className="w-full flex items-center gap-2.5 px-4 py-2.5 text-right hover:bg-destructive/8 transition-colors"
+                      >
+                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-destructive/8 border border-destructive/10">
+                          <LogOut className="h-3 w-3 text-destructive/60" />
+                        </div>
+                        <p className="text-[11px] font-semibold text-destructive/70">התנתק</p>
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </header>
 
