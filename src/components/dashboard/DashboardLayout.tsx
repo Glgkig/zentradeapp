@@ -162,7 +162,10 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
 
         {/* Sidebar Footer */}
         <div className="border-t border-border px-3 py-4">
-          <button className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:bg-destructive/10 hover:text-destructive">
+          <button
+            onClick={() => navigate("/")}
+            className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:bg-destructive/10 hover:text-destructive"
+          >
             <LogOut className="h-[18px] w-[18px]" />
             התנתק
           </button>
