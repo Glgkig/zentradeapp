@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Shield, BarChart3, ChevronDown, Bot, Zap, Lock, X, Menu,
   FlaskConical, Mic, Newspaper, ArrowUp, Activity, AlertTriangle,
