@@ -57,6 +57,10 @@
   }
 }
 
+.auth-input {
+  @apply w-full rounded-lg border border-card-foreground/10 bg-card-foreground/[0.03] px-3.5 py-2.5 text-sm text-card-foreground placeholder:text-card-foreground/30 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all;
+}
+
 @keyframes marquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
