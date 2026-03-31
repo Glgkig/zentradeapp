@@ -4,9 +4,6 @@ import {
   CheckCircle2, AlertTriangle, Volume2, Mail, Smartphone,
 } from "lucide-react";
 
-import logoMt5 from "@/assets/logos/mt5.png";
-import logoBinance from "@/assets/logos/binance.png";
-import logoTradeLocker from "@/assets/logos/tradelocker.png";
 
 const tabs = [
   { id: "account", label: "חשבון והעדפות", icon: User },
