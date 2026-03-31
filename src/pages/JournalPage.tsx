@@ -469,11 +469,11 @@ const TradingViewChart = ({ trade, timeframe }: { trade: TradeData; timeframe: s
       <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
         {/* Horizontal grid lines */}
         {[20, 35, 50, 65, 80].map(y => (
-          <line key={y} x1="0" y1={y} x2="100" y2={y} stroke="hsl(220,20%,18%)" strokeWidth="0.15" strokeDasharray="1,1" />
+          <line key={y} x1="0" y1={y} x2="100" y2={y} stroke="hsl(0,0%,12%)" strokeWidth="0.15" strokeDasharray="1,1" />
         ))}
         {/* Vertical grid lines */}
         {[15, 30, 45, 60, 75, 90].map(x => (
-          <line key={x} x1={x} y1="0" x2={x} y2="100" stroke="hsl(220,20%,18%)" strokeWidth="0.15" strokeDasharray="1,1" />
+          <line key={x} x1={x} y1="0" x2={x} y2="100" stroke="hsl(0,0%,12%)" strokeWidth="0.15" strokeDasharray="1,1" />
         ))}
 
         {/* Support zone */}
