@@ -40,12 +40,21 @@ const AuthPage = () => {
             התחברות / הרשמה
           </button>
 
-          {/* Mobile Hamburger */}
+          {/* Mobile Menu Trigger */}
           <button
             onClick={() => setMobileMenu(!mobileMenu)}
-            className="md:hidden rounded-lg p-2 text-foreground hover:bg-muted/50 transition-colors"
+            className="md:hidden relative flex h-9 w-9 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 transition-all hover:bg-primary/20 active:scale-95"
           >
-            {mobileMenu ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {mobileMenu ? (
+              <X className="h-4 w-4 text-primary" />
+            ) : (
+              <div className="flex flex-col items-center gap-[3px]">
+                <span className="block h-[2px] w-4 rounded-full bg-primary transition-all" />
+                <span className="block h-[2px] w-3 rounded-full bg-primary/60 transition-all" />
+                <span className="block h-[2px] w-4 rounded-full bg-primary transition-all" />
+              </div>
+            )}
+            <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-accent animate-pulse" />
           </button>
         </div>
 
