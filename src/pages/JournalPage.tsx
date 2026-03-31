@@ -251,25 +251,8 @@ const JournalPage = () => {
               {expanded && (
                 <div className="border-t border-border/15 bg-gradient-to-b from-muted/[0.04] to-transparent px-4 md:px-6 py-5 animate-in slide-in-from-top-2 fade-in duration-300">
                   {/* Chart */}
-                  <div className="relative rounded-2xl border border-border/20 bg-muted/[0.06] overflow-hidden mb-5 h-36 md:h-48">
-                    <TradeChart bull={t.pnl > 0} />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent pointer-events-none" />
-                    <div className="absolute top-3 right-3 flex items-center gap-1.5">
-                      <span className="rounded-lg bg-background/70 backdrop-blur-md px-2 py-1 text-[9px] font-bold text-foreground border border-border/20">{t.pair}</span>
-                      <span className={`rounded-lg backdrop-blur-md px-2 py-1 text-[9px] font-bold border ${
-                        t.dir === "Long" ? "bg-accent/15 text-accent border-accent/15" : "bg-destructive/15 text-destructive border-destructive/15"
-                      }`}>{t.dir}</span>
-                    </div>
-                    <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between">
-                      <span className="rounded-lg bg-primary/15 backdrop-blur-md px-2.5 py-1 text-[8px] font-bold text-primary border border-primary/15">
-                        כניסה: {t.entry}
-                      </span>
-                      <span className={`rounded-lg backdrop-blur-md px-2.5 py-1 text-[8px] font-bold border ${
-                        t.pnl > 0 ? "bg-accent/15 text-accent border-accent/15" : "bg-destructive/15 text-destructive border-destructive/15"
-                      }`}>
-                        יציאה: {t.exit}
-                      </span>
-                    </div>
+                  <div className="relative rounded-2xl border border-border/20 bg-[hsl(222,47%,4%)] overflow-hidden mb-5 h-52 md:h-72">
+                    <TradingViewChart trade={t} />
                   </div>
 
                   {/* Detail Grid */}
