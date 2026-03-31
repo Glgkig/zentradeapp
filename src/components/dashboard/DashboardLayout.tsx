@@ -7,6 +7,7 @@ import {
 import SettingsPage from "@/pages/SettingsPage";
 import SetupsPage from "@/pages/SetupsPage";
 import StatsPage from "@/pages/StatsPage";
+import JournalPage from "@/pages/JournalPage";
 import HomeDashboard from "@/components/dashboard/HomeDashboard";
 import OnboardingModal from "@/components/dashboard/OnboardingModal";
 
@@ -61,6 +62,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
     if (activeNav === "dashboard") return <HomeDashboard userName="יהונתן" />;
     if (activeNav === "setups") return <SetupsPage />;
     if (activeNav === "stats") return <StatsPage />;
+    if (activeNav === "journal") return <JournalPage />;
     if (activeNav === "settings") return <SettingsPage />;
     return children || (
       <div className="flex h-full items-center justify-center">
