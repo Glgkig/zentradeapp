@@ -89,7 +89,7 @@ const ProtectionPage = () => {
                   value={drawdownLimit}
                   onChange={(e) => setDrawdownLimit(e.target.value)}
                   disabled={hardLock}
-                  className="w-full rounded-xl border border-border/20 bg-muted/8 px-4 pr-8 py-3 text-sm font-bold text-foreground placeholder:text-muted-foreground/20 outline-none focus:border-primary/30 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="w-full rounded-xl border border-border/20 bg-[hsl(222,40%,8%)] px-4 pr-8 py-3 text-sm font-bold text-foreground placeholder:text-muted-foreground/20 outline-none focus:border-primary/30 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                   placeholder="500"
                 />
               </div>
