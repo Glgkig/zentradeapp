@@ -211,7 +211,7 @@ const ProtectionPage = () => {
                   <select
                     value={newsBuffer}
                     onChange={(e) => setNewsBuffer(e.target.value)}
-                    className="w-full rounded-xl border border-border/20 bg-muted/8 px-4 py-3 text-sm font-bold text-foreground appearance-none outline-none focus:border-primary/30 transition-all"
+                    className="w-full rounded-xl border border-border/20 bg-[hsl(222,40%,8%)] px-4 py-3 text-sm font-bold text-foreground appearance-none outline-none focus:border-primary/30 transition-all"
                   >
                     <option value="15">15 דקות</option>
                     <option value="30">30 דקות</option>
