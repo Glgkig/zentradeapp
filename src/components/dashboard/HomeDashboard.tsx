@@ -135,54 +135,113 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
         </div>
       </div>
 
-      {/* ===== Row 2: Chart with AI Vision ===== */}
-      <div className="rounded-2xl border border-border bg-secondary/30 overflow-hidden">
-        <div className="flex items-center justify-between border-b border-border px-4 py-3 md:px-5">
-          <div className="flex items-center gap-3">
-            <BarChart3 className="h-4 w-4 text-primary" />
-            <span className="text-xs md:text-sm font-semibold text-foreground">EUR/USD — M15</span>
-            <span className="flex items-center gap-1 text-[10px] text-accent font-medium">
-              <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
-              Live
-            </span>
+      {/* ===== Row 2: Chart + AI Signals + Sentiment ===== */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+
+        {/* Compact Chart */}
+        <div className="md:col-span-5 rounded-2xl border border-border bg-secondary/30 overflow-hidden">
+          <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
+            <div className="flex items-center gap-2">
+              <BarChart3 className="h-3.5 w-3.5 text-primary" />
+              <span className="text-[10px] md:text-xs font-semibold text-foreground">EUR/USD — M15</span>
+              <span className="flex items-center gap-1 text-[9px] text-accent font-medium">
+                <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+                Live
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="rounded-md bg-muted/50 px-2 py-0.5 text-[9px] text-muted-foreground font-mono">1.0847</span>
+              <span className="text-[9px] text-accent flex items-center gap-0.5 font-semibold">
+                <ArrowUpRight className="h-3 w-3" />+0.12%
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="rounded-md bg-muted/50 px-2 py-0.5 text-[10px] text-muted-foreground font-mono">1.0847</span>
-            <span className="text-[10px] text-accent flex items-center gap-0.5 font-semibold">
-              <ArrowUpRight className="h-3 w-3" />+0.12%
-            </span>
+          <div className="p-3 md:p-4">
+            <div className="flex items-end gap-[2px] h-32 md:h-40">
+              {chartData.map((c, i) => (
+                <div key={i} className="flex-1 flex flex-col items-center gap-[1px]">
+                  <div className="w-px bg-muted-foreground/15" style={{ height: `${c.wick}%` }} />
+                  <div className={`w-full rounded-[1px] ${c.bull ? "bg-accent/70" : "bg-destructive/55"} transition-colors`} style={{ height: `${c.body}%` }} />
+                  <div className="w-px bg-muted-foreground/15" style={{ height: `${c.lwick}%` }} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        <div className="relative p-4 md:p-5">
-          {/* Candlestick Chart */}
-          <div className="flex items-end gap-[2px] md:gap-[3px] h-44 md:h-64">
-            {chartData.map((c, i) => (
-              <div key={i} className="flex-1 flex flex-col items-center gap-[1px]">
-                <div className="w-px bg-muted-foreground/15" style={{ height: `${c.wick}%` }} />
-                <div className={`w-full rounded-[1px] ${c.bull ? "bg-accent/70 hover:bg-accent" : "bg-destructive/55 hover:bg-destructive/70"} transition-colors`} style={{ height: `${c.body}%` }} />
-                <div className="w-px bg-muted-foreground/15" style={{ height: `${c.lwick}%` }} />
+        {/* Live AI Signals Feed */}
+        <div className="md:col-span-4 rounded-2xl border border-border bg-secondary/30 p-4 md:p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
+              <Zap className="h-3.5 w-3.5 text-primary" />
+            </div>
+            <span className="text-[10px] md:text-xs font-semibold text-foreground">סיגנלים חיים מה-AI</span>
+          </div>
+          <div className="space-y-2">
+            {[
+              { icon: <CheckCircle2 className="h-3 w-3 text-accent shrink-0" />, text: "זיהוי בולען (Engulfing) — אישור setup לונג", time: "לפני 3 דק׳", border: "border-accent/20 bg-accent/[0.04]" },
+              { icon: <AlertTriangle className="h-3 w-3 text-destructive shrink-0" />, text: "נר פטיש מזויף — נפח מסחר נמוך", time: "לפני 8 דק׳", border: "border-destructive/20 bg-destructive/[0.04]" },
+              { icon: <Newspaper className="h-3 w-3 text-primary shrink-0" />, text: "15 דקות להודעת CPI — אל תסחור", time: "לפני 12 דק׳", border: "border-primary/20 bg-primary/[0.04]" },
+              { icon: <Eye className="h-3 w-3 text-accent shrink-0" />, text: "GBP/USD — אזור ביקוש חזק ב-1.2680", time: "לפני 20 דק׳", border: "border-accent/20 bg-accent/[0.04]" },
+              { icon: <Shield className="h-3 w-3 text-primary shrink-0" />, text: "הגנת סטופ הוזזה ל-Break Even", time: "לפני 25 דק׳", border: "border-primary/20 bg-primary/[0.04]" },
+            ].map((sig, i) => (
+              <div key={i} className={`flex items-start gap-2.5 rounded-xl border ${sig.border} px-3 py-2.5 transition-all hover:scale-[1.01]`}>
+                <div className="mt-0.5">{sig.icon}</div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[9px] md:text-[10px] font-medium text-foreground leading-relaxed">{sig.text}</p>
+                  <p className="text-[8px] text-muted-foreground/50 mt-0.5">{sig.time}</p>
+                </div>
               </div>
             ))}
           </div>
+        </div>
 
-          {/* AI Annotations */}
-          <div className="absolute top-6 md:top-8 right-[12%] md:right-[18%] animate-in fade-in duration-1000">
-            <div className="rounded-xl border border-accent/30 bg-accent/10 backdrop-blur-md px-3 py-2 text-[9px] md:text-[10px] text-accent font-medium shadow-[0_4px_15px_hsl(160_60%_45%/0.1)]">
-              <CheckCircle2 className="h-3 w-3 inline ml-1" />
-              זיהוי בולען (Engulfing) — אישור setup לונג
+        {/* Market Sentiment + Quick Stats */}
+        <div className="md:col-span-3 space-y-4">
+          {/* Sentiment */}
+          <div className="rounded-2xl border border-border bg-secondary/30 p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Activity className="h-3.5 w-3.5 text-primary" />
+              <span className="text-[10px] font-semibold text-foreground">סנטימנט שוק</span>
+            </div>
+            <div className="space-y-3">
+              {[
+                { pair: "EUR/USD", bull: 62 },
+                { pair: "GBP/USD", bull: 45 },
+                { pair: "BTC/USD", bull: 78 },
+              ].map((s) => (
+                <div key={s.pair}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[9px] font-semibold text-foreground">{s.pair}</span>
+                    <span className="text-[8px] text-muted-foreground">{s.bull}% לונג</span>
+                  </div>
+                  <div className="flex h-2 rounded-full overflow-hidden">
+                    <div className="bg-accent/70 transition-all" style={{ width: `${s.bull}%` }} />
+                    <div className="bg-destructive/50 flex-1" />
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-          <div className="absolute top-24 md:top-36 left-[8%] md:left-[22%] animate-in fade-in duration-1000 delay-300">
-            <div className="rounded-xl border border-destructive/30 bg-destructive/10 backdrop-blur-md px-3 py-2 text-[9px] md:text-[10px] text-destructive font-medium shadow-[0_4px_15px_hsl(0_72%_51%/0.1)]">
-              <AlertTriangle className="h-3 w-3 inline ml-1" />
-              אזהרת AI: נר פטיש מזויף — נפח מסחר נמוך
+
+          {/* Quick Performance */}
+          <div className="rounded-2xl border border-border bg-secondary/30 p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <TrendingUp className="h-3.5 w-3.5 text-accent" />
+              <span className="text-[10px] font-semibold text-foreground">ביצועים מהירים</span>
             </div>
-          </div>
-          <div className="absolute bottom-6 md:bottom-8 left-[4%] md:left-[12%] animate-in fade-in duration-1000 delay-700">
-            <div className="rounded-xl border border-primary/30 bg-primary/10 backdrop-blur-md px-3 py-2 text-[9px] md:text-[10px] text-primary font-medium shadow-[0_4px_15px_hsl(217_72%_53%/0.1)] flex items-center gap-1.5">
-              <Newspaper className="h-3 w-3" />
-              15 דקות להודעת ריבית (CPI) — אל תסחור
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { label: "Win Rate", value: "68%", color: "text-accent" },
+                { label: "Profit Factor", value: "2.4", color: "text-accent" },
+                { label: "Avg Win", value: "+$87", color: "text-accent" },
+                { label: "Avg Loss", value: "-$36", color: "text-destructive" },
+              ].map((s) => (
+                <div key={s.label} className="rounded-lg bg-muted/15 border border-border/30 p-2 text-center">
+                  <p className={`text-sm font-bold ${s.color}`}>{s.value}</p>
+                  <p className="text-[8px] text-muted-foreground mt-0.5">{s.label}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
