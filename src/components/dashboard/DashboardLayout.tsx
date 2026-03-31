@@ -40,6 +40,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   const [activeNav, setActiveNav] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [brokerModal, setBrokerModal] = useState(false);
+  const [userMenu, setUserMenu] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(() => {
     return localStorage.getItem("zentrade-onboarded") !== "true";
   });
