@@ -65,6 +65,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
     if (activeNav === "stats") return <StatsPage />;
     if (activeNav === "journal") return <JournalPage />;
     if (activeNav === "settings") return <SettingsPage />;
+    if (activeNav === "mentor") return <MentorPage />;
     return children || (
       <div className="flex h-full items-center justify-center">
         <div className="text-center">
