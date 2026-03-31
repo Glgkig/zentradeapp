@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Mic, Play, ChevronDown, ChevronUp, Calendar,
   ArrowUpRight, ArrowDownRight, Brain, AlertTriangle,
@@ -251,9 +251,7 @@ const JournalPage = () => {
               {expanded && (
                 <div className="border-t border-border/15 bg-gradient-to-b from-muted/[0.04] to-transparent px-4 md:px-6 py-5 animate-in slide-in-from-top-2 fade-in duration-300">
                   {/* Chart */}
-                  <div className="relative rounded-2xl border border-border/20 bg-[hsl(222,47%,4%)] overflow-hidden mb-5 h-52 md:h-72">
-                    <TradingViewChart trade={t} />
-                  </div>
+                  <TradeChartContainer trade={t} />
 
                   {/* Detail Grid */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-5">
@@ -378,20 +376,23 @@ const seededRandom = (seed: number) => {
   return x - Math.floor(x);
 };
 
-const generateCandles = (id: number, bull: boolean) => {
-  const count = 60;
+const generateCandles = (id: number, bull: boolean, tf: string) => {
+  const tfSeed = tf === "15m" ? 1 : tf === "1H" ? 2 : tf === "4H" ? 3 : tf === "1D" ? 4 : 5;
+  const seed = id * 100 + tfSeed * 7;
+  const count = tf === "15m" ? 80 : tf === "1H" ? 60 : tf === "4H" ? 45 : 30;
   const candles: { o: number; h: number; l: number; c: number }[] = [];
-  let price = 50 + seededRandom(id * 100) * 20;
+  let price = 50 + seededRandom(seed) * 20;
+  const vol = tf === "15m" ? 0.6 : tf === "1H" ? 1.0 : tf === "4H" ? 1.4 : 2.0;
 
   for (let i = 0; i < count; i++) {
     const trend = bull
-      ? (i < 20 ? -0.1 : i < 35 ? 0.5 : i < 50 ? 0.3 : -0.1)
-      : (i < 20 ? 0.2 : i < 35 ? -0.4 : i < 50 ? -0.3 : 0.1);
-    const volatility = 0.8 + seededRandom(id * 1000 + i * 7) * 1.5;
-    const change = (seededRandom(id * 500 + i * 13) - 0.45 + trend * 0.3) * volatility;
+      ? (i < count * 0.3 ? -0.1 : i < count * 0.6 ? 0.5 : i < count * 0.8 ? 0.3 : -0.1)
+      : (i < count * 0.3 ? 0.2 : i < count * 0.6 ? -0.4 : i < count * 0.8 ? -0.3 : 0.1);
+    const volatility = (0.8 + seededRandom(seed * 10 + i * 7) * 1.5) * vol;
+    const change = (seededRandom(seed * 5 + i * 13) - 0.45 + trend * 0.3) * volatility;
     const o = price;
     const c = price + change;
-    const wick = seededRandom(id * 300 + i * 17) * 0.8;
+    const wick = seededRandom(seed * 3 + i * 17) * 0.8 * vol;
     const h = Math.max(o, c) + wick;
     const l = Math.min(o, c) - wick;
     candles.push({ o, h, l, c });
@@ -401,9 +402,36 @@ const generateCandles = (id: number, bull: boolean) => {
 };
 
 type TradeData = typeof trades[0];
+const TIMEFRAMES = ["5m", "15m", "1H", "4H", "1D"] as const;
 
-const TradingViewChart = ({ trade }: { trade: TradeData }) => {
-  const candles = generateCandles(trade.id, trade.pnl > 0);
+const TradeChartContainer = ({ trade }: { trade: TradeData }) => {
+  const [tf, setTf] = useState("1H");
+
+  return (
+    <div className="relative rounded-2xl border border-border/20 bg-[hsl(0,0%,3%)] overflow-hidden mb-5 h-56 md:h-80">
+      {/* Timeframe selector */}
+      <div className="absolute top-2.5 left-2.5 flex items-center gap-0.5 z-20">
+        {TIMEFRAMES.map((t) => (
+          <button
+            key={t}
+            onClick={(e) => { e.stopPropagation(); setTf(t); }}
+            className={`rounded-md px-2 py-0.5 text-[7px] font-bold border transition-all duration-200 cursor-pointer ${
+              tf === t
+                ? "bg-primary/20 text-primary border-primary/25 shadow-[0_0_8px_hsl(var(--primary)/0.15)]"
+                : "bg-[hsl(0,0%,8%)] text-muted-foreground/40 border-[hsl(0,0%,12%)] hover:text-muted-foreground/60 hover:bg-[hsl(0,0%,10%)]"
+            }`}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
+      <TradingViewChart trade={trade} timeframe={tf} />
+    </div>
+  );
+};
+
+const TradingViewChart = ({ trade, timeframe }: { trade: TradeData; timeframe: string }) => {
+  const candles = useMemo(() => generateCandles(trade.id, trade.pnl > 0, timeframe), [trade.id, trade.pnl, timeframe]);
   const allPrices = candles.flatMap(c => [c.h, c.l]);
   const minP = Math.min(...allPrices);
   const maxP = Math.max(...allPrices);
@@ -441,11 +469,11 @@ const TradingViewChart = ({ trade }: { trade: TradeData }) => {
       <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
         {/* Horizontal grid lines */}
         {[20, 35, 50, 65, 80].map(y => (
-          <line key={y} x1="0" y1={y} x2="100" y2={y} stroke="hsl(220,20%,18%)" strokeWidth="0.15" strokeDasharray="1,1" />
+          <line key={y} x1="0" y1={y} x2="100" y2={y} stroke="hsl(0,0%,12%)" strokeWidth="0.15" strokeDasharray="1,1" />
         ))}
         {/* Vertical grid lines */}
         {[15, 30, 45, 60, 75, 90].map(x => (
-          <line key={x} x1={x} y1="0" x2={x} y2="100" stroke="hsl(220,20%,18%)" strokeWidth="0.15" strokeDasharray="1,1" />
+          <line key={x} x1={x} y1="0" x2={x} y2="100" stroke="hsl(0,0%,12%)" strokeWidth="0.15" strokeDasharray="1,1" />
         ))}
 
         {/* Support zone */}
@@ -543,24 +571,15 @@ const TradingViewChart = ({ trade }: { trade: TradeData }) => {
       </svg>
 
       {/* Overlays */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[hsl(222,47%,4%)]/70 via-transparent to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[hsl(0,0%,3%)]/60 via-transparent to-transparent pointer-events-none" />
 
       {/* Top labels */}
       <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 z-10">
-        <span className="rounded-md bg-background/60 backdrop-blur-md px-2 py-0.5 text-[9px] font-bold text-foreground border border-border/15">{trade.pair}</span>
+        <span className="rounded-md bg-[hsl(0,0%,6%)]/80 backdrop-blur-md px-2 py-0.5 text-[9px] font-bold text-foreground border border-[hsl(0,0%,15%)]">{trade.pair}</span>
         <span className={`rounded-md backdrop-blur-md px-2 py-0.5 text-[9px] font-bold border ${
           trade.dir === "Long" ? "bg-accent/15 text-accent border-accent/10" : "bg-destructive/15 text-destructive border-destructive/10"
         }`}>{trade.dir}</span>
         <span className="rounded-md bg-yellow-400/10 backdrop-blur-md px-2 py-0.5 text-[8px] font-semibold text-yellow-400/70 border border-yellow-400/10">EMA 12</span>
-      </div>
-
-      {/* Top-left timeframe */}
-      <div className="absolute top-2.5 left-2.5 flex items-center gap-1 z-10">
-        {["15m", "1H", "4H"].map((tf, i) => (
-          <span key={tf} className={`rounded-md px-1.5 py-0.5 text-[7px] font-bold border ${
-            i === 1 ? "bg-primary/15 text-primary border-primary/15" : "bg-muted/20 text-muted-foreground/40 border-border/10"
-          }`}>{tf}</span>
-        ))}
       </div>
 
       {/* Bottom entry/exit badges */}
