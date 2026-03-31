@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import {
   LayoutDashboard, BookOpen, Bot, FlaskConical, ShieldCheck,
   LogOut, ChevronDown, Plug, Menu, X, Settings, Sun, Moon,
+  Crosshair, PieChart, History,
 } from "lucide-react";
 import SettingsPage from "@/pages/SettingsPage";
 import HomeDashboard from "@/components/dashboard/HomeDashboard";
@@ -9,9 +10,11 @@ import OnboardingModal from "@/components/dashboard/OnboardingModal";
 
 const navItems = [
   { id: "dashboard", label: "דשבורד ראשי", icon: LayoutDashboard },
+  { id: "setups", label: "הסטאפים שלי", icon: Crosshair },
   { id: "journal", label: "יומן מסחר", icon: BookOpen },
+  { id: "stats", label: "סטטיסטיקות וביצועים", icon: PieChart },
   { id: "mentor", label: "מנטור AI", icon: Bot },
-  { id: "backtesting", label: "בקטסטינג", icon: FlaskConical },
+  { id: "backtesting", label: "בקטסטינג", icon: History },
   { id: "protection", label: "הגדרות הגנה", icon: ShieldCheck },
   { id: "settings", label: "הגדרות", icon: Settings },
 ];
