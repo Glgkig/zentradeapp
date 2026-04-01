@@ -9,6 +9,7 @@ import {
   XCircle, ChevronRight, Sparkles, MapPin, Eye, EyeOff,
 } from "lucide-react";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
+import { supabase } from "@/integrations/supabase/client";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import logoMt5 from "@/assets/logos/mt5-full.png";
 import logoBinance from "@/assets/logos/binance-full.png";
