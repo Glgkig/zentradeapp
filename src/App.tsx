@@ -10,6 +10,9 @@ import Dashboard from "./pages/Dashboard.tsx";
 import TermsPage from "./pages/TermsPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ResetPasswordPage from "./pages/ResetPasswordPage.tsx";
+import SignupPage from "./pages/SignupPage.tsx";
+import LoginPage from "./pages/LoginPage.tsx";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +26,10 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/index" element={<Index />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route
               path="/dashboard"
               element={
@@ -32,7 +39,6 @@ const App = () => (
               }
             />
             <Route path="/terms" element={<TermsPage />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
