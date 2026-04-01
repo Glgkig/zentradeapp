@@ -426,7 +426,7 @@ const AuthPage = () => {
               <br />
               <span className="text-primary">על סטאפים רעים?</span>
             </h2>
-            <p className="mt-4 md:mt-5 text-sm md:text-base text-muted-foreground leading-relaxed">
+            <p className="mt-4 md:mt-5 text-sm md:text-base text-foreground/70 leading-relaxed">
               הצטרף ל-ZenTrade היום וקבל גישה מלאה למנטור AI, יומן מסחר חכם, ותובנות שוק — בחינם.
             </p>
             <button
