@@ -236,7 +236,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                   </div>
 
                   {/* Mobile bottom sheet */}
-                  <div className="md:hidden fixed inset-x-0 bottom-0 z-50 rounded-t-3xl border-t border-border/20 bg-secondary/98 backdrop-blur-xl animate-in slide-in-from-bottom duration-300 overflow-hidden">
+                  <div className="md:hidden fixed inset-x-0 bottom-0 z-50 rounded-t-3xl border-t border-border/20 bg-secondary animate-in slide-in-from-bottom duration-300 overflow-hidden">
                     <div className="flex justify-center pt-3 pb-1"><div className="w-10 h-1 rounded-full bg-muted-foreground/15" /></div>
                     <UserMenuContent
                       onClose={() => setUserMenu(false)}
