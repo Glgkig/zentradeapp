@@ -366,7 +366,7 @@ const AuthPage = () => {
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-foreground">{t.name}</p>
-                      <p className="text-[10px] text-muted-foreground">{t.role}</p>
+                      <p className="text-[10px] text-foreground/60">{t.role}</p>
                     </div>
                   </div>
                 </div>
