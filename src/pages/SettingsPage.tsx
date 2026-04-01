@@ -185,7 +185,7 @@ const Select = ({ options, defaultValue }: { options: { value: string; label: st
 const Toggle = ({ label, sub, defaultChecked }: { label: string; sub?: string; defaultChecked?: boolean }) => {
   const [on, setOn] = useState(defaultChecked ?? false);
   return (
-    <div className="flex items-center justify-between rounded-lg border border-border bg-muted/10 px-3 py-2.5">
+    <div className="flex items-center justify-between rounded-lg border border-border/15 bg-muted/10 px-3 py-2.5 transition-all duration-200 hover:bg-muted/15 min-h-[48px]">
       <div>
         <p className="text-[11px] md:text-xs font-medium text-foreground">{label}</p>
         {sub && <p className="text-[9px] text-muted-foreground mt-0.5">{sub}</p>}
