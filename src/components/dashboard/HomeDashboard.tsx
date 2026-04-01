@@ -170,7 +170,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
         </div>
 
         {/* Live AI Signals Feed */}
-        <div className="md:col-span-4 rounded-2xl border border-border bg-secondary/30 p-4 md:p-5">
+        <div className="md:col-span-4 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4 md:p-5">
           <div className="flex items-center gap-2 mb-3">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
               <Zap className="h-3.5 w-3.5 text-primary" />
