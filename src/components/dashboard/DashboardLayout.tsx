@@ -33,6 +33,7 @@ const navItems = [
   { id: "mentor", label: "מנטור AI", icon: Bot },
   { id: "backtesting", label: "בקטסטינג", icon: History },
   { id: "protection", label: "הגנה", icon: ShieldCheck },
+  { id: "calendar", label: "לוח כלכלי", icon: Calendar },
   { id: "settings", label: "הגדרות", icon: Settings },
 ];
 
