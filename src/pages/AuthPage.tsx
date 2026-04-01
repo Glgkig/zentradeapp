@@ -9,6 +9,7 @@ import {
   XCircle, ChevronRight, Sparkles, MapPin, Eye, EyeOff,
 } from "lucide-react";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
+import { supabase } from "@/integrations/supabase/client";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import logoMt5 from "@/assets/logos/mt5-full.png";
 import logoBinance from "@/assets/logos/binance-full.png";
@@ -487,8 +488,34 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
   const [name, setName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [forgotMode, setForgotMode] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
   const navigate = useNavigate();
   const { signIn, signUp, updateProfile } = useAuth();
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      toast.error("הזן את כתובת האימייל שלך");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) {
+        toast.error(error.message);
+      } else {
+        setResetSent(true);
+        toast.success("נשלח קישור לאיפוס סיסמה לאימייל שלך");
+      }
+    } catch {
+      toast.error("שגיאה לא צפויה");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -547,10 +574,39 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
             </div>
             <h2 className="font-heading text-lg md:text-xl font-bold text-foreground">ZenTrade</h2>
             <p className="mt-1 text-[10px] md:text-xs text-foreground/60">
-              {isLogin ? "התחבר לחשבון שלך" : "צור חשבון חדש"}
+              {forgotMode ? "איפוס סיסמה" : isLogin ? "התחבר לחשבון שלך" : "צור חשבון חדש"}
             </p>
           </div>
 
+          {forgotMode ? (
+            resetSent ? (
+              <div className="text-center space-y-4 py-4">
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-500/10">
+                  <CheckCircle2 className="h-6 w-6 text-green-500" />
+                </div>
+                <p className="text-sm text-foreground">נשלח קישור לאיפוס סיסמה לאימייל שלך</p>
+                <p className="text-xs text-muted-foreground">בדוק את תיבת הדואר שלך ולחץ על הקישור</p>
+                <button onClick={() => { setForgotMode(false); setResetSent(false); }} className="text-xs text-primary hover:underline">
+                  חזרה להתחברות
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleForgotPassword} className="space-y-3">
+                <div>
+                  <label className="mb-1 block text-[10px] md:text-xs font-medium text-foreground/70">אימייל</label>
+                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" dir="ltr"
+                    className="w-full rounded-lg border border-border bg-muted/30 px-3 py-2.5 text-xs md:text-sm text-foreground text-left placeholder:text-muted-foreground/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" />
+                </div>
+                <button type="submit" disabled={submitting} className="w-full rounded-xl bg-primary py-3 text-xs md:text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 active:scale-[0.98] disabled:opacity-60">
+                  {submitting ? "שולח..." : "שלח קישור לאיפוס"}
+                </button>
+                <p className="text-center">
+                  <button type="button" onClick={() => setForgotMode(false)} className="text-xs text-primary hover:underline">חזרה להתחברות</button>
+                </p>
+              </form>
+            )
+          ) : (
+            <>
           <div className="mb-5 md:mb-6 flex gap-1 rounded-xl bg-muted p-1">
             {[{ label: "התחברות", login: true }, { label: "הרשמה", login: false }].map(({ label, login }) => (
               <button
@@ -613,7 +669,7 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
 
             {isLogin && (
               <div className="text-left">
-                <button type="button" className="text-[10px] md:text-xs text-primary hover:underline">שכחת סיסמה?</button>
+                <button type="button" onClick={() => setForgotMode(true)} className="text-[10px] md:text-xs text-primary hover:underline">שכחת סיסמה?</button>
               </div>
             )}
 
@@ -628,6 +684,8 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
               {isLogin ? "הירשם עכשיו" : "התחבר"}
             </button>
           </p>
+            </>
+          )}
         </div>
       </div>
     </div>
