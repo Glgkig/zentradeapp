@@ -431,34 +431,20 @@ const AuthPage = () => {
         </RevealSection>
       </section>
 
-      {/* ===== CONTACT SECTION ===== */}
-      <RevealSection>
-        <section className="px-4 py-16 md:py-20">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground mb-3">צריך עזרה? דבר איתנו</h2>
-            <p className="text-sm md:text-base text-muted-foreground mb-8">הצוות שלנו זמין לכל שאלה — בוואטסאפ או במייל.</p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a
-                href="https://wa.me/972504433779"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2.5 rounded-xl px-8 py-4 text-sm font-bold text-white shadow-lg transition-all hover:opacity-90 active:scale-[0.97]"
-                style={{ backgroundColor: '#25D366' }}
-              >
-                <MessageCircle className="h-5 w-5" />
-                צ'אט בוואטסאפ
-              </a>
-              <a
-                href="mailto:gonidrop9@gmail.com"
-                className="inline-flex items-center gap-2.5 rounded-xl border border-border bg-card px-8 py-4 text-sm font-bold text-foreground shadow-lg transition-all hover:bg-accent active:scale-[0.97]"
-              >
-                <Mail className="h-5 w-5" />
-                שלח מייל
-              </a>
-            </div>
-          </div>
-        </section>
-      </RevealSection>
+      {/* ===== WhatsApp FAB ===== */}
+      <a
+        href="https://wa.me/972504433779"
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Support"
+        className="group fixed bottom-6 left-6 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-xl transition-transform duration-200 hover:scale-110"
+        style={{ backgroundColor: '#25D366' }}
+      >
+        <MessageCircle className="h-7 w-7 text-white" />
+        <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 rounded-md bg-card px-3 py-1 text-xs font-medium text-foreground shadow-lg opacity-0 transition-opacity group-hover:opacity-100 border border-border">
+          Support
+        </span>
+      </a>
 
       {/* ===== FOOTER ===== */}
       <footer className="border-t border-border/30 px-4 py-8 md:px-8 md:py-10">
