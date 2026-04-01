@@ -75,9 +75,9 @@ const AuthPage = () => {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-6">
-            <a href="#features" className="text-xs text-muted-foreground hover:text-foreground transition-colors">למה ZenTrade?</a>
-            <a href="#testimonials" className="text-xs text-muted-foreground hover:text-foreground transition-colors">ביקורות</a>
-            <a href="#faq" className="text-xs text-muted-foreground hover:text-foreground transition-colors">שאלות נפוצות</a>
+            <a href="#features" className="text-xs text-foreground/70 hover:text-foreground transition-colors">למה ZenTrade?</a>
+            <a href="#testimonials" className="text-xs text-foreground/70 hover:text-foreground transition-colors">ביקורות</a>
+            <a href="#faq" className="text-xs text-foreground/70 hover:text-foreground transition-colors">שאלות נפוצות</a>
             <div className="h-4 w-px bg-border" />
             <button
               onClick={() => openModal("login")}
