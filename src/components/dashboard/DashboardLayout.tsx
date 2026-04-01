@@ -60,6 +60,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   const [showOnboarding, setShowOnboarding] = useState(() => {
     return localStorage.getItem("zentrade-onboarded") !== "true";
   });
+  const [upgradeModal, setUpgradeModal] = useState(false);
   const [dark, setDark] = useState(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("zentrade-theme") !== "light";
