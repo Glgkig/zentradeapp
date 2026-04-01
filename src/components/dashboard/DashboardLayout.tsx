@@ -81,10 +81,8 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   };
 
   const handleNav = (id: string) => {
-    if (id === "more") { setMoreSheet(true); return; }
     setActiveNav(id);
-    setSidebarOpen(false);
-    setMoreSheet(false);
+    setMobileNavOpen(false);
   };
 
   const renderContent = () => {
