@@ -14,7 +14,7 @@ import HomeDashboard from "@/components/dashboard/HomeDashboard";
 import OnboardingModal from "@/components/dashboard/OnboardingModal";
 import BacktestingPage from "@/pages/BacktestingPage";
 import ProtectionPage from "@/pages/ProtectionPage";
-import CalendarPage from "@/pages/CalendarPage";
+
 import logoBinanceFull from "@/assets/logos/binance-full.png";
 import logoTradeLockerFull from "@/assets/logos/tradelocker-full.png";
 import logoTradingViewFull from "@/assets/logos/tradingview-full.png";
