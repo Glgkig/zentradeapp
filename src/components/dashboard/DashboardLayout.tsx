@@ -15,6 +15,7 @@ import OnboardingModal from "@/components/dashboard/OnboardingModal";
 import BacktestingPage from "@/pages/BacktestingPage";
 import ProtectionPage from "@/pages/ProtectionPage";
 import logoBinanceFull from "@/assets/logos/binance-full.png";
+import logoTradeLockerFull from "@/assets/logos/tradelocker-full.png";
 
 /* ===== Nav Config ===== */
 const navItems = [
