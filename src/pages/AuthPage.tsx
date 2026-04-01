@@ -312,7 +312,7 @@ const AuthPage = () => {
                     {f.icon}
                   </div>
                   <h3 className="font-heading text-base md:text-lg font-bold text-foreground mb-2">{f.title}</h3>
-                  <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
+                  <p className="text-xs md:text-sm text-foreground/70 leading-relaxed">{f.desc}</p>
                 </div>
               </RevealSection>
             ))}
