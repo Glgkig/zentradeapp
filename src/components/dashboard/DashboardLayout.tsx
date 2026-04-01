@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, BookOpen, Bot, ShieldCheck,
   LogOut, ChevronDown, Plug, Menu, X, Settings, Sun, Moon, Zap,
-  Crosshair, PieChart, History, CheckCircle2,
+  Crosshair, PieChart, History, CheckCircle2, Flame, Eye,
 } from "lucide-react";
 import SettingsPage from "@/pages/SettingsPage";
 import SetupsPage from "@/pages/SetupsPage";
@@ -56,6 +56,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   const [moreSheet, setMoreSheet] = useState(false);
   const [brokerModal, setBrokerModal] = useState(false);
   const [userMenu, setUserMenu] = useState(false);
+  const [zenMode, setZenMode] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(() => {
     return localStorage.getItem("zentrade-onboarded") !== "true";
   });
@@ -111,9 +112,12 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   };
 
   return (
-    <div className="flex h-screen w-full overflow-hidden" dir="rtl">
+    <div className="flex h-screen w-full overflow-hidden relative" dir="rtl">
+      {/* Dynamic Ambient Background */}
+      <div className="ambient-bg" />
+
       {/* ===== Desktop Sidebar (hidden on mobile) ===== */}
-      <aside className="hidden md:flex h-full w-[260px] flex-col border-l border-border/15 bg-sidebar/80 backdrop-blur-xl shrink-0">
+      <aside className={`hidden md:flex h-full w-[260px] flex-col border-l border-border/15 bg-sidebar/80 backdrop-blur-xl shrink-0 relative z-10 ${zenMode ? "zen-hidden" : "zen-visible"}`}>
         {/* Brand */}
         <div className="flex items-center border-b border-border px-5 py-5">
           <div className="flex items-center gap-2.5">
@@ -170,9 +174,9 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
       </aside>
 
       {/* ===== Main Area ===== */}
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden relative z-10">
         {/* Top Header */}
-        <header className="flex items-center justify-between glass-header px-4 py-2.5 md:px-6 md:py-3 shrink-0 relative z-50">
+        <header className={`flex items-center justify-between glass-header px-4 py-2.5 md:px-6 md:py-3 shrink-0 relative z-50 ${zenMode ? "zen-hidden" : "zen-visible"}`}>
           <div className="flex items-center gap-2.5">
             {/* Mobile brand (replaces hamburger) */}
             <div className="flex md:hidden items-center gap-2">
@@ -187,6 +191,21 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Discipline Streak Badge */}
+            <div className="hidden sm:flex group relative">
+              <div className="streak-badge flex items-center gap-1.5 rounded-full border border-orange-500/25 bg-orange-500/8 px-3 py-1.5 cursor-default">
+                <Flame className="h-3 w-3 text-orange-400" />
+                <span className="text-[11px] font-bold text-orange-400">5 ימים</span>
+              </div>
+              {/* Glass tooltip */}
+              <div className="absolute top-full mt-2 right-0 w-56 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 z-[80]">
+                <div className="rounded-xl border border-border/30 bg-secondary/95 backdrop-blur-xl p-3 shadow-2xl">
+                  <p className="text-[10px] font-semibold text-foreground mb-1">🔥 רצף משמעת</p>
+                  <p className="text-[9px] text-muted-foreground leading-relaxed">5 ימים רצופים ללא הפרת חוקי הברזל. אתה פועל כמו צלף.</p>
+                </div>
+              </div>
+            </div>
+
             {/* AI Status */}
             <div className="hidden sm:flex items-center gap-2 rounded-full border border-accent/25 bg-accent/8 px-3 py-1.5">
               <span className="relative flex h-2 w-2">
@@ -195,6 +214,19 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               </span>
               <span className="text-[11px] font-medium text-accent">AI פעיל</span>
             </div>
+
+            {/* Zen Mode Toggle */}
+            <button
+              onClick={() => setZenMode(!zenMode)}
+              className={`haptic-press flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-xl border transition-all duration-300 ${
+                zenMode
+                  ? "border-primary/40 bg-primary/15 text-primary shadow-[0_0_16px_hsl(var(--primary)/0.2)]"
+                  : "border-border/20 bg-muted/15 text-muted-foreground hover:bg-primary/10 hover:text-primary hover:border-primary/20"
+              }`}
+              title={zenMode ? "צא ממצב פוקוס" : "מצב פוקוס"}
+            >
+              <Eye className="h-4 w-4" />
+            </button>
 
             {/* Theme */}
             <button
@@ -262,7 +294,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
       </div>
 
       {/* ===== Mobile Bottom Tab Bar ===== */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 border-t border-border/15 bg-sidebar/90 backdrop-blur-2xl">
+      <nav className={`md:hidden fixed bottom-0 inset-x-0 z-30 border-t border-border/15 bg-sidebar/90 backdrop-blur-2xl ${zenMode ? "zen-hidden" : "zen-visible"}`}>
         <div className="flex items-center justify-around px-1 pt-1.5 pb-[env(safe-area-inset-bottom,8px)]">
           {bottomTabs.map((tab) => {
             const active = tab.id !== "more" && activeNav === tab.id;

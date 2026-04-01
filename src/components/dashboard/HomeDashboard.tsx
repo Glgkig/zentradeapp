@@ -22,7 +22,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
             <div className="flex items-start gap-3.5 mb-4">
               {/* Pulsing AI Avatar */}
               <div className="relative shrink-0">
-                <div className="absolute inset-[-4px] rounded-2xl bg-primary/10 animate-pulse" style={{ animationDuration: "3s" }} />
+                <div className="absolute inset-[-4px] rounded-2xl bg-primary/10 ai-breathe" />
                 <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/15 border border-primary/20 shadow-[0_0_20px_hsl(217_72%_53%/0.12)]">
                   <Bot className="h-6 w-6 text-primary" />
                 </div>
