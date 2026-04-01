@@ -5,15 +5,15 @@ import {
   FlaskConical, Mic, Newspaper, ArrowUp, Activity, AlertTriangle,
   CheckCircle2, TrendingUp, Quote,
 } from "lucide-react";
-import logoMt5 from "@/assets/logos/mt5.png";
-import logoBinance from "@/assets/logos/binance.png";
-import logoTradeLocker from "@/assets/logos/tradelocker.png";
-import logoTradingView from "@/assets/logos/tradingview.png";
-import logoRithmic from "@/assets/logos/rithmic.png";
-import logoIbkr from "@/assets/logos/ibkr.png";
-import logoTopstep from "@/assets/logos/topstep.png";
-import logoForex from "@/assets/logos/forexcom.png";
-import logoNinjaTrader from "@/assets/logos/ninjatrader.png";
+import logoMt5 from "@/assets/logos/mt5-full.png";
+import logoBinance from "@/assets/logos/binance-full.png";
+import logoTradeLocker from "@/assets/logos/tradelocker-full.png";
+import logoTradingView from "@/assets/logos/tradingview-full.png";
+import logoRithmic from "@/assets/logos/rithmic-full.png";
+import logoIbkr from "@/assets/logos/ibkr-full.png";
+import logoTopstep from "@/assets/logos/topstepx-full.png";
+import logoForex from "@/assets/logos/forex-full.png";
+import logoNinjaTrader from "@/assets/logos/ninjatrader-full.png";
 
 /* ===== Main Page ===== */
 const AuthPage = () => {
