@@ -47,7 +47,7 @@ const StatsPage = () => {
       </div>
 
       {/* Top Summary Bar */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3 md:mb-4">
         {[
           { label: "רווח נקי החודש", value: "+$3,020", sub: "131 עסקאות", color: "text-accent", icon: <TrendingUp className="h-3.5 w-3.5" />, borderColor: "border-accent/20" },
           { label: "Win Rate", value: "62%", sub: "81 מתוך 131", color: "text-primary", icon: <Target className="h-3.5 w-3.5" />, borderColor: "border-primary/20" },
