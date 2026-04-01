@@ -25,7 +25,7 @@ const SettingsPage = () => {
             <Input value="yehonatan@zentrade.io" placeholder="name@example.com" dir="ltr" />
           </Field>
         </div>
-        <button className="mt-3 flex items-center gap-1.5 rounded-lg border border-border bg-muted/30 px-3 py-1.5 text-[11px] font-medium text-foreground hover:bg-muted/50 transition-all">
+        <button className="interactive-btn mt-3 flex items-center gap-1.5 rounded-lg border border-border/15 bg-muted/15 px-4 py-2 text-[11px] font-medium text-foreground hover:bg-muted/30 hover:border-primary/20 transition-all min-h-[44px]">
           <Lock className="h-3 w-3 text-muted-foreground" />
           שנה סיסמה
         </button>

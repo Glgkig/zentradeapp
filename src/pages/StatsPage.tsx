@@ -200,7 +200,7 @@ const StatsPage = () => {
                 {hours.map((h) => (
                   <div
                     key={h}
-                    className={`flex-1 h-6 md:h-7 rounded-[3px] transition-all hover:scale-110 hover:z-10 ${heatColor(heatData[day][h])}`}
+                    className={`flex-1 h-6 md:h-7 rounded-[4px] transition-all duration-200 hover:scale-110 hover:z-10 cursor-pointer ${heatColor(heatData[day][h])}`}
                     title={`${day} ${h}:00 — ${heatData[day][h] > 0 ? "+" : ""}${heatData[day][h]}`}
                   />
                 ))}

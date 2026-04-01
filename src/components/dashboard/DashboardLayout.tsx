@@ -270,7 +270,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               <button
                 key={tab.id}
                 onClick={() => handleNav(tab.id)}
-                className={`flex flex-col items-center gap-0.5 py-1.5 px-3 min-w-[56px] rounded-xl transition-all duration-200 ${
+                className={`interactive-btn flex flex-col items-center gap-0.5 py-1.5 px-3 min-w-[56px] rounded-xl transition-all duration-200 ${
                   active ? "text-primary" : "text-muted-foreground/40"
                 }`}
               >
