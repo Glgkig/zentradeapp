@@ -2,12 +2,13 @@ import { useState } from "react";
 import {
   Shield, User, Globe, Lock, Bell, ChevronDown, ChevronRight,
   AlertTriangle, Volume2, Mail, Smartphone, Sparkles, Save,
-  Eye, Palette, CreditCard, Key, Database, Zap,
+  Eye, Palette, CreditCard, Key, Database, Zap, Link2, Plus, Check, X,
 } from "lucide-react";
 
 /* ===== Tab Config ===== */
 const tabs = [
   { id: "profile", label: "פרופיל", icon: User },
+  { id: "connections", label: "חיבורים", icon: Link2 },
   { id: "preferences", label: "העדפות", icon: Globe },
   { id: "rules", label: "חוקי ברזל", icon: Shield },
   { id: "notifications", label: "התראות", icon: Bell },
