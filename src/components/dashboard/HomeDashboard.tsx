@@ -10,7 +10,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
   const greeting = hour < 12 ? "בוקר טוב" : hour < 17 ? "צהריים טובים" : "ערב טוב";
 
   return (
-    <div className="mx-auto max-w-[1280px] space-y-4">
+    <div className="mx-auto max-w-[1280px] space-y-3 md:space-y-4">
 
       {/* ===== Row 1: AI Pulse + Tilt Meter + Protection ===== */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
