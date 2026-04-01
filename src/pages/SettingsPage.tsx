@@ -165,7 +165,7 @@ const Input = ({ value, placeholder, type = "text", dir, prefix }: {
       defaultValue={value}
       placeholder={placeholder}
       dir={dir}
-      className={`w-full rounded-lg border border-border bg-muted/20 py-2 text-xs text-foreground placeholder:text-muted-foreground/30 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all ${prefix ? "px-7" : "px-3"}`}
+      className={`w-full rounded-lg border border-border/15 bg-muted/15 py-2.5 text-xs text-foreground placeholder:text-muted-foreground/30 focus:border-primary/30 focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all min-h-[44px] ${prefix ? "px-7" : "px-3"}`}
     />
   </div>
 );
