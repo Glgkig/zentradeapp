@@ -278,73 +278,107 @@ const SetupsPage = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 border border-primary/15">
-              <Crosshair className="h-4 w-4 text-primary" />
+          <div className="flex items-center gap-3 mb-1.5">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 border border-primary/15">
+              <Crosshair className="h-5 w-5 text-primary" />
             </div>
-            <h1 className="font-heading text-xl md:text-2xl font-extrabold text-foreground tracking-tight">
-              הסטאפים שלי
-            </h1>
+            <div>
+              <h1 className="font-heading text-xl md:text-2xl font-extrabold text-foreground tracking-tight">
+                הסטאפים שלי
+              </h1>
+              <p className="text-[10px] md:text-[11px] text-muted-foreground/40 leading-relaxed">
+                ה-Playbook האישי שלך · <span className="text-accent font-semibold">{setups.length} סטאפים</span> · <span className="text-primary font-semibold">{setups.filter(s => s.aiActive).length} במעקב AI</span>
+              </p>
+            </div>
           </div>
-          <p className="text-[11px] md:text-xs text-muted-foreground/50 leading-relaxed max-w-md">
-            ה-Playbook האישי שלך. כל סטאפ מנוטר בזמן אמת ע״י ה-AI
-          </p>
         </div>
-        <button className="interactive-btn group flex items-center gap-2 self-start rounded-xl bg-primary/8 border border-primary/15 px-4 py-2.5 text-[11px] font-bold text-primary hover:bg-primary/15 hover:border-primary/25 hover:shadow-[0_0_15px_hsl(var(--primary)/0.1)] transition-all duration-300 min-h-[44px]">
-          <Plus className="h-3.5 w-3.5" />
+        <button className="haptic-press group flex items-center gap-2 self-start rounded-xl bg-primary/10 border border-primary/20 px-5 py-2.5 text-[11px] font-bold text-primary hover:bg-primary/20 hover:border-primary/30 hover:shadow-[0_0_20px_hsl(var(--primary)/0.12)] transition-all duration-300 min-h-[44px]">
+          <Plus className="h-4 w-4 group-hover:rotate-90 transition-transform duration-300" />
           סטאפ חדש
         </button>
       </div>
 
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {setups.map((s) => (
+        {setups.map((s, index) => (
           <button
             key={s.id}
             onClick={() => setSelectedId(s.id)}
-            className="interactive-btn group text-right rounded-2xl border border-border/15 bg-secondary/10 hover:bg-secondary/20 hover:border-primary/20 hover:shadow-[0_4px_20px_hsl(var(--primary)/0.04)] transition-all duration-300 overflow-hidden"
+            className="haptic-press group text-right rounded-2xl border border-border/10 bg-card/50 hover:bg-card/80 hover:border-primary/15 hover:shadow-[0_8px_30px_hsl(var(--primary)/0.06)] transition-all duration-300 overflow-hidden animate-in fade-in slide-in-from-bottom-2 fill-mode-both"
+            style={{ animationDelay: `${index * 60}ms`, animationDuration: '400ms' }}
           >
             {/* Chart thumbnail */}
-            <div className="relative h-28 md:h-32 bg-[hsl(0,0%,3%)] overflow-hidden">
+            <div className="relative h-32 md:h-36 bg-background overflow-hidden">
               <SetupChart id={s.id} bull={s.dir === "לונג"} />
-              <div className="absolute inset-0 bg-gradient-to-t from-secondary/80 via-transparent to-transparent" />
-              {/* AI badge */}
-              {s.aiActive && (
-                <div className="absolute top-2 right-2 flex items-center gap-1 rounded-md bg-accent/12 border border-accent/15 px-1.5 py-0.5">
-                  <span className="relative flex h-1.5 w-1.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent/50" />
-                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-accent/80" />
-                  </span>
-                  <span className="text-[7px] font-bold text-accent/80">AI</span>
-                </div>
-              )}
-              {/* Pair badge */}
-              <div className="absolute bottom-2 left-2">
-                <span className="rounded-md bg-[hsl(0,0%,5%)]/80 backdrop-blur-sm px-2 py-0.5 text-[8px] font-bold text-foreground/70 border border-[hsl(0,0%,15%)]">
+              <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
+              
+              {/* Top row: AI badge + Direction */}
+              <div className="absolute top-2.5 right-2.5 left-2.5 flex items-center justify-between">
+                {s.aiActive ? (
+                  <div className="flex items-center gap-1.5 rounded-lg bg-accent/10 border border-accent/15 px-2 py-1 backdrop-blur-sm">
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent/60" />
+                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-accent" />
+                    </span>
+                    <span className="text-[8px] font-bold text-accent">AI פעיל</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1 rounded-lg bg-muted/20 border border-border/10 px-2 py-1 backdrop-blur-sm">
+                    <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/20" />
+                    <span className="text-[8px] font-medium text-muted-foreground/40">ידני</span>
+                  </div>
+                )}
+                <span className={`rounded-lg border px-2 py-1 text-[8px] font-bold backdrop-blur-sm ${
+                  s.dir === "לונג"
+                    ? "text-accent bg-accent/10 border-accent/15"
+                    : "text-destructive bg-destructive/10 border-destructive/15"
+                }`}>
+                  {s.dir === "לונג" ? "↑" : "↓"} {s.dir}
+                </span>
+              </div>
+
+              {/* Bottom pair label */}
+              <div className="absolute bottom-2.5 right-2.5">
+                <span className="rounded-lg bg-background/80 backdrop-blur-md px-2.5 py-1 text-[9px] font-bold text-foreground/80 border border-border/15 ticker-text">
                   {s.pair} · {s.tf}
                 </span>
               </div>
             </div>
 
             {/* Body */}
-            <div className="px-4 py-3.5">
-              <h3 className="text-xs md:text-[13px] font-bold text-foreground mb-2 group-hover:text-primary/90 transition-colors">
+            <div className="px-4 pt-3.5 pb-4">
+              <h3 className="text-[13px] font-bold text-foreground mb-3 group-hover:text-primary transition-colors leading-snug">
                 {s.name}
               </h3>
-              <div className="flex flex-wrap gap-1.5 mb-3">
-                <span className={`rounded-md border px-2 py-0.5 text-[8px] font-semibold ${
-                  s.dir === "לונג" ? "text-accent/70 bg-accent/6 border-accent/12" : "text-destructive/70 bg-destructive/6 border-destructive/12"
-                }`}>{s.dir}</span>
-                <span className="rounded-md border border-border/15 bg-muted/10 px-2 py-0.5 text-[8px] font-medium text-muted-foreground/50">
-                  {s.volatility}
-                </span>
-                <span className="rounded-md border border-accent/10 bg-accent/5 px-2 py-0.5 text-[8px] font-semibold text-accent/60">
-                  {s.winRate}%
-                </span>
+              
+              {/* Stats Row */}
+              <div className="grid grid-cols-3 gap-1.5 mb-3">
+                <div className="rounded-lg bg-accent/[0.04] border border-accent/8 py-1.5 text-center">
+                  <p className="text-[12px] font-bold text-accent">{s.winRate}%</p>
+                  <p className="text-[7px] text-muted-foreground/40 font-medium">Win Rate</p>
+                </div>
+                <div className="rounded-lg bg-primary/[0.04] border border-primary/8 py-1.5 text-center">
+                  <p className="text-[12px] font-bold text-primary">{s.avgRR}</p>
+                  <p className="text-[7px] text-muted-foreground/40 font-medium">R:R</p>
+                </div>
+                <div className="rounded-lg bg-muted/[0.06] border border-border/8 py-1.5 text-center">
+                  <p className="text-[12px] font-bold text-foreground/70">{s.trades}</p>
+                  <p className="text-[7px] text-muted-foreground/40 font-medium">עסקאות</p>
+                </div>
               </div>
-              <div className="flex items-center justify-between text-[9px] text-muted-foreground/35 font-medium">
-                <span>{s.trades} עסקאות</span>
-                <span>R:R {s.avgRR}</span>
+
+              {/* Volatility + View hint */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <div className={`h-1.5 w-1.5 rounded-full ${
+                    s.volatility === "גבוהה מאוד" ? "bg-destructive" :
+                    s.volatility === "גבוהה" ? "bg-orange-400" : "bg-accent"
+                  }`} />
+                  <span className="text-[9px] text-muted-foreground/40 font-medium">תנודתיות {s.volatility}</span>
+                </div>
+                <span className="text-[8px] text-primary/40 font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5">
+                  <Eye className="h-2.5 w-2.5" /> פרטים
+                </span>
               </div>
             </div>
           </button>
