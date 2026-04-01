@@ -14,6 +14,7 @@ import HomeDashboard from "@/components/dashboard/HomeDashboard";
 import OnboardingModal from "@/components/dashboard/OnboardingModal";
 import BacktestingPage from "@/pages/BacktestingPage";
 import ProtectionPage from "@/pages/ProtectionPage";
+import logoBinanceFull from "@/assets/logos/binance-full.png";
 
 /* ===== Nav Config ===== */
 const navItems = [
@@ -39,7 +40,7 @@ const brokers = [
   { name: "TradingView", initials: "TV", connected: false, account: null },
   { name: "TradeLocker", initials: "TL", connected: true, account: "TL-7842" },
   { name: "MetaTrader 5", initials: "M5", connected: false, account: null },
-  { name: "Binance", initials: "BN", connected: true, account: "BN-3291" },
+  { name: "Binance", initials: "BN", connected: true, account: "BN-3291", logo: logoBinanceFull },
   { name: "TopstepX", initials: "TX", connected: false, account: null },
   { name: "Rithmic", initials: "RI", connected: false, account: null },
   { name: "NinjaTrader", initials: "NT", connected: false, account: null },
@@ -487,7 +488,13 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
             {connected.map((b) => (
               <div key={b.name} className="flex items-center justify-between rounded-sm bg-primary/[0.03] border border-primary/8 px-3 py-2">
                 <div className="flex items-center gap-2.5">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-sm bg-primary/8 text-2xs font-bold text-primary font-mono">{b.initials}</div>
+                  {(b as any).logo ? (
+                    <div className="flex h-7 w-7 items-center justify-center rounded-sm overflow-hidden">
+                      <img src={(b as any).logo} alt={b.name} className="h-7 w-7 object-cover rounded-sm" />
+                    </div>
+                  ) : (
+                    <div className="flex h-7 w-7 items-center justify-center rounded-sm bg-primary/8 text-2xs font-bold text-primary font-mono">{b.initials}</div>
+                  )}
                   <div>
                     <p className="text-[11px] font-semibold text-foreground">{b.name}</p>
                     <div className="flex items-center gap-1 mt-0.5">
@@ -509,7 +516,13 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
           {disconnected.map((b) => (
             <div key={b.name} className="flex items-center justify-between rounded-sm bg-muted/[0.03] border border-border/6 px-3 py-2 hover:bg-muted/8 group transition-all">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-7 w-7 items-center justify-center rounded-sm bg-muted/10 border border-border/8 text-2xs font-bold text-muted-foreground/40 font-mono group-hover:text-primary/60">{b.initials}</div>
+                {(b as any).logo ? (
+                  <div className="flex h-7 w-7 items-center justify-center rounded-sm overflow-hidden">
+                    <img src={(b as any).logo} alt={b.name} className="h-7 w-7 object-cover rounded-sm" />
+                  </div>
+                ) : (
+                  <div className="flex h-7 w-7 items-center justify-center rounded-sm bg-muted/10 border border-border/8 text-2xs font-bold text-muted-foreground/40 font-mono group-hover:text-primary/60">{b.initials}</div>
+                )}
                 <p className="text-[11px] font-medium text-muted-foreground/60 group-hover:text-foreground">{b.name}</p>
               </div>
               <button className="haptic-press rounded-sm bg-primary/6 border border-primary/10 px-2 py-1 text-2xs font-semibold text-primary/60 hover:bg-primary/12 hover:text-primary transition-all">חבר</button>
