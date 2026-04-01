@@ -14,12 +14,12 @@ interface Message {
 
 /* ===== Tilt Pills ===== */
 const tiltPills = [
-  { text: "בא לי לנקום בשוק", icon: Flame, color: "destructive" as const },
-  { text: "שברתי את כל החוקים שלי", icon: AlertTriangle, color: "warning" as const },
-  { text: "אני בפומו מטורף", icon: Zap, color: "warning" as const },
-  { text: "מחקתי אתגר פראפ", icon: Trophy, color: "destructive" as const },
-  { text: "אני מרגיש חרדה מהשוק", icon: Heart, color: "info" as const },
-  { text: "אני לא מצליח לעצור לסחור", icon: Shield, color: "warning" as const },
+  { text: "נקמה בשוק", icon: Flame, color: "destructive" as const, full: "בא לי לנקום בשוק" },
+  { text: "שברתי חוקים", icon: AlertTriangle, color: "warning" as const, full: "שברתי את כל החוקים שלי" },
+  { text: "FOMO מטורף", icon: Zap, color: "warning" as const, full: "אני בפומו מטורף" },
+  { text: "חרדה מהשוק", icon: Heart, color: "info" as const, full: "אני מרגיש חרדה מהשוק" },
+  { text: "לא מצליח לעצור", icon: Shield, color: "warning" as const, full: "אני לא מצליח לעצור לסחור" },
+  { text: "מחקתי פראפ", icon: Trophy, color: "destructive" as const, full: "מחקתי אתגר פראפ" },
 ];
 
 const pillColorMap = {
@@ -216,19 +216,19 @@ const MentorPage = () => {
         <div ref={chatEndRef} />
       </div>
 
-      {/* ── Tilt Pills ── */}
+      {/* ── Quick Actions Grid ── */}
       <div className="shrink-0 px-1 pt-3">
-        <div className="flex gap-1.5 overflow-x-auto scrollbar-none pb-2">
+        <div className="grid grid-cols-3 gap-1.5">
           {tiltPills.map((pill) => {
             const colors = pillColorMap[pill.color];
             return (
               <button
                 key={pill.text}
-                onClick={() => sendMessage(pill.text)}
-                className={`interactive-btn group flex items-center gap-1.5 shrink-0 rounded-xl border px-3 py-2 transition-all duration-300 min-h-[40px] ${colors.bg}`}
+                onClick={() => sendMessage(pill.full)}
+                className={`haptic-press group flex items-center justify-center gap-1.5 rounded-xl border px-2 py-2.5 transition-all duration-200 ${colors.bg}`}
               >
                 <pill.icon className={`h-3 w-3 shrink-0 ${colors.icon}`} />
-                <span className={`text-[9px] md:text-[10px] font-semibold whitespace-nowrap ${colors.text}`}>
+                <span className={`text-[9px] md:text-[10px] font-semibold ${colors.text}`}>
                   {pill.text}
                 </span>
               </button>
