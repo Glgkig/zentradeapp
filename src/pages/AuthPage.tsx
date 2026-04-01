@@ -73,6 +73,7 @@ const AuthPage = () => {
   }, []);
 
   const openModal = (mode: "login" | "register" = "register") => {
+    if (isEditorCanvas) return;
     setModalMode(mode);
     setShowModal(true);
     setMobileMenu(false);
