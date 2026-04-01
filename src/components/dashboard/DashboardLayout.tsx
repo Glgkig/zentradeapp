@@ -438,6 +438,23 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
         </>
       )}
 
+      {/* ===== Upgrade Modal ===== */}
+      {upgradeModal && (
+        <>
+          <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-md animate-in fade-in duration-300" onClick={() => setUpgradeModal(false)} />
+          
+          {/* Desktop */}
+          <div className="hidden md:flex fixed inset-0 z-[61] items-center justify-center p-4">
+            <UpgradeModalContent onClose={() => setUpgradeModal(false)} />
+          </div>
+          {/* Mobile */}
+          <div className="md:hidden fixed inset-x-0 bottom-0 z-[61] max-h-[90vh] rounded-t-3xl border-t border-border/20 bg-card/98 backdrop-blur-xl animate-in slide-in-from-bottom duration-300 overflow-y-auto">
+            <div className="flex justify-center pt-3 pb-1"><div className="w-10 h-1 rounded-full bg-muted-foreground/15" /></div>
+            <UpgradeModalContent onClose={() => setUpgradeModal(false)} mobile />
+          </div>
+        </>
+      )}
+
       {showOnboarding && (
         <OnboardingModal userName="יהונתן" onComplete={completeOnboarding} />
       )}
