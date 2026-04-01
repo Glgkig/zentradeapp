@@ -303,7 +303,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
         </div>
 
         {/* News Guard */}
-        <div className="md:col-span-3 rounded-2xl border border-destructive/20 bg-destructive/[0.03] p-4 md:p-5">
+        <div className="sm:col-span-1 md:col-span-3 rounded-2xl border border-destructive/20 bg-destructive/[0.03] p-3.5 md:p-5">
           <div className="flex items-center gap-2 mb-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-destructive/10">
               <Newspaper className="h-4 w-4 text-destructive" />
