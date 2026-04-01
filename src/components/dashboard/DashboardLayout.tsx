@@ -621,4 +621,145 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
   );
 };
 
+/* ===== Upgrade Modal Content ===== */
+const plans = [
+  {
+    id: "basic",
+    name: "בסיסי",
+    price: "40",
+    icon: Zap,
+    color: "muted-foreground",
+    gradient: "from-muted/20 to-muted/5",
+    borderColor: "border-border/20",
+    features: ["3 סטאפים פעילים", "יומן מסחר בסיסי", "סטטיסטיקות שבועיות", "התראות מייל"],
+    cta: "בחר תוכנית",
+    popular: false,
+  },
+  {
+    id: "pro",
+    name: "Pro",
+    price: "80",
+    icon: Star,
+    color: "primary",
+    gradient: "from-primary/15 to-primary/5",
+    borderColor: "border-primary/30",
+    features: ["סטאפים ללא הגבלה", "מנטור AI מתקדם", "סטטיסטיקות בזמן אמת", "בקטסטינג מלא", "התראות Push + מייל", "ייצוא דוחות PDF"],
+    cta: "שדרג ל-Pro",
+    popular: true,
+  },
+  {
+    id: "vip",
+    name: "VIP",
+    price: "150",
+    icon: Crown,
+    color: "accent",
+    gradient: "from-accent/12 to-accent/4",
+    borderColor: "border-accent/25",
+    features: ["הכול ב-Pro +", "API גישה מלאה", "מנטור AI אישי 1:1", "חוקי ברזל מותאמים", "קבוצת VIP בטלגרם", "תמיכה עדיפות 24/7", "גישה מוקדמת לפיצ׳רים"],
+    cta: "הצטרף ל-VIP",
+    popular: false,
+  },
+];
+
+const UpgradeModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?: boolean }) => (
+  <div className={mobile ? "px-5 pb-8" : "w-full max-w-2xl rounded-3xl border border-border/30 bg-card shadow-[0_30px_80px_rgba(0,0,0,0.6)] animate-in fade-in slide-in-from-bottom-4 duration-400 overflow-hidden"}>
+    {/* Header */}
+    <div className="relative px-6 pt-6 pb-5">
+      {!mobile && <div className="absolute top-0 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <div className="absolute inset-[-3px] rounded-2xl bg-primary/8 ai-breathe" />
+            <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 border border-primary/15">
+              <Crown className="h-5 w-5 text-primary" />
+            </div>
+          </div>
+          <div>
+            <h2 className="text-[15px] font-bold text-foreground">שדרג את ZenTrade</h2>
+            <p className="text-[10px] text-muted-foreground mt-0.5">בחר את התוכנית המתאימה לך</p>
+          </div>
+        </div>
+        <button
+          onClick={onClose}
+          className="haptic-press flex h-9 w-9 items-center justify-center rounded-xl border border-border/20 bg-muted/10 text-muted-foreground/50 hover:text-foreground hover:bg-muted/25 transition-all"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
+
+    {/* Plans Grid */}
+    <div className={`px-6 pb-6 grid gap-3 ${mobile ? "grid-cols-1" : "grid-cols-3"}`}>
+      {plans.map((plan, i) => {
+        const Icon = plan.icon;
+        return (
+          <div
+            key={plan.id}
+            className={`relative rounded-2xl border ${plan.borderColor} bg-gradient-to-b ${plan.gradient} p-4 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg animate-in fade-in slide-in-from-bottom-2`}
+            style={{ animationDelay: `${i * 80}ms`, animationFillMode: "both" }}
+          >
+            {plan.popular && (
+              <div className="absolute -top-2.5 left-1/2 -translate-x-1/2">
+                <div className="rounded-full bg-primary px-3 py-0.5 text-[9px] font-bold text-primary-foreground shadow-[0_0_16px_hsl(var(--primary)/0.4)]">
+                  הכי פופולרי ⭐
+                </div>
+              </div>
+            )}
+
+            {/* Plan Header */}
+            <div className="flex items-center gap-2.5 mb-3 mt-1">
+              <div className={`flex h-9 w-9 items-center justify-center rounded-xl bg-${plan.color}/12 border border-${plan.color}/15`}>
+                <Icon className={`h-4 w-4 text-${plan.color}`} />
+              </div>
+              <div>
+                <h3 className="text-[14px] font-bold text-foreground">{plan.name}</h3>
+              </div>
+            </div>
+
+            {/* Price */}
+            <div className="mb-4">
+              <div className="flex items-baseline gap-1">
+                <span className="text-[28px] font-extrabold text-foreground leading-none">₪{plan.price}</span>
+                <span className="text-[10px] text-muted-foreground">/חודש</span>
+              </div>
+            </div>
+
+            {/* Features */}
+            <div className="space-y-2 mb-4">
+              {plan.features.map((f) => (
+                <div key={f} className="flex items-center gap-2">
+                  <CheckCircle2 className={`h-3.5 w-3.5 text-${plan.color} shrink-0`} />
+                  <span className="text-[11px] text-muted-foreground">{f}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA */}
+            <button
+              className={`haptic-press w-full rounded-xl py-2.5 text-[12px] font-bold transition-all duration-200 ${
+                plan.popular
+                  ? "bg-primary text-primary-foreground shadow-[0_0_20px_hsl(var(--primary)/0.3)] hover:shadow-[0_0_28px_hsl(var(--primary)/0.5)]"
+                  : plan.id === "vip"
+                  ? "bg-accent/15 border border-accent/20 text-accent hover:bg-accent/25"
+                  : "bg-muted/15 border border-border/20 text-foreground/70 hover:bg-muted/25"
+              }`}
+            >
+              {plan.cta}
+            </button>
+          </div>
+        );
+      })}
+    </div>
+
+    {/* Footer */}
+    <div className="border-t border-border/10 px-6 py-3 flex items-center justify-between bg-muted/[0.03]">
+      <div className="flex items-center gap-1.5">
+        <ShieldCheck className="h-3 w-3 text-muted-foreground/25" />
+        <p className="text-[8px] text-muted-foreground/30">ביטול בכל עת · ללא התחייבות</p>
+      </div>
+      <p className="text-[8px] text-muted-foreground/25">כל המחירים כוללים מע״מ</p>
+    </div>
+  </div>
+);
+
 export default DashboardLayout;
