@@ -277,10 +277,10 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                 className="flex items-center gap-1.5 rounded-sm border border-border/10 bg-muted/10 px-1.5 py-1 hover:bg-muted/20 transition-all"
               >
                 <div className="flex h-6 w-6 items-center justify-center rounded-sm bg-primary/10 text-2xs font-bold text-primary font-mono">
-                  Y
+                  {userName.charAt(0).toUpperCase()}
                 </div>
                 <div className="hidden md:block text-right">
-                  <p className="text-[10px] font-semibold text-foreground leading-none">יהונתן</p>
+                  <p className="text-[10px] font-semibold text-foreground leading-none">{userName}</p>
                   <p className="text-2xs text-muted-foreground/40 font-mono">PRO</p>
                 </div>
                 <ChevronDown className={`h-3 w-3 text-muted-foreground/30 hidden md:block transition-transform ${userMenu ? "rotate-180" : ""}`} />
