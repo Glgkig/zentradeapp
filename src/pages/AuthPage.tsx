@@ -113,9 +113,9 @@ const AuthPage = () => {
         {/* Mobile Menu */}
         {mobileMenu && (
           <div className="md:hidden border-t border-border/30 bg-background/95 backdrop-blur-xl px-4 py-4 space-y-2">
-            <a href="#features" onClick={() => setMobileMenu(false)} className="block py-2 text-sm text-muted-foreground">למה ZenTrade?</a>
-            <a href="#testimonials" onClick={() => setMobileMenu(false)} className="block py-2 text-sm text-muted-foreground">ביקורות</a>
-            <a href="#faq" onClick={() => setMobileMenu(false)} className="block py-2 text-sm text-muted-foreground">שאלות נפוצות</a>
+            <a href="#features" onClick={() => setMobileMenu(false)} className="block py-2 text-sm text-foreground/70">למה ZenTrade?</a>
+            <a href="#testimonials" onClick={() => setMobileMenu(false)} className="block py-2 text-sm text-foreground/70">ביקורות</a>
+            <a href="#faq" onClick={() => setMobileMenu(false)} className="block py-2 text-sm text-foreground/70">שאלות נפוצות</a>
             <div className="h-px bg-border my-2" />
             <button onClick={() => openModal("login")} className="w-full rounded-xl border border-border py-3 text-sm font-medium text-foreground">התחברות</button>
             <button onClick={() => openModal("register")} className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20">הרשמה חינם</button>
