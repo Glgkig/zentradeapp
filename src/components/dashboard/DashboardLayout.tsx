@@ -174,9 +174,9 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
       </aside>
 
       {/* ===== Main Area ===== */}
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden relative z-10">
         {/* Top Header */}
-        <header className="flex items-center justify-between glass-header px-4 py-2.5 md:px-6 md:py-3 shrink-0 relative z-50">
+        <header className={`flex items-center justify-between glass-header px-4 py-2.5 md:px-6 md:py-3 shrink-0 relative z-50 ${zenMode ? "zen-hidden" : "zen-visible"}`}>
           <div className="flex items-center gap-2.5">
             {/* Mobile brand (replaces hamburger) */}
             <div className="flex md:hidden items-center gap-2">
