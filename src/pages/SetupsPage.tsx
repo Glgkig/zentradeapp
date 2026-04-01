@@ -302,7 +302,7 @@ const SetupsPage = () => {
           <button
             key={s.id}
             onClick={() => setSelectedId(s.id)}
-            className="group text-right rounded-2xl border border-border/15 bg-secondary/10 hover:bg-secondary/20 hover:border-primary/20 transition-all duration-300 overflow-hidden"
+            className="interactive-btn group text-right rounded-2xl border border-border/15 bg-secondary/10 hover:bg-secondary/20 hover:border-primary/20 hover:shadow-[0_4px_20px_hsl(var(--primary)/0.04)] transition-all duration-300 overflow-hidden"
           >
             {/* Chart thumbnail */}
             <div className="relative h-28 md:h-32 bg-[hsl(0,0%,3%)] overflow-hidden">
