@@ -142,7 +142,7 @@ const JournalPage = () => {
       </div>
 
       {/* ── Summary Strip ── */}
-      <div className="grid grid-cols-3 gap-2.5 md:gap-3 mb-6">
+      <div className="grid grid-cols-3 gap-2 md:gap-2.5 mb-4 md:mb-6">
         <SummaryCard
           value={`${weekPnl >= 0 ? "+" : ""}${weekPnl.toLocaleString()}$`}
           label="P&L שבועי"

@@ -345,7 +345,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
           </button>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-right">
+          <table className="w-full text-right min-w-[480px]">
             <thead>
               <tr className="border-b border-border/15 text-[9px] md:text-[10px] text-muted-foreground">
                 <th className="pb-2 pr-2 font-medium">נכס</th>
