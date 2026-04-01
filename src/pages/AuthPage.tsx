@@ -597,7 +597,7 @@ const DashStat = ({ label, value, sub, positive }: { label: string; value: strin
   <div className="rounded-xl border border-border/50 bg-muted/10 p-3">
     <p className="text-[9px] md:text-[10px] text-foreground/60 mb-1">{label}</p>
     <p className="font-heading text-sm md:text-lg font-bold text-foreground">{value}</p>
-    <p className={`text-[9px] md:text-[10px] mt-0.5 ${positive ? "text-accent" : "text-muted-foreground"}`}>{sub}</p>
+    <p className={`text-[9px] md:text-[10px] mt-0.5 ${positive ? "text-accent" : "text-foreground/60"}`}>{sub}</p>
   </div>
 );
 
