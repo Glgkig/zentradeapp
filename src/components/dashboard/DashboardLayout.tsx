@@ -293,7 +293,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                     <UserMenuContent
                       onClose={() => setUserMenu(false)}
                       onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
-                      onLogout={() => { setUserMenu(false); navigate("/"); }}
+                      onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
                     />
                   </div>
                   <div className="md:hidden fixed inset-x-0 bottom-0 z-[70] rounded-t-xl border-t border-border/15 bg-card animate-in slide-in-from-bottom duration-200 overflow-hidden">
