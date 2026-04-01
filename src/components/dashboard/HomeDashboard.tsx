@@ -185,7 +185,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
               { icon: <Eye className="h-3 w-3 text-accent shrink-0" />, text: "GBP/USD — אזור ביקוש חזק ב-1.2680", time: "לפני 20 דק׳", border: "border-accent/20 bg-accent/[0.04]" },
               { icon: <Shield className="h-3 w-3 text-primary shrink-0" />, text: "הגנת סטופ הוזזה ל-Break Even", time: "לפני 25 דק׳", border: "border-primary/20 bg-primary/[0.04]" },
             ].map((sig, i) => (
-              <div key={i} className={`flex items-start gap-2.5 rounded-xl border ${sig.border} px-3 py-2.5 transition-all hover:scale-[1.01]`}>
+              <div key={i} className={`flex items-start gap-2.5 rounded-xl border ${sig.border} px-3 py-2.5 transition-all duration-200 hover:scale-[1.01] cursor-default`}>
                 <div className="mt-0.5">{sig.icon}</div>
                 <div className="flex-1 min-w-0">
                   <p className="text-[9px] md:text-[10px] font-medium text-foreground leading-relaxed">{sig.text}</p>
