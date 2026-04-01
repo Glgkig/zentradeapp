@@ -21,6 +21,7 @@ import logoMT5Full from "@/assets/logos/mt5-full.png";
 import logoTopstepXFull from "@/assets/logos/topstepx-full.png";
 import logoNinjaTraderFull from "@/assets/logos/ninjatrader-full.png";
 import logoIBKRFull from "@/assets/logos/ibkr-full.png";
+import logoForexFull from "@/assets/logos/forex-full.png";
 
 /* ===== Nav Config ===== */
 const navItems = [
@@ -51,7 +52,7 @@ const brokers = [
   { name: "Rithmic", initials: "RI", connected: false, account: null },
   { name: "NinjaTrader", initials: "NT", connected: false, account: null, logo: logoNinjaTraderFull },
   { name: "Interactive Brokers", initials: "IB", connected: false, account: null, logo: logoIBKRFull },
-  { name: "Forex.com", initials: "FX", connected: false, account: null },
+  { name: "Forex.com", initials: "FX", connected: false, account: null, logo: logoForexFull },
 ];
 
 /* ===== Layout ===== */
