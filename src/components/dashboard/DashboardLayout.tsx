@@ -300,15 +300,21 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
 
         {/* Main Content */}
         {/* Mobile Nav Dropdown */}
-        {mobileNavOpen && (
-          <div className="md:hidden border-b border-border/10 bg-sidebar px-3 py-3 space-y-px animate-in slide-in-from-top-2 duration-200 relative z-40">
-            {navItems.map((item) => {
+        <div
+          className={`md:hidden border-b border-border/10 bg-sidebar px-3 py-3 space-y-px relative z-40 overflow-hidden transition-all duration-300 ease-out ${
+            mobileNavOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0 border-b-0 py-0"
+          }`}
+        >
+            {navItems.map((item, i) => {
               const active = activeNav === item.id;
               return (
                 <button
                   key={item.id}
                   onClick={() => handleNav(item.id)}
-                  className={`haptic-press flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium transition-all min-h-[42px] ${
+                  style={{ transitionDelay: mobileNavOpen ? `${i * 40}ms` : "0ms" }}
+                  className={`haptic-press flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium transition-all duration-200 min-h-[42px] ${
+                    mobileNavOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
+                  } ${
                     active ? "bg-primary/8 text-primary" : "text-muted-foreground/60 hover:bg-muted/10 hover:text-foreground"
                   }`}
                 >
@@ -320,7 +326,10 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             <div className="h-px bg-border/10 my-1" />
             <button
               onClick={() => { setMobileNavOpen(false); setBrokerModal(true); }}
-              className="flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium text-muted-foreground/60 min-h-[42px] hover:bg-muted/10"
+              style={{ transitionDelay: mobileNavOpen ? `${navItems.length * 40}ms` : "0ms" }}
+              className={`flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium text-muted-foreground/60 min-h-[42px] hover:bg-muted/10 transition-all duration-200 ${
+                mobileNavOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
+              }`}
             >
               <Plug className="h-4 w-4 text-muted-foreground/30" />
               חבר ברוקר
@@ -328,7 +337,10 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             </button>
             <button
               onClick={() => { setMobileNavOpen(false); setUpgradeModal(true); }}
-              className="flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium text-primary min-h-[42px] bg-primary/5 hover:bg-primary/8"
+              style={{ transitionDelay: mobileNavOpen ? `${(navItems.length + 1) * 40}ms` : "0ms" }}
+              className={`flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium text-primary min-h-[42px] bg-primary/5 hover:bg-primary/8 transition-all duration-200 ${
+                mobileNavOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
+              }`}
             >
               <Crown className="h-4 w-4" />
               שדרג תוכנית
@@ -336,13 +348,15 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             </button>
             <button
               onClick={() => { setMobileNavOpen(false); navigate("/"); }}
-              className="flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium text-destructive/50 min-h-[42px] hover:bg-destructive/5"
+              style={{ transitionDelay: mobileNavOpen ? `${(navItems.length + 2) * 40}ms` : "0ms" }}
+              className={`flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium text-destructive/50 min-h-[42px] hover:bg-destructive/5 transition-all duration-200 ${
+                mobileNavOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
+              }`}
             >
               <LogOut className="h-4 w-4" />
               התנתק
             </button>
-          </div>
-        )}
+        </div>
 
         <main className="flex-1 overflow-y-auto bg-background p-2 md:p-4 md:pb-4 relative">
           {renderContent()}
