@@ -289,10 +289,10 @@ const StatsPage = () => {
             {days.map((day) => {
               const dayTotal = hours.reduce((sum, h) => sum + heatData[day][h].pnl, 0);
               return (
-                <div key={day} className="flex items-center gap-1.5 mb-1.5">
-                  <div className="w-14 shrink-0 flex flex-col">
-                    <span className="text-[9px] md:text-[10px] text-foreground font-medium text-left">{day}</span>
-                    <span className={`text-[7px] font-semibold text-left ${dayTotal >= 0 ? "text-accent" : "text-destructive"}`}>
+                <div key={day} className="flex items-center gap-1 mb-1">
+                  <div className="w-12 shrink-0 flex flex-col">
+                    <span className="text-[8px] md:text-[9px] text-foreground font-medium text-left">{day}</span>
+                    <span className={`text-[6px] font-semibold text-left ${dayTotal >= 0 ? "text-accent" : "text-destructive"}`}>
                       {dayTotal >= 0 ? "+" : ""}{dayTotal}$
                     </span>
                   </div>
@@ -301,14 +301,14 @@ const StatsPage = () => {
                     return (
                       <div
                         key={h}
-                        className={`flex-1 h-10 md:h-12 rounded-md border transition-all duration-200 hover:scale-105 hover:z-10 cursor-pointer flex flex-col items-center justify-center gap-0.5 ${heatColor(cell.pnl)}`}
+                        className={`flex-1 h-8 md:h-9 rounded-[3px] border transition-all duration-200 hover:scale-105 hover:z-10 cursor-pointer flex flex-col items-center justify-center ${heatColor(cell.pnl)}`}
                         title={`${day} ${h}:00 — ${cell.pnl >= 0 ? "+" : ""}$${cell.pnl} (${cell.trades} עסקאות)`}
                       >
-                        <span className={`text-[8px] md:text-[9px] font-bold ${cell.pnl > 0 ? "text-accent" : cell.pnl < 0 ? "text-destructive" : "text-muted-foreground/50"}`}>
+                        <span className={`text-[6px] md:text-[7px] font-bold ${cell.pnl > 0 ? "text-accent" : cell.pnl < 0 ? "text-destructive" : "text-muted-foreground/50"}`}>
                           {cell.pnl === 0 ? "—" : `${cell.pnl > 0 ? "+" : ""}${cell.pnl}$`}
                         </span>
                         {cell.trades > 0 && (
-                          <span className="text-[6px] md:text-[7px] text-muted-foreground">{cell.trades} עס׳</span>
+                          <span className="text-[5px] text-muted-foreground">{cell.trades} עס׳</span>
                         )}
                       </div>
                     );
