@@ -256,6 +256,15 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               <span className="text-[11px] font-medium text-accent">AI פעיל</span>
             </div>
 
+            {/* Upgrade Button */}
+            <button
+              onClick={() => setUpgradeModal(true)}
+              className="haptic-press hidden sm:flex items-center gap-1.5 rounded-full bg-gradient-to-l from-primary via-primary to-ring px-3.5 py-1.5 text-[11px] font-bold text-primary-foreground shadow-[0_0_20px_hsl(var(--primary)/0.3)] transition-all duration-300 hover:shadow-[0_0_28px_hsl(var(--primary)/0.5)] hover:scale-[1.03]"
+            >
+              <Crown className="h-3.5 w-3.5" />
+              <span>שדרוג</span>
+            </button>
+
             {/* Zen Mode Toggle */}
             <button
               onClick={() => setZenMode(!zenMode)}
