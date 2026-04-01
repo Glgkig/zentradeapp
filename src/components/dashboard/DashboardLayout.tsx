@@ -488,7 +488,13 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
             {connected.map((b) => (
               <div key={b.name} className="flex items-center justify-between rounded-sm bg-primary/[0.03] border border-primary/8 px-3 py-2">
                 <div className="flex items-center gap-2.5">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-sm bg-primary/8 text-2xs font-bold text-primary font-mono">{b.initials}</div>
+                  {(b as any).logo ? (
+                    <div className="flex h-7 w-7 items-center justify-center rounded-sm overflow-hidden">
+                      <img src={(b as any).logo} alt={b.name} className="h-7 w-7 object-cover rounded-sm" />
+                    </div>
+                  ) : (
+                    <div className="flex h-7 w-7 items-center justify-center rounded-sm bg-primary/8 text-2xs font-bold text-primary font-mono">{b.initials}</div>
+                  )}
                   <div>
                     <p className="text-[11px] font-semibold text-foreground">{b.name}</p>
                     <div className="flex items-center gap-1 mt-0.5">
