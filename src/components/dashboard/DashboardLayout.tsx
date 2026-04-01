@@ -172,7 +172,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
       {/* ===== Main Area ===== */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top Header */}
-        <header className="flex items-center justify-between glass-header px-4 py-2.5 md:px-6 md:py-3 shrink-0">
+        <header className="flex items-center justify-between glass-header px-4 py-2.5 md:px-6 md:py-3 shrink-0 relative z-50">
           <div className="flex items-center gap-2.5">
             {/* Mobile brand (replaces hamburger) */}
             <div className="flex md:hidden items-center gap-2">
