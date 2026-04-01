@@ -83,7 +83,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
         </div>
 
         {/* 3. Hard Protection Limits */}
-        <div className="md:col-span-4 rounded-2xl border border-border bg-secondary/30 p-5">
+        <div className="md:col-span-4 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-5">
           <div className="flex items-center gap-2 mb-4">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
               <Shield className="h-4 w-4 text-primary" />
