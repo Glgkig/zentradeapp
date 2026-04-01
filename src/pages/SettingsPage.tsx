@@ -49,7 +49,7 @@ const SettingsPage = () => {
                       : "text-muted-foreground/50 hover:bg-muted/15 hover:text-foreground border border-transparent"
                   }`}
                 >
-                  <div className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
+                  <div className={`flex h-6 w-6 md:h-7 md:w-7 items-center justify-center rounded-lg transition-colors ${
                     active ? "bg-primary/15" : "bg-muted/10"
                   }`}>
                     <tab.icon className={`h-3.5 w-3.5 ${active ? "text-primary" : "text-muted-foreground/40"}`} />
