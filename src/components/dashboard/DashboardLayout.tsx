@@ -191,6 +191,21 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Discipline Streak Badge */}
+            <div className="hidden sm:flex group relative">
+              <div className="streak-badge flex items-center gap-1.5 rounded-full border border-orange-500/25 bg-orange-500/8 px-3 py-1.5 cursor-default">
+                <Flame className="h-3 w-3 text-orange-400" />
+                <span className="text-[11px] font-bold text-orange-400">5 ימים</span>
+              </div>
+              {/* Glass tooltip */}
+              <div className="absolute top-full mt-2 right-0 w-56 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 z-[80]">
+                <div className="rounded-xl border border-border/30 bg-secondary/95 backdrop-blur-xl p-3 shadow-2xl">
+                  <p className="text-[10px] font-semibold text-foreground mb-1">🔥 רצף משמעת</p>
+                  <p className="text-[9px] text-muted-foreground leading-relaxed">5 ימים רצופים ללא הפרת חוקי הברזל. אתה פועל כמו צלף.</p>
+                </div>
+              </div>
+            </div>
+
             {/* AI Status */}
             <div className="hidden sm:flex items-center gap-2 rounded-full border border-accent/25 bg-accent/8 px-3 py-1.5">
               <span className="relative flex h-2 w-2">
@@ -199,6 +214,19 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               </span>
               <span className="text-[11px] font-medium text-accent">AI פעיל</span>
             </div>
+
+            {/* Zen Mode Toggle */}
+            <button
+              onClick={() => setZenMode(!zenMode)}
+              className={`haptic-press flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-xl border transition-all duration-300 ${
+                zenMode
+                  ? "border-primary/40 bg-primary/15 text-primary shadow-[0_0_16px_hsl(var(--primary)/0.2)]"
+                  : "border-border/20 bg-muted/15 text-muted-foreground hover:bg-primary/10 hover:text-primary hover:border-primary/20"
+              }`}
+              title={zenMode ? "צא ממצב פוקוס" : "מצב פוקוס"}
+            >
+              <Eye className="h-4 w-4" />
+            </button>
 
             {/* Theme */}
             <button
