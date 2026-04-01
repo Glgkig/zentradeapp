@@ -530,7 +530,7 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
 
           <div className="flex items-center gap-3 mb-4">
             <div className="h-px flex-1 bg-border" />
-            <span className="text-[10px] text-muted-foreground">או עם אימייל</span>
+            <span className="text-[10px] text-foreground/50">או עם אימייל</span>
             <div className="h-px flex-1 bg-border" />
           </div>
 
