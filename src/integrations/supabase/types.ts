@@ -14,7 +14,478 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ai_alerts: {
+        Row: {
+          acknowledged: boolean | null
+          acknowledged_at: string | null
+          action_taken: string | null
+          alert_type: string | null
+          id: string
+          message: string
+          session_id: string | null
+          stress_score_at_alert: number | null
+          triggered_at: string | null
+          user_id: string
+        }
+        Insert: {
+          acknowledged?: boolean | null
+          acknowledged_at?: string | null
+          action_taken?: string | null
+          alert_type?: string | null
+          id?: string
+          message: string
+          session_id?: string | null
+          stress_score_at_alert?: number | null
+          triggered_at?: string | null
+          user_id: string
+        }
+        Update: {
+          acknowledged?: boolean | null
+          acknowledged_at?: string | null
+          action_taken?: string | null
+          alert_type?: string | null
+          id?: string
+          message?: string
+          session_id?: string | null
+          stress_score_at_alert?: number | null
+          triggered_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_alerts_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "behavioral_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_alerts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_insights: {
+        Row: {
+          body: string
+          created_at: string | null
+          id: string
+          insight_type: string | null
+          is_read: boolean | null
+          metrics: Json | null
+          related_session_id: string | null
+          related_trade_id: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string | null
+          id?: string
+          insight_type?: string | null
+          is_read?: boolean | null
+          metrics?: Json | null
+          related_session_id?: string | null
+          related_trade_id?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string | null
+          id?: string
+          insight_type?: string | null
+          is_read?: boolean | null
+          metrics?: Json | null
+          related_session_id?: string | null
+          related_trade_id?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_insights_related_session_id_fkey"
+            columns: ["related_session_id"]
+            isOneToOne: false
+            referencedRelation: "behavioral_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_insights_related_trade_id_fkey"
+            columns: ["related_trade_id"]
+            isOneToOne: false
+            referencedRelation: "trades"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_insights_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      behavioral_events: {
+        Row: {
+          event_time: string | null
+          event_type: string | null
+          id: number
+          metadata: Json | null
+          session_id: string | null
+          user_id: string
+        }
+        Insert: {
+          event_time?: string | null
+          event_type?: string | null
+          id?: never
+          metadata?: Json | null
+          session_id?: string | null
+          user_id: string
+        }
+        Update: {
+          event_time?: string | null
+          event_type?: string | null
+          id?: never
+          metadata?: Json | null
+          session_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "behavioral_events_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "behavioral_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "behavioral_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      behavioral_sessions: {
+        Row: {
+          avg_click_interval_ms: number | null
+          created_at: string | null
+          fomo_detected: boolean | null
+          id: string
+          mouse_event_count: number | null
+          peak_stress_time: string | null
+          rapid_click_count: number | null
+          screen_switches: number | null
+          session_end: string | null
+          session_start: string
+          stress_score: number | null
+          trades_during_session: number | null
+          user_id: string
+        }
+        Insert: {
+          avg_click_interval_ms?: number | null
+          created_at?: string | null
+          fomo_detected?: boolean | null
+          id?: string
+          mouse_event_count?: number | null
+          peak_stress_time?: string | null
+          rapid_click_count?: number | null
+          screen_switches?: number | null
+          session_end?: string | null
+          session_start?: string
+          stress_score?: number | null
+          trades_during_session?: number | null
+          user_id: string
+        }
+        Update: {
+          avg_click_interval_ms?: number | null
+          created_at?: string | null
+          fomo_detected?: boolean | null
+          id?: string
+          mouse_event_count?: number | null
+          peak_stress_time?: string | null
+          rapid_click_count?: number | null
+          screen_switches?: number | null
+          session_end?: string | null
+          session_start?: string
+          stress_score?: number | null
+          trades_during_session?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "behavioral_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      economic_events: {
+        Row: {
+          actual_value: string | null
+          country: string
+          currency: string | null
+          event_name: string
+          event_time: string
+          fetched_at: string | null
+          forecast_value: string | null
+          id: string
+          impact_level: string | null
+          previous_value: string | null
+          raw_payload: Json | null
+          source_api: string | null
+        }
+        Insert: {
+          actual_value?: string | null
+          country: string
+          currency?: string | null
+          event_name: string
+          event_time: string
+          fetched_at?: string | null
+          forecast_value?: string | null
+          id?: string
+          impact_level?: string | null
+          previous_value?: string | null
+          raw_payload?: Json | null
+          source_api?: string | null
+        }
+        Update: {
+          actual_value?: string | null
+          country?: string
+          currency?: string | null
+          event_name?: string
+          event_time?: string
+          fetched_at?: string | null
+          forecast_value?: string | null
+          id?: string
+          impact_level?: string | null
+          previous_value?: string | null
+          raw_payload?: Json | null
+          source_api?: string | null
+        }
+        Relationships: []
+      }
+      mental_journal: {
+        Row: {
+          emotional_state: string | null
+          id: string
+          mood_after: number | null
+          mood_before: number | null
+          note: string | null
+          recorded_at: string | null
+          trade_id: string | null
+          user_id: string
+        }
+        Insert: {
+          emotional_state?: string | null
+          id?: string
+          mood_after?: number | null
+          mood_before?: number | null
+          note?: string | null
+          recorded_at?: string | null
+          trade_id?: string | null
+          user_id: string
+        }
+        Update: {
+          emotional_state?: string | null
+          id?: string
+          mood_after?: number | null
+          mood_before?: number | null
+          note?: string | null
+          recorded_at?: string | null
+          trade_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mental_journal_trade_id_fkey"
+            columns: ["trade_id"]
+            isOneToOne: false
+            referencedRelation: "trades"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mental_journal_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          account_size: number | null
+          avatar_url: string | null
+          created_at: string | null
+          experience_years: number | null
+          full_name: string | null
+          goals: string | null
+          id: string
+          onboarding_completed: boolean | null
+          primary_instruments: string[] | null
+          timezone: string | null
+          trading_style: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          account_size?: number | null
+          avatar_url?: string | null
+          created_at?: string | null
+          experience_years?: number | null
+          full_name?: string | null
+          goals?: string | null
+          id: string
+          onboarding_completed?: boolean | null
+          primary_instruments?: string[] | null
+          timezone?: string | null
+          trading_style?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          account_size?: number | null
+          avatar_url?: string | null
+          created_at?: string | null
+          experience_years?: number | null
+          full_name?: string | null
+          goals?: string | null
+          id?: string
+          onboarding_completed?: boolean | null
+          primary_instruments?: string[] | null
+          timezone?: string | null
+          trading_style?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      trades: {
+        Row: {
+          asset_class: string | null
+          created_at: string | null
+          direction: string | null
+          entry_price: number
+          entry_time: string
+          exit_price: number | null
+          exit_time: string | null
+          id: string
+          lot_size: number
+          notes: string | null
+          pnl: number | null
+          pnl_pct: number | null
+          rating: number | null
+          screenshots: string[] | null
+          setup_type: string | null
+          status: string | null
+          stop_loss: number | null
+          symbol: string
+          tags: string[] | null
+          take_profit: number | null
+          timeframe: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          asset_class?: string | null
+          created_at?: string | null
+          direction?: string | null
+          entry_price: number
+          entry_time: string
+          exit_price?: number | null
+          exit_time?: string | null
+          id?: string
+          lot_size: number
+          notes?: string | null
+          pnl?: number | null
+          pnl_pct?: number | null
+          rating?: number | null
+          screenshots?: string[] | null
+          setup_type?: string | null
+          status?: string | null
+          stop_loss?: number | null
+          symbol: string
+          tags?: string[] | null
+          take_profit?: number | null
+          timeframe?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          asset_class?: string | null
+          created_at?: string | null
+          direction?: string | null
+          entry_price?: number
+          entry_time?: string
+          exit_price?: number | null
+          exit_time?: string | null
+          id?: string
+          lot_size?: number
+          notes?: string | null
+          pnl?: number | null
+          pnl_pct?: number | null
+          rating?: number | null
+          screenshots?: string[] | null
+          setup_type?: string | null
+          status?: string | null
+          stop_loss?: number | null
+          symbol?: string
+          tags?: string[] | null
+          take_profit?: number | null
+          timeframe?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trades_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      watchlist: {
+        Row: {
+          added_at: string | null
+          asset_class: string | null
+          display_order: number | null
+          id: string
+          symbol: string
+          user_id: string
+        }
+        Insert: {
+          added_at?: string | null
+          asset_class?: string | null
+          display_order?: number | null
+          id?: string
+          symbol: string
+          user_id: string
+        }
+        Update: {
+          added_at?: string | null
+          asset_class?: string | null
+          display_order?: number | null
+          id?: string
+          symbol?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "watchlist_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
