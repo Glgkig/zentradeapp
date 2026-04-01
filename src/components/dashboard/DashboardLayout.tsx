@@ -626,138 +626,259 @@ const plans = [
   {
     id: "basic",
     name: "בסיסי",
+    nameEn: "STARTER",
     price: "40",
+    monthly: "40",
     icon: Zap,
-    color: "muted-foreground",
-    gradient: "from-muted/20 to-muted/5",
-    borderColor: "border-border/20",
-    features: ["3 סטאפים פעילים", "יומן מסחר בסיסי", "סטטיסטיקות שבועיות", "התראות מייל"],
-    cta: "בחר תוכנית",
+    features: [
+      { text: "3 סטאפים פעילים", included: true },
+      { text: "יומן מסחר בסיסי", included: true },
+      { text: "סטטיסטיקות שבועיות", included: true },
+      { text: "התראות מייל", included: true },
+      { text: "מנטור AI", included: false },
+      { text: "בקטסטינג", included: false },
+    ],
+    cta: "התחל עכשיו",
     popular: false,
+    tier: 1,
   },
   {
     id: "pro",
     name: "Pro",
+    nameEn: "PRO",
     price: "80",
+    monthly: "80",
     icon: Star,
-    color: "primary",
-    gradient: "from-primary/15 to-primary/5",
-    borderColor: "border-primary/30",
-    features: ["סטאפים ללא הגבלה", "מנטור AI מתקדם", "סטטיסטיקות בזמן אמת", "בקטסטינג מלא", "התראות Push + מייל", "ייצוא דוחות PDF"],
+    features: [
+      { text: "סטאפים ללא הגבלה", included: true },
+      { text: "מנטור AI מתקדם", included: true },
+      { text: "סטטיסטיקות Real-Time", included: true },
+      { text: "בקטסטינג מלא", included: true },
+      { text: "התראות Push + מייל", included: true },
+      { text: "ייצוא דוחות PDF", included: true },
+    ],
     cta: "שדרג ל-Pro",
     popular: true,
+    tier: 2,
   },
   {
     id: "vip",
     name: "VIP",
+    nameEn: "VIP",
     price: "150",
+    monthly: "150",
     icon: Crown,
-    color: "accent",
-    gradient: "from-accent/12 to-accent/4",
-    borderColor: "border-accent/25",
-    features: ["הכול ב-Pro +", "API גישה מלאה", "מנטור AI אישי 1:1", "חוקי ברזל מותאמים", "קבוצת VIP בטלגרם", "תמיכה עדיפות 24/7", "גישה מוקדמת לפיצ׳רים"],
+    features: [
+      { text: "הכול ב-Pro +", included: true },
+      { text: "API גישה מלאה", included: true },
+      { text: "מנטור AI אישי 1:1", included: true },
+      { text: "חוקי ברזל מותאמים", included: true },
+      { text: "קבוצת VIP בטלגרם", included: true },
+      { text: "תמיכה עדיפות 24/7", included: true },
+      { text: "גישה מוקדמת לפיצ׳רים", included: true },
+    ],
     cta: "הצטרף ל-VIP",
     popular: false,
+    tier: 3,
   },
 ];
 
 const UpgradeModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?: boolean }) => (
-  <div className={mobile ? "px-5 pb-8" : "w-full max-w-2xl rounded-3xl border border-border/30 bg-card shadow-[0_30px_80px_rgba(0,0,0,0.6)] animate-in fade-in slide-in-from-bottom-4 duration-400 overflow-hidden"}>
-    {/* Header */}
-    <div className="relative px-6 pt-6 pb-5">
-      {!mobile && <div className="absolute top-0 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <div className="absolute inset-[-3px] rounded-2xl bg-primary/8 ai-breathe" />
-            <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 border border-primary/15">
-              <Crown className="h-5 w-5 text-primary" />
-            </div>
-          </div>
-          <div>
-            <h2 className="text-[15px] font-bold text-foreground">שדרג את ZenTrade</h2>
-            <p className="text-[10px] text-muted-foreground mt-0.5">בחר את התוכנית המתאימה לך</p>
-          </div>
-        </div>
+  <div className={mobile ? "px-4 pb-8" : "w-full max-w-[780px] rounded-3xl border border-border/20 bg-card overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.7)] animate-in fade-in zoom-in-95 duration-500"}>
+    
+    {/* ── Hero Header ── */}
+    <div className="relative overflow-hidden">
+      {/* Ambient glow */}
+      <div className="absolute inset-0 bg-gradient-to-b from-primary/8 via-transparent to-transparent" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[120px] bg-primary/10 rounded-full blur-[80px]" />
+      
+      <div className="relative px-8 pt-8 pb-6">
+        {/* Close */}
         <button
           onClick={onClose}
-          className="haptic-press flex h-9 w-9 items-center justify-center rounded-xl border border-border/20 bg-muted/10 text-muted-foreground/50 hover:text-foreground hover:bg-muted/25 transition-all"
+          className="haptic-press absolute top-5 left-5 flex h-8 w-8 items-center justify-center rounded-full border border-border/15 bg-muted/10 text-muted-foreground/40 hover:text-foreground hover:bg-muted/25 transition-all z-10"
         >
-          <X className="h-4 w-4" />
+          <X className="h-3.5 w-3.5" />
         </button>
+
+        {/* Title */}
+        <div className="text-center">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/8 px-4 py-1.5 mb-4">
+            <Sparkles className="h-3.5 w-3.5 text-primary" />
+            <span className="text-[11px] font-semibold text-primary">שדרג את החוויה שלך</span>
+          </div>
+          <h2 className="text-[22px] font-extrabold text-foreground mb-1.5">
+            בחר את התוכנית ש<span className="text-primary">תשנה לך</span> את המשחק
+          </h2>
+          <p className="text-[12px] text-muted-foreground max-w-sm mx-auto leading-relaxed">
+            הצטרף לאלפי טריידרים שכבר משתמשים ב-ZenTrade כדי לסחור חכם יותר
+          </p>
+        </div>
       </div>
     </div>
 
-    {/* Plans Grid */}
-    <div className={`px-6 pb-6 grid gap-3 ${mobile ? "grid-cols-1" : "grid-cols-3"}`}>
+    {/* ── Plans Grid ── */}
+    <div className={`px-6 pb-5 grid gap-4 ${mobile ? "grid-cols-1" : "grid-cols-3"}`}>
       {plans.map((plan, i) => {
         const Icon = plan.icon;
+        const isPro = plan.id === "pro";
+        const isVip = plan.id === "vip";
+        
         return (
           <div
             key={plan.id}
-            className={`relative rounded-2xl border ${plan.borderColor} bg-gradient-to-b ${plan.gradient} p-4 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg animate-in fade-in slide-in-from-bottom-2`}
-            style={{ animationDelay: `${i * 80}ms`, animationFillMode: "both" }}
+            className={`
+              relative rounded-2xl p-[1px] transition-all duration-500 animate-in fade-in slide-in-from-bottom-3
+              ${isPro
+                ? "bg-gradient-to-b from-primary/60 via-primary/20 to-primary/5 shadow-[0_0_40px_hsl(var(--primary)/0.15)] hover:shadow-[0_0_60px_hsl(var(--primary)/0.25)] scale-[1.03]"
+                : isVip
+                ? "bg-gradient-to-b from-accent/40 via-accent/15 to-accent/5 hover:shadow-[0_0_40px_hsl(var(--accent)/0.15)]"
+                : "bg-gradient-to-b from-border/30 to-border/10 hover:from-border/50 hover:to-border/20"
+              }
+            `}
+            style={{ animationDelay: `${i * 120}ms`, animationFillMode: "both" }}
           >
-            {plan.popular && (
-              <div className="absolute -top-2.5 left-1/2 -translate-x-1/2">
-                <div className="rounded-full bg-primary px-3 py-0.5 text-[9px] font-bold text-primary-foreground shadow-[0_0_16px_hsl(var(--primary)/0.4)]">
-                  הכי פופולרי ⭐
+            <div className={`
+              relative h-full rounded-[15px] p-5 flex flex-col
+              ${isPro ? "bg-card/95" : "bg-card"}
+            `}>
+              {/* Popular badge */}
+              {isPro && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+                  <div className="flex items-center gap-1.5 rounded-full bg-primary px-4 py-1 shadow-[0_4px_20px_hsl(var(--primary)/0.4)]">
+                    <Star className="h-3 w-3 text-primary-foreground fill-primary-foreground" />
+                    <span className="text-[10px] font-bold text-primary-foreground tracking-wide">הכי פופולרי</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Tier indicator line */}
+              <div className={`absolute top-0 right-5 left-5 h-[2px] rounded-full ${
+                isPro ? "bg-primary/50" : isVip ? "bg-accent/40" : "bg-border/30"
+              }`} />
+
+              {/* Plan icon + name */}
+              <div className="flex items-center gap-3 mt-2 mb-4">
+                <div className={`
+                  flex h-11 w-11 items-center justify-center rounded-2xl border transition-all
+                  ${isPro 
+                    ? "bg-primary/12 border-primary/20 shadow-[0_0_16px_hsl(var(--primary)/0.1)]" 
+                    : isVip 
+                    ? "bg-accent/10 border-accent/15" 
+                    : "bg-muted/15 border-border/20"
+                  }
+                `}>
+                  <Icon className={`h-5 w-5 ${isPro ? "text-primary" : isVip ? "text-accent" : "text-muted-foreground"}`} />
+                </div>
+                <div>
+                  <h3 className="text-[15px] font-extrabold text-foreground leading-none">{plan.name}</h3>
+                  <span className={`text-[8px] font-bold tracking-[0.15em] uppercase ${
+                    isPro ? "text-primary/50" : isVip ? "text-accent/50" : "text-muted-foreground/30"
+                  }`}>{plan.nameEn}</span>
                 </div>
               </div>
-            )}
 
-            {/* Plan Header */}
-            <div className="flex items-center gap-2.5 mb-3 mt-1">
-              <div className={`flex h-9 w-9 items-center justify-center rounded-xl bg-${plan.color}/12 border border-${plan.color}/15`}>
-                <Icon className={`h-4 w-4 text-${plan.color}`} />
-              </div>
-              <div>
-                <h3 className="text-[14px] font-bold text-foreground">{plan.name}</h3>
-              </div>
-            </div>
-
-            {/* Price */}
-            <div className="mb-4">
-              <div className="flex items-baseline gap-1">
-                <span className="text-[28px] font-extrabold text-foreground leading-none">₪{plan.price}</span>
-                <span className="text-[10px] text-muted-foreground">/חודש</span>
-              </div>
-            </div>
-
-            {/* Features */}
-            <div className="space-y-2 mb-4">
-              {plan.features.map((f) => (
-                <div key={f} className="flex items-center gap-2">
-                  <CheckCircle2 className={`h-3.5 w-3.5 text-${plan.color} shrink-0`} />
-                  <span className="text-[11px] text-muted-foreground">{f}</span>
+              {/* Price block */}
+              <div className="mb-5 pb-4 border-b border-border/10">
+                <div className="flex items-baseline gap-1.5">
+                  <span className={`text-[36px] font-black leading-none tracking-tight ${
+                    isPro ? "text-foreground" : isVip ? "text-foreground" : "text-foreground/80"
+                  }`}>₪{plan.price}</span>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-muted-foreground/50 leading-tight">/חודש</span>
+                  </div>
                 </div>
-              ))}
-            </div>
+                {isPro && (
+                  <p className="text-[9px] text-primary/60 mt-1.5 font-medium">חיסכון של 20% בתוכנית שנתית</p>
+                )}
+                {isVip && (
+                  <p className="text-[9px] text-accent/60 mt-1.5 font-medium">גישה בלעדית · מקומות מוגבלים</p>
+                )}
+              </div>
 
-            {/* CTA */}
-            <button
-              className={`haptic-press w-full rounded-xl py-2.5 text-[12px] font-bold transition-all duration-200 ${
-                plan.popular
-                  ? "bg-primary text-primary-foreground shadow-[0_0_20px_hsl(var(--primary)/0.3)] hover:shadow-[0_0_28px_hsl(var(--primary)/0.5)]"
-                  : plan.id === "vip"
-                  ? "bg-accent/15 border border-accent/20 text-accent hover:bg-accent/25"
-                  : "bg-muted/15 border border-border/20 text-foreground/70 hover:bg-muted/25"
-              }`}
-            >
-              {plan.cta}
-            </button>
+              {/* Features */}
+              <div className="space-y-2.5 flex-1 mb-5">
+                {plan.features.map((f) => (
+                  <div key={f.text} className="flex items-center gap-2.5">
+                    {f.included ? (
+                      <div className={`flex h-4.5 w-4.5 items-center justify-center rounded-full ${
+                        isPro ? "bg-primary/12" : isVip ? "bg-accent/10" : "bg-muted/15"
+                      }`}>
+                        <CheckCircle2 className={`h-3.5 w-3.5 ${
+                          isPro ? "text-primary" : isVip ? "text-accent" : "text-muted-foreground/60"
+                        }`} />
+                      </div>
+                    ) : (
+                      <div className="flex h-4.5 w-4.5 items-center justify-center rounded-full bg-muted/8">
+                        <X className="h-3 w-3 text-muted-foreground/20" />
+                      </div>
+                    )}
+                    <span className={`text-[11px] ${
+                      f.included ? "text-foreground/70" : "text-muted-foreground/25 line-through"
+                    }`}>{f.text}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* CTA Button */}
+              <button
+                className={`
+                  haptic-press w-full rounded-xl py-3 text-[12px] font-bold transition-all duration-300 relative overflow-hidden group
+                  ${isPro
+                    ? "bg-primary text-primary-foreground shadow-[0_4px_24px_hsl(var(--primary)/0.3)] hover:shadow-[0_8px_32px_hsl(var(--primary)/0.5)] hover:scale-[1.02]"
+                    : isVip
+                    ? "bg-gradient-to-l from-accent/90 to-accent text-accent-foreground shadow-[0_4px_20px_hsl(var(--accent)/0.2)] hover:shadow-[0_8px_28px_hsl(var(--accent)/0.4)] hover:scale-[1.02]"
+                    : "bg-muted/20 border border-border/25 text-foreground/70 hover:bg-muted/30 hover:border-border/40"
+                  }
+                `}
+              >
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  <Icon className="h-3.5 w-3.5" />
+                  {plan.cta}
+                </span>
+                {(isPro || isVip) && (
+                  <div className="absolute inset-0 bg-gradient-to-l from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                )}
+              </button>
+            </div>
           </div>
         );
       })}
     </div>
 
-    {/* Footer */}
-    <div className="border-t border-border/10 px-6 py-3 flex items-center justify-between bg-muted/[0.03]">
-      <div className="flex items-center gap-1.5">
-        <ShieldCheck className="h-3 w-3 text-muted-foreground/25" />
-        <p className="text-[8px] text-muted-foreground/30">ביטול בכל עת · ללא התחייבות</p>
+    {/* ── Social Proof + Footer ── */}
+    <div className="border-t border-border/10 px-8 py-4 bg-muted/[0.03]">
+      <div className="flex items-center justify-between">
+        {/* Avatars + social proof */}
+        <div className="flex items-center gap-3">
+          <div className="flex -space-x-2 rtl:space-x-reverse">
+            {["א", "מ", "ד", "ש"].map((letter, i) => (
+              <div
+                key={i}
+                className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-card bg-primary/15 text-[9px] font-bold text-primary"
+              >
+                {letter}
+              </div>
+            ))}
+          </div>
+          <div>
+            <p className="text-[10px] font-semibold text-foreground/60">+2,847 טריידרים</p>
+            <p className="text-[8px] text-muted-foreground/40">כבר משתמשים ב-ZenTrade Pro</p>
+          </div>
+        </div>
+        
+        {/* Trust badges */}
+        <div className="hidden sm:flex items-center gap-4">
+          <div className="flex items-center gap-1.5">
+            <ShieldCheck className="h-3.5 w-3.5 text-muted-foreground/25" />
+            <span className="text-[9px] text-muted-foreground/30">ביטול בכל עת</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Zap className="h-3.5 w-3.5 text-muted-foreground/25" />
+            <span className="text-[9px] text-muted-foreground/30">הפעלה מיידית</span>
+          </div>
+        </div>
       </div>
-      <p className="text-[8px] text-muted-foreground/25">כל המחירים כוללים מע״מ</p>
     </div>
   </div>
 );
