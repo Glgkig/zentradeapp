@@ -276,7 +276,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
         </div>
 
         {/* Goals */}
-        <div className="md:col-span-3 rounded-2xl border border-border bg-secondary/30 p-4 md:p-5">
+        <div className="md:col-span-3 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4 md:p-5">
           <div className="flex items-center gap-2 mb-4">
             <Target className="h-4 w-4 text-primary" />
             <span className="text-xs font-semibold text-foreground">יעדים להיום</span>
