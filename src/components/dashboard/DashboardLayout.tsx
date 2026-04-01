@@ -117,57 +117,97 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
       <div className="ambient-bg" />
 
       {/* ===== Desktop Sidebar (hidden on mobile) ===== */}
-      <aside className={`hidden md:flex h-full w-[260px] flex-col border-l border-border/15 bg-sidebar/80 backdrop-blur-xl shrink-0 relative z-10 ${zenMode ? "zen-hidden" : "zen-visible"}`}>
+      <aside className={`hidden md:flex h-full w-[260px] flex-col border-l border-border/10 bg-sidebar/90 backdrop-blur-2xl shrink-0 relative z-10 ${zenMode ? "zen-hidden" : "zen-visible"}`}>
         {/* Brand */}
-        <div className="flex items-center border-b border-border px-5 py-5">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/15 border border-primary/25">
-              <ShieldCheck className="h-5 w-5 text-primary" />
+        <div className="flex items-center px-5 py-5 border-b border-border/8">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="absolute inset-[-2px] rounded-xl bg-primary/8 ai-breathe" />
+              <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-primary/12 border border-primary/20">
+                <ShieldCheck className="h-5 w-5 text-primary" />
+              </div>
             </div>
-            <span className="font-heading text-lg font-bold text-foreground tracking-tight">ZenTrade</span>
+            <div>
+              <span className="font-heading text-[15px] font-bold text-foreground tracking-tight block">ZenTrade</span>
+              <span className="text-[8px] text-muted-foreground/30 font-medium">Trading Psychology AI</span>
+            </div>
           </div>
         </div>
 
         {/* Nav Links */}
-        <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
-          {navItems.map((item) => {
+        <nav className="flex-1 space-y-0.5 px-3 py-4 overflow-y-auto scrollbar-none">
+          <p className="text-[8px] font-semibold text-muted-foreground/25 uppercase tracking-[0.1em] px-3.5 mb-2">ראשי</p>
+          {navItems.slice(0, 4).map((item) => {
             const active = activeNav === item.id;
             return (
               <button
                 key={item.id}
                 onClick={() => handleNav(item.id)}
-                className={`interactive-btn group flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-200 ${
+                className={`haptic-press group flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13px] font-medium transition-all duration-200 ${
                   active
-                    ? "bg-primary/12 text-primary shadow-[inset_0_0_20px_hsl(217_72%_53%/0.06)]"
-                    : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                    ? "bg-primary/10 text-primary border border-primary/12"
+                    : "text-muted-foreground/60 hover:bg-muted/15 hover:text-foreground border border-transparent"
                 }`}
               >
-                <item.icon className={`h-[18px] w-[18px] transition-colors ${active ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`} />
-                {item.label}
-                {active && <span className="mr-auto h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_6px_hsl(217_72%_53%/0.6)]" />}
+                <div className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
+                  active ? "bg-primary/15" : "bg-muted/10 group-hover:bg-muted/20"
+                }`}>
+                  <item.icon className={`h-3.5 w-3.5 transition-colors ${active ? "text-primary" : "text-muted-foreground/40 group-hover:text-foreground/70"}`} />
+                </div>
+                <span className="flex-1 text-right">{item.label}</span>
+                {active && <span className="h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_8px_hsl(217_72%_53%/0.6)]" />}
               </button>
             );
           })}
+
+          <p className="text-[8px] font-semibold text-muted-foreground/25 uppercase tracking-[0.1em] px-3.5 mt-4 mb-2">כלים</p>
+          {navItems.slice(4).map((item) => {
+            const active = activeNav === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleNav(item.id)}
+                className={`haptic-press group flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13px] font-medium transition-all duration-200 ${
+                  active
+                    ? "bg-primary/10 text-primary border border-primary/12"
+                    : "text-muted-foreground/60 hover:bg-muted/15 hover:text-foreground border border-transparent"
+                }`}
+              >
+                <div className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
+                  active ? "bg-primary/15" : "bg-muted/10 group-hover:bg-muted/20"
+                }`}>
+                  <item.icon className={`h-3.5 w-3.5 transition-colors ${active ? "text-primary" : "text-muted-foreground/40 group-hover:text-foreground/70"}`} />
+                </div>
+                <span className="flex-1 text-right">{item.label}</span>
+                {active && <span className="h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_8px_hsl(217_72%_53%/0.6)]" />}
+              </button>
+            );
+          })}
+
           {/* Broker Connect */}
-          <div className="pt-2 mt-2 border-t border-border/40">
+          <div className="pt-3 mt-3 border-t border-border/8">
             <button
               onClick={() => setBrokerModal(true)}
-              className="group flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-muted-foreground transition-all duration-200 hover:bg-primary/8 hover:text-primary"
+              className="haptic-press group flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13px] font-medium text-muted-foreground/60 transition-all duration-200 hover:bg-primary/8 hover:text-primary border border-transparent"
             >
-              <Plug className="h-[18px] w-[18px] text-muted-foreground group-hover:text-primary transition-colors" />
-              חבר ברוקר
-              <span className="mr-auto rounded bg-accent/15 px-1.5 py-0.5 text-[8px] font-bold text-accent">2</span>
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-muted/10 group-hover:bg-primary/10 transition-colors">
+                <Plug className="h-3.5 w-3.5 text-muted-foreground/40 group-hover:text-primary transition-colors" />
+              </div>
+              <span className="flex-1 text-right">חבר ברוקר</span>
+              <span className="rounded-md bg-accent/10 border border-accent/12 px-1.5 py-0.5 text-[8px] font-bold text-accent">2</span>
             </button>
           </div>
         </nav>
 
         {/* Footer */}
-        <div className="border-t border-border px-3 py-4">
+        <div className="border-t border-border/8 px-3 py-3">
           <button
             onClick={() => navigate("/")}
-            className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:bg-destructive/10 hover:text-destructive"
+            className="haptic-press flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13px] font-medium text-muted-foreground/40 transition-all hover:bg-destructive/8 hover:text-destructive"
           >
-            <LogOut className="h-[18px] w-[18px]" />
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-muted/10 hover:bg-destructive/10 transition-colors">
+              <LogOut className="h-3.5 w-3.5" />
+            </div>
             התנתק
           </button>
         </div>
