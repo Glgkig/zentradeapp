@@ -153,7 +153,7 @@ const AuthPage = () => {
               </RevealSection>
 
               <RevealSection delay={200}>
-                <p className="mt-5 md:mt-6 text-sm md:text-base lg:text-lg leading-relaxed text-muted-foreground max-w-xl mx-auto lg:mx-0 lg:mr-0">
+                <p className="mt-5 md:mt-6 text-sm md:text-base lg:text-lg leading-relaxed text-foreground/80 max-w-xl mx-auto lg:mx-0 lg:mr-0">
                   תפסיק לנחש. תן ל-AI שלנו לנתח את העסקאות שלך, לזהות את הטעויות, ולאמן אותך לרווחיות עקבית.
                 </p>
               </RevealSection>
