@@ -324,7 +324,7 @@ const AuthPage = () => {
               <h3 className="font-heading text-base md:text-lg font-bold text-foreground mb-4 text-center">מה לא תמצא כאן 🚫</h3>
               <div className="grid sm:grid-cols-2 gap-3">
                 {notIncluded.map((item) => (
-                  <div key={item} className="flex items-center gap-3 text-xs md:text-sm text-muted-foreground">
+                  <div key={item} className="flex items-center gap-3 text-xs md:text-sm text-foreground/70">
                     <XCircle className="h-4 w-4 text-destructive shrink-0" />
                     <span>{item}</span>
                   </div>
