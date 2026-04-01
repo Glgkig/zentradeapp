@@ -54,6 +54,16 @@ const AuthPage = () => {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [modalMode, setModalMode] = useState<"login" | "register">("register");
 
+  // Force dark mode on landing page
+  useEffect(() => {
+    document.documentElement.classList.remove("light");
+    return () => {
+      // Restore theme preference when leaving
+      const saved = localStorage.getItem("zentrade-theme");
+      if (saved === "light") document.documentElement.classList.add("light");
+    };
+  }, []);
+
   const openModal = (mode: "login" | "register" = "register") => {
     setModalMode(mode);
     setShowModal(true);
