@@ -5,14 +5,21 @@ import {
 } from "lucide-react";
 
 /* ===== Heatmap Data ===== */
-const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי"];
-const hours = ["09", "10", "11", "12", "13", "14", "15", "16", "17"];
+const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
+const hours = ["09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22"];
+const _h = (data: [number,number][]) => {
+  const obj: Record<string, { pnl: number; trades: number }> = {};
+  hours.forEach((h, i) => { obj[h] = { pnl: data[i]?.[0] ?? 0, trades: data[i]?.[1] ?? 0 }; });
+  return obj;
+};
 const heatData: Record<string, Record<string, { pnl: number; trades: number }>> = {
-  "ראשון": { "09": { pnl: 120, trades: 3 }, "10": { pnl: 250, trades: 5 }, "11": { pnl: 80, trades: 2 }, "12": { pnl: 0, trades: 0 }, "13": { pnl: -45, trades: 1 }, "14": { pnl: 180, trades: 4 }, "15": { pnl: 60, trades: 2 }, "16": { pnl: -190, trades: 3 }, "17": { pnl: -75, trades: 2 } },
-  "שני":   { "09": { pnl: 90, trades: 2 }, "10": { pnl: 160, trades: 3 }, "11": { pnl: 310, trades: 6 }, "12": { pnl: 55, trades: 1 }, "13": { pnl: 0, trades: 0 }, "14": { pnl: 70, trades: 2 }, "15": { pnl: -80, trades: 2 }, "16": { pnl: -280, trades: 4 }, "17": { pnl: -150, trades: 3 } },
-  "שלישי": { "09": { pnl: 340, trades: 5 }, "10": { pnl: 95, trades: 2 }, "11": { pnl: 200, trades: 4 }, "12": { pnl: 130, trades: 3 }, "13": { pnl: 40, trades: 1 }, "14": { pnl: 0, trades: 0 }, "15": { pnl: -60, trades: 1 }, "16": { pnl: -170, trades: 3 }, "17": { pnl: 15, trades: 1 } },
-  "רביעי": { "09": { pnl: 0, trades: 0 }, "10": { pnl: 145, trades: 3 }, "11": { pnl: 75, trades: 2 }, "12": { pnl: 290, trades: 5 }, "13": { pnl: 110, trades: 2 }, "14": { pnl: 50, trades: 1 }, "15": { pnl: 0, trades: 0 }, "16": { pnl: -95, trades: 2 }, "17": { pnl: -320, trades: 5 } },
-  "חמישי": { "09": { pnl: 185, trades: 4 }, "10": { pnl: 270, trades: 5 }, "11": { pnl: 150, trades: 3 }, "12": { pnl: 60, trades: 1 }, "13": { pnl: 0, trades: 0 }, "14": { pnl: -110, trades: 2 }, "15": { pnl: -200, trades: 3 }, "16": { pnl: -350, trades: 6 }, "17": { pnl: -85, trades: 2 } },
+  "ראשון": _h([[120,3],[250,5],[80,2],[0,0],[-45,1],[180,4],[60,2],[-190,3],[-75,2],[45,1],[0,0],[-30,1],[0,0],[0,0]]),
+  "שני":   _h([[90,2],[160,3],[310,6],[55,1],[0,0],[70,2],[-80,2],[-280,4],[-150,3],[0,0],[65,2],[-40,1],[0,0],[0,0]]),
+  "שלישי": _h([[340,5],[95,2],[200,4],[130,3],[40,1],[0,0],[-60,1],[-170,3],[15,1],[85,2],[0,0],[-25,1],[50,1],[0,0]]),
+  "רביעי": _h([[0,0],[145,3],[75,2],[290,5],[110,2],[50,1],[0,0],[-95,2],[-320,5],[0,0],[35,1],[0,0],[-55,1],[0,0]]),
+  "חמישי": _h([[185,4],[270,5],[150,3],[60,1],[0,0],[-110,2],[-200,3],[-350,6],[-85,2],[0,0],[0,0],[70,2],[0,0],[-40,1]]),
+  "שישי":  _h([[0,0],[0,0],[95,2],[140,3],[0,0],[60,1],[0,0],[0,0],[-45,1],[120,3],[80,2],[0,0],[-35,1],[0,0]]),
+  "שבת":   _h([[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[75,2],[110,3],[0,0],[55,1],[-60,2],[0,0],[0,0]]),
 };
 
 const heatColor = (pnl: number) => {
@@ -272,9 +279,9 @@ const StatsPage = () => {
         <div className="overflow-x-auto">
           <div className="min-w-[500px]">
             {/* Hours header */}
-            <div className="flex items-center gap-1.5 mb-2 pr-16">
+            <div className="flex items-center gap-1 mb-1.5 pr-12">
               {hours.map((h) => (
-                <div key={h} className="flex-1 text-center text-[8px] md:text-[9px] text-muted-foreground font-mono">{h}:00</div>
+                <div key={h} className="flex-1 text-center text-[6px] md:text-[7px] text-muted-foreground font-mono">{h}:00</div>
               ))}
             </div>
 
@@ -282,10 +289,10 @@ const StatsPage = () => {
             {days.map((day) => {
               const dayTotal = hours.reduce((sum, h) => sum + heatData[day][h].pnl, 0);
               return (
-                <div key={day} className="flex items-center gap-1.5 mb-1.5">
-                  <div className="w-14 shrink-0 flex flex-col">
-                    <span className="text-[9px] md:text-[10px] text-foreground font-medium text-left">{day}</span>
-                    <span className={`text-[7px] font-semibold text-left ${dayTotal >= 0 ? "text-accent" : "text-destructive"}`}>
+                <div key={day} className="flex items-center gap-1 mb-1">
+                  <div className="w-12 shrink-0 flex flex-col">
+                    <span className="text-[8px] md:text-[9px] text-foreground font-medium text-left">{day}</span>
+                    <span className={`text-[6px] font-semibold text-left ${dayTotal >= 0 ? "text-accent" : "text-destructive"}`}>
                       {dayTotal >= 0 ? "+" : ""}{dayTotal}$
                     </span>
                   </div>
@@ -294,14 +301,14 @@ const StatsPage = () => {
                     return (
                       <div
                         key={h}
-                        className={`flex-1 h-10 md:h-12 rounded-md border transition-all duration-200 hover:scale-105 hover:z-10 cursor-pointer flex flex-col items-center justify-center gap-0.5 ${heatColor(cell.pnl)}`}
+                        className={`flex-1 h-8 md:h-9 rounded-[3px] border transition-all duration-200 hover:scale-105 hover:z-10 cursor-pointer flex flex-col items-center justify-center ${heatColor(cell.pnl)}`}
                         title={`${day} ${h}:00 — ${cell.pnl >= 0 ? "+" : ""}$${cell.pnl} (${cell.trades} עסקאות)`}
                       >
-                        <span className={`text-[8px] md:text-[9px] font-bold ${cell.pnl > 0 ? "text-accent" : cell.pnl < 0 ? "text-destructive" : "text-muted-foreground/50"}`}>
+                        <span className={`text-[6px] md:text-[7px] font-bold ${cell.pnl > 0 ? "text-accent" : cell.pnl < 0 ? "text-destructive" : "text-muted-foreground/50"}`}>
                           {cell.pnl === 0 ? "—" : `${cell.pnl > 0 ? "+" : ""}${cell.pnl}$`}
                         </span>
                         {cell.trades > 0 && (
-                          <span className="text-[6px] md:text-[7px] text-muted-foreground">{cell.trades} עס׳</span>
+                          <span className="text-[5px] text-muted-foreground">{cell.trades} עס׳</span>
                         )}
                       </div>
                     );
@@ -311,12 +318,12 @@ const StatsPage = () => {
             })}
 
             {/* Column totals */}
-            <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-border/10 pr-16">
+            <div className="flex items-center gap-1 mt-1.5 pt-1.5 border-t border-border/10 pr-12">
               {hours.map((h) => {
                 const colTotal = days.reduce((sum, day) => sum + heatData[day][h].pnl, 0);
                 return (
                   <div key={h} className="flex-1 text-center">
-                    <span className={`text-[8px] font-bold ${colTotal >= 0 ? "text-accent" : "text-destructive"}`}>
+                    <span className={`text-[6px] font-bold ${colTotal >= 0 ? "text-accent" : "text-destructive"}`}>
                       {colTotal >= 0 ? "+" : ""}{colTotal}$
                     </span>
                   </div>
