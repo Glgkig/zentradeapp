@@ -444,88 +444,114 @@ const UserMenuContent = ({ onClose, onSettings, onLogout }: { onClose: () => voi
 );
 
 /* ===== Broker Modal Content (shared between modal & bottom sheet) ===== */
-const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?: boolean }) => (
-  <div className={mobile ? "" : "w-full max-w-lg rounded-2xl border border-border/60 bg-secondary/95 backdrop-blur-xl shadow-[0_25px_60px_rgba(0,0,0,0.5)] animate-in fade-in slide-in-from-bottom-4 duration-400"}>
-    {!mobile && <div className="absolute -top-px left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />}
+const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?: boolean }) => {
+  const connected = brokers.filter(b => b.connected);
+  const disconnected = brokers.filter(b => !b.connected);
 
-    <div className="flex items-center justify-between border-b border-border/40 px-5 py-4">
-      <div className="flex items-center gap-3">
-        <div className="relative">
-          <div className="absolute inset-[-3px] rounded-xl bg-primary/10 animate-pulse" style={{ animationDuration: "3s" }} />
-          <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-primary/15 border border-primary/25">
-            <Plug className="h-4 w-4 text-primary" />
-          </div>
-        </div>
-        <div>
-          <h2 className="text-sm font-bold text-foreground">חיבורי ברוקר ו-API</h2>
-          <p className="text-[10px] text-muted-foreground mt-0.5">חבר את פלטפורמת המסחר שלך</p>
-        </div>
-      </div>
-      <button
-        onClick={onClose}
-        className="flex h-10 w-10 md:h-8 md:w-8 items-center justify-center rounded-xl md:rounded-lg border border-border/40 bg-muted/20 text-muted-foreground hover:text-foreground transition-all"
-      >
-        <X className="h-4 w-4" />
-      </button>
-    </div>
+  return (
+    <div className={mobile ? "" : "w-full max-w-md rounded-3xl border border-border/30 bg-card shadow-[0_30px_80px_rgba(0,0,0,0.6)] animate-in fade-in slide-in-from-bottom-4 duration-400 overflow-hidden"}>
 
-    <div className="flex items-center justify-between px-5 py-2.5 border-b border-border/30 bg-muted/5">
-      <span className="text-[10px] text-muted-foreground">
-        <span className="text-accent font-semibold">{brokers.filter(b => b.connected).length}</span> מתוך {brokers.length} מחוברות
-      </span>
-      <div className="flex items-center gap-1.5">
-        <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-        <span className="text-[9px] text-accent font-medium">מוכן למסחר</span>
-      </div>
-    </div>
-
-    <div className={mobile ? "max-h-[50vh] overflow-y-auto" : "max-h-[55vh] overflow-y-auto"}>
-      {brokers.map((b, i) => (
-        <div
-          key={b.name}
-          className={`flex items-center justify-between gap-3 px-5 py-4 md:py-3.5 transition-all hover:bg-primary/[0.03] min-h-[56px] md:min-h-0 ${
-            i < brokers.length - 1 ? "border-b border-border/20" : ""
-          }`}
-        >
-          <div className="flex items-center gap-3 min-w-0">
-            <div className={`flex h-11 w-11 md:h-10 md:w-10 shrink-0 items-center justify-center rounded-xl border text-[10px] font-bold ${
-              b.connected
-                ? "border-accent/25 bg-accent/10 text-accent"
-                : "border-border/60 bg-muted/20 text-muted-foreground"
-            }`}>
-              {b.initials}
-            </div>
-            <div className="min-w-0">
-              <p className="text-xs font-semibold text-foreground truncate">{b.name}</p>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className={`inline-flex h-1.5 w-1.5 rounded-full ${b.connected ? "bg-accent" : "bg-muted-foreground/30"}`} />
-                <span className={`text-[9px] font-medium ${b.connected ? "text-accent" : "text-muted-foreground/40"}`}>
-                  {b.connected ? `מחובר • ${b.account}` : "מנותק"}
-                </span>
+      {/* Header */}
+      <div className="relative px-6 pt-6 pb-5">
+        {!mobile && <div className="absolute top-0 left-[15%] right-[15%] h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="absolute inset-[-3px] rounded-2xl bg-primary/8 ai-breathe" />
+              <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 border border-primary/15">
+                <Plug className="h-5 w-5 text-primary" />
               </div>
             </div>
+            <div>
+              <h2 className="text-[15px] font-bold text-foreground">חיבורי ברוקר</h2>
+              <p className="text-[10px] text-muted-foreground mt-0.5">נהל את פלטפורמות המסחר שלך</p>
+            </div>
           </div>
-          <button className={`shrink-0 rounded-xl md:rounded-lg px-4 py-2.5 md:px-3.5 md:py-1.5 text-[11px] md:text-[10px] font-semibold transition-all min-h-[44px] md:min-h-0 ${
-            b.connected
-              ? "border border-accent/20 bg-accent/[0.06] text-accent"
-              : "border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20"
-          }`}>
-            {b.connected ? "מחובר ✓" : "הגדר חיבור"}
+          <button
+            onClick={onClose}
+            className="haptic-press flex h-9 w-9 items-center justify-center rounded-xl border border-border/20 bg-muted/10 text-muted-foreground/50 hover:text-foreground hover:bg-muted/25 transition-all"
+          >
+            <X className="h-4 w-4" />
           </button>
         </div>
-      ))}
-    </div>
 
-    <div className="border-t border-border/30 px-5 py-3.5 md:py-3 flex items-center justify-between">
-      <p className="text-[9px] text-muted-foreground/40">מוצפן בתקן AES-256</p>
-      <button
-        onClick={onClose}
-        className="rounded-xl md:rounded-lg border border-border/40 bg-muted/15 px-4 py-2.5 md:px-3 md:py-1.5 text-[11px] md:text-[10px] font-medium text-muted-foreground hover:text-foreground transition-all min-h-[44px] md:min-h-0"
-      >
-        סגור
-      </button>
+        {/* Status bar */}
+        <div className="mt-4 flex items-center gap-3">
+          <div className="flex-1 rounded-xl bg-accent/[0.06] border border-accent/12 px-3 py-2 flex items-center justify-between">
+            <span className="text-[10px] text-muted-foreground">מחוברות</span>
+            <span className="text-[12px] font-bold text-accent">{connected.length}</span>
+          </div>
+          <div className="flex-1 rounded-xl bg-muted/10 border border-border/12 px-3 py-2 flex items-center justify-between">
+            <span className="text-[10px] text-muted-foreground">ממתינות</span>
+            <span className="text-[12px] font-bold text-muted-foreground">{disconnected.length}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Connected brokers */}
+      {connected.length > 0 && (
+        <div className="px-6 pb-3">
+          <p className="text-[9px] font-semibold text-muted-foreground/50 uppercase tracking-wider mb-2">פעילות</p>
+          <div className="space-y-1.5">
+            {connected.map((b) => (
+              <div key={b.name} className="flex items-center justify-between rounded-xl bg-accent/[0.04] border border-accent/10 px-3.5 py-3 transition-all hover:bg-accent/[0.07]">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent/12 border border-accent/15 text-[10px] font-bold text-accent">
+                    {b.initials}
+                  </div>
+                  <div>
+                    <p className="text-[12px] font-semibold text-foreground">{b.name}</p>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className="h-1.5 w-1.5 rounded-full bg-accent shadow-[0_0_4px_hsl(var(--accent)/0.5)]" />
+                      <span className="text-[9px] font-medium text-accent">{b.account}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 rounded-lg bg-accent/10 px-2 py-1">
+                  <CheckCircle2 className="h-3 w-3 text-accent" />
+                  <span className="text-[9px] font-semibold text-accent">מחובר</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Disconnected brokers */}
+      <div className="px-6 pb-4">
+        <p className="text-[9px] font-semibold text-muted-foreground/50 uppercase tracking-wider mb-2">זמינות לחיבור</p>
+        <div className={`space-y-1 ${mobile ? "max-h-[35vh] overflow-y-auto" : "max-h-[30vh] overflow-y-auto"} scrollbar-none`}>
+          {disconnected.map((b) => (
+            <div key={b.name} className="flex items-center justify-between rounded-xl bg-muted/[0.04] border border-border/8 px-3.5 py-2.5 transition-all hover:bg-muted/10 hover:border-primary/12 group">
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted/15 border border-border/15 text-[10px] font-bold text-muted-foreground/50 group-hover:text-primary/60 group-hover:border-primary/15 group-hover:bg-primary/[0.06] transition-colors">
+                  {b.initials}
+                </div>
+                <p className="text-[12px] font-medium text-muted-foreground/70 group-hover:text-foreground transition-colors">{b.name}</p>
+              </div>
+              <button className="haptic-press rounded-lg bg-primary/8 border border-primary/15 px-3 py-1.5 text-[10px] font-semibold text-primary/70 hover:bg-primary/15 hover:text-primary transition-all">
+                חבר
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="border-t border-border/10 px-6 py-3.5 flex items-center justify-between bg-muted/[0.03]">
+        <div className="flex items-center gap-1.5">
+          <ShieldCheck className="h-3 w-3 text-muted-foreground/25" />
+          <p className="text-[8px] text-muted-foreground/30">הצפנת AES-256 · מאובטח</p>
+        </div>
+        <button
+          onClick={onClose}
+          className="haptic-press rounded-xl bg-muted/10 border border-border/15 px-4 py-2 text-[11px] font-medium text-muted-foreground/60 hover:text-foreground hover:bg-muted/20 transition-all"
+        >
+          סגור
+        </button>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default DashboardLayout;
