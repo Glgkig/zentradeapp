@@ -4,6 +4,15 @@ import {
   AlertTriangle, Volume2, Mail, Smartphone, Sparkles, Save,
   Eye, Palette, CreditCard, Key, Database, Zap, Link2, Plus, Check, X,
 } from "lucide-react";
+import logoTradingView from "@/assets/logos/tradingview.png";
+import logoTradeLocker from "@/assets/logos/tradelocker.png";
+import logoMt5 from "@/assets/logos/mt5.png";
+import logoBinance from "@/assets/logos/binance.png";
+import logoTopstep from "@/assets/logos/topstep.png";
+import logoRithmic from "@/assets/logos/rithmic.png";
+import logoNinjaTrader from "@/assets/logos/ninjatrader.png";
+import logoIbkr from "@/assets/logos/ibkr.png";
+import logoForex from "@/assets/logos/forexcom.png";
 
 /* ===== Tab Config ===== */
 const tabs = [
