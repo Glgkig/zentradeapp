@@ -537,7 +537,7 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
           <form onSubmit={handleSubmit} className="space-y-3">
             {!isLogin && (
               <div>
-                <label className="mb-1 block text-[10px] md:text-xs font-medium text-muted-foreground">שם מלא</label>
+                <label className="mb-1 block text-[10px] md:text-xs font-medium text-foreground/70">שם מלא</label>
                 <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="הכנס את שמך"
                   className="w-full rounded-lg border border-border bg-muted/30 px-3 py-2.5 text-xs md:text-sm text-foreground placeholder:text-muted-foreground/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" />
               </div>
