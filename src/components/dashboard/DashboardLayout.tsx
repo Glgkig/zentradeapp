@@ -55,8 +55,7 @@ const brokers = [
 const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState("dashboard");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [moreSheet, setMoreSheet] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [brokerModal, setBrokerModal] = useState(false);
   const [userMenu, setUserMenu] = useState(false);
   const [zenMode, setZenMode] = useState(false);
