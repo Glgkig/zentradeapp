@@ -140,7 +140,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
 
         {/* Compact Chart */}
         <div className="md:col-span-5 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm overflow-hidden">
-          <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
+          <div className="flex items-center justify-between border-b border-border/15 px-4 py-2.5">
             <div className="flex items-center gap-2">
               <BarChart3 className="h-3.5 w-3.5 text-primary" />
               <span className="text-[10px] md:text-xs font-semibold text-foreground">EUR/USD — M15</span>
