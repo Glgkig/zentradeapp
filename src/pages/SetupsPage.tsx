@@ -308,7 +308,7 @@ const SetupsPage = () => {
             style={{ animationDelay: `${index * 60}ms`, animationDuration: '400ms' }}
           >
             {/* Chart thumbnail */}
-            <div className="relative h-32 md:h-36 bg-background overflow-hidden">
+            <div className="relative h-28 md:h-36 bg-background overflow-hidden">
               <SetupChart id={s.id} bull={s.dir === "לונג"} />
               <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
               

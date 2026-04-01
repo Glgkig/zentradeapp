@@ -59,7 +59,7 @@ const ProtectionPage = () => {
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3 md:space-y-4">
         {/* ══ Module 1: Hard Stop ══ */}
         <div className={`rounded-2xl border overflow-hidden transition-all duration-500 ${
           hardLock
