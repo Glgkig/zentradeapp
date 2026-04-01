@@ -487,6 +487,8 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
   const [name, setName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [forgotMode, setForgotMode] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
   const navigate = useNavigate();
   const { signIn, signUp, updateProfile } = useAuth();
 
