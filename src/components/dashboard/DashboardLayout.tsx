@@ -45,7 +45,7 @@ const brokers = [
   { name: "TradeLocker", initials: "TL", connected: true, account: "TL-7842", logo: logoTradeLockerFull },
   { name: "MetaTrader 5", initials: "M5", connected: false, account: null, logo: logoMT5Full },
   { name: "Binance", initials: "BN", connected: true, account: "BN-3291", logo: logoBinanceFull },
-  { name: "TopstepX", initials: "TX", connected: false, account: null },
+  { name: "TopstepX", initials: "TX", connected: false, account: null, logo: logoTopstepXFull },
   { name: "Rithmic", initials: "RI", connected: false, account: null },
   { name: "NinjaTrader", initials: "NT", connected: false, account: null },
   { name: "Interactive Brokers", initials: "IB", connected: false, account: null },
