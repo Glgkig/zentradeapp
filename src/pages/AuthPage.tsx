@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   Shield, BarChart3, ChevronDown, Bot, Zap, Lock, X, Menu,
   FlaskConical, Mic, Newspaper, ArrowUp, Activity, AlertTriangle,
@@ -439,7 +439,7 @@ const AuthPage = () => {
             <span className="font-heading text-sm font-bold text-foreground">ZenTrade</span>
           </div>
           <div className="flex items-center gap-6 text-xs text-muted-foreground">
-            <span className="cursor-pointer hover:text-foreground transition-colors">תנאי שימוש</span>
+            <Link to="/terms" className="hover:text-foreground transition-colors">תנאי שימוש</Link>
             <span className="cursor-pointer hover:text-foreground transition-colors">מדיניות פרטיות</span>
             <span className="cursor-pointer hover:text-foreground transition-colors">יצירת קשר</span>
           </div>
