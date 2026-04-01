@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 import {
   Shield, BarChart3, ChevronDown, Bot, Zap, Lock, X, Menu,
   FlaskConical, Mic, Newspaper, ArrowUp, Activity, AlertTriangle,
