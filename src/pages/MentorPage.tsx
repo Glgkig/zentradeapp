@@ -239,16 +239,19 @@ const MentorPage = () => {
       </div>
 
       {/* ── Input Area ── */}
-      <div className="shrink-0 px-1 pb-2 pt-1">
-        <form onSubmit={handleSubmit} className="relative flex items-center gap-2 rounded-2xl border border-border/25 bg-secondary/25 px-2 py-2">
+      <div className="shrink-0 px-1 pb-2 pt-2">
+        <form
+          onSubmit={handleSubmit}
+          className="relative flex items-center gap-2.5 rounded-2xl border border-border/20 bg-secondary/30 backdrop-blur-sm px-3 py-2.5 transition-all duration-300 focus-within:border-primary/25 focus-within:bg-secondary/40 focus-within:shadow-[0_0_20px_hsl(var(--primary)/0.06)]"
+        >
           {/* Mic button */}
           <button
             type="button"
             onClick={() => setIsRecording(!isRecording)}
-            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-300 ${
+            className={`haptic-press flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-300 ${
               isRecording
-                ? "bg-destructive/15 border border-destructive/25 text-destructive shadow-[0_0_20px_hsl(var(--destructive)/0.15)]"
-                : "bg-primary/10 border border-primary/15 text-primary/60 hover:text-primary hover:bg-primary/15"
+                ? "bg-destructive/15 border border-destructive/25 text-destructive shadow-[0_0_16px_hsl(var(--destructive)/0.15)]"
+                : "bg-muted/15 border border-border/15 text-muted-foreground/40 hover:text-primary hover:bg-primary/10 hover:border-primary/20"
             }`}
           >
             <Mic className={`h-4 w-4 ${isRecording ? "animate-pulse" : ""}`} />
@@ -256,8 +259,8 @@ const MentorPage = () => {
 
           {/* Recording state */}
           {isRecording && (
-            <div className="flex items-center gap-2 flex-1">
-              <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2.5 flex-1">
+              <div className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-destructive animate-pulse" />
                 <span className="text-[10px] text-destructive/70 font-semibold">מקליט...</span>
               </div>
@@ -280,7 +283,7 @@ const MentorPage = () => {
                   setIsRecording(false);
                   sendMessage("(הודעה קולית) אני מרגיש לחוץ היום מהשוק, הפסדתי שתי עסקאות ואני לא יודע אם להמשיך");
                 }}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/15 border border-primary/20 text-primary"
+                className="haptic-press flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/15 border border-primary/20 text-primary transition-all hover:bg-primary/20"
               >
                 <Send className="h-3.5 w-3.5" />
               </button>
@@ -295,19 +298,19 @@ const MentorPage = () => {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="דבר אליי, או הקלד כאן..."
-                className="flex-1 bg-transparent text-[11px] md:text-xs text-foreground placeholder:text-muted-foreground/30 outline-none px-2 font-medium"
+                placeholder="ספר לי מה עובר עליך..."
+                className="flex-1 bg-transparent text-[12px] md:text-[13px] text-foreground placeholder:text-muted-foreground/25 outline-none px-1 font-medium leading-relaxed"
               />
               <button
                 type="submit"
                 disabled={!input.trim()}
-                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-all duration-300 ${
+                className={`haptic-press flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-300 ${
                   input.trim()
-                    ? "bg-primary/15 border border-primary/25 text-primary shadow-[0_0_12px_hsl(var(--primary)/0.1)]"
-                    : "bg-muted/10 border border-border/15 text-muted-foreground/20"
+                    ? "bg-primary/15 border border-primary/30 text-primary shadow-[0_0_14px_hsl(var(--primary)/0.12)] hover:bg-primary/25"
+                    : "bg-muted/8 border border-border/10 text-muted-foreground/15 cursor-not-allowed"
                 }`}
               >
-                <Send className="h-3.5 w-3.5 rotate-180" />
+                <Send className="h-4 w-4 rotate-180" />
               </button>
             </>
           )}
