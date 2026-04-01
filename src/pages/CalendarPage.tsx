@@ -26,7 +26,7 @@ const CalendarPage = () => {
           </div>
         )}
         <iframe
-          src="https://www.forexfactory.com/calendar"
+          src="https://www.forexfactory.com/"
           title="Forex Factory Calendar"
           className="w-full h-full border-0"
           onLoad={() => setLoading(false)}
