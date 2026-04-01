@@ -104,6 +104,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
     if (activeNav === "mentor") return <MentorPage />;
     if (activeNav === "backtesting") return <BacktestingPage />;
     if (activeNav === "protection") return <ProtectionPage />;
+    if (activeNav === "calendar") return <CalendarPage />;
     return children || null;
   };
 
