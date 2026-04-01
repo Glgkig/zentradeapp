@@ -188,7 +188,7 @@ const AuthPage = () => {
                   ].map((s) => (
                     <div key={s.label} className="rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm p-3 text-center">
                       <p className={`font-heading text-lg md:text-2xl font-bold ${s.accent ? "text-primary" : "text-foreground"}`}>{s.value}</p>
-                      <p className="text-[9px] md:text-[10px] text-muted-foreground mt-0.5">{s.label}</p>
+                      <p className="text-[9px] md:text-[10px] text-foreground/60 mt-0.5">{s.label}</p>
                     </div>
                   ))}
                 </div>
