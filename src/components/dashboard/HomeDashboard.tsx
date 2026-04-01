@@ -333,7 +333,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
       </div>
 
       {/* ===== Row 4: Recent Activity Feed ===== */}
-      <div className="rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4 md:p-5">
+      <div className="rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-3.5 md:p-5">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4 text-primary" />

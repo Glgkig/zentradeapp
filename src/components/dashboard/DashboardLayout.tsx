@@ -332,7 +332,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto bg-background p-3 pb-20 md:p-6 md:pb-6 relative">
+        <main className="flex-1 overflow-y-auto bg-background p-2.5 pb-20 md:p-6 md:pb-6 relative">
           {renderContent()}
           {/* Zen Mode exit floating button */}
           {zenMode && (
