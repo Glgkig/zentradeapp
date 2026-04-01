@@ -289,17 +289,26 @@ const AuthPage = () => {
                 הכלים שמפרידים בין <span className="text-primary">מנצחים</span> למפסידים
               </h2>
               <p className="mt-4 max-w-2xl mx-auto text-sm md:text-base text-muted-foreground leading-relaxed">
-                שלושה כלים קריטיים, פלטפורמה אחת. הכל מונע AI.
+                ארבעה כלים קריטיים, פלטפורמה אחת. הכל מונע AI.
               </p>
             </div>
           </RevealSection>
 
-          <div className="grid md:grid-cols-3 gap-4 md:gap-6">
+          <div className="grid md:grid-cols-2 gap-4 md:gap-6">
             {features.map((f, i) => (
               <RevealSection key={f.title} delay={i * 150}>
-                <div className="group relative rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm p-6 md:p-8 transition-all duration-500 hover:border-primary/30 hover:bg-card/80 hover:shadow-xl hover:shadow-primary/5 h-full">
+                <div className={`group relative rounded-2xl border bg-card/50 backdrop-blur-sm p-6 md:p-8 transition-all duration-500 hover:shadow-xl h-full ${
+                  (f as any).highlight
+                    ? "border-primary/40 hover:border-primary/60 hover:shadow-primary/10 ring-1 ring-primary/10"
+                    : "border-border/50 hover:border-primary/30 hover:bg-card/80 hover:shadow-primary/5"
+                }`}>
                   <div className="absolute top-0 right-0 left-0 h-px bg-gradient-to-l from-transparent via-primary/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary`}>
+                  {(f as any).highlight && (
+                    <span className="absolute -top-3 right-6 rounded-full bg-primary px-3 py-0.5 text-[10px] font-bold text-primary-foreground uppercase tracking-wider">חדש</span>
+                  )}
+                  <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl text-primary ${
+                    (f as any).highlight ? "bg-primary/20" : "bg-primary/10"
+                  }`}>
                     {f.icon}
                   </div>
                   <h3 className="font-heading text-base md:text-lg font-bold text-foreground mb-2">{f.title}</h3>
@@ -653,6 +662,12 @@ const features = [
     icon: <Brain className="h-6 w-6" />,
     title: "מנטור AI למסחר",
     desc: "ה-AI מנתח את כל העסקאות שלך, מזהה דפוסים חוזרים, ונותן לך המלצות מותאמות אישית לשיפור הביצועים. כמו מאמן פרטי שזמין 24/7.",
+  },
+  {
+    icon: <Shield className="h-6 w-6" />,
+    title: "Mindset Guard & FOMO Detection",
+    desc: "ה-AI שלנו לא רק מנתח גרפים — הוא מנתח אותך. על ידי מעקב אחרי התנהגות על המסך, תנועות עכבר חריגות ולחיצות מהירות, ZenTrade מזהה FOMO ומסחר אימפולסיבי בזמן אמת. אנחנו מתריעים ומתערבים לפני שתבצע עסקה רגשית שעלולה לפוצץ את החשבון.",
+    highlight: true,
   },
   {
     icon: <BookOpen className="h-6 w-6" />,
