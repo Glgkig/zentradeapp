@@ -286,14 +286,14 @@ const ConnectionsTab = () => {
                 style={{ left: `${x}%`, top: `${y}%` }}
                 title={broker.name}
               >
-                <div className={`relative flex h-11 w-11 items-center justify-center rounded-xl border text-[9px] font-black tracking-tight text-white shadow-lg transition-all duration-300 ${
+                <div className={`relative flex h-11 w-11 items-center justify-center rounded-xl border overflow-hidden shadow-lg transition-all duration-300 ${
                   broker.connected
                     ? "border-accent/30 shadow-[0_0_12px_hsl(var(--accent)/0.3)]"
                     : "border-white/8 hover:border-white/20 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]"
                 }`}
                   style={{ background: `linear-gradient(135deg, ${broker.color}cc, ${broker.color}66)` }}
                 >
-                  {broker.short}
+                  <img src={broker.logo} alt={broker.name} className="h-8 w-8 object-contain" loading="lazy" />
                   {broker.connected && (
                     <div className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent border-2 border-background">
                       <Check className="h-2.5 w-2.5 text-background" />
