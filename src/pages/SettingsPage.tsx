@@ -174,7 +174,7 @@ const Select = ({ options, defaultValue }: { options: { value: string; label: st
   <div className="relative">
     <select
       defaultValue={defaultValue}
-      className="w-full appearance-none rounded-lg border border-border bg-muted/20 px-3 py-2 text-xs text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all"
+      className="w-full appearance-none rounded-lg border border-border/15 bg-muted/15 px-3 py-2.5 text-xs text-foreground focus:border-primary/30 focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all min-h-[44px]"
     >
       {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
