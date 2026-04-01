@@ -359,7 +359,7 @@ const AuthPage = () => {
                     ))}
                   </div>
                   <Quote className="h-5 w-5 text-primary/20 mb-3" />
-                  <p className="text-xs md:text-sm text-foreground/85 leading-relaxed flex-1">"{t.quote}"</p>
+                  <p className="text-xs md:text-sm text-foreground/90 leading-relaxed flex-1">"{t.quote}"</p>
                   <div className="mt-5 pt-4 border-t border-border/30 flex items-center gap-3">
                     <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary/20 to-accent/10 flex items-center justify-center border border-primary/20">
                       <span className="text-sm font-bold text-primary">{t.avatar}</span>
