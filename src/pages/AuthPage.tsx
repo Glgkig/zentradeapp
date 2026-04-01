@@ -248,7 +248,7 @@ const AuthPage = () => {
                         <Bot className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                         <div>
                           <p className="text-xs font-semibold text-primary">המלצת AI</p>
-                          <p className="text-[10px] text-muted-foreground mt-1">ביצעת 3 עסקאות מוצלחות. מומלץ לעצור כאן ולנצל את היום הטוב. 🎯</p>
+                          <p className="text-[10px] text-foreground/70 mt-1">ביצעת 3 עסקאות מוצלחות. מומלץ לעצור כאן ולנצל את היום הטוב. 🎯</p>
                         </div>
                       </div>
                     </div>
