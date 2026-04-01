@@ -192,8 +192,11 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
           <div className="flex items-center gap-2">
             {/* Mobile hamburger */}
             <button
-              onClick={() => setMobileNavOpen(!mobileNavOpen)}
-              className="md:hidden haptic-press flex h-8 w-8 items-center justify-center rounded-sm border border-border/15 bg-muted/10 text-muted-foreground/60 hover:text-primary hover:border-primary/15 transition-all"
+              onClick={() => {
+                if (navigator.vibrate) navigator.vibrate(10);
+                setMobileNavOpen(!mobileNavOpen);
+              }}
+              className="md:hidden haptic-press flex h-8 w-8 items-center justify-center rounded-sm border border-border/15 bg-muted/10 text-muted-foreground/60 hover:text-primary hover:border-primary/15 transition-all active:scale-95"
             >
               {mobileNavOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
