@@ -271,7 +271,7 @@ const AuthPage = () => {
       <section className="border-t border-border/30 bg-card/30 px-4 py-10 md:py-14">
         <RevealSection>
           <div className="mx-auto max-w-4xl text-center">
-            <p className="text-xs text-muted-foreground mb-6">מתחבר בלייב לבורסות המובילות</p>
+            <p className="text-xs text-foreground/70 mb-6">מתחבר בלייב לבורסות המובילות</p>
             <FadingCarousel />
           </div>
         </RevealSection>
