@@ -38,13 +38,6 @@ const navItems = [
   { id: "settings", label: "הגדרות", icon: Settings },
 ];
 
-const bottomTabs = [
-  { id: "dashboard", label: "דשבורד", icon: LayoutDashboard },
-  { id: "journal", label: "יומן", icon: BookOpen },
-  { id: "mentor", label: "מנטור", icon: Bot },
-  { id: "settings", label: "הגדרות", icon: Settings },
-  { id: "more", label: "עוד", icon: Menu },
-];
 
 const brokers = [
   { name: "TradingView", initials: "TV", connected: false, account: null, logo: logoTradingViewFull },
@@ -62,8 +55,7 @@ const brokers = [
 const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState("dashboard");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [moreSheet, setMoreSheet] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [brokerModal, setBrokerModal] = useState(false);
   const [userMenu, setUserMenu] = useState(false);
   const [zenMode, setZenMode] = useState(false);
@@ -89,10 +81,8 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   };
 
   const handleNav = (id: string) => {
-    if (id === "more") { setMoreSheet(true); return; }
     setActiveNav(id);
-    setSidebarOpen(false);
-    setMoreSheet(false);
+    setMobileNavOpen(false);
   };
 
   const renderContent = () => {
@@ -200,6 +190,13 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
         {/* Top Header — Compact */}
         <header className={`flex items-center justify-between glass-header px-2.5 py-1.5 md:px-4 md:py-2 shrink-0 relative z-50 ${zenMode ? "zen-hidden" : "zen-visible"}`}>
           <div className="flex items-center gap-2">
+            {/* Mobile hamburger */}
+            <button
+              onClick={() => setMobileNavOpen(!mobileNavOpen)}
+              className="md:hidden haptic-press flex h-8 w-8 items-center justify-center rounded-sm border border-border/15 bg-muted/10 text-muted-foreground/60 hover:text-primary hover:border-primary/15 transition-all"
+            >
+              {mobileNavOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </button>
             {/* Mobile brand */}
             <div className="flex md:hidden items-center gap-1.5">
               <div className="flex h-6 w-6 items-center justify-center rounded-sm bg-primary/10 border border-primary/15">
@@ -302,7 +299,52 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto bg-background p-2 pb-16 md:p-4 md:pb-4 relative">
+        {/* Mobile Nav Dropdown */}
+        {mobileNavOpen && (
+          <div className="md:hidden border-b border-border/10 bg-sidebar/95 backdrop-blur-xl px-3 py-3 space-y-px animate-in slide-in-from-top-2 duration-200">
+            {navItems.map((item) => {
+              const active = activeNav === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleNav(item.id)}
+                  className={`haptic-press flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium transition-all min-h-[42px] ${
+                    active ? "bg-primary/8 text-primary" : "text-muted-foreground/60 hover:bg-muted/10 hover:text-foreground"
+                  }`}
+                >
+                  <item.icon className={`h-4 w-4 ${active ? "text-primary" : "text-muted-foreground/30"}`} />
+                  {item.label}
+                </button>
+              );
+            })}
+            <div className="h-px bg-border/10 my-1" />
+            <button
+              onClick={() => { setMobileNavOpen(false); setBrokerModal(true); }}
+              className="flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium text-muted-foreground/60 min-h-[42px] hover:bg-muted/10"
+            >
+              <Plug className="h-4 w-4 text-muted-foreground/30" />
+              חבר ברוקר
+              <span className="mr-auto rounded-sm bg-primary/10 border border-primary/10 px-1 py-px text-2xs font-bold text-primary font-mono">2</span>
+            </button>
+            <button
+              onClick={() => { setMobileNavOpen(false); setUpgradeModal(true); }}
+              className="flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium text-primary min-h-[42px] bg-primary/5 hover:bg-primary/8"
+            >
+              <Crown className="h-4 w-4" />
+              שדרג תוכנית
+              <span className="mr-auto rounded-sm bg-primary/10 px-1.5 py-px text-2xs font-bold text-primary font-mono">PRO</span>
+            </button>
+            <button
+              onClick={() => { setMobileNavOpen(false); navigate("/"); }}
+              className="flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium text-destructive/50 min-h-[42px] hover:bg-destructive/5"
+            >
+              <LogOut className="h-4 w-4" />
+              התנתק
+            </button>
+          </div>
+        )}
+
+        <main className="flex-1 overflow-y-auto bg-background p-2 md:p-4 md:pb-4 relative">
           {renderContent()}
           {zenMode && (
             <button
@@ -316,75 +358,9 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
         </main>
       </div>
 
-      {/* ===== Mobile Bottom Tab Bar ===== */}
-      <nav className={`md:hidden fixed bottom-0 inset-x-0 z-30 border-t border-border/10 bg-sidebar/95 backdrop-blur-xl ${zenMode ? "zen-hidden" : "zen-visible"}`}>
-        <div className="flex items-center justify-around px-1 pt-1 pb-[env(safe-area-inset-bottom,6px)]">
-          {bottomTabs.map((tab) => {
-            const active = tab.id !== "more" && activeNav === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => handleNav(tab.id)}
-                className={`haptic-press flex flex-col items-center gap-0.5 py-1 px-2.5 min-w-[48px] rounded-sm transition-all ${
-                  active ? "text-primary" : "text-muted-foreground/30"
-                }`}
-              >
-                <tab.icon className={`h-4 w-4 ${active ? "text-primary drop-shadow-[0_0_6px_hsl(var(--primary)/0.6)]" : ""}`} />
-                <span className={`text-2xs font-semibold ${active ? "text-primary" : ""}`}>{tab.label}</span>
-                {active && <span className="h-px w-3 bg-primary mt-0.5" />}
-              </button>
-            );
-          })}
-        </div>
-      </nav>
-
-      {/* ===== "More" Bottom Sheet ===== */}
-      {moreSheet && (
-        <>
-          <div className="fixed inset-0 z-40 bg-background/40 backdrop-blur-sm md:hidden" onClick={() => setMoreSheet(false)} />
-          <div className="fixed inset-x-0 bottom-0 z-50 md:hidden rounded-t-xl border-t border-border/15 bg-card backdrop-blur-xl animate-in slide-in-from-bottom duration-200">
-            <div className="flex justify-center pt-2 pb-1"><div className="w-8 h-0.5 rounded-full bg-muted-foreground/15" /></div>
-            <div className="px-3 pb-6 space-y-px">
-              {navItems.filter(n => !bottomTabs.some(t => t.id === n.id)).map((item) => {
-                const active = activeNav === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => handleNav(item.id)}
-                    className={`flex w-full items-center gap-2.5 rounded-sm px-3 py-3 text-[12px] font-medium transition-all min-h-[44px] ${
-                      active ? "bg-primary/8 text-primary" : "text-muted-foreground/60 hover:bg-muted/10"
-                    }`}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    {item.label}
-                  </button>
-                );
-              })}
-              <button
-                onClick={() => { setMoreSheet(false); setUpgradeModal(true); }}
-                className="flex w-full items-center gap-2.5 rounded-sm px-3 py-3 text-[12px] font-medium text-primary min-h-[44px] bg-primary/5 hover:bg-primary/8"
-              >
-                <Crown className="h-4 w-4" />
-                שדרג תוכנית
-                <span className="mr-auto rounded-sm bg-primary/10 px-1.5 py-px text-2xs font-bold text-primary font-mono">PRO</span>
-              </button>
-              <button
-                onClick={() => { setMoreSheet(false); setBrokerModal(true); }}
-                className="flex w-full items-center gap-2.5 rounded-sm px-3 py-3 text-[12px] font-medium text-muted-foreground/60 min-h-[44px] hover:bg-muted/10"
-              >
-                <Plug className="h-4 w-4" />
-                חבר ברוקר
-              </button>
-              <button
-                onClick={() => { setMoreSheet(false); navigate("/"); }}
-                className="flex w-full items-center gap-2.5 rounded-sm px-3 py-3 text-[12px] font-medium text-destructive/50 min-h-[44px] hover:bg-destructive/5"
-              >
-                <LogOut className="h-4 w-4" />
-                התנתק
-              </button>
-            </div>
-          </div>
-        </>
+      {/* Mobile nav overlay */}
+      {mobileNavOpen && (
+        <div className="md:hidden fixed inset-0 z-40 bg-background/30 backdrop-blur-[2px]" onClick={() => setMobileNavOpen(false)} />
       )}
 
       {/* ===== Broker Modal ===== */}
