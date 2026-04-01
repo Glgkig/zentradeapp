@@ -260,7 +260,7 @@ const AuthPage = () => {
         </div>
 
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 hidden lg:flex flex-col items-center gap-1 text-muted-foreground/40">
-          <span className="text-[10px]">גלול למטה</span>
+          <span className="text-[10px] text-foreground/40">גלול למטה</span>
           <ChevronDown className="h-4 w-4 animate-bounce" />
         </div>
       </section>
