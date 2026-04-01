@@ -134,7 +134,7 @@ const StatsPage = () => {
         </div>
 
         {/* Revenge Trading - Premium Redesign */}
-        <div className="md:col-span-3 rounded-xl border border-destructive/15 bg-destructive/[0.02] p-5">
+        <div className="md:col-span-3 rounded-xl border border-destructive/15 bg-destructive/[0.02] p-4 md:p-5">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2.5">
               <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-destructive/10 border border-destructive/15">
