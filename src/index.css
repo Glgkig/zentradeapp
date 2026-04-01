@@ -270,3 +270,12 @@ select option {
   background-color: hsl(240, 8%, 7%);
   color: hsl(220, 15%, 88%);
 }
+
+@keyframes spin-orbit {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes counter-spin-orbit {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(-360deg); }
+}
