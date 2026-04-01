@@ -258,7 +258,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
           </div>
           <div className="space-y-2">
             {watchlist.map((item) => (
-              <div key={item.pair} className="flex items-center justify-between rounded-xl bg-muted/10 border border-border/15 px-3 py-2.5 transition-all duration-200 hover:bg-muted/20 hover:border-primary/15 cursor-pointer min-h-[48px]">
+              <div key={item.pair} className="flex items-center justify-between rounded-xl bg-muted/10 border border-border/15 px-2.5 md:px-3 py-2 md:py-2.5 transition-all duration-200 hover:bg-muted/20 hover:border-primary/15 cursor-pointer min-h-[44px]">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-semibold text-foreground">{item.pair}</span>
                   <span className="text-[8px] text-muted-foreground/60 bg-muted/30 rounded px-1 py-0.5">{item.tf}</span>
