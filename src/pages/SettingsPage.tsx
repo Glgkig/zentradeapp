@@ -2,12 +2,13 @@ import { useState } from "react";
 import {
   Shield, User, Globe, Lock, Bell, ChevronDown, ChevronRight,
   AlertTriangle, Volume2, Mail, Smartphone, Sparkles, Save,
-  Eye, Palette, CreditCard, Key, Database, Zap,
+  Eye, Palette, CreditCard, Key, Database, Zap, Link2, Plus, Check, X,
 } from "lucide-react";
 
 /* ===== Tab Config ===== */
 const tabs = [
   { id: "profile", label: "פרופיל", icon: User },
+  { id: "connections", label: "חיבורים", icon: Link2 },
   { id: "preferences", label: "העדפות", icon: Globe },
   { id: "rules", label: "חוקי ברזל", icon: Shield },
   { id: "notifications", label: "התראות", icon: Bell },
@@ -93,6 +94,7 @@ const SettingsPage = () => {
         {/* Content Area */}
         <div className="flex-1 min-w-0">
           {activeTab === "profile" && <ProfileTab />}
+          {activeTab === "connections" && <ConnectionsTab />}
           {activeTab === "preferences" && <PreferencesTab />}
           {activeTab === "rules" && <RulesTab />}
           {activeTab === "notifications" && <NotificationsTab />}
@@ -173,6 +175,211 @@ const ProfileTab = () => (
     <SaveButton />
   </div>
 );
+
+/* ===== Connections Tab ===== */
+const brokers = [
+  { name: "TradingView", short: "TV", color: "#2962FF", connected: true },
+  { name: "TradeLocker", short: "TL", color: "#00E676", connected: false },
+  { name: "MetaTrader 5", short: "MT5", color: "#4A90D9", connected: true },
+  { name: "Binance", short: "BN", color: "#F0B90B", connected: false },
+  { name: "TopstepX", short: "TS", color: "#1DB954", connected: false },
+  { name: "Rithmic", short: "R+", color: "#FF6B35", connected: false },
+  { name: "NinjaTrader", short: "NT", color: "#E84E0F", connected: false },
+  { name: "Interactive Brokers", short: "IB", color: "#DC143C", connected: false },
+  { name: "Forex.com", short: "FX", color: "#0891B2", connected: false },
+  { name: "Bybit", short: "BY", color: "#F7A600", connected: false },
+  { name: "cTrader", short: "cT", color: "#6366F1", connected: false },
+  { name: "DXtrade", short: "DX", color: "#10B981", connected: false },
+];
+
+const ConnectionsTab = () => {
+  const [selectedBroker, setSelectedBroker] = useState<string | null>(null);
+
+  return (
+    <div className="space-y-4 animate-in fade-in slide-in-from-left-2 duration-300">
+      {/* Header CTA */}
+      <button className="haptic-press w-full flex items-center justify-center gap-2 rounded-xl bg-primary/12 border border-primary/20 py-3 text-[12px] font-bold text-primary hover:bg-primary/20 hover:shadow-[0_0_20px_hsl(var(--primary)/0.1)] transition-all duration-300 min-h-[48px]">
+        <Plus className="h-4 w-4" />
+        הוסף חשבון מסחר
+      </button>
+
+      {/* Connected Accounts */}
+      <div className="rounded-2xl border border-border/10 bg-card/50 p-5">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent/10">
+              <Link2 className="h-3.5 w-3.5 text-accent/60" />
+            </div>
+            <h3 className="text-[12px] font-semibold text-foreground">חשבונות מחוברים</h3>
+          </div>
+          <span className="rounded-md bg-accent/10 border border-accent/12 px-2 py-0.5 text-[8px] font-bold text-accent">
+            {brokers.filter(b => b.connected).length} פעילים
+          </span>
+        </div>
+
+        <div className="space-y-2">
+          {brokers.filter(b => b.connected).map((broker) => (
+            <div key={broker.name} className="flex items-center justify-between rounded-xl border border-accent/12 bg-accent/[0.03] px-4 py-3 transition-all min-h-[48px]">
+              <div className="flex items-center gap-3">
+                <div
+                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/5 text-[10px] font-black tracking-tight text-white shadow-lg"
+                  style={{ background: `linear-gradient(135deg, ${broker.color}dd, ${broker.color}88)` }}
+                >
+                  {broker.short}
+                </div>
+                <div className="text-right">
+                  <p className="text-[11px] font-semibold text-foreground/80">{broker.name}</p>
+                  <p className="text-[8px] text-accent">● מחובר ופעיל</p>
+                </div>
+              </div>
+              <button className="haptic-press flex h-7 w-7 items-center justify-center rounded-lg bg-destructive/10 border border-destructive/15 text-destructive/60 hover:bg-destructive/20 transition-all">
+                <X className="h-3 w-3" />
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* All Brokers - Circular Layout */}
+      <div className="rounded-2xl border border-border/10 bg-card/50 p-5">
+        <div className="flex items-center gap-2.5 mb-5">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-muted/15">
+            <Database className="h-3.5 w-3.5 text-muted-foreground/50" />
+          </div>
+          <div>
+            <h3 className="text-[12px] font-semibold text-foreground">פלטפורמות מסחר נתמכות</h3>
+            <p className="text-[8px] text-muted-foreground/35">לחץ על פלטפורמה לחיבור</p>
+          </div>
+        </div>
+
+        {/* Orbital Layout */}
+        <div className="relative mx-auto w-full max-w-[320px] aspect-square">
+          {/* Center Hub */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-card border border-primary/20 shadow-[0_0_30px_hsl(var(--primary)/0.15)]">
+              <Sparkles className="h-7 w-7 text-primary" />
+            </div>
+          </div>
+
+          {/* Orbit Ring */}
+          <div className="absolute inset-4 rounded-full border border-dashed border-muted-foreground/8" />
+          <div className="absolute inset-10 rounded-full border border-dashed border-muted-foreground/5" />
+
+          {/* Broker Icons in Circle */}
+          {brokers.map((broker, i) => {
+            const angle = (i / brokers.length) * 2 * Math.PI - Math.PI / 2;
+            const radius = 42;
+            const x = 50 + radius * Math.cos(angle);
+            const y = 50 + radius * Math.sin(angle);
+
+            return (
+              <button
+                key={broker.name}
+                onClick={() => setSelectedBroker(selectedBroker === broker.name ? null : broker.name)}
+                className="haptic-press absolute -translate-x-1/2 -translate-y-1/2 group transition-all duration-300 hover:scale-110 z-20"
+                style={{ left: `${x}%`, top: `${y}%` }}
+                title={broker.name}
+              >
+                <div className={`relative flex h-11 w-11 items-center justify-center rounded-xl border text-[9px] font-black tracking-tight text-white shadow-lg transition-all duration-300 ${
+                  broker.connected
+                    ? "border-accent/30 shadow-[0_0_12px_hsl(var(--accent)/0.3)]"
+                    : "border-white/8 hover:border-white/20 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]"
+                }`}
+                  style={{ background: `linear-gradient(135deg, ${broker.color}cc, ${broker.color}66)` }}
+                >
+                  {broker.short}
+                  {broker.connected && (
+                    <div className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent border-2 border-background">
+                      <Check className="h-2.5 w-2.5 text-background" />
+                    </div>
+                  )}
+                </div>
+                {/* Tooltip */}
+                <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  <span className="rounded-md bg-card border border-border/20 px-2 py-0.5 text-[8px] font-semibold text-foreground/70 shadow-lg">
+                    {broker.name}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
+
+          {/* Connecting Lines from center to each broker */}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100">
+            {brokers.map((broker, i) => {
+              const angle = (i / brokers.length) * 2 * Math.PI - Math.PI / 2;
+              const radius = 42;
+              const x = 50 + radius * Math.cos(angle);
+              const y = 50 + radius * Math.sin(angle);
+              return (
+                <line
+                  key={broker.name}
+                  x1="50" y1="50" x2={x} y2={y}
+                  stroke={broker.connected ? "hsl(var(--accent))" : "hsl(var(--muted-foreground) / 0.06)"}
+                  strokeWidth={broker.connected ? "0.3" : "0.15"}
+                  strokeDasharray={broker.connected ? "none" : "1,1"}
+                />
+              );
+            })}
+          </svg>
+        </div>
+      </div>
+
+      {/* Selected Broker Detail */}
+      {selectedBroker && (() => {
+        const broker = brokers.find(b => b.name === selectedBroker)!;
+        return (
+          <div className="rounded-2xl border border-primary/12 bg-primary/[0.02] p-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="flex items-center gap-3 mb-4">
+              <div
+                className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 text-[12px] font-black text-white shadow-lg"
+                style={{ background: `linear-gradient(135deg, ${broker.color}dd, ${broker.color}77)` }}
+              >
+                {broker.short}
+              </div>
+              <div>
+                <h3 className="text-[13px] font-bold text-foreground">{broker.name}</h3>
+                <p className="text-[9px] text-muted-foreground/40">
+                  {broker.connected ? "מחובר ומסנכרן עסקאות" : "לא מחובר — לחץ לחיבור"}
+                </p>
+              </div>
+            </div>
+
+            {!broker.connected ? (
+              <div className="space-y-3">
+                <Field label="API Key">
+                  <Input value="" placeholder="הכנס API Key..." dir="ltr" />
+                </Field>
+                <Field label="Secret Key">
+                  <Input value="" placeholder="הכנס Secret Key..." dir="ltr" />
+                </Field>
+                <button className="haptic-press w-full flex items-center justify-center gap-2 rounded-xl bg-primary/15 border border-primary/20 py-3 text-[12px] font-bold text-primary hover:bg-primary/25 transition-all min-h-[48px]">
+                  <Link2 className="h-4 w-4" />
+                  חבר את {broker.name}
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between rounded-xl border border-accent/10 bg-accent/[0.03] px-4 py-2.5">
+                  <span className="text-[10px] text-muted-foreground/50">סטטוס</span>
+                  <span className="text-[10px] font-bold text-accent">● פעיל ומסנכרן</span>
+                </div>
+                <div className="flex items-center justify-between rounded-xl border border-border/10 bg-muted/[0.03] px-4 py-2.5">
+                  <span className="text-[10px] text-muted-foreground/50">עסקאות מיובאות</span>
+                  <span className="text-[10px] font-bold text-foreground/70 font-mono">247</span>
+                </div>
+                <div className="flex items-center justify-between rounded-xl border border-border/10 bg-muted/[0.03] px-4 py-2.5">
+                  <span className="text-[10px] text-muted-foreground/50">סנכרון אחרון</span>
+                  <span className="text-[10px] font-bold text-foreground/70 font-mono">לפני 3 דקות</span>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })()}
+    </div>
+  );
+};
 
 /* ===== Preferences Tab ===== */
 const PreferencesTab = () => (
