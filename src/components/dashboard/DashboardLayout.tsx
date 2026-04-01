@@ -301,7 +301,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
         {/* Main Content */}
         {/* Mobile Nav Dropdown */}
         {mobileNavOpen && (
-          <div className="md:hidden border-b border-border/10 bg-sidebar/95 backdrop-blur-xl px-3 py-3 space-y-px animate-in slide-in-from-top-2 duration-200">
+          <div className="md:hidden border-b border-border/10 bg-sidebar px-3 py-3 space-y-px animate-in slide-in-from-top-2 duration-200 relative z-40">
             {navItems.map((item) => {
               const active = activeNav === item.id;
               return (
