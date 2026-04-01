@@ -516,7 +516,13 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
           {disconnected.map((b) => (
             <div key={b.name} className="flex items-center justify-between rounded-sm bg-muted/[0.03] border border-border/6 px-3 py-2 hover:bg-muted/8 group transition-all">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-7 w-7 items-center justify-center rounded-sm bg-muted/10 border border-border/8 text-2xs font-bold text-muted-foreground/40 font-mono group-hover:text-primary/60">{b.initials}</div>
+                {(b as any).logo ? (
+                  <div className="flex h-7 w-7 items-center justify-center rounded-sm overflow-hidden">
+                    <img src={(b as any).logo} alt={b.name} className="h-7 w-7 object-cover rounded-sm" />
+                  </div>
+                ) : (
+                  <div className="flex h-7 w-7 items-center justify-center rounded-sm bg-muted/10 border border-border/8 text-2xs font-bold text-muted-foreground/40 font-mono group-hover:text-primary/60">{b.initials}</div>
+                )}
                 <p className="text-[11px] font-medium text-muted-foreground/60 group-hover:text-foreground">{b.name}</p>
               </div>
               <button className="haptic-press rounded-sm bg-primary/6 border border-primary/10 px-2 py-1 text-2xs font-semibold text-primary/60 hover:bg-primary/12 hover:text-primary transition-all">חבר</button>
