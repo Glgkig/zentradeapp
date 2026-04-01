@@ -14,12 +14,12 @@ interface Message {
 
 /* ===== Tilt Pills ===== */
 const tiltPills = [
-  { text: "בא לי לנקום בשוק", icon: Flame, color: "destructive" as const },
-  { text: "שברתי את כל החוקים שלי", icon: AlertTriangle, color: "warning" as const },
-  { text: "אני בפומו מטורף", icon: Zap, color: "warning" as const },
-  { text: "מחקתי אתגר פראפ", icon: Trophy, color: "destructive" as const },
-  { text: "אני מרגיש חרדה מהשוק", icon: Heart, color: "info" as const },
-  { text: "אני לא מצליח לעצור לסחור", icon: Shield, color: "warning" as const },
+  { text: "נקמה בשוק", icon: Flame, color: "destructive" as const, full: "בא לי לנקום בשוק" },
+  { text: "שברתי חוקים", icon: AlertTriangle, color: "warning" as const, full: "שברתי את כל החוקים שלי" },
+  { text: "FOMO מטורף", icon: Zap, color: "warning" as const, full: "אני בפומו מטורף" },
+  { text: "חרדה מהשוק", icon: Heart, color: "info" as const, full: "אני מרגיש חרדה מהשוק" },
+  { text: "לא מצליח לעצור", icon: Shield, color: "warning" as const, full: "אני לא מצליח לעצור לסחור" },
+  { text: "מחקתי פראפ", icon: Trophy, color: "destructive" as const, full: "מחקתי אתגר פראפ" },
 ];
 
 const pillColorMap = {
