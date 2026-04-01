@@ -259,7 +259,7 @@ const ConnectionsTab = () => {
         </div>
 
         {/* Orbital Layout */}
-        <div className="relative mx-auto w-full max-w-[320px] aspect-square">
+        <div className="relative mx-auto w-full max-w-[320px] aspect-square" style={{ perspective: "800px" }}>
           {/* Center Hub */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
             <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-card border border-primary/20 shadow-[0_0_30px_hsl(var(--primary)/0.15)]">
