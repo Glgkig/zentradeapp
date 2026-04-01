@@ -290,7 +290,7 @@ const SetupsPage = () => {
             ה-Playbook האישי שלך. כל סטאפ מנוטר בזמן אמת ע״י ה-AI
           </p>
         </div>
-        <button className="group flex items-center gap-2 self-start rounded-xl bg-primary/8 border border-primary/15 px-4 py-2.5 text-[11px] font-bold text-primary hover:bg-primary/15 hover:border-primary/25 transition-all duration-300">
+        <button className="interactive-btn group flex items-center gap-2 self-start rounded-xl bg-primary/8 border border-primary/15 px-4 py-2.5 text-[11px] font-bold text-primary hover:bg-primary/15 hover:border-primary/25 hover:shadow-[0_0_15px_hsl(var(--primary)/0.1)] transition-all duration-300 min-h-[44px]">
           <Plus className="h-3.5 w-3.5" />
           סטאפ חדש
         </button>
