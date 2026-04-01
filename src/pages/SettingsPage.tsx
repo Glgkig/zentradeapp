@@ -33,7 +33,7 @@ const SettingsPage = () => {
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4">
+      <div className="flex flex-col md:flex-row gap-3 md:gap-4">
         {/* Sidebar Tabs */}
         <div className="md:w-[220px] shrink-0">
           <div className="rounded-2xl border border-border/10 bg-card/50 p-2 space-y-0.5">
