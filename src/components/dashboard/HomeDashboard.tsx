@@ -225,7 +225,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
           </div>
 
           {/* Quick Performance */}
-          <div className="rounded-2xl border border-border bg-secondary/30 p-4">
+          <div className="rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4">
             <div className="flex items-center gap-2 mb-3">
               <TrendingUp className="h-3.5 w-3.5 text-accent" />
               <span className="text-[10px] font-semibold text-foreground">ביצועים מהירים</span>
