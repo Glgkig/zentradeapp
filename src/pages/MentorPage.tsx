@@ -219,13 +219,14 @@ const MentorPage = () => {
       {/* ── Quick Actions Grid ── */}
       <div className="shrink-0 px-1 pt-3">
         <div className="grid grid-cols-3 gap-1.5">
-          {tiltPills.map((pill) => {
+          {tiltPills.map((pill, index) => {
             const colors = pillColorMap[pill.color];
             return (
               <button
                 key={pill.text}
                 onClick={() => sendMessage(pill.full)}
-                className={`haptic-press group flex items-center justify-center gap-1.5 rounded-xl border px-2 py-2.5 transition-all duration-200 ${colors.bg}`}
+                className={`haptic-press group flex items-center justify-center gap-1.5 rounded-xl border px-2 py-2.5 transition-all duration-200 animate-in fade-in slide-in-from-bottom-2 fill-mode-both ${colors.bg}`}
+                style={{ animationDelay: `${index * 80}ms`, animationDuration: '400ms' }}
               >
                 <pill.icon className={`h-3 w-3 shrink-0 ${colors.icon}`} />
                 <span className={`text-[9px] md:text-[10px] font-semibold ${colors.text}`}>
