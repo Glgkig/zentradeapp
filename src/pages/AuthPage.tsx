@@ -450,7 +450,7 @@ const AuthPage = () => {
           <div className="flex items-center gap-2">
             <Shield className="h-4 w-4 text-primary" />
             <span className="font-heading text-sm font-bold text-foreground">ZenTrade</span>
-            <span className="text-xs text-muted-foreground">• AI-Powered Trading Coach</span>
+            <span className="text-xs text-foreground/60">• AI-Powered Trading Coach</span>
           </div>
           <div className="flex items-center gap-6 text-xs text-muted-foreground">
             <Link to="/terms" className="hover:text-foreground transition-colors">תנאי שימוש</Link>
