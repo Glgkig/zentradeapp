@@ -613,8 +613,8 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
               </div>
             )}
 
-            <button type="submit" className="w-full rounded-xl bg-primary py-3 text-xs md:text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 active:scale-[0.98]">
-              {isLogin ? "היכנס לחשבון" : "צור חשבון חינם"}
+            <button type="submit" disabled={submitting} className="w-full rounded-xl bg-primary py-3 text-xs md:text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 active:scale-[0.98] disabled:opacity-60">
+              {submitting ? "מעבד..." : isLogin ? "היכנס לחשבון" : "צור חשבון חינם"}
             </button>
           </form>
 
