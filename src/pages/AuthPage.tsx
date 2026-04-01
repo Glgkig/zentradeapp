@@ -175,7 +175,7 @@ const AuthPage = () => {
                     <ChevronRight className="h-4 w-4 rotate-180" />
                   </button>
                 </div>
-                <p className="mt-3 text-[10px] md:text-xs text-muted-foreground/50">ללא כרטיס אשראי • הגדרה תוך 2 דקות</p>
+                <p className="mt-3 text-[10px] md:text-xs text-foreground/50">ללא כרטיס אשראי • הגדרה תוך 2 דקות</p>
               </RevealSection>
 
               {/* Trust stats */}
