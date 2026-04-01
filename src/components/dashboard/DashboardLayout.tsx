@@ -55,14 +55,13 @@ const brokers = [
 /* ===== Layout ===== */
 const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   const navigate = useNavigate();
+  const { profile, signOut, refreshProfile } = useAuth();
   const [activeNav, setActiveNav] = useState("dashboard");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [brokerModal, setBrokerModal] = useState(false);
   const [userMenu, setUserMenu] = useState(false);
   const [zenMode, setZenMode] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(() => {
-    return localStorage.getItem("zentrade-onboarded") !== "true";
-  });
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [upgradeModal, setUpgradeModal] = useState(false);
   const [dark, setDark] = useState(() => {
     if (typeof window !== "undefined") {
@@ -71,14 +70,21 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
     return true;
   });
 
+  // Show onboarding if profile exists and not completed
+  useEffect(() => {
+    if (profile && !profile.onboarding_completed) {
+      setShowOnboarding(true);
+    }
+  }, [profile]);
+
   useEffect(() => {
     document.documentElement.classList.toggle("light", !dark);
     localStorage.setItem("zentrade-theme", dark ? "dark" : "light");
   }, [dark]);
 
-  const completeOnboarding = () => {
-    localStorage.setItem("zentrade-onboarded", "true");
+  const completeOnboarding = async () => {
     setShowOnboarding(false);
+    await refreshProfile();
   };
 
   const handleNav = (id: string) => {
@@ -86,8 +92,10 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
     setMobileNavOpen(false);
   };
 
+  const userName = profile?.full_name || "סוחר";
+
   const renderContent = () => {
-    if (activeNav === "dashboard") return <HomeDashboard userName="יהונתן" />;
+    if (activeNav === "dashboard") return <HomeDashboard userName={userName} />;
     if (activeNav === "setups") return <SetupsPage />;
     if (activeNav === "stats") return <StatsPage />;
     if (activeNav === "journal") return <JournalPage />;
