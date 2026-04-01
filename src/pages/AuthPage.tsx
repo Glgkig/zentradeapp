@@ -55,14 +55,7 @@ const AuthPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [modalMode, setModalMode] = useState<"login" | "register">("register");
-  const isEditorCanvas = (() => {
-    if (typeof window === "undefined") return false;
-    try {
-      return window.self !== window.top;
-    } catch {
-      return true;
-    }
-  })();
+  const isEditorCanvas = false; // Disabled — was blocking buttons in preview iframe
 
   // Force dark mode on landing page
   useEffect(() => {
