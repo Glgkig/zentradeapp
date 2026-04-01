@@ -228,10 +228,10 @@ const ConnectionsTab = () => {
             <div key={broker.name} className="flex items-center justify-between rounded-xl border border-accent/12 bg-accent/[0.03] px-4 py-3 transition-all min-h-[48px]">
               <div className="flex items-center gap-3">
                 <div
-                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/5 text-[10px] font-black tracking-tight text-white shadow-lg"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/5 overflow-hidden shadow-lg"
                   style={{ background: `linear-gradient(135deg, ${broker.color}dd, ${broker.color}88)` }}
                 >
-                  {broker.short}
+                  <img src={broker.logo} alt={broker.name} className="h-7 w-7 object-contain" loading="lazy" />
                 </div>
                 <div className="text-right">
                   <p className="text-[11px] font-semibold text-foreground/80">{broker.name}</p>
