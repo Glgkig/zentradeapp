@@ -114,7 +114,7 @@ const AuthPage = () => {
 
           {/* Mobile Menu Trigger */}
           <button
-            onClick={() => setMobileMenu(!mobileMenu)}
+            onClick={() => !isEditorCanvas && setMobileMenu(!mobileMenu)}
             className="md:hidden relative flex h-9 w-9 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 transition-all hover:bg-primary/20 active:scale-95"
           >
             {mobileMenu ? (
