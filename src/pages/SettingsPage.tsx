@@ -133,8 +133,8 @@ const SettingsPage = () => {
 const Section = ({ title, icon, highlight, children }: {
   title: string; icon: React.ReactNode; highlight?: boolean; children: React.ReactNode;
 }) => (
-  <div className={`rounded-xl border p-4 md:p-5 ${
-    highlight ? "border-primary/20 bg-primary/[0.02]" : "border-border bg-secondary/20"
+  <div className={`rounded-xl border p-4 md:p-5 transition-all duration-300 ${
+    highlight ? "border-primary/20 bg-primary/[0.02]" : "border-border/15 bg-secondary/15 backdrop-blur-sm"
   }`}>
     <div className="flex items-center gap-2.5 mb-4">
       <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${
