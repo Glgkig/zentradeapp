@@ -446,7 +446,7 @@ const AuthPage = () => {
 
       {/* ===== FOOTER ===== */}
       <footer className="border-t border-border/30 px-4 py-8 md:px-8 md:py-10">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 md:flex-row">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-4">
           <div className="flex items-center gap-2">
             <Shield className="h-4 w-4 text-primary" />
             <span className="font-heading text-sm font-bold text-foreground">ZenTrade</span>
@@ -454,14 +454,9 @@ const AuthPage = () => {
           </div>
           <div className="flex items-center gap-6 text-xs text-muted-foreground">
             <Link to="/terms" className="hover:text-foreground transition-colors">תנאי שימוש</Link>
-            <span className="cursor-pointer hover:text-foreground transition-colors">מדיניות פרטיות</span>
           </div>
-          <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground/60">
-            <MapPin className="h-3 w-3" />
-            Merkaz Shapira, Israel
-          </div>
+          <p className="text-[10px] text-muted-foreground/40">© 2026 ZenTrade. כל הזכויות שמורות.</p>
         </div>
-        <p className="mt-4 text-center text-[10px] text-muted-foreground/40">© 2026 ZenTrade. כל הזכויות שמורות.</p>
       </footer>
 
       {/* ===== AUTH MODAL ===== */}
