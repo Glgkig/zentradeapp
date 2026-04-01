@@ -136,7 +136,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
       </div>
 
       {/* ===== Row 2: Chart + AI Signals + Sentiment ===== */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4">
 
         {/* Compact Chart */}
         <div className="md:col-span-5 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm overflow-hidden">
