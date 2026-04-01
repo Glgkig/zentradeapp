@@ -193,10 +193,13 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             {/* Mobile hamburger */}
             <button
               onClick={() => {
-                if (navigator.vibrate) navigator.vibrate(10);
-                setMobileNavOpen(!mobileNavOpen);
+                navigator.vibrate?.(10);
+                setUserMenu(false);
+                setMobileNavOpen((prev) => !prev);
               }}
-              className="md:hidden haptic-press flex h-8 w-8 items-center justify-center rounded-sm border border-border/15 bg-muted/10 text-muted-foreground/60 hover:text-primary hover:border-primary/15 transition-all active:scale-95"
+              aria-expanded={mobileNavOpen}
+              aria-label={mobileNavOpen ? "סגור תפריט ניווט" : "פתח תפריט ניווט"}
+              className="md:hidden haptic-press flex h-8 w-8 items-center justify-center rounded-sm border border-border/15 bg-muted/10 text-muted-foreground/60 hover:text-primary hover:border-primary/15 transition-all duration-200 active:scale-95"
             >
               {mobileNavOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
@@ -304,64 +307,70 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
         {/* Main Content */}
         {/* Mobile Nav Dropdown */}
         <div
-          className={`md:hidden border-b border-border/10 bg-sidebar px-3 py-3 space-y-px relative z-40 overflow-hidden transition-all duration-300 ease-out ${
-            mobileNavOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0 border-b-0 py-0"
+          className={`md:hidden relative z-40 origin-top overflow-hidden border-b border-border/10 bg-sidebar shadow-lg transition-all duration-300 ease-out ${
+            mobileNavOpen
+              ? "max-h-[620px] translate-y-0 opacity-100"
+              : "pointer-events-none max-h-0 -translate-y-2 opacity-0 border-b-0"
           }`}
         >
-            {navItems.map((item, i) => {
-              const active = activeNav === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handleNav(item.id)}
-                  style={{ transitionDelay: mobileNavOpen ? `${i * 40}ms` : "0ms" }}
-                  className={`haptic-press flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium transition-all duration-200 min-h-[42px] ${
-                    mobileNavOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
-                  } ${
-                    active ? "bg-primary/8 text-primary" : "text-muted-foreground/60 hover:bg-muted/10 hover:text-foreground"
-                  }`}
-                >
-                  <item.icon className={`h-4 w-4 ${active ? "text-primary" : "text-muted-foreground/30"}`} />
-                  {item.label}
-                </button>
-              );
-            })}
-            <div className="h-px bg-border/10 my-1" />
-            <button
-              onClick={() => { setMobileNavOpen(false); setBrokerModal(true); }}
-              style={{ transitionDelay: mobileNavOpen ? `${navItems.length * 40}ms` : "0ms" }}
-              className={`flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium text-muted-foreground/60 min-h-[42px] hover:bg-muted/10 transition-all duration-200 ${
-                mobileNavOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
-              }`}
-            >
-              <Plug className="h-4 w-4 text-muted-foreground/30" />
-              חבר ברוקר
-              <span className="mr-auto rounded-sm bg-primary/10 border border-primary/10 px-1 py-px text-2xs font-bold text-primary font-mono">2</span>
-            </button>
-            <button
-              onClick={() => { setMobileNavOpen(false); setUpgradeModal(true); }}
-              style={{ transitionDelay: mobileNavOpen ? `${(navItems.length + 1) * 40}ms` : "0ms" }}
-              className={`flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium text-primary min-h-[42px] bg-primary/5 hover:bg-primary/8 transition-all duration-200 ${
-                mobileNavOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
-              }`}
-            >
-              <Crown className="h-4 w-4" />
-              שדרג תוכנית
-              <span className="mr-auto rounded-sm bg-primary/10 px-1.5 py-px text-2xs font-bold text-primary font-mono">PRO</span>
-            </button>
-            <button
-              onClick={() => { setMobileNavOpen(false); navigate("/"); }}
-              style={{ transitionDelay: mobileNavOpen ? `${(navItems.length + 2) * 40}ms` : "0ms" }}
-              className={`flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium text-destructive/50 min-h-[42px] hover:bg-destructive/5 transition-all duration-200 ${
-                mobileNavOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
-              }`}
-            >
-              <LogOut className="h-4 w-4" />
-              התנתק
-            </button>
+          <div className={`px-3 py-3 transition-transform duration-300 ease-out ${mobileNavOpen ? "translate-y-0" : "-translate-y-2"}`}>
+            <div className="space-y-px">
+              {navItems.map((item, i) => {
+                const active = activeNav === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handleNav(item.id)}
+                    style={{ transitionDelay: mobileNavOpen ? `${i * 35}ms` : "0ms" }}
+                    className={`haptic-press flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium min-h-[42px] transition-all duration-300 ${
+                      mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
+                    } ${
+                      active ? "bg-primary/8 text-primary" : "text-muted-foreground/60 hover:bg-muted/10 hover:text-foreground"
+                    }`}
+                  >
+                    <item.icon className={`h-4 w-4 ${active ? "text-primary" : "text-muted-foreground/30"}`} />
+                    {item.label}
+                  </button>
+                );
+              })}
+              <div className="my-1 h-px bg-border/10" />
+              <button
+                onClick={() => { setMobileNavOpen(false); setBrokerModal(true); }}
+                style={{ transitionDelay: mobileNavOpen ? `${navItems.length * 35}ms` : "0ms" }}
+                className={`flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium text-muted-foreground/60 min-h-[42px] hover:bg-muted/10 transition-all duration-300 ${
+                  mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
+                }`}
+              >
+                <Plug className="h-4 w-4 text-muted-foreground/30" />
+                חבר ברוקר
+                <span className="mr-auto rounded-sm bg-primary/10 border border-primary/10 px-1 py-px text-2xs font-bold text-primary font-mono">2</span>
+              </button>
+              <button
+                onClick={() => { setMobileNavOpen(false); setUpgradeModal(true); }}
+                style={{ transitionDelay: mobileNavOpen ? `${(navItems.length + 1) * 35}ms` : "0ms" }}
+                className={`flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium text-primary min-h-[42px] bg-primary/5 hover:bg-primary/8 transition-all duration-300 ${
+                  mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
+                }`}
+              >
+                <Crown className="h-4 w-4" />
+                שדרג תוכנית
+                <span className="mr-auto rounded-sm bg-primary/10 px-1.5 py-px text-2xs font-bold text-primary font-mono">PRO</span>
+              </button>
+              <button
+                onClick={() => { setMobileNavOpen(false); navigate("/"); }}
+                style={{ transitionDelay: mobileNavOpen ? `${(navItems.length + 2) * 35}ms` : "0ms" }}
+                className={`flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium text-destructive/50 min-h-[42px] hover:bg-destructive/5 transition-all duration-300 ${
+                  mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
+                }`}
+              >
+                <LogOut className="h-4 w-4" />
+                התנתק
+              </button>
+            </div>
+          </div>
         </div>
 
-        <main className="flex-1 overflow-y-auto bg-background p-2 md:p-4 md:pb-4 relative">
+        <main className="relative flex-1 overflow-y-auto bg-background p-2 md:p-4 md:pb-4">
           {renderContent()}
           {zenMode && (
             <button
@@ -373,12 +382,14 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             </button>
           )}
         </main>
-      </div>
 
-      {/* Mobile nav overlay */}
-      {mobileNavOpen && (
-        <div className="md:hidden fixed inset-0 z-40 bg-background/40" onClick={() => setMobileNavOpen(false)} />
-      )}
+        <div
+          className={`md:hidden absolute inset-0 z-30 bg-background/55 transition-opacity duration-300 ${
+            mobileNavOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+          }`}
+          onClick={() => setMobileNavOpen(false)}
+        />
+      </div>
 
       {/* ===== Broker Modal ===== */}
       {brokerModal && (
