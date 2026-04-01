@@ -1,224 +1,396 @@
-import { useState } from "react";
-import {
-  Bot, ChevronLeft, ChevronRight, Sparkles, ShieldAlert,
-  CheckCircle2, Brain, Flame, Target, Heart, Lock,
-} from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Bot, Send, Sparkles, CheckCircle2, User } from "lucide-react";
 
-type StepOption = { value: string; label: string; desc: string; emoji: string };
-type Step = {
-  id: string; question: string; subtitle: string; icon: React.ReactNode; iconColor: string;
-  type?: "number"; placeholder?: string; prefix?: string; options?: StepOption[];
+/* ===== Types ===== */
+type ChatMessage = {
+  id: string;
+  role: "bot" | "user";
+  content: string;
+  chips?: { label: string; value: string }[];
+  multiSelect?: boolean;
+  inputType?: "text" | "number" | "textarea";
+  inputPlaceholder?: string;
 };
 
-const steps: Step[] = [
+type QuestionDef = {
+  id: string;
+  botMessage: string;
+  chips?: { label: string; value: string }[];
+  multiSelect?: boolean;
+  inputType?: "text" | "number" | "textarea";
+  inputPlaceholder?: string;
+};
+
+/* ===== Questions ===== */
+const questions: QuestionDef[] = [
   {
-    id: "weakness",
-    question: "בכנות, מהי החולשה הפסיכולוגית הכי גדולה ששורפת לך חשבונות?",
-    subtitle: "אין פה שיפוטיות. אני צריך לדעת מה לשמור עליך ממנו.",
-    icon: <Flame className="h-4 w-4" />, iconColor: "destructive",
-    options: [
-      { value: "revenge", label: "מסחר נקמה", desc: "נכנס לעסקה כדי 'להחזיר' הפסד", emoji: "🔥" },
-      { value: "fomo", label: "פומו וכניסה מוקדמת", desc: "רואה נר ירוק וקופץ בלי אישור", emoji: "⚡" },
-      { value: "stoploss", label: "הזזת סטופ-לוס", desc: "מרחיק את הסטופ ומפסיד יותר", emoji: "📉" },
-      { value: "overlev", label: "מינוף יתר", desc: "נכנס בגדול כי 'הפעם אני בטוח'", emoji: "💣" },
+    id: "name",
+    botMessage: "היי! 👋 אני ZenTrade AI — השומר שלך בשוק.\n\nלפני שנתחיל, ספר לי — מה השם שלך?",
+    inputType: "text",
+    inputPlaceholder: "הקלד את שמך...",
+  },
+  {
+    id: "experience",
+    botMessage: "נעים מאוד! 🤝\n\nכמה ניסיון יש לך במסחר?",
+    chips: [
+      { label: "🌱 מתחיל", value: "beginner" },
+      { label: "📊 פחות משנה", value: "<1year" },
+      { label: "📈 1-3 שנים", value: "1-3years" },
+      { label: "🏆 3+ שנים", value: "3+years" },
     ],
   },
   {
-    id: "propfail",
-    question: "כמה פעמים נכשלת באתגר פראפ בגלל חוסר משמעת?",
-    subtitle: "לא בגלל אסטרטגיה — בגלל הראש.",
-    icon: <Target className="h-4 w-4" />, iconColor: "primary",
-    options: [
-      { value: "0", label: "אף פעם", desc: "עדיין לא ניסיתי או עברתי", emoji: "✅" },
-      { value: "1-3", label: "1-3 פעמים", desc: "כואב, אבל לומד", emoji: "😤" },
-      { value: "4-10", label: "4-10 פעמים", desc: "הבנתי שהבעיה זה לא הסטרטגיה", emoji: "😞" },
-      { value: "lost_count", label: "הפסקתי לספור", desc: "...וזו בדיוק הסיבה שאתה פה", emoji: "💔" },
+    id: "risk",
+    botMessage: "מעולה. עכשיו בוא נדבר על ניהול סיכונים — זה הלב של הכל 💎\n\nכמה אחוז מההון שלך אתה מוכן לסכן בעסקה בודדת?",
+    chips: [
+      { label: "1%", value: "1%" },
+      { label: "2%", value: "2%" },
+      { label: "3%", value: "3%" },
+      { label: "✏️ אחוז מותאם", value: "custom" },
     ],
   },
   {
-    id: "reaction",
-    question: "איך אתה מגיב אחרי הפסד כואב?",
-    subtitle: "התגובה שלך אחרי הפסד קובעת אם תשרוד.",
-    icon: <Brain className="h-4 w-4" />, iconColor: "primary",
-    options: [
-      { value: "jump", label: "קופץ מיד לעסקה", desc: "חייב להחזיר את הכסף עכשיו", emoji: "🏃" },
-      { value: "freeze", label: "קופא מול המסך", desc: "מפחד לגעת, הלב דופק", emoji: "🧊" },
-      { value: "double", label: "מכפיל כמות", desc: "מגדיל פוזיציה כי 'זו ההזדמנות'", emoji: "💀" },
+    id: "capital",
+    botMessage: "מהו גודל התיק שלך, או כמה הון אתה מוכן להשקיע? 💰",
+    chips: [
+      { label: "עד $1,000", value: "<1k" },
+      { label: "$1,000 - $5,000", value: "1k-5k" },
+      { label: "$5,000 - $25,000", value: "5k-25k" },
+      { label: "$25,000 - $100,000", value: "25k-100k" },
+      { label: "$100,000+", value: "100k+" },
     ],
   },
   {
-    id: "lockout",
-    question: "מהו סכום ההפסד היומי שבו אנעל לך הכל?",
-    subtitle: "זה קו האדום. ברגע שתגיע — אני נועל. בלי פשרות.",
-    icon: <Lock className="h-4 w-4" />, iconColor: "destructive",
-    type: "number", placeholder: "300", prefix: "$",
+    id: "methodology",
+    botMessage: "איזה סגנון מסחר הולך לך? בחר כמה שמתאימים 🎯",
+    multiSelect: true,
+    chips: [
+      { label: "Price Action", value: "price-action" },
+      { label: "SMC", value: "smc" },
+      { label: "Supply & Demand", value: "supply-demand" },
+      { label: "Order Blocks", value: "order-blocks" },
+      { label: "אינדיקטורים", value: "indicators" },
+      { label: "Elliott Wave", value: "elliott-wave" },
+      { label: "אחר", value: "other" },
+    ],
+  },
+  {
+    id: "assets",
+    botMessage: "על מה אתה סוחר? בחר את הנכסים שלך 📊",
+    multiSelect: true,
+    chips: [
+      { label: "🌍 Forex", value: "forex" },
+      { label: "📊 מדדים", value: "indices" },
+      { label: "📈 מניות", value: "stocks" },
+      { label: "₿ קריפטו", value: "crypto" },
+      { label: "🥇 סחורות/זהב", value: "commodities" },
+    ],
+  },
+  {
+    id: "goal",
+    botMessage: "שאלה אחרונה — ואולי הכי חשובה 🔥\n\nמה המטרה הכי גדולה שלך, או מה האתגר שהכי שורף אותך עכשיו במסחר?",
+    inputType: "textarea",
+    inputPlaceholder: "ספר לי מה עובר עליך...",
   },
 ];
 
-interface OnboardingModalProps { userName: string; onComplete: () => void; }
+/* ===== Component ===== */
+interface OnboardingModalProps {
+  userName: string;
+  onComplete: () => void;
+}
 
-const OnboardingModal = ({ userName, onComplete }: OnboardingModalProps) => {
-  const [phase, setPhase] = useState<"greeting" | "steps" | "done">("greeting");
-  const [currentStep, setCurrentStep] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
+const OnboardingModal = ({ onComplete }: OnboardingModalProps) => {
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [currentQ, setCurrentQ] = useState(-1); // -1 = not started
+  const [userProfile, setUserProfile] = useState<Record<string, string | string[]>>({});
+  const [inputValue, setInputValue] = useState("");
+  const [multiSelected, setMultiSelected] = useState<string[]>([]);
+  const [typing, setTyping] = useState(false);
+  const [completed, setCompleted] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  const handleSelect = (stepId: string, value: string) => setAnswers({ ...answers, [stepId]: value });
-  const canProceed = () => !!answers[steps[currentStep].id];
-  const next = () => { if (currentStep < steps.length - 1) setCurrentStep(currentStep + 1); else setPhase("done"); };
-  const prev = () => { if (currentStep > 0) setCurrentStep(currentStep - 1); };
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    }, 50);
+  };
+
+  // Start onboarding
+  useEffect(() => {
+    if (currentQ === -1) {
+      setTyping(true);
+      setTimeout(() => {
+        const q = questions[0];
+        setMessages([{
+          id: "q-0",
+          role: "bot",
+          content: q.botMessage,
+          chips: q.chips,
+          multiSelect: q.multiSelect,
+          inputType: q.inputType,
+          inputPlaceholder: q.inputPlaceholder,
+        }]);
+        setCurrentQ(0);
+        setTyping(false);
+        scrollToBottom();
+      }, 800);
+    }
+  }, []);
+
+  const advanceToNext = (answerDisplay: string, profileKey: string, profileValue: string | string[]) => {
+    // Add user message
+    const userMsg: ChatMessage = { id: `u-${currentQ}`, role: "user", content: answerDisplay };
+    setMessages((prev) => [...prev, userMsg]);
+    setUserProfile((prev) => ({ ...prev, [profileKey]: profileValue }));
+    setInputValue("");
+    setMultiSelected([]);
+    scrollToBottom();
+
+    const nextIdx = currentQ + 1;
+
+    if (nextIdx >= questions.length) {
+      // All done — show summary
+      setTyping(true);
+      scrollToBottom();
+      setTimeout(() => {
+        const name = userProfile.name || answerDisplay;
+        const summaryMsg: ChatMessage = {
+          id: "summary",
+          role: "bot",
+          content: `🎉 מושלם, ${typeof name === 'string' ? name : ''}!\n\nהפרופיל שלך מוכן. הנה הסיכום:\n\n✅ ניסיון: ${userProfile.experience || profileValue}\n✅ סיכון לעסקה: ${userProfile.risk || ''}\n✅ גודל תיק: ${userProfile.capital || ''}\n✅ סגנון מסחר: ${Array.isArray(userProfile.methodology) ? userProfile.methodology.join(', ') : userProfile.methodology || ''}\n✅ נכסים: ${Array.isArray(userProfile.assets) ? userProfile.assets.join(', ') : userProfile.assets || ''}\n\nאני כאן בשבילך — לשמור, לנתח, ולדאוג שלא תחרוג מהתוכנית 🛡️\n\nבוא נתחיל לעבוד!`,
+        };
+        setMessages((prev) => [...prev, summaryMsg]);
+        setTyping(false);
+        setCompleted(true);
+        scrollToBottom();
+      }, 1200);
+      return;
+    }
+
+    // Next question
+    setTyping(true);
+    scrollToBottom();
+    setTimeout(() => {
+      const q = questions[nextIdx];
+      const botMsg: ChatMessage = {
+        id: `q-${nextIdx}`,
+        role: "bot",
+        content: q.botMessage,
+        chips: q.chips,
+        multiSelect: q.multiSelect,
+        inputType: q.inputType,
+        inputPlaceholder: q.inputPlaceholder,
+      };
+      setMessages((prev) => [...prev, botMsg]);
+      setCurrentQ(nextIdx);
+      setTyping(false);
+      scrollToBottom();
+    }, 900);
+  };
+
+  const handleChipClick = (value: string, label: string) => {
+    const q = questions[currentQ];
+    if (q.multiSelect) {
+      setMultiSelected((prev) =>
+        prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+      );
+    } else {
+      advanceToNext(label, q.id, value);
+    }
+  };
+
+  const handleSubmitMulti = () => {
+    if (multiSelected.length === 0) return;
+    const q = questions[currentQ];
+    const labels = multiSelected.map((v) => q.chips?.find((c) => c.value === v)?.label || v);
+    advanceToNext(labels.join("، "), q.id, multiSelected);
+  };
+
+  const handleSubmitInput = () => {
+    if (!inputValue.trim()) return;
+    const q = questions[currentQ];
+    advanceToNext(inputValue.trim(), q.id, inputValue.trim());
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmitInput();
+    }
+  };
+
+  // Find current active question for input UI
+  const activeQ = currentQ >= 0 && currentQ < questions.length ? questions[currentQ] : null;
+  const isLastBotMsg = (msgId: string) => {
+    const botMsgs = messages.filter((m) => m.role === "bot");
+    return botMsgs[botMsgs.length - 1]?.id === msgId;
+  };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 md:p-6" dir="rtl">
-      <div className="absolute inset-0 bg-[#050508]/90 backdrop-blur-xl" />
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-2 md:p-6" dir="rtl">
+      <div className="absolute inset-0 bg-[hsl(var(--background)/0.95)] backdrop-blur-xl" />
 
-      <div className="relative z-10 w-full max-w-lg max-h-[94vh] overflow-y-auto animate-in zoom-in-95 fade-in duration-500">
-        <div className="rounded-sm border border-border/30 bg-card shadow-2xl overflow-hidden">
-          <div className="h-px w-full bg-gradient-to-l from-primary via-primary/50 to-primary" />
-
-          <div className="p-5 md:p-6">
-            {/* Greeting */}
-            {phase === "greeting" && (
-              <div className="text-center py-4">
-                <div className="mx-auto mb-6 relative">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="h-24 w-24 rounded-full bg-primary/8 animate-ping" style={{ animationDuration: "3s" }} />
-                  </div>
-                  <div className="relative flex h-20 w-20 mx-auto items-center justify-center rounded-sm bg-primary/10 border border-primary/15">
-                    <Bot className="h-10 w-10 text-primary" />
-                  </div>
-                </div>
-
-                <h2 className="font-heading text-lg md:text-xl font-bold text-foreground">
-                  ברוך הבא הביתה,
-                  <br />
-                  <span className="text-primary">{userName}</span>.
-                </h2>
-
-                <div className="mt-5 mx-auto max-w-sm rounded-sm border border-border/15 bg-muted/10 p-4">
-                  <p className="text-[11px] leading-[1.9] text-muted-foreground">
-                    לפני שנתחיל, אני צריך
-                    <span className="text-primary font-medium"> להכיר את השדים שלך </span>
-                    כדי להגן עליך מפניהם.
-                  </p>
-                </div>
-
-                <button
-                  onClick={() => setPhase("steps")}
-                  className="mt-6 inline-flex items-center gap-2 rounded-sm bg-primary px-6 py-3 text-[12px] font-bold text-primary-foreground transition-all hover:bg-primary/90 active:scale-[0.97]"
-                >
-                  <Sparkles className="h-3.5 w-3.5" />
-                  אני מוכן. נתחיל.
-                </button>
+      <div className="relative z-10 w-full max-w-xl h-[90vh] md:h-[85vh] flex flex-col animate-in zoom-in-95 fade-in duration-500">
+        <div className="flex flex-col h-full rounded-xl border border-border/20 bg-card shadow-2xl overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center gap-3 px-4 py-3 border-b border-border/10 bg-card/80 backdrop-blur-sm">
+            <div className="relative">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 border border-primary/15">
+                <Bot className="h-5 w-5 text-primary" />
               </div>
-            )}
+              <span className="absolute -bottom-0.5 -left-0.5 h-2.5 w-2.5 rounded-full bg-profit border-2 border-card" />
+            </div>
+            <div>
+              <h2 className="font-heading text-sm font-bold text-foreground">ZenTrade AI</h2>
+              <p className="text-2xs text-muted-foreground/50">בונה את הפרופיל שלך...</p>
+            </div>
+            <div className="mr-auto flex items-center gap-1 px-2 py-1 rounded-md bg-primary/5 border border-primary/10">
+              <Sparkles className="h-3 w-3 text-primary" />
+              <span className="text-2xs text-primary font-semibold">{Math.min(currentQ + 1, 7)}/7</span>
+            </div>
+          </div>
 
-            {/* Steps */}
-            {phase === "steps" && (() => {
-              const step = steps[currentStep];
-              const isNumber = step.type === "number";
-              return (
-                <div>
-                  <div className="mb-1.5 flex items-center gap-1">
-                    {steps.map((_, i) => (
-                      <div key={i} className={`h-0.5 flex-1 rounded-sm transition-all ${i < currentStep ? "bg-profit" : i === currentStep ? "bg-primary" : "bg-muted/20"}`} />
-                    ))}
+          {/* Messages */}
+          <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 md:px-4 py-4 space-y-3 scrollbar-none">
+            {messages.map((msg) => (
+              <div key={msg.id} className={`flex gap-2 ${msg.role === "user" ? "flex-row-reverse" : ""} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
+                {/* Avatar */}
+                {msg.role === "bot" ? (
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/8 border border-primary/10 mt-0.5">
+                    <Bot className="h-3.5 w-3.5 text-primary" />
                   </div>
-                  <p className="text-2xs text-muted-foreground/30 mb-4 font-mono">{currentStep + 1}/{steps.length}</p>
+                ) : (
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-muted/20 border border-border/10 mt-0.5">
+                    <User className="h-3.5 w-3.5 text-muted-foreground" />
+                  </div>
+                )}
 
-                  <div className={`rounded-sm border p-3 mb-4 ${step.iconColor === "destructive" ? "border-loss/15 bg-loss/[0.02]" : "border-primary/10 bg-primary/[0.02]"}`}>
-                    <div className="flex items-start gap-2.5">
-                      <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-sm ${step.iconColor === "destructive" ? "bg-loss/8 text-loss" : "bg-primary/8 text-primary"}`}>
-                        {step.icon}
-                      </div>
-                      <div>
-                        <h3 className="font-heading text-[12px] md:text-[13px] font-bold text-foreground leading-relaxed">{step.question}</h3>
-                        <p className="mt-1 text-2xs text-muted-foreground/50 leading-relaxed">{step.subtitle}</p>
-                      </div>
-                    </div>
+                {/* Bubble */}
+                <div className={`max-w-[80%] ${msg.role === "user" ? "ml-auto" : ""}`}>
+                  <div className={`rounded-xl px-3.5 py-2.5 text-[12px] leading-[1.8] whitespace-pre-line ${
+                    msg.role === "bot"
+                      ? "bg-muted/10 border border-border/10 text-foreground"
+                      : "bg-primary text-primary-foreground"
+                  }`}>
+                    {msg.content}
                   </div>
 
-                  {!isNumber && step.options && (
-                    <div className="space-y-1.5">
-                      {step.options.map((opt) => {
-                        const selected = answers[step.id] === opt.value;
+                  {/* Chips (only on last bot msg) */}
+                  {msg.role === "bot" && msg.chips && isLastBotMsg(msg.id) && !completed && (
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {msg.chips.map((chip) => {
+                        const selected = msg.multiSelect
+                          ? multiSelected.includes(chip.value)
+                          : false;
                         return (
                           <button
-                            key={opt.value}
-                            onClick={() => handleSelect(step.id, opt.value)}
-                            className={`flex w-full items-start gap-2.5 rounded-sm border p-3 text-right transition-all ${
-                              selected ? "border-primary/25 bg-primary/[0.04]" : "border-border/10 bg-muted/5 hover:bg-muted/10 hover:border-border/20"
+                            key={chip.value}
+                            onClick={() => handleChipClick(chip.value, chip.label)}
+                            className={`inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-[11px] font-medium border transition-all active:scale-[0.96] ${
+                              selected
+                                ? "border-primary/30 bg-primary/10 text-primary"
+                                : "border-border/15 bg-card hover:border-primary/20 hover:bg-primary/5 text-foreground"
                             }`}
                           >
-                            <span className="text-sm mt-0.5">{opt.emoji}</span>
-                            <div className="flex-1">
-                              <div className="flex items-center gap-1.5">
-                                <p className="text-[11px] font-semibold text-foreground">{opt.label}</p>
-                                {selected && <CheckCircle2 className="h-3 w-3 text-primary" />}
-                              </div>
-                              <p className="text-2xs text-muted-foreground/50 mt-0.5 leading-relaxed">{opt.desc}</p>
-                            </div>
+                            {chip.label}
+                            {selected && <CheckCircle2 className="h-3 w-3 text-primary" />}
                           </button>
                         );
                       })}
+                      {msg.multiSelect && multiSelected.length > 0 && (
+                        <button
+                          onClick={handleSubmitMulti}
+                          className="inline-flex items-center gap-1 rounded-lg px-4 py-1.5 text-[11px] font-bold bg-primary text-primary-foreground transition-all hover:bg-primary/90 active:scale-[0.96]"
+                        >
+                          <Send className="h-3 w-3" />
+                          אישור ({multiSelected.length})
+                        </button>
+                      )}
                     </div>
                   )}
+                </div>
+              </div>
+            ))}
 
-                  {isNumber && (
-                    <div className="space-y-3">
-                      <div className="relative">
-                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xl font-bold text-primary font-mono">{step.prefix}</span>
-                        <input
-                          type="number"
-                          value={answers[step.id] || ""}
-                          onChange={(e) => handleSelect(step.id, e.target.value)}
-                          placeholder={step.placeholder}
-                          className="w-full rounded-sm border border-loss/15 bg-loss/[0.02] py-4 pr-12 pl-4 text-2xl font-bold text-foreground text-center font-mono placeholder:text-muted-foreground/15 focus:border-primary focus:outline-none transition-all"
-                        />
-                      </div>
-                      <div className="rounded-sm border border-loss/10 bg-loss/[0.02] p-2.5 flex items-start gap-2">
-                        <ShieldAlert className="h-3.5 w-3.5 text-loss shrink-0 mt-0.5" />
-                        <p className="text-2xs text-muted-foreground/50 leading-relaxed">
-                          ברגע שתגיע לסכום — <span className="text-loss font-semibold">אני נועל הכל</span>. זה בשבילך.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="mt-6 flex items-center justify-between">
-                    <button onClick={prev} disabled={currentStep === 0} className="flex items-center gap-1 rounded-sm px-3 py-2 text-[11px] font-medium text-muted-foreground/50 hover:text-foreground disabled:opacity-15 transition-all">
-                      <ChevronRight className="h-3 w-3" />
-                      הקודם
-                    </button>
-                    <button onClick={next} disabled={!canProceed()} className="flex items-center gap-1.5 rounded-sm bg-primary px-5 py-2.5 text-[11px] font-bold text-primary-foreground disabled:opacity-20 transition-all hover:bg-primary/90 active:scale-[0.97]">
-                      {currentStep === steps.length - 1 ? "סיים" : "הבא"}
-                      <ChevronLeft className="h-3 w-3" />
-                    </button>
+            {/* Typing indicator */}
+            {typing && (
+              <div className="flex gap-2 animate-in fade-in duration-300">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/8 border border-primary/10">
+                  <Bot className="h-3.5 w-3.5 text-primary" />
+                </div>
+                <div className="rounded-xl bg-muted/10 border border-border/10 px-4 py-3">
+                  <div className="flex gap-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/30 animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/30 animate-bounce" style={{ animationDelay: "150ms" }} />
+                    <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/30 animate-bounce" style={{ animationDelay: "300ms" }} />
                   </div>
                 </div>
-              );
-            })()}
+              </div>
+            )}
+          </div>
 
-            {/* Done */}
-            {phase === "done" && (
-              <div className="text-center py-5">
-                <div className="flex h-16 w-16 mx-auto items-center justify-center rounded-sm bg-profit/8 border border-profit/15 mb-4">
-                  <Heart className="h-8 w-8 text-profit" />
-                </div>
-                <h2 className="font-heading text-lg font-bold text-foreground">אני מבין אותך.</h2>
-                <p className="mt-1.5 text-primary font-heading text-[13px] font-semibold">מעכשיו, אתה לא לבד.</p>
-                <div className="mt-4 mx-auto max-w-sm rounded-sm border border-border/10 bg-muted/8 p-3">
-                  <p className="text-2xs text-muted-foreground/50 leading-[1.8]">
-                    המידע נשמר בצורה מוצפנת. ישמש רק להגנה עליך בזמן אמת.
-                  </p>
-                </div>
+          {/* Input Area */}
+          <div className="border-t border-border/10 bg-card/80 backdrop-blur-sm px-3 md:px-4 py-3">
+            {completed ? (
+              <button
+                onClick={onComplete}
+                className="w-full flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-[13px] font-bold text-primary-foreground transition-all hover:bg-primary/90 active:scale-[0.97]"
+              >
+                <Sparkles className="h-4 w-4" />
+                בוא נתחיל לעבוד!
+              </button>
+            ) : activeQ?.inputType === "text" || activeQ?.inputType === "textarea" ? (
+              <div className="flex items-end gap-2">
+                {activeQ.inputType === "textarea" ? (
+                  <textarea
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder={activeQ.inputPlaceholder}
+                    rows={2}
+                    className="flex-1 resize-none rounded-lg border border-border/15 bg-muted/5 px-3 py-2.5 text-[12px] text-foreground placeholder:text-muted-foreground/25 focus:border-primary/30 focus:outline-none transition-all"
+                  />
+                ) : (
+                  <input
+                    type="text"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder={activeQ.inputPlaceholder}
+                    autoFocus
+                    className="flex-1 rounded-lg border border-border/15 bg-muted/5 px-3 py-2.5 text-[12px] text-foreground placeholder:text-muted-foreground/25 focus:border-primary/30 focus:outline-none transition-all"
+                  />
+                )}
                 <button
-                  onClick={onComplete}
-                  className="mt-6 inline-flex items-center gap-2 rounded-sm bg-primary px-6 py-3 text-[12px] font-bold text-primary-foreground transition-all hover:bg-primary/90 active:scale-[0.97]"
+                  onClick={handleSubmitInput}
+                  disabled={!inputValue.trim()}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground disabled:opacity-20 transition-all hover:bg-primary/90 active:scale-[0.95]"
                 >
-                  <Sparkles className="h-3.5 w-3.5" />
-                  בוא ניכנס
+                  <Send className="h-4 w-4" />
                 </button>
               </div>
+            ) : activeQ?.inputType === "number" ? (
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder={activeQ.inputPlaceholder}
+                  autoFocus
+                  className="flex-1 rounded-lg border border-border/15 bg-muted/5 px-3 py-2.5 text-[12px] text-foreground placeholder:text-muted-foreground/25 focus:border-primary/30 focus:outline-none transition-all font-mono"
+                />
+                <button
+                  onClick={handleSubmitInput}
+                  disabled={!inputValue.trim()}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground disabled:opacity-20 transition-all hover:bg-primary/90 active:scale-[0.95]"
+                >
+                  <Send className="h-4 w-4" />
+                </button>
+              </div>
+            ) : (
+              <p className="text-center text-2xs text-muted-foreground/30 py-1">בחר אחת מהאפשרויות למעלה ☝️</p>
             )}
           </div>
         </div>
