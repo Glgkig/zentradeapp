@@ -16,7 +16,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4">
 
         {/* 1. AI Pulse & Emotional State */}
-        <div className="md:col-span-5 rounded-2xl border border-primary/15 bg-gradient-to-bl from-primary/[0.05] via-secondary/40 to-secondary/30 p-5 relative overflow-hidden">
+        <div className="md:col-span-5 rounded-2xl border border-primary/15 bg-gradient-to-bl from-primary/[0.05] via-secondary/40 to-secondary/30 p-4 md:p-5 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-40 h-40 bg-primary/[0.04] rounded-full blur-3xl" />
           <div className="relative z-10">
             <div className="flex items-start gap-3.5 mb-4">
