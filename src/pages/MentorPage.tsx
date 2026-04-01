@@ -259,31 +259,40 @@ const MentorPage = () => {
 
           {/* Recording state */}
           {isRecording && (
-            <div className="flex items-center gap-2.5 flex-1">
-              <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-destructive animate-pulse" />
-                <span className="text-[10px] text-destructive/70 font-semibold">מקליט...</span>
+            <div className="flex items-center gap-3 flex-1">
+              {/* Timer */}
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_8px_hsl(var(--primary)/0.5)]" />
+                <span className="text-[11px] text-primary font-mono font-semibold tabular-nums">0:04</span>
               </div>
-              <div className="flex-1 flex items-end gap-[1.5px] h-5">
-                {Array.from({ length: 30 }, (_, i) => (
-                  <div
-                    key={i}
-                    className="flex-1 rounded-full bg-destructive/25 animate-pulse"
-                    style={{
-                      height: `${20 + Math.random() * 80}%`,
-                      animationDelay: `${i * 50}ms`,
-                      animationDuration: "0.6s",
-                    }}
-                  />
-                ))}
+
+              {/* Waveform — thin elegant bars */}
+              <div className="flex-1 flex items-center justify-center gap-[2px] h-8">
+                {Array.from({ length: 40 }, (_, i) => {
+                  const center = 20;
+                  const dist = Math.abs(i - center) / center;
+                  const baseH = 15 + (1 - dist) * 70 + Math.sin(i * 0.8) * 15;
+                  return (
+                    <div
+                      key={i}
+                      className="w-[2px] rounded-full bg-primary/50 transition-all"
+                      style={{
+                        height: `${baseH}%`,
+                        animation: `waveform ${0.4 + Math.random() * 0.4}s ease-in-out ${i * 30}ms infinite alternate`,
+                      }}
+                    />
+                  );
+                })}
               </div>
+
+              {/* Send */}
               <button
                 type="button"
                 onClick={() => {
                   setIsRecording(false);
                   sendMessage("(הודעה קולית) אני מרגיש לחוץ היום מהשוק, הפסדתי שתי עסקאות ואני לא יודע אם להמשיך");
                 }}
-                className="haptic-press flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/15 border border-primary/20 text-primary transition-all hover:bg-primary/20"
+                className="haptic-press flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/15 border border-primary/25 text-primary transition-all hover:bg-primary/25 hover:shadow-[0_0_12px_hsl(var(--primary)/0.15)]"
               >
                 <Send className="h-3.5 w-3.5" />
               </button>
