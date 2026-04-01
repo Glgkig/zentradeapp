@@ -684,6 +684,8 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
               {isLogin ? "הירשם עכשיו" : "התחבר"}
             </button>
           </p>
+            </>
+          )}
         </div>
       </div>
     </div>
