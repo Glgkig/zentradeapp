@@ -439,7 +439,7 @@ const AuthPage = () => {
             <span className="font-heading text-sm font-bold text-foreground">ZenTrade</span>
           </div>
           <div className="flex items-center gap-6 text-xs text-muted-foreground">
-            <span className="cursor-pointer hover:text-foreground transition-colors">תנאי שימוש</span>
+            <Link to="/terms" className="hover:text-foreground transition-colors">תנאי שימוש</Link>
             <span className="cursor-pointer hover:text-foreground transition-colors">מדיניות פרטיות</span>
             <span className="cursor-pointer hover:text-foreground transition-colors">יצירת קשר</span>
           </div>
