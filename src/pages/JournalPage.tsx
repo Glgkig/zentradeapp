@@ -134,7 +134,7 @@ const JournalPage = () => {
             <option value="plan">לפי תוכנית</option>
           </FilterSelect>
 
-          <button className="rounded-xl border border-border/30 bg-muted/10 px-3.5 py-2 text-[10px] md:text-[11px] text-muted-foreground/60 flex items-center gap-1.5 hover:text-foreground hover:border-border/50 transition-all duration-300">
+          <button className="interactive-btn rounded-xl border border-border/30 bg-muted/10 px-3.5 py-2 text-[10px] md:text-[11px] text-muted-foreground/60 flex items-center gap-1.5 hover:text-foreground hover:border-border/50 transition-all duration-300 min-h-[44px]">
             <Calendar className="h-3 w-3" />
             טווח תאריכים
           </button>
