@@ -611,7 +611,7 @@ const UpgradeModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?
       {/* Plans Grid */}
       <div className={`grid ${mobile ? "grid-cols-1 gap-2" : "grid-cols-3 gap-2.5"}`}>
         {plans.map((plan) => {
-          const displayPrice = isYearly ? plan.yearlyPrice : plan.price;
+          const originalYearly = Number(plan.price) * 12;
           return (
             <div
               key={plan.id}
@@ -632,10 +632,17 @@ const UpgradeModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?
                 <span className="text-2xs text-muted-foreground/30 font-mono">{plan.nameEn}</span>
               </div>
               <div className="mb-3">
-                <span className="text-xl font-bold text-foreground font-mono">₪{displayPrice}</span>
-                <span className="text-2xs text-muted-foreground/40">/חודש</span>
-                {isYearly && (
-                  <span className="mr-2 text-2xs text-muted-foreground/30 line-through font-mono">₪{plan.price}</span>
+                {isYearly ? (
+                  <>
+                    <span className="text-xl font-bold text-foreground font-mono">₪{plan.yearlyTotal}</span>
+                    <span className="text-2xs text-muted-foreground/40">/שנה</span>
+                    <span className="mr-2 text-2xs text-muted-foreground/30 line-through font-mono">₪{originalYearly.toLocaleString()}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-xl font-bold text-foreground font-mono">₪{plan.price}</span>
+                    <span className="text-2xs text-muted-foreground/40">/חודש</span>
+                  </>
                 )}
               </div>
               <div className="space-y-1 mb-3">
