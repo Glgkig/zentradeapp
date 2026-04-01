@@ -102,6 +102,7 @@ interface OnboardingModalProps {
 }
 
 const OnboardingModal = ({ onComplete }: OnboardingModalProps) => {
+  const { updateProfile } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentQ, setCurrentQ] = useState(-1); // -1 = not started
   const [userProfile, setUserProfile] = useState<Record<string, string | string[]>>({});
