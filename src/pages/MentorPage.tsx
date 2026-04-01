@@ -218,8 +218,8 @@ const MentorPage = () => {
 
       {/* ── Quick Actions Grid ── */}
       <div className="shrink-0 px-1 pt-3">
-        <div className="grid grid-cols-3 gap-1.5">
-          {tiltPills.map((pill, index) => {
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+          {tiltPills.slice(0, window.innerWidth < 640 ? 4 : 6).map((pill, index) => {
             const colors = pillColorMap[pill.color];
             return (
               <button

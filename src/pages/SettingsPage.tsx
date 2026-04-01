@@ -62,8 +62,8 @@ const SettingsPage = () => {
             })}
           </div>
 
-          {/* Quick Info Card */}
-          <div className="mt-3 rounded-2xl border border-border/10 bg-card/50 p-4">
+          {/* Quick Info Card — hidden on mobile */}
+          <div className="hidden md:block mt-3 rounded-2xl border border-border/10 bg-card/50 p-4">
             <div className="flex items-center gap-2 mb-3">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
                 <Zap className="h-3.5 w-3.5 text-accent" />
