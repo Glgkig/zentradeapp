@@ -53,6 +53,14 @@ const AuthPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [modalMode, setModalMode] = useState<"login" | "register">("register");
+  const isEditorCanvas = (() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return window.self !== window.top;
+    } catch {
+      return true;
+    }
+  })();
 
   // Force dark mode on landing page
   useEffect(() => {
@@ -65,6 +73,7 @@ const AuthPage = () => {
   }, []);
 
   const openModal = (mode: "login" | "register" = "register") => {
+    if (isEditorCanvas) return;
     setModalMode(mode);
     setShowModal(true);
     setMobileMenu(false);
@@ -105,7 +114,7 @@ const AuthPage = () => {
 
           {/* Mobile Menu Trigger */}
           <button
-            onClick={() => setMobileMenu(!mobileMenu)}
+            onClick={() => !isEditorCanvas && setMobileMenu(!mobileMenu)}
             className="md:hidden relative flex h-9 w-9 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 transition-all hover:bg-primary/20 active:scale-95"
           >
             {mobileMenu ? (
@@ -121,7 +130,7 @@ const AuthPage = () => {
         </div>
 
         {/* Mobile Menu */}
-        {mobileMenu && (
+        {!isEditorCanvas && mobileMenu && (
           <div className="md:hidden border-t border-border/30 bg-background/95 backdrop-blur-xl px-4 py-4 space-y-2">
             <a href="#features" onClick={() => setMobileMenu(false)} className="block py-2 text-sm text-foreground/70">למה ZenTrade?</a>
             <a href="#testimonials" onClick={() => setMobileMenu(false)} className="block py-2 text-sm text-foreground/70">ביקורות</a>
@@ -452,7 +461,7 @@ const AuthPage = () => {
       </section>
 
       {/* ===== WhatsApp Chat Widget ===== */}
-      <WhatsAppWidget />
+      {!isEditorCanvas && <WhatsAppWidget />}
 
       {/* ===== FOOTER ===== */}
       <footer className="border-t border-border/30 px-4 py-8 md:px-8 md:py-10">
@@ -470,7 +479,7 @@ const AuthPage = () => {
       </footer>
 
       {/* ===== AUTH MODAL ===== */}
-      {showModal && <AuthModal onClose={closeModal} initialMode={modalMode} />}
+      {!isEditorCanvas && showModal && <AuthModal onClose={closeModal} initialMode={modalMode} />}
     </div>
   );
 };
