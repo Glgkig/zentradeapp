@@ -391,6 +391,15 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                   </button>
                 );
               })}
+              {/* Upgrade */}
+              <button
+                onClick={() => { setMoreSheet(false); setUpgradeModal(true); }}
+                className="flex w-full items-center gap-3 rounded-2xl px-4 py-3.5 text-sm font-medium text-primary min-h-[48px] hover:bg-primary/10 bg-primary/[0.04]"
+              >
+                <Crown className="h-5 w-5" />
+                שדרג תוכנית
+                <span className="mr-auto rounded-full bg-primary/15 px-2 py-0.5 text-[8px] font-bold text-primary">Pro</span>
+              </button>
               {/* Broker connect */}
               <button
                 onClick={() => { setMoreSheet(false); setBrokerModal(true); }}
