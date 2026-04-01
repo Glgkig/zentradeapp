@@ -59,7 +59,7 @@ const StatsPage = () => {
               <div className={`${item.color} opacity-60`}>{item.icon}</div>
               <span className="text-[9px] md:text-[10px] text-muted-foreground">{item.label}</span>
             </div>
-            <p className={`text-xl md:text-2xl font-bold ${item.color}`}>{item.value}</p>
+            <p className={`text-lg md:text-2xl font-bold ${item.color}`}>{item.value}</p>
             <p className="text-[8px] text-muted-foreground mt-0.5">{item.sub}</p>
           </div>
         ))}
