@@ -17,6 +17,7 @@ import ProtectionPage from "@/pages/ProtectionPage";
 import logoBinanceFull from "@/assets/logos/binance-full.png";
 import logoTradeLockerFull from "@/assets/logos/tradelocker-full.png";
 import logoTradingViewFull from "@/assets/logos/tradingview-full.png";
+import logoMT5Full from "@/assets/logos/mt5-full.png";
 
 /* ===== Nav Config ===== */
 const navItems = [
@@ -41,7 +42,7 @@ const bottomTabs = [
 const brokers = [
   { name: "TradingView", initials: "TV", connected: false, account: null, logo: logoTradingViewFull },
   { name: "TradeLocker", initials: "TL", connected: true, account: "TL-7842", logo: logoTradeLockerFull },
-  { name: "MetaTrader 5", initials: "M5", connected: false, account: null },
+  { name: "MetaTrader 5", initials: "M5", connected: false, account: null, logo: logoMT5Full },
   { name: "Binance", initials: "BN", connected: true, account: "BN-3291", logo: logoBinanceFull },
   { name: "TopstepX", initials: "TX", connected: false, account: null },
   { name: "Rithmic", initials: "RI", connected: false, account: null },
