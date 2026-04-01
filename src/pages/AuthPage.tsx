@@ -479,7 +479,7 @@ const AuthPage = () => {
       </footer>
 
       {/* ===== AUTH MODAL ===== */}
-      {showModal && <AuthModal onClose={closeModal} initialMode={modalMode} />}
+      {!isEditorCanvas && showModal && <AuthModal onClose={closeModal} initialMode={modalMode} />}
     </div>
   );
 };
