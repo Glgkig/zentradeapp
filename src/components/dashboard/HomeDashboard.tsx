@@ -13,7 +13,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
     <div className="mx-auto max-w-[1280px] space-y-3 md:space-y-4">
 
       {/* ===== Row 1: AI Pulse + Tilt Meter + Protection ===== */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4">
 
         {/* 1. AI Pulse & Emotional State */}
         <div className="md:col-span-5 rounded-2xl border border-primary/15 bg-gradient-to-bl from-primary/[0.05] via-secondary/40 to-secondary/30 p-5 relative overflow-hidden">
