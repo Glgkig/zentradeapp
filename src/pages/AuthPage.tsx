@@ -564,7 +564,7 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
             </button>
           </form>
 
-          <p className="mt-4 text-center text-[10px] md:text-xs text-muted-foreground/60">
+          <p className="mt-4 text-center text-[10px] md:text-xs text-foreground/50">
             {isLogin ? "אין לך חשבון?" : "כבר יש לך חשבון?"}{" "}
             <button onClick={() => setIsLogin(!isLogin)} className="text-primary hover:underline font-medium">
               {isLogin ? "הירשם עכשיו" : "התחבר"}
