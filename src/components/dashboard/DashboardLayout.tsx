@@ -39,7 +39,7 @@ const bottomTabs = [
 ];
 
 const brokers = [
-  { name: "TradingView", initials: "TV", connected: false, account: null },
+  { name: "TradingView", initials: "TV", connected: false, account: null, logo: logoTradingViewFull },
   { name: "TradeLocker", initials: "TL", connected: true, account: "TL-7842", logo: logoTradeLockerFull },
   { name: "MetaTrader 5", initials: "M5", connected: false, account: null },
   { name: "Binance", initials: "BN", connected: true, account: "BN-3291", logo: logoBinanceFull },
