@@ -556,94 +556,121 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
 /* ===== Upgrade Modal ===== */
 const plans = [
   {
-    id: "basic", name: "בסיסי", nameEn: "STARTER", price: "40", icon: Zap,
+    id: "basic", name: "בסיסי", nameEn: "STARTER", price: "40", yearlyPrice: "36", icon: Zap,
     features: ["3 סטאפים", "יומן בסיסי", "סטטיסטיקות שבועיות", "התראות מייל"],
     missing: ["מנטור AI", "בקטסטינג"],
     cta: "התחל", popular: false,
   },
   {
-    id: "pro", name: "Pro", nameEn: "PRO", price: "80", icon: Star,
+    id: "pro", name: "Pro", nameEn: "PRO", price: "80", yearlyPrice: "72", icon: Star,
     features: ["סטאפים ∞", "מנטור AI מתקדם", "Real-Time סטטיסטיקות", "בקטסטינג מלא", "Push + מייל", "ייצוא PDF"],
     missing: [],
     cta: "שדרג ל-Pro", popular: true,
   },
   {
-    id: "vip", name: "VIP", nameEn: "VIP", price: "150", icon: Crown,
+    id: "vip", name: "VIP", nameEn: "VIP", price: "150", yearlyPrice: "135", icon: Crown,
     features: ["הכול ב-Pro +", "API גישה מלאה", "מנטור 1:1", "חוקי ברזל מותאמים", "VIP טלגרם", "תמיכה 24/7", "גישה מוקדמת"],
     missing: [],
     cta: "הצטרף ל-VIP", popular: false,
   },
 ];
 
-const UpgradeModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?: boolean }) => (
-  <div className={mobile ? "px-3 pb-6" : "w-full max-w-2xl rounded-sm border border-border/15 bg-card shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200 overflow-hidden p-5"}>
-    {/* Header */}
-    <div className="flex items-center justify-between mb-4">
-      <div>
-        <h2 className="text-[14px] font-bold text-foreground">שדרוג תוכנית</h2>
-        <p className="text-2xs text-muted-foreground/40 mt-0.5">בחר את התוכנית שמתאימה לך</p>
-      </div>
-      <button onClick={onClose} className="haptic-press flex h-7 w-7 items-center justify-center rounded-sm border border-border/15 bg-muted/10 text-muted-foreground/40 hover:text-foreground transition-all">
-        <X className="h-3.5 w-3.5" />
-      </button>
-    </div>
+const UpgradeModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?: boolean }) => {
+  const [isYearly, setIsYearly] = useState(false);
 
-    {/* Plans Grid */}
-    <div className={`grid ${mobile ? "grid-cols-1 gap-2" : "grid-cols-3 gap-2.5"}`}>
-      {plans.map((plan) => (
-        <div
-          key={plan.id}
-          className={`rounded-sm border p-3 transition-all ${
-            plan.popular
-              ? "border-primary/25 bg-primary/[0.04] shadow-[0_0_20px_hsl(var(--primary)/0.08)]"
-              : "border-border/10 bg-muted/[0.03] hover:border-border/20"
-          }`}
-        >
-          {plan.popular && (
-            <div className="flex items-center gap-1 mb-2">
-              <span className="rounded-sm bg-primary/10 border border-primary/15 px-1.5 py-px text-2xs font-bold text-primary font-mono">POPULAR</span>
-            </div>
-          )}
-          <div className="flex items-center gap-2 mb-2">
-            <plan.icon className={`h-4 w-4 ${plan.popular ? "text-primary" : "text-muted-foreground/40"}`} />
-            <span className="text-[12px] font-bold text-foreground">{plan.name}</span>
-            <span className="text-2xs text-muted-foreground/30 font-mono">{plan.nameEn}</span>
-          </div>
-          <div className="mb-3">
-            <span className="text-xl font-bold text-foreground font-mono">₪{plan.price}</span>
-            <span className="text-2xs text-muted-foreground/40">/חודש</span>
-          </div>
-          <div className="space-y-1 mb-3">
-            {plan.features.map((f) => (
-              <div key={f} className="flex items-center gap-1.5 text-2xs text-muted-foreground/60">
-                <CheckCircle2 className="h-2.5 w-2.5 text-profit shrink-0" />
-                {f}
-              </div>
-            ))}
-            {plan.missing?.map((f) => (
-              <div key={f} className="flex items-center gap-1.5 text-2xs text-muted-foreground/20 line-through">
-                <X className="h-2.5 w-2.5 shrink-0" />
-                {f}
-              </div>
-            ))}
-          </div>
-          <button className={`haptic-press w-full rounded-sm py-2 text-[11px] font-bold transition-all ${
-            plan.popular
-              ? "bg-primary text-primary-foreground hover:bg-primary/90"
-              : "bg-muted/10 border border-border/10 text-foreground/60 hover:bg-muted/20"
-          }`}>
-            {plan.cta}
-          </button>
+  return (
+    <div className={mobile ? "px-3 pb-6" : "w-full max-w-2xl rounded-sm border border-border/15 bg-card shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200 overflow-hidden p-5"}>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h2 className="text-[14px] font-bold text-foreground">שדרוג תוכנית</h2>
+          <p className="text-2xs text-muted-foreground/40 mt-0.5">בחר את התוכנית שמתאימה לך</p>
         </div>
-      ))}
-    </div>
+        <button onClick={onClose} className="haptic-press flex h-7 w-7 items-center justify-center rounded-sm border border-border/15 bg-muted/10 text-muted-foreground/40 hover:text-foreground transition-all">
+          <X className="h-3.5 w-3.5" />
+        </button>
+      </div>
 
-    {/* Social proof */}
-    <div className="mt-3 flex items-center justify-center gap-2 text-2xs text-muted-foreground/25">
-      <ShieldCheck className="h-3 w-3" />
-      <span className="font-mono">+2,847 סוחרים · ביטול בכל עת</span>
+      {/* Billing Toggle */}
+      <div className="flex items-center justify-center gap-3 mb-5">
+        <span className={`text-xs font-medium transition-colors ${!isYearly ? "text-foreground" : "text-muted-foreground/40"}`}>חודשי</span>
+        <button
+          onClick={() => setIsYearly(!isYearly)}
+          className={`relative h-6 w-11 rounded-full transition-colors duration-200 ${isYearly ? "bg-primary" : "bg-muted/30 border border-border/20"}`}
+        >
+          <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-all duration-200 ${isYearly ? "right-0.5" : "right-[22px]"}`} />
+        </button>
+        <span className={`text-xs font-medium transition-colors ${isYearly ? "text-foreground" : "text-muted-foreground/40"}`}>שנתי</span>
+        {isYearly && (
+          <span className="rounded-full bg-profit/15 border border-profit/20 px-2 py-0.5 text-2xs font-bold text-profit font-mono animate-in fade-in zoom-in-95 duration-200">
+            10% הנחה
+          </span>
+        )}
+      </div>
+
+      {/* Plans Grid */}
+      <div className={`grid ${mobile ? "grid-cols-1 gap-2" : "grid-cols-3 gap-2.5"}`}>
+        {plans.map((plan) => {
+          const displayPrice = isYearly ? plan.yearlyPrice : plan.price;
+          return (
+            <div
+              key={plan.id}
+              className={`rounded-sm border p-3 transition-all ${
+                plan.popular
+                  ? "border-primary/25 bg-primary/[0.04] shadow-[0_0_20px_hsl(var(--primary)/0.08)]"
+                  : "border-border/10 bg-muted/[0.03] hover:border-border/20"
+              }`}
+            >
+              {plan.popular && (
+                <div className="flex items-center gap-1 mb-2">
+                  <span className="rounded-sm bg-primary/10 border border-primary/15 px-1.5 py-px text-2xs font-bold text-primary font-mono">POPULAR</span>
+                </div>
+              )}
+              <div className="flex items-center gap-2 mb-2">
+                <plan.icon className={`h-4 w-4 ${plan.popular ? "text-primary" : "text-muted-foreground/40"}`} />
+                <span className="text-[12px] font-bold text-foreground">{plan.name}</span>
+                <span className="text-2xs text-muted-foreground/30 font-mono">{plan.nameEn}</span>
+              </div>
+              <div className="mb-3">
+                <span className="text-xl font-bold text-foreground font-mono">₪{displayPrice}</span>
+                <span className="text-2xs text-muted-foreground/40">/חודש</span>
+                {isYearly && (
+                  <span className="mr-2 text-2xs text-muted-foreground/30 line-through font-mono">₪{plan.price}</span>
+                )}
+              </div>
+              <div className="space-y-1 mb-3">
+                {plan.features.map((f) => (
+                  <div key={f} className="flex items-center gap-1.5 text-2xs text-muted-foreground/60">
+                    <CheckCircle2 className="h-2.5 w-2.5 text-profit shrink-0" />
+                    {f}
+                  </div>
+                ))}
+                {plan.missing?.map((f) => (
+                  <div key={f} className="flex items-center gap-1.5 text-2xs text-muted-foreground/20 line-through">
+                    <X className="h-2.5 w-2.5 shrink-0" />
+                    {f}
+                  </div>
+                ))}
+              </div>
+              <button className={`haptic-press w-full rounded-sm py-2 text-[11px] font-bold transition-all ${
+                plan.popular
+                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                  : "bg-muted/10 border border-border/10 text-foreground/60 hover:bg-muted/20"
+              }`}>
+                {plan.cta}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Social proof */}
+      <div className="mt-3 flex items-center justify-center gap-2 text-2xs text-muted-foreground/25">
+        <ShieldCheck className="h-3 w-3" />
+        <span className="font-mono">+2,847 סוחרים · ביטול בכל עת</span>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default DashboardLayout;
