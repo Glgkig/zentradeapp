@@ -38,13 +38,6 @@ const navItems = [
   { id: "settings", label: "הגדרות", icon: Settings },
 ];
 
-const bottomTabs = [
-  { id: "dashboard", label: "דשבורד", icon: LayoutDashboard },
-  { id: "journal", label: "יומן", icon: BookOpen },
-  { id: "mentor", label: "מנטור", icon: Bot },
-  { id: "settings", label: "הגדרות", icon: Settings },
-  { id: "more", label: "עוד", icon: Menu },
-];
 
 const brokers = [
   { name: "TradingView", initials: "TV", connected: false, account: null, logo: logoTradingViewFull },
