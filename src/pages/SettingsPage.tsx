@@ -338,10 +338,10 @@ const ConnectionsTab = () => {
           <div className="rounded-2xl border border-primary/12 bg-primary/[0.02] p-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div className="flex items-center gap-3 mb-4">
               <div
-                className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 text-[12px] font-black text-white shadow-lg"
+                className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 overflow-hidden shadow-lg"
                 style={{ background: `linear-gradient(135deg, ${broker.color}dd, ${broker.color}77)` }}
               >
-                {broker.short}
+                <img src={broker.logo} alt={broker.name} className="h-9 w-9 object-contain" loading="lazy" />
               </div>
               <div>
                 <h3 className="text-[13px] font-bold text-foreground">{broker.name}</h3>
