@@ -299,7 +299,52 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto bg-background p-2 pb-16 md:p-4 md:pb-4 relative">
+        {/* Mobile Nav Dropdown */}
+        {mobileNavOpen && (
+          <div className="md:hidden border-b border-border/10 bg-sidebar/95 backdrop-blur-xl px-3 py-3 space-y-px animate-in slide-in-from-top-2 duration-200">
+            {navItems.map((item) => {
+              const active = activeNav === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleNav(item.id)}
+                  className={`haptic-press flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium transition-all min-h-[42px] ${
+                    active ? "bg-primary/8 text-primary" : "text-muted-foreground/60 hover:bg-muted/10 hover:text-foreground"
+                  }`}
+                >
+                  <item.icon className={`h-4 w-4 ${active ? "text-primary" : "text-muted-foreground/30"}`} />
+                  {item.label}
+                </button>
+              );
+            })}
+            <div className="h-px bg-border/10 my-1" />
+            <button
+              onClick={() => { setMobileNavOpen(false); setBrokerModal(true); }}
+              className="flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium text-muted-foreground/60 min-h-[42px] hover:bg-muted/10"
+            >
+              <Plug className="h-4 w-4 text-muted-foreground/30" />
+              חבר ברוקר
+              <span className="mr-auto rounded-sm bg-primary/10 border border-primary/10 px-1 py-px text-2xs font-bold text-primary font-mono">2</span>
+            </button>
+            <button
+              onClick={() => { setMobileNavOpen(false); setUpgradeModal(true); }}
+              className="flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium text-primary min-h-[42px] bg-primary/5 hover:bg-primary/8"
+            >
+              <Crown className="h-4 w-4" />
+              שדרג תוכנית
+              <span className="mr-auto rounded-sm bg-primary/10 px-1.5 py-px text-2xs font-bold text-primary font-mono">PRO</span>
+            </button>
+            <button
+              onClick={() => { setMobileNavOpen(false); navigate("/"); }}
+              className="flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium text-destructive/50 min-h-[42px] hover:bg-destructive/5"
+            >
+              <LogOut className="h-4 w-4" />
+              התנתק
+            </button>
+          </div>
+        )}
+
+        <main className="flex-1 overflow-y-auto bg-background p-2 md:p-4 md:pb-4 relative">
           {renderContent()}
           {zenMode && (
             <button
