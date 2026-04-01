@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import logoMt5 from "@/assets/logos/mt5-full.png";
 import logoBinance from "@/assets/logos/binance-full.png";
@@ -493,6 +494,26 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
   const navigate = useNavigate();
   const { signIn, signUp, updateProfile } = useAuth();
 
+  const handleGoogleSignIn = async () => {
+    setSubmitting(true);
+    try {
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
+      });
+      if (result.error) {
+        toast.error("שגיאה בהתחברות עם Google");
+        return;
+      }
+      if (result.redirected) return;
+      toast.success("התחברת בהצלחה!");
+      navigate("/dashboard");
+    } catch {
+      toast.error("שגיאה לא צפויה");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
@@ -622,7 +643,7 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
           </div>
 
           <div className="space-y-2 mb-4">
-            <button className="flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-muted/30 py-3 text-xs md:text-sm font-medium text-foreground transition-all hover:bg-muted/60">
+            <button onClick={handleGoogleSignIn} disabled={submitting} className="flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-muted/30 py-3 text-xs md:text-sm font-medium text-foreground transition-all hover:bg-muted/60 disabled:opacity-60">
               <GoogleIcon />
               המשך עם Google
             </button>
