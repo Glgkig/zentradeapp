@@ -461,7 +461,7 @@ const AuthPage = () => {
       </section>
 
       {/* ===== WhatsApp Chat Widget ===== */}
-      <WhatsAppWidget />
+      {!isEditorCanvas && <WhatsAppWidget />}
 
       {/* ===== FOOTER ===== */}
       <footer className="border-t border-border/30 px-4 py-8 md:px-8 md:py-10">
