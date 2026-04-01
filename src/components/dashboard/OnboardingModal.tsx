@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Bot, Send, Sparkles, CheckCircle2, User } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 /* ===== Types ===== */
 type ChatMessage = {
@@ -101,6 +102,7 @@ interface OnboardingModalProps {
 }
 
 const OnboardingModal = ({ onComplete }: OnboardingModalProps) => {
+  const { updateProfile } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentQ, setCurrentQ] = useState(-1); // -1 = not started
   const [userProfile, setUserProfile] = useState<Record<string, string | string[]>>({});
@@ -334,7 +336,27 @@ const OnboardingModal = ({ onComplete }: OnboardingModalProps) => {
           <div className="border-t border-border/10 bg-card/80 backdrop-blur-sm px-3 md:px-4 py-3">
             {completed ? (
               <button
-                onClick={onComplete}
+                onClick={async () => {
+                  // Map onboarding answers to profile fields
+                  const experienceMap: Record<string, number> = { "beginner": 0, "<1year": 1, "1-3years": 2, "3+years": 4 };
+                  const capitalMap: Record<string, number> = { "<1k": 500, "1k-5k": 3000, "5k-25k": 15000, "25k-100k": 62500, "100k+": 150000 };
+                  const styleMap: Record<string, string> = { "price-action": "day_trading", "smc": "day_trading", "indicators": "swing" };
+                  
+                  const updates: Record<string, any> = {
+                    onboarding_completed: true,
+                  };
+                  if (userProfile.name && typeof userProfile.name === "string") updates.full_name = userProfile.name;
+                  if (userProfile.experience && typeof userProfile.experience === "string") updates.experience_years = experienceMap[userProfile.experience] ?? 1;
+                  if (userProfile.capital && typeof userProfile.capital === "string") updates.account_size = capitalMap[userProfile.capital] ?? null;
+                  if (userProfile.assets && Array.isArray(userProfile.assets)) updates.primary_instruments = userProfile.assets;
+                  if (userProfile.goal && typeof userProfile.goal === "string") updates.goals = userProfile.goal;
+                  if (userProfile.methodology && Array.isArray(userProfile.methodology)) {
+                    updates.trading_style = styleMap[userProfile.methodology[0]] ?? "day_trading";
+                  }
+
+                  await updateProfile(updates);
+                  onComplete();
+                }}
                 className="w-full flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-[13px] font-bold text-primary-foreground transition-all hover:bg-primary/90 active:scale-[0.97]"
               >
                 <Sparkles className="h-4 w-4" />

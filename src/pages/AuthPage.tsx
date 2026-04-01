@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 import {
   Shield, BarChart3, ChevronDown, Bot, Zap, Lock, X, Menu,
   FlaskConical, Mic, Newspaper, ArrowUp, Activity, AlertTriangle,
@@ -490,14 +492,47 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
+  const { signIn, signUp, updateProfile } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isLogin) {
-      localStorage.removeItem("zentrade-onboarded");
+    if (!email || !password) return;
+    setSubmitting(true);
+
+    try {
+      if (isLogin) {
+        const { error } = await signIn(email, password);
+        if (error) {
+          toast.error(error.message === "Invalid login credentials" ? "אימייל או סיסמה לא נכונים" : error.message);
+          return;
+        }
+        toast.success("התחברת בהצלחה!");
+        navigate("/dashboard");
+      } else {
+        if (password.length < 6) {
+          toast.error("הסיסמה חייבת להיות לפחות 6 תווים");
+          return;
+        }
+        const { error } = await signUp(email, password);
+        if (error) {
+          toast.error(error.message);
+          return;
+        }
+        // Update profile with name if provided
+        if (name) {
+          await updateProfile({ full_name: name });
+        }
+        localStorage.removeItem("zentrade-onboarded");
+        toast.success("החשבון נוצר בהצלחה!");
+        navigate("/dashboard");
+      }
+    } catch (err: any) {
+      toast.error(err?.message || "שגיאה לא צפויה");
+    } finally {
+      setSubmitting(false);
     }
-    navigate("/dashboard");
   };
 
   return (
@@ -578,8 +613,8 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
               </div>
             )}
 
-            <button type="submit" className="w-full rounded-xl bg-primary py-3 text-xs md:text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 active:scale-[0.98]">
-              {isLogin ? "היכנס לחשבון" : "צור חשבון חינם"}
+            <button type="submit" disabled={submitting} className="w-full rounded-xl bg-primary py-3 text-xs md:text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 active:scale-[0.98] disabled:opacity-60">
+              {submitting ? "מעבד..." : isLogin ? "היכנס לחשבון" : "צור חשבון חינם"}
             </button>
           </form>
 

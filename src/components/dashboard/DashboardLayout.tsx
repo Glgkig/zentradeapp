@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, BookOpen, Bot, ShieldCheck,
@@ -54,14 +55,13 @@ const brokers = [
 /* ===== Layout ===== */
 const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   const navigate = useNavigate();
+  const { profile, signOut, refreshProfile } = useAuth();
   const [activeNav, setActiveNav] = useState("dashboard");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [brokerModal, setBrokerModal] = useState(false);
   const [userMenu, setUserMenu] = useState(false);
   const [zenMode, setZenMode] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(() => {
-    return localStorage.getItem("zentrade-onboarded") !== "true";
-  });
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [upgradeModal, setUpgradeModal] = useState(false);
   const [dark, setDark] = useState(() => {
     if (typeof window !== "undefined") {
@@ -70,14 +70,21 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
     return true;
   });
 
+  // Show onboarding if profile exists and not completed
+  useEffect(() => {
+    if (profile && !profile.onboarding_completed) {
+      setShowOnboarding(true);
+    }
+  }, [profile]);
+
   useEffect(() => {
     document.documentElement.classList.toggle("light", !dark);
     localStorage.setItem("zentrade-theme", dark ? "dark" : "light");
   }, [dark]);
 
-  const completeOnboarding = () => {
-    localStorage.setItem("zentrade-onboarded", "true");
+  const completeOnboarding = async () => {
     setShowOnboarding(false);
+    await refreshProfile();
   };
 
   const handleNav = (id: string) => {
@@ -85,8 +92,10 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
     setMobileNavOpen(false);
   };
 
+  const userName = profile?.full_name || "סוחר";
+
   const renderContent = () => {
-    if (activeNav === "dashboard") return <HomeDashboard userName="יהונתן" />;
+    if (activeNav === "dashboard") return <HomeDashboard userName={userName} />;
     if (activeNav === "setups") return <SetupsPage />;
     if (activeNav === "stats") return <StatsPage />;
     if (activeNav === "journal") return <JournalPage />;
@@ -176,7 +185,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
         {/* Footer */}
         <div className="border-t border-border/6 px-2 py-2">
           <button
-            onClick={() => navigate("/")}
+            onClick={async () => { await signOut(); navigate("/"); }}
             className="haptic-press flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-[11px] font-medium text-muted-foreground/30 hover:bg-destructive/6 hover:text-destructive transition-all"
           >
             <LogOut className="h-3.5 w-3.5" />
@@ -268,10 +277,10 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                 className="flex items-center gap-1.5 rounded-sm border border-border/10 bg-muted/10 px-1.5 py-1 hover:bg-muted/20 transition-all"
               >
                 <div className="flex h-6 w-6 items-center justify-center rounded-sm bg-primary/10 text-2xs font-bold text-primary font-mono">
-                  Y
+                  {userName.charAt(0).toUpperCase()}
                 </div>
                 <div className="hidden md:block text-right">
-                  <p className="text-[10px] font-semibold text-foreground leading-none">יהונתן</p>
+                  <p className="text-[10px] font-semibold text-foreground leading-none">{userName}</p>
                   <p className="text-2xs text-muted-foreground/40 font-mono">PRO</p>
                 </div>
                 <ChevronDown className={`h-3 w-3 text-muted-foreground/30 hidden md:block transition-transform ${userMenu ? "rotate-180" : ""}`} />
@@ -284,7 +293,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                     <UserMenuContent
                       onClose={() => setUserMenu(false)}
                       onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
-                      onLogout={() => { setUserMenu(false); navigate("/"); }}
+                      onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
                     />
                   </div>
                   <div className="md:hidden fixed inset-x-0 bottom-0 z-[70] rounded-t-xl border-t border-border/15 bg-card animate-in slide-in-from-bottom duration-200 overflow-hidden">
@@ -292,7 +301,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                     <UserMenuContent
                       onClose={() => setUserMenu(false)}
                       onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
-                      onLogout={() => { setUserMenu(false); navigate("/"); }}
+                      onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
                     />
                     <div className="px-3 pb-5 pt-1">
                       <button onClick={() => setUserMenu(false)} className="w-full rounded-sm bg-muted/10 border border-border/10 py-2.5 text-[11px] font-medium text-muted-foreground/50">סגור</button>
@@ -357,7 +366,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                 <span className="mr-auto rounded-sm bg-primary/10 px-1.5 py-px text-2xs font-bold text-primary font-mono">PRO</span>
               </button>
               <button
-                onClick={() => { setMobileNavOpen(false); navigate("/"); }}
+                onClick={async () => { setMobileNavOpen(false); await signOut(); navigate("/"); }}
                 style={{ transitionDelay: mobileNavOpen ? `${(navItems.length + 2) * 35}ms` : "0ms" }}
                 className={`flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium text-destructive/50 min-h-[42px] hover:bg-destructive/5 transition-all duration-300 ${
                   mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
@@ -420,7 +429,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
       )}
 
       {showOnboarding && (
-        <OnboardingModal userName="יהונתן" onComplete={completeOnboarding} />
+        <OnboardingModal userName={userName} onComplete={completeOnboarding} />
       )}
     </div>
   );
