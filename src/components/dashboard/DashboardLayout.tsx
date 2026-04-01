@@ -112,9 +112,12 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   };
 
   return (
-    <div className="flex h-screen w-full overflow-hidden" dir="rtl">
+    <div className="flex h-screen w-full overflow-hidden relative" dir="rtl">
+      {/* Dynamic Ambient Background */}
+      <div className="ambient-bg" />
+
       {/* ===== Desktop Sidebar (hidden on mobile) ===== */}
-      <aside className="hidden md:flex h-full w-[260px] flex-col border-l border-border/15 bg-sidebar/80 backdrop-blur-xl shrink-0">
+      <aside className={`hidden md:flex h-full w-[260px] flex-col border-l border-border/15 bg-sidebar/80 backdrop-blur-xl shrink-0 relative z-10 ${zenMode ? "zen-hidden" : "zen-visible"}`}>
         {/* Brand */}
         <div className="flex items-center border-b border-border px-5 py-5">
           <div className="flex items-center gap-2.5">
