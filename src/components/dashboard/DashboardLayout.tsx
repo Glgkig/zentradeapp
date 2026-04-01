@@ -366,7 +366,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                 <span className="mr-auto rounded-sm bg-primary/10 px-1.5 py-px text-2xs font-bold text-primary font-mono">PRO</span>
               </button>
               <button
-                onClick={() => { setMobileNavOpen(false); navigate("/"); }}
+                onClick={async () => { setMobileNavOpen(false); await signOut(); navigate("/"); }}
                 style={{ transitionDelay: mobileNavOpen ? `${(navItems.length + 2) * 35}ms` : "0ms" }}
                 className={`flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium text-destructive/50 min-h-[42px] hover:bg-destructive/5 transition-all duration-300 ${
                   mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
