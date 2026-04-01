@@ -492,14 +492,47 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
+  const { signIn, signUp, updateProfile } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isLogin) {
-      localStorage.removeItem("zentrade-onboarded");
+    if (!email || !password) return;
+    setSubmitting(true);
+
+    try {
+      if (isLogin) {
+        const { error } = await signIn(email, password);
+        if (error) {
+          toast.error(error.message === "Invalid login credentials" ? "אימייל או סיסמה לא נכונים" : error.message);
+          return;
+        }
+        toast.success("התחברת בהצלחה!");
+        navigate("/dashboard");
+      } else {
+        if (password.length < 6) {
+          toast.error("הסיסמה חייבת להיות לפחות 6 תווים");
+          return;
+        }
+        const { error } = await signUp(email, password);
+        if (error) {
+          toast.error(error.message);
+          return;
+        }
+        // Update profile with name if provided
+        if (name) {
+          await updateProfile({ full_name: name });
+        }
+        localStorage.removeItem("zentrade-onboarded");
+        toast.success("החשבון נוצר בהצלחה!");
+        navigate("/dashboard");
+      }
+    } catch (err: any) {
+      toast.error(err?.message || "שגיאה לא צפויה");
+    } finally {
+      setSubmitting(false);
     }
-    navigate("/dashboard");
   };
 
   return (
