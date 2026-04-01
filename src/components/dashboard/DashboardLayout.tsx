@@ -217,28 +217,27 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
       {/* ===== Main Area ===== */}
       <div className="flex flex-1 flex-col overflow-hidden relative z-10">
         {/* Top Header */}
-        <header className={`flex items-center justify-between glass-header px-4 py-2.5 md:px-6 md:py-3 shrink-0 relative z-50 ${zenMode ? "zen-hidden" : "zen-visible"}`}>
-          <div className="flex items-center gap-2.5">
-            {/* Mobile brand (replaces hamburger) */}
-            <div className="flex md:hidden items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/15 border border-primary/20">
-                <ShieldCheck className="h-4 w-4 text-primary" />
+        <header className={`flex items-center justify-between glass-header px-3 py-2 md:px-6 md:py-3 shrink-0 relative z-50 ${zenMode ? "zen-hidden" : "zen-visible"}`}>
+          <div className="flex items-center gap-2">
+            {/* Mobile brand */}
+            <div className="flex md:hidden items-center gap-1.5">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/15 border border-primary/20">
+                <ShieldCheck className="h-3.5 w-3.5 text-primary" />
               </div>
-              <span className="font-heading text-sm font-bold text-foreground">ZenTrade</span>
+              <span className="font-heading text-[13px] font-bold text-foreground">ZenTrade</span>
             </div>
             <h1 className="hidden md:block font-heading text-sm font-semibold text-foreground md:text-base">
               {navItems.find((n) => n.id === activeNav)?.label}
             </h1>
           </div>
 
-          <div className="flex items-center gap-2">
-            {/* Discipline Streak Badge */}
+          <div className="flex items-center gap-1.5 md:gap-2">
+            {/* Discipline Streak Badge — hidden on very small */}
             <div className="hidden sm:flex group relative">
-              <div className="streak-badge flex items-center gap-1.5 rounded-full border border-orange-500/25 bg-orange-500/8 px-3 py-1.5 cursor-default">
+              <div className="streak-badge flex items-center gap-1 rounded-full border border-orange-500/25 bg-orange-500/8 px-2 md:px-3 py-1 md:py-1.5 cursor-default">
                 <Flame className="h-3 w-3 text-orange-400" />
-                <span className="text-[11px] font-bold text-orange-400">5 ימים</span>
+                <span className="text-[10px] md:text-[11px] font-bold text-orange-400">5 ימים</span>
               </div>
-              {/* Glass tooltip */}
               <div className="absolute top-full mt-2 right-0 w-56 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 z-[80]">
                 <div className="rounded-xl border border-border/30 bg-secondary/95 backdrop-blur-xl p-3 shadow-2xl">
                   <p className="text-[10px] font-semibold text-foreground mb-1">🔥 רצף משמעת</p>
@@ -247,8 +246,8 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               </div>
             </div>
 
-            {/* AI Status */}
-            <div className="hidden sm:flex items-center gap-2 rounded-full border border-accent/25 bg-accent/8 px-3 py-1.5">
+            {/* AI Status — hidden on mobile */}
+            <div className="hidden md:flex items-center gap-2 rounded-full border border-accent/25 bg-accent/8 px-3 py-1.5">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
@@ -256,19 +255,19 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               <span className="text-[11px] font-medium text-accent">AI פעיל</span>
             </div>
 
-            {/* Upgrade Button */}
+            {/* Upgrade Button — icon only on mobile */}
             <button
               onClick={() => setUpgradeModal(true)}
-              className="haptic-press hidden sm:flex items-center gap-1.5 rounded-full bg-gradient-to-l from-primary via-primary to-ring px-3.5 py-1.5 text-[11px] font-bold text-primary-foreground shadow-[0_0_20px_hsl(var(--primary)/0.3)] transition-all duration-300 hover:shadow-[0_0_28px_hsl(var(--primary)/0.5)] hover:scale-[1.03]"
+              className="haptic-press flex items-center gap-1.5 rounded-full bg-gradient-to-l from-primary via-primary to-ring px-2.5 py-1.5 md:px-3.5 text-[10px] md:text-[11px] font-bold text-primary-foreground shadow-[0_0_20px_hsl(var(--primary)/0.3)] transition-all duration-300 hover:shadow-[0_0_28px_hsl(var(--primary)/0.5)] hover:scale-[1.03]"
             >
               <Crown className="h-3.5 w-3.5" />
-              <span>שדרוג</span>
+              <span className="hidden sm:inline">שדרוג</span>
             </button>
 
             {/* Zen Mode Toggle */}
             <button
               onClick={() => setZenMode(!zenMode)}
-              className={`haptic-press flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-xl border transition-all duration-300 ${
+              className={`haptic-press flex h-9 w-9 md:h-9 md:w-9 items-center justify-center rounded-xl border transition-all duration-300 ${
                 zenMode
                   ? "border-primary/40 bg-primary/15 text-primary shadow-[0_0_16px_hsl(var(--primary)/0.2)]"
                   : "border-border/20 bg-muted/15 text-muted-foreground hover:bg-primary/10 hover:text-primary hover:border-primary/20"
@@ -281,19 +280,19 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             {/* Theme */}
             <button
               onClick={() => setDark(!dark)}
-              className="interactive-btn flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-xl border border-border/20 bg-muted/15 text-muted-foreground transition-all duration-300 hover:bg-primary/10 hover:text-primary hover:border-primary/20 hover:shadow-[0_0_12px_hsl(var(--primary)/0.1)]"
+              className="interactive-btn flex h-9 w-9 md:h-9 md:w-9 items-center justify-center rounded-xl border border-border/20 bg-muted/15 text-muted-foreground transition-all duration-300 hover:bg-primary/10 hover:text-primary hover:border-primary/20"
               title={dark ? "מצב בהיר" : "מצב כהה"}
             >
-              {dark ? <Sun className="h-4 w-4 transition-transform duration-300 hover:rotate-45" /> : <Moon className="h-4 w-4 transition-transform duration-300 hover:-rotate-12" />}
+              {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
 
             {/* User */}
             <div className="relative">
               <button
                 onClick={() => setUserMenu(!userMenu)}
-                className="flex items-center gap-2 rounded-xl border border-border bg-muted/20 px-2 py-1.5 transition-all hover:bg-muted/40 md:px-3"
+                className="flex items-center gap-1.5 md:gap-2 rounded-xl border border-border bg-muted/20 px-1.5 py-1 md:px-3 md:py-1.5 transition-all hover:bg-muted/40"
               >
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/15 text-xs font-bold text-primary">
+                <div className="flex h-7 w-7 md:h-8 md:w-8 items-center justify-center rounded-lg bg-primary/15 text-[10px] md:text-xs font-bold text-primary">
                   י
                 </div>
                 <div className="hidden md:block text-right">
@@ -303,12 +302,9 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                 <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground hidden md:block transition-transform duration-200 ${userMenu ? "rotate-180" : ""}`} />
               </button>
 
-              {/* User Dropdown — Bottom sheet on mobile, dropdown on desktop */}
               {userMenu && (
                 <>
                   <div className="fixed inset-0 z-[60] bg-background/60 md:bg-transparent" onClick={() => setUserMenu(false)} />
-
-                  {/* Desktop dropdown */}
                   <div className="hidden md:block absolute left-0 md:left-auto md:right-0 top-full mt-2 w-56 z-[70] rounded-2xl border border-border/30 bg-secondary shadow-2xl shadow-background/60 animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden">
                     <UserMenuContent
                       onClose={() => setUserMenu(false)}
@@ -316,8 +312,6 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                       onLogout={() => { setUserMenu(false); navigate("/"); }}
                     />
                   </div>
-
-                  {/* Mobile bottom sheet */}
                   <div className="md:hidden fixed inset-x-0 bottom-0 z-[70] rounded-t-3xl border-t border-border/20 bg-secondary animate-in slide-in-from-bottom duration-300 overflow-hidden">
                     <div className="flex justify-center pt-3 pb-1"><div className="w-10 h-1 rounded-full bg-muted-foreground/15" /></div>
                     <UserMenuContent
