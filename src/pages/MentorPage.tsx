@@ -110,7 +110,7 @@ const MentorPage = () => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-80px)] md:h-[calc(100vh-64px)] max-w-3xl mx-auto -mt-2 md:-mt-4">
+    <div className="flex flex-col h-[calc(100vh-120px)] md:h-[calc(100vh-64px)] max-w-3xl mx-auto -mt-1 md:-mt-4">
       {/* ── Header ── */}
       <div className="shrink-0 px-1 pt-1 pb-4">
         <div className="relative rounded-2xl border border-border/20 bg-secondary/20 px-5 py-4 overflow-hidden">
@@ -218,7 +218,7 @@ const MentorPage = () => {
 
       {/* ── Quick Actions Grid ── */}
       <div className="shrink-0 px-1 pt-3">
-        <div className="grid grid-cols-3 gap-1.5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
           {tiltPills.map((pill, index) => {
             const colors = pillColorMap[pill.color];
             return (

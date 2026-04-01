@@ -30,7 +30,7 @@ const StatsPage = () => {
   const circumference = 2 * Math.PI * 54;
 
   return (
-    <div className="mx-auto max-w-[1280px]">
+    <div className="mx-auto max-w-[1280px] space-y-3 md:space-y-0">
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3">
@@ -47,19 +47,19 @@ const StatsPage = () => {
       </div>
 
       {/* Top Summary Bar */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3 md:mb-4">
         {[
           { label: "רווח נקי החודש", value: "+$3,020", sub: "131 עסקאות", color: "text-accent", icon: <TrendingUp className="h-3.5 w-3.5" />, borderColor: "border-accent/20" },
           { label: "Win Rate", value: "62%", sub: "81 מתוך 131", color: "text-primary", icon: <Target className="h-3.5 w-3.5" />, borderColor: "border-primary/20" },
           { label: "Profit Factor", value: "1.8", sub: "רווח/הפסד ממוצע", color: "text-accent", icon: <BarChart3 className="h-3.5 w-3.5" />, borderColor: "border-accent/20" },
           { label: "ציון משמעת", value: "85/100", sub: "ביצועים מעולים", color: "text-primary", icon: <Shield className="h-3.5 w-3.5" />, borderColor: "border-primary/20" },
         ].map((item) => (
-          <div key={item.label} className={`rounded-xl border ${item.borderColor} bg-secondary/20 p-3.5 transition-all duration-200 hover:bg-secondary/30`}>
+          <div key={item.label} className={`rounded-xl border ${item.borderColor} bg-secondary/20 p-2.5 md:p-3.5 transition-all duration-200 hover:bg-secondary/30`}>
             <div className="flex items-center gap-2 mb-2">
               <div className={`${item.color} opacity-60`}>{item.icon}</div>
               <span className="text-[9px] md:text-[10px] text-muted-foreground">{item.label}</span>
             </div>
-            <p className={`text-xl md:text-2xl font-bold ${item.color}`}>{item.value}</p>
+            <p className={`text-lg md:text-2xl font-bold ${item.color}`}>{item.value}</p>
             <p className="text-[8px] text-muted-foreground mt-0.5">{item.sub}</p>
           </div>
         ))}
@@ -69,7 +69,7 @@ const StatsPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-3 mb-3">
 
         {/* Discipline Score - Premium Redesign */}
-        <div className="md:col-span-4 rounded-xl border border-border/15 bg-secondary/15 p-5">
+        <div className="md:col-span-4 rounded-xl border border-border/15 bg-secondary/15 p-4 md:p-5">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2.5">
               <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 border border-primary/15">
@@ -134,7 +134,7 @@ const StatsPage = () => {
         </div>
 
         {/* Revenge Trading - Premium Redesign */}
-        <div className="md:col-span-3 rounded-xl border border-destructive/15 bg-destructive/[0.02] p-5">
+        <div className="md:col-span-3 rounded-xl border border-destructive/15 bg-destructive/[0.02] p-4 md:p-5">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2.5">
               <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-destructive/10 border border-destructive/15">
@@ -185,7 +185,7 @@ const StatsPage = () => {
         </div>
 
         {/* Classic Metrics - Premium Redesign */}
-        <div className="md:col-span-5 rounded-xl border border-border/15 bg-secondary/15 p-5">
+        <div className="md:col-span-5 rounded-xl border border-border/15 bg-secondary/15 p-4 md:p-5">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2.5">
               <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent/10 border border-accent/15">
@@ -251,7 +251,7 @@ const StatsPage = () => {
       </div>
 
       {/* Row 2: Heatmap (Full Width) */}
-      <div className="rounded-xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4">
+      <div className="rounded-xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-3 md:p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">

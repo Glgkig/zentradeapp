@@ -33,36 +33,37 @@ const SettingsPage = () => {
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4">
+      <div className="flex flex-col md:flex-row gap-3 md:gap-4">
         {/* Sidebar Tabs */}
         <div className="md:w-[220px] shrink-0">
-          <div className="rounded-2xl border border-border/10 bg-card/50 p-2 space-y-0.5">
+          <div className="flex md:flex-col rounded-2xl border border-border/10 bg-card/50 p-1.5 md:p-2 gap-0.5 overflow-x-auto scrollbar-none">
             {tabs.map((tab) => {
               const active = activeTab === tab.id;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`haptic-press flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-[12px] font-medium transition-all duration-200 ${
+                  className={`haptic-press flex items-center gap-2 md:gap-2.5 rounded-xl px-2.5 md:px-3 py-2 md:py-2.5 text-[11px] md:text-[12px] font-medium transition-all duration-200 whitespace-nowrap md:w-full ${
                     active
                       ? "bg-primary/10 text-primary border border-primary/12"
                       : "text-muted-foreground/50 hover:bg-muted/15 hover:text-foreground border border-transparent"
                   }`}
                 >
-                  <div className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
+                  <div className={`flex h-6 w-6 md:h-7 md:w-7 items-center justify-center rounded-lg transition-colors ${
                     active ? "bg-primary/15" : "bg-muted/10"
                   }`}>
                     <tab.icon className={`h-3.5 w-3.5 ${active ? "text-primary" : "text-muted-foreground/40"}`} />
                   </div>
-                  <span className="flex-1 text-right">{tab.label}</span>
-                  {active && <ChevronRight className="h-3 w-3 text-primary/40 rotate-180" />}
+                  <span className="flex-1 text-right hidden md:inline">{tab.label}</span>
+                  <span className="md:hidden">{tab.label}</span>
+                  {active && <ChevronRight className="h-3 w-3 text-primary/40 rotate-180 hidden md:block" />}
                 </button>
               );
             })}
           </div>
 
-          {/* Quick Info Card */}
-          <div className="mt-3 rounded-2xl border border-border/10 bg-card/50 p-4">
+          {/* Quick Info Card — hidden on mobile */}
+          <div className="hidden md:block mt-3 rounded-2xl border border-border/10 bg-card/50 p-4">
             <div className="flex items-center gap-2 mb-3">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
                 <Zap className="h-3.5 w-3.5 text-accent" />

@@ -17,7 +17,7 @@ const ProtectionPage = () => {
   return (
     <div className="mx-auto max-w-[900px]">
       {/* ── Header ── */}
-      <div className="relative mb-6 rounded-2xl border border-border/20 bg-secondary/15 p-5 md:p-7 overflow-hidden">
+      <div className="relative mb-4 md:mb-6 rounded-2xl border border-border/20 bg-secondary/15 p-4 md:p-7 overflow-hidden">
         <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full bg-destructive/[0.03] blur-3xl pointer-events-none" />
         <div className="absolute -bottom-12 -left-12 w-40 h-40 rounded-full bg-primary/[0.04] blur-3xl pointer-events-none" />
 
@@ -59,7 +59,7 @@ const ProtectionPage = () => {
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3 md:space-y-4">
         {/* ══ Module 1: Hard Stop ══ */}
         <div className={`rounded-2xl border overflow-hidden transition-all duration-500 ${
           hardLock

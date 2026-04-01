@@ -10,13 +10,13 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
   const greeting = hour < 12 ? "בוקר טוב" : hour < 17 ? "צהריים טובים" : "ערב טוב";
 
   return (
-    <div className="mx-auto max-w-[1280px] space-y-4">
+    <div className="mx-auto max-w-[1280px] space-y-3 md:space-y-4">
 
       {/* ===== Row 1: AI Pulse + Tilt Meter + Protection ===== */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4">
 
         {/* 1. AI Pulse & Emotional State */}
-        <div className="md:col-span-5 rounded-2xl border border-primary/15 bg-gradient-to-bl from-primary/[0.05] via-secondary/40 to-secondary/30 p-5 relative overflow-hidden">
+        <div className="md:col-span-5 rounded-2xl border border-primary/15 bg-gradient-to-bl from-primary/[0.05] via-secondary/40 to-secondary/30 p-4 md:p-5 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-40 h-40 bg-primary/[0.04] rounded-full blur-3xl" />
           <div className="relative z-10">
             <div className="flex items-start gap-3.5 mb-4">
@@ -54,7 +54,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
         </div>
 
         {/* 2. Psychological Tilt Meter */}
-        <div className="md:col-span-3 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-5">
+        <div className="md:col-span-3 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4 md:p-5">
           <div className="flex items-center gap-2 mb-4">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
               <Activity className="h-4 w-4 text-accent" />
@@ -83,7 +83,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
         </div>
 
         {/* 3. Hard Protection Limits */}
-        <div className="md:col-span-4 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-5">
+        <div className="md:col-span-4 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4 md:p-5">
           <div className="flex items-center gap-2 mb-4">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
               <Shield className="h-4 w-4 text-primary" />
@@ -136,7 +136,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
       </div>
 
       {/* ===== Row 2: Chart + AI Signals + Sentiment ===== */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4">
 
         {/* Compact Chart */}
         <div className="md:col-span-5 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm overflow-hidden">
@@ -248,17 +248,17 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
       </div>
 
       {/* ===== Row 3: Watchlist + Goals + Voice + News ===== */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 md:gap-4">
 
         {/* Watchlist */}
-        <div className="md:col-span-4 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4 md:p-5">
+        <div className="sm:col-span-1 md:col-span-4 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-3.5 md:p-5">
           <div className="flex items-center gap-2 mb-4">
             <Eye className="h-4 w-4 text-primary" />
             <span className="text-xs font-semibold text-foreground">רשימת מעקב</span>
           </div>
           <div className="space-y-2">
             {watchlist.map((item) => (
-              <div key={item.pair} className="flex items-center justify-between rounded-xl bg-muted/10 border border-border/15 px-3 py-2.5 transition-all duration-200 hover:bg-muted/20 hover:border-primary/15 cursor-pointer min-h-[48px]">
+              <div key={item.pair} className="flex items-center justify-between rounded-xl bg-muted/10 border border-border/15 px-2.5 md:px-3 py-2 md:py-2.5 transition-all duration-200 hover:bg-muted/20 hover:border-primary/15 cursor-pointer min-h-[44px]">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-semibold text-foreground">{item.pair}</span>
                   <span className="text-[8px] text-muted-foreground/60 bg-muted/30 rounded px-1 py-0.5">{item.tf}</span>
@@ -276,7 +276,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
         </div>
 
         {/* Goals */}
-        <div className="md:col-span-3 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4 md:p-5">
+        <div className="sm:col-span-1 md:col-span-3 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-3.5 md:p-5">
           <div className="flex items-center gap-2 mb-4">
             <Target className="h-4 w-4 text-primary" />
             <span className="text-xs font-semibold text-foreground">יעדים להיום</span>
@@ -289,7 +289,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
         </div>
 
         {/* Voice Journal */}
-        <div className="md:col-span-2 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4 md:p-5 flex flex-col items-center justify-center text-center">
+        <div className="sm:col-span-1 md:col-span-2 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-3.5 md:p-5 flex flex-col items-center justify-center text-center">
           <div className="relative mb-4">
             <div className="absolute inset-[-8px] rounded-full bg-primary/5 animate-pulse" style={{ animationDuration: "2.5s" }} />
             <button className="interactive-btn relative flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 border border-primary/25 text-primary transition-all hover:bg-primary/20 hover:shadow-[0_0_30px_hsl(217_72%_53%/0.2)] active:scale-95">
@@ -303,7 +303,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
         </div>
 
         {/* News Guard */}
-        <div className="md:col-span-3 rounded-2xl border border-destructive/20 bg-destructive/[0.03] p-4 md:p-5">
+        <div className="sm:col-span-1 md:col-span-3 rounded-2xl border border-destructive/20 bg-destructive/[0.03] p-3.5 md:p-5">
           <div className="flex items-center gap-2 mb-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-destructive/10">
               <Newspaper className="h-4 w-4 text-destructive" />
@@ -333,7 +333,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
       </div>
 
       {/* ===== Row 4: Recent Activity Feed ===== */}
-      <div className="rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4 md:p-5">
+      <div className="rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-3.5 md:p-5">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4 text-primary" />
@@ -345,7 +345,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
           </button>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-right">
+          <table className="w-full text-right min-w-[480px]">
             <thead>
               <tr className="border-b border-border/15 text-[9px] md:text-[10px] text-muted-foreground">
                 <th className="pb-2 pr-2 font-medium">נכס</th>

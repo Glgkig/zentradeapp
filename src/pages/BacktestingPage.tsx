@@ -100,7 +100,7 @@ const BacktestingPage = () => {
   const currentDate = `${String(Math.min(visibleCount, 28)).padStart(2, "0")}/01/2026`;
 
   return (
-    <div className="mx-auto max-w-[1400px] h-[calc(100vh-80px)] md:h-[calc(100vh-64px)] flex flex-col -mt-2 md:-mt-4">
+    <div className="mx-auto max-w-[1400px] h-[calc(100vh-120px)] md:h-[calc(100vh-64px)] flex flex-col -mt-1 md:-mt-4">
       {/* ── Header ── */}
       <div className="shrink-0 px-1 pt-1 pb-3 flex items-end justify-between gap-3">
         <div>
