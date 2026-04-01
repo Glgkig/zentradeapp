@@ -10,236 +10,210 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
   const greeting = hour < 12 ? "בוקר טוב" : hour < 17 ? "צהריים טובים" : "ערב טוב";
 
   return (
-    <div className="mx-auto max-w-[1280px] space-y-3 md:space-y-4">
-
-      {/* ===== Row 1: AI Pulse + Tilt Meter + Protection ===== */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4">
-
-        {/* 1. AI Pulse & Emotional State */}
-        <div className="md:col-span-5 rounded-2xl border border-primary/15 bg-gradient-to-bl from-primary/[0.05] via-secondary/40 to-secondary/30 p-4 md:p-5 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-40 h-40 bg-primary/[0.04] rounded-full blur-3xl" />
+    <div className="mx-auto max-w-[1280px] space-y-2">
+      {/* ===== Row 1: AI + Tilt + Protection ===== */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-2">
+        {/* AI Status */}
+        <div className="md:col-span-5 rounded-sm border border-primary/10 bg-primary/[0.03] p-3 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/[0.03] rounded-full blur-3xl" />
           <div className="relative z-10">
-            <div className="flex items-start gap-3.5 mb-4">
-              {/* Pulsing AI Avatar */}
+            <div className="flex items-start gap-2.5 mb-3">
               <div className="relative shrink-0">
-                <div className="absolute inset-[-4px] rounded-2xl bg-primary/10 ai-breathe" />
-                <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/15 border border-primary/20 shadow-[0_0_20px_hsl(217_72%_53%/0.12)]">
-                  <Bot className="h-6 w-6 text-primary" />
+                <div className="absolute inset-[-3px] rounded-sm bg-primary/8 ai-breathe" />
+                <div className="relative flex h-10 w-10 items-center justify-center rounded-sm bg-primary/10 border border-primary/15">
+                  <Bot className="h-5 w-5 text-primary" />
                 </div>
               </div>
               <div>
-                <h2 className="font-heading text-base md:text-lg font-bold text-foreground">
+                <h2 className="font-heading text-[13px] md:text-[14px] font-bold text-foreground">
                   {greeting}, <span className="text-primary">{userName}</span>
                 </h2>
-                <span className="inline-flex items-center gap-1.5 mt-1 rounded-full bg-accent/10 border border-accent/20 px-2.5 py-0.5 text-[9px] font-semibold text-accent">
+                <div className="inline-flex items-center gap-1 mt-1 rounded-sm bg-primary/8 border border-primary/10 px-1.5 py-0.5 text-2xs font-semibold text-primary">
                   <span className="relative flex h-1.5 w-1.5">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
-                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-50" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
                   </span>
-                  שומר הראש: פעיל
-                </span>
+                  <span className="font-mono">BODYGUARD: ACTIVE</span>
+                </div>
               </div>
             </div>
-            <div className="rounded-xl bg-muted/20 border border-border/50 p-4">
-              <p className="text-xs md:text-sm text-muted-foreground leading-[1.9]">
-                הסטופ-לוס שלך מוגדר וההגנה היומית דרוכה.
+            <div className="rounded-sm bg-muted/10 border border-border/8 p-2.5">
+              <p className="text-[10px] text-muted-foreground leading-[1.8]">
+                הסטופ-לוס מוגדר. ההגנה דרוכה.
                 <br />
-                <span className="text-primary font-medium">נשום עמוק, תחכה לסטאפ שלך. אני פה.</span>
-              </p>
-              <p className="mt-2 text-[10px] text-muted-foreground/50 italic">
-                "לא לקחת עסקה זה גם חלק מהמסחר."
+                <span className="text-primary font-medium">נשום עמוק, תחכה לסטאפ. אני פה.</span>
               </p>
             </div>
           </div>
         </div>
 
-        {/* 2. Psychological Tilt Meter */}
-        <div className="md:col-span-3 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4 md:p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
-              <Activity className="h-4 w-4 text-accent" />
-            </div>
-            <span className="text-[10px] md:text-xs font-semibold text-muted-foreground">מד טילט פסיכולוגי</span>
+        {/* Tilt Meter */}
+        <div className="md:col-span-3 rounded-sm border border-border/8 bg-card p-3">
+          <div className="flex items-center gap-1.5 mb-3">
+            <Activity className="h-3.5 w-3.5 text-primary" />
+            <span className="text-2xs font-semibold text-muted-foreground font-mono">TILT METER</span>
           </div>
-
           <div className="flex flex-col items-center">
             <TiltGauge value={25} />
-            <div className="mt-3 text-center">
-              <p className="text-sm font-bold text-accent">רגוע ✓</p>
-              <p className="text-[9px] text-muted-foreground mt-1">הערכת AI בזמן אמת</p>
+            <div className="mt-2 text-center">
+              <p className="text-[11px] font-bold text-profit font-mono">CALM ✓</p>
+              <p className="text-2xs text-muted-foreground/40">AI real-time assessment</p>
             </div>
           </div>
-
-          <div className="mt-4 space-y-2">
-            <div className="flex items-center justify-between rounded-lg bg-muted/20 px-3 py-2">
-              <span className="text-[9px] text-muted-foreground">זמן מאז עסקה אחרונה</span>
-              <span className="text-[10px] font-semibold text-foreground">שעתיים</span>
+          <div className="mt-3 space-y-1">
+            <div className="flex items-center justify-between rounded-sm bg-muted/8 px-2 py-1.5">
+              <span className="text-2xs text-muted-foreground/40">זמן מאז עסקה</span>
+              <span className="text-2xs font-semibold text-foreground font-mono">2H</span>
             </div>
-            <div className="flex items-center justify-between rounded-lg bg-muted/20 px-3 py-2">
-              <span className="text-[9px] text-muted-foreground">סטריק רצוף</span>
-              <span className="text-[10px] font-semibold text-accent">3 ניצחונות ✓</span>
+            <div className="flex items-center justify-between rounded-sm bg-muted/8 px-2 py-1.5">
+              <span className="text-2xs text-muted-foreground/40">סטריק</span>
+              <span className="text-2xs font-semibold text-profit font-mono">3W ✓</span>
             </div>
           </div>
         </div>
 
-        {/* 3. Hard Protection Limits */}
-        <div className="md:col-span-4 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4 md:p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-              <Shield className="h-4 w-4 text-primary" />
-            </div>
-            <span className="text-[10px] md:text-xs font-semibold text-muted-foreground">מגבלות הגנה קשיחות</span>
+        {/* Protection Limits */}
+        <div className="md:col-span-4 rounded-sm border border-border/8 bg-card p-3">
+          <div className="flex items-center gap-1.5 mb-3">
+            <Shield className="h-3.5 w-3.5 text-primary" />
+            <span className="text-2xs font-semibold text-muted-foreground font-mono">HARD LIMITS</span>
           </div>
 
-          {/* Daily Loss */}
-          <div className="mb-4">
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[10px] font-medium text-foreground">הפסד יומי מקסימלי</span>
-              <span className="text-[10px] text-muted-foreground">$120 / $500</span>
+          <div className="mb-3">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-2xs font-medium text-foreground/70">Daily Drawdown</span>
+              <span className="text-2xs text-muted-foreground font-mono">$120 / $500</span>
             </div>
-            <div className="h-3 w-full rounded-full bg-muted overflow-hidden">
-              <div className="h-full rounded-full bg-gradient-to-l from-accent to-accent/70 transition-all relative" style={{ width: "24%" }}>
-                <div className="absolute inset-0 bg-white/10 animate-pulse" style={{ animationDuration: "2s" }} />
-              </div>
+            <div className="h-1.5 w-full rounded-sm bg-muted/15 overflow-hidden">
+              <div className="h-full rounded-sm bg-profit transition-all" style={{ width: "24%" }} />
             </div>
-            <p className="text-[9px] text-accent mt-1.5 flex items-center gap-1">
-              <CheckCircle2 className="h-3 w-3" />
-              24% — בטווח בטוח
+            <p className="text-2xs text-profit mt-1 flex items-center gap-0.5 font-mono">
+              <CheckCircle2 className="h-2.5 w-2.5" />
+              24% — SAFE ZONE
             </p>
           </div>
 
-          {/* Trade Allowance */}
-          <div className="mb-4">
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[10px] font-medium text-foreground">ניצולת עסקאות יומית</span>
-              <span className="text-[10px] text-muted-foreground">2 / 5</span>
+          <div className="mb-3">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-2xs font-medium text-foreground/70">Trades Used</span>
+              <span className="text-2xs text-muted-foreground font-mono">2 / 5</span>
             </div>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1">
               {[1, 2, 3, 4, 5].map((i) => (
-                <div
-                  key={i}
-                  className={`h-3 flex-1 rounded-full transition-all ${
-                    i <= 2 ? "bg-primary shadow-[0_0_6px_hsl(217_72%_53%/0.3)]" : "bg-muted"
-                  }`}
-                />
+                <div key={i} className={`h-1.5 flex-1 rounded-sm transition-all ${i <= 2 ? "bg-primary" : "bg-muted/15"}`} />
               ))}
             </div>
           </div>
 
-          <div className="rounded-xl border border-primary/15 bg-primary/[0.04] p-3 flex items-start gap-2">
-            <Lock className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
-            <p className="text-[9px] md:text-[10px] text-muted-foreground leading-relaxed">
-              נשארו לך <span className="text-primary font-bold">3 כדורים בקנה</span> להיום. תשתמש בהם בחוכמה.
+          <div className="rounded-sm border border-primary/10 bg-primary/[0.03] p-2 flex items-start gap-1.5">
+            <Lock className="h-3 w-3 text-primary shrink-0 mt-0.5" />
+            <p className="text-2xs text-muted-foreground/60 leading-relaxed">
+              נשארו <span className="text-primary font-bold font-mono">3</span> כדורים בקנה. שמור עליהם.
             </p>
           </div>
         </div>
       </div>
 
-      {/* ===== Row 2: Chart + AI Signals + Sentiment ===== */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4">
-
-        {/* Compact Chart */}
-        <div className="md:col-span-5 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm overflow-hidden">
-          <div className="flex items-center justify-between border-b border-border/15 px-4 py-2.5">
-            <div className="flex items-center gap-2">
-              <BarChart3 className="h-3.5 w-3.5 text-primary" />
-              <span className="text-[10px] md:text-xs font-semibold text-foreground">EUR/USD — M15</span>
-              <span className="flex items-center gap-1 text-[9px] text-accent font-medium">
-                <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
-                Live
+      {/* ===== Row 2: Chart + Signals + Sentiment ===== */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-2">
+        {/* Chart */}
+        <div className="md:col-span-5 rounded-sm border border-border/8 bg-card overflow-hidden">
+          <div className="flex items-center justify-between border-b border-border/8 px-3 py-1.5">
+            <div className="flex items-center gap-1.5">
+              <BarChart3 className="h-3 w-3 text-primary" />
+              <span className="text-2xs font-semibold text-foreground font-mono">EUR/USD — M15</span>
+              <span className="flex items-center gap-0.5 text-2xs text-profit font-mono">
+                <span className="h-1 w-1 rounded-full bg-profit animate-pulse" />
+                LIVE
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="rounded-md bg-muted/50 px-2 py-0.5 text-[9px] text-muted-foreground font-mono">1.0847</span>
-              <span className="text-[9px] text-accent flex items-center gap-0.5 font-semibold">
-                <ArrowUpRight className="h-3 w-3" />+0.12%
+            <div className="flex items-center gap-1.5">
+              <span className="rounded-sm bg-muted/15 px-1.5 py-0.5 text-2xs text-muted-foreground font-mono">1.0847</span>
+              <span className="text-2xs text-profit flex items-center gap-0.5 font-mono font-semibold">
+                <ArrowUpRight className="h-2.5 w-2.5" />+0.12%
               </span>
             </div>
           </div>
-          <div className="p-3 md:p-4">
-            <div className="flex items-end gap-[2px] h-32 md:h-40">
+          <div className="p-2">
+            <div className="flex items-end gap-[1px] h-28 md:h-36">
               {chartData.map((c, i) => (
                 <div key={i} className="flex-1 flex flex-col items-center gap-[1px]">
-                  <div className="w-px bg-muted-foreground/15" style={{ height: `${c.wick}%` }} />
-                  <div className={`w-full rounded-[1px] ${c.bull ? "bg-accent/70" : "bg-destructive/55"} transition-colors`} style={{ height: `${c.body}%` }} />
-                  <div className="w-px bg-muted-foreground/15" style={{ height: `${c.lwick}%` }} />
+                  <div className="w-px bg-muted-foreground/10" style={{ height: `${c.wick}%` }} />
+                  <div className={`w-full rounded-[0.5px] ${c.bull ? "bg-profit/60" : "bg-loss/50"}`} style={{ height: `${c.body}%` }} />
+                  <div className="w-px bg-muted-foreground/10" style={{ height: `${c.lwick}%` }} />
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Live AI Signals Feed */}
-        <div className="md:col-span-4 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4 md:p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-              <Zap className="h-3.5 w-3.5 text-primary" />
-            </div>
-            <span className="text-[10px] md:text-xs font-semibold text-foreground">סיגנלים חיים מה-AI</span>
+        {/* AI Signals */}
+        <div className="md:col-span-4 rounded-sm border border-border/8 bg-card p-3">
+          <div className="flex items-center gap-1.5 mb-2">
+            <Zap className="h-3 w-3 text-primary" />
+            <span className="text-2xs font-semibold text-foreground font-mono">AI SIGNALS</span>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1">
             {[
-              { icon: <CheckCircle2 className="h-3 w-3 text-accent shrink-0" />, text: "זיהוי בולען (Engulfing) — אישור setup לונג", time: "לפני 3 דק׳", border: "border-accent/20 bg-accent/[0.04]" },
-              { icon: <AlertTriangle className="h-3 w-3 text-destructive shrink-0" />, text: "נר פטיש מזויף — נפח מסחר נמוך", time: "לפני 8 דק׳", border: "border-destructive/20 bg-destructive/[0.04]" },
-              { icon: <Newspaper className="h-3 w-3 text-primary shrink-0" />, text: "15 דקות להודעת CPI — אל תסחור", time: "לפני 12 דק׳", border: "border-primary/20 bg-primary/[0.04]" },
-              { icon: <Eye className="h-3 w-3 text-accent shrink-0" />, text: "GBP/USD — אזור ביקוש חזק ב-1.2680", time: "לפני 20 דק׳", border: "border-accent/20 bg-accent/[0.04]" },
-              { icon: <Shield className="h-3 w-3 text-primary shrink-0" />, text: "הגנת סטופ הוזזה ל-Break Even", time: "לפני 25 דק׳", border: "border-primary/20 bg-primary/[0.04]" },
+              { icon: <CheckCircle2 className="h-2.5 w-2.5 text-profit" />, text: "Engulfing — אישור לונג", time: "3m", border: "border-profit/10 bg-profit/[0.03]" },
+              { icon: <AlertTriangle className="h-2.5 w-2.5 text-loss" />, text: "פטיש מזויף — נפח נמוך", time: "8m", border: "border-loss/10 bg-loss/[0.03]" },
+              { icon: <Newspaper className="h-2.5 w-2.5 text-primary" />, text: "CPI בעוד 15 דק׳ — אל תסחור", time: "12m", border: "border-primary/10 bg-primary/[0.03]" },
+              { icon: <Eye className="h-2.5 w-2.5 text-profit" />, text: "GBP/USD — ביקוש חזק 1.2680", time: "20m", border: "border-profit/10 bg-profit/[0.03]" },
+              { icon: <Shield className="h-2.5 w-2.5 text-primary" />, text: "סטופ הוזז ל-Break Even", time: "25m", border: "border-primary/10 bg-primary/[0.03]" },
             ].map((sig, i) => (
-              <div key={i} className={`flex items-start gap-2.5 rounded-xl border ${sig.border} px-3 py-2.5 transition-all duration-200 hover:scale-[1.01] cursor-default`}>
-                <div className="mt-0.5">{sig.icon}</div>
+              <div key={i} className={`flex items-start gap-2 rounded-sm border ${sig.border} px-2 py-1.5`}>
+                <div className="mt-0.5 shrink-0">{sig.icon}</div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[9px] md:text-[10px] font-medium text-foreground leading-relaxed">{sig.text}</p>
-                  <p className="text-[8px] text-muted-foreground/50 mt-0.5">{sig.time}</p>
+                  <p className="text-2xs font-medium text-foreground/80 leading-snug">{sig.text}</p>
+                  <p className="text-2xs text-muted-foreground/30 font-mono">{sig.time}</p>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Market Sentiment + Quick Stats */}
-        <div className="md:col-span-3 space-y-4">
-          {/* Sentiment */}
-          <div className="rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Activity className="h-3.5 w-3.5 text-primary" />
-              <span className="text-[10px] font-semibold text-foreground">סנטימנט שוק</span>
+        {/* Sentiment + Stats */}
+        <div className="md:col-span-3 space-y-2">
+          <div className="rounded-sm border border-border/8 bg-card p-2.5">
+            <div className="flex items-center gap-1.5 mb-2">
+              <Activity className="h-3 w-3 text-primary" />
+              <span className="text-2xs font-semibold text-foreground font-mono">SENTIMENT</span>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-2">
               {[
                 { pair: "EUR/USD", bull: 62 },
                 { pair: "GBP/USD", bull: 45 },
                 { pair: "BTC/USD", bull: 78 },
               ].map((s) => (
                 <div key={s.pair}>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[9px] font-semibold text-foreground">{s.pair}</span>
-                    <span className="text-[8px] text-muted-foreground">{s.bull}% לונג</span>
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span className="text-2xs font-semibold text-foreground font-mono">{s.pair}</span>
+                    <span className="text-2xs text-muted-foreground/40 font-mono">{s.bull}%L</span>
                   </div>
-                  <div className="flex h-2 rounded-full overflow-hidden">
-                    <div className="bg-accent/70 transition-all" style={{ width: `${s.bull}%` }} />
-                    <div className="bg-destructive/50 flex-1" />
+                  <div className="flex h-1 rounded-sm overflow-hidden">
+                    <div className="bg-profit/50 transition-all" style={{ width: `${s.bull}%` }} />
+                    <div className="bg-loss/30 flex-1" />
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Quick Performance */}
-          <div className="rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <TrendingUp className="h-3.5 w-3.5 text-accent" />
-              <span className="text-[10px] font-semibold text-foreground">ביצועים מהירים</span>
+          <div className="rounded-sm border border-border/8 bg-card p-2.5">
+            <div className="flex items-center gap-1.5 mb-2">
+              <TrendingUp className="h-3 w-3 text-profit" />
+              <span className="text-2xs font-semibold text-foreground font-mono">QUICK STATS</span>
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-1">
               {[
-                { label: "Win Rate", value: "68%", color: "text-accent" },
-                { label: "Profit Factor", value: "2.4", color: "text-accent" },
-                { label: "Avg Win", value: "+$87", color: "text-accent" },
-                { label: "Avg Loss", value: "-$36", color: "text-destructive" },
+                { label: "Win Rate", value: "68%", color: "text-profit" },
+                { label: "PF", value: "2.4", color: "text-profit" },
+                { label: "Avg Win", value: "+$87", color: "text-profit" },
+                { label: "Avg Loss", value: "-$36", color: "text-loss" },
               ].map((s) => (
-                <div key={s.label} className="rounded-lg bg-muted/15 border border-border/30 p-2 text-center">
-                  <p className={`text-sm font-bold ${s.color}`}>{s.value}</p>
-                  <p className="text-[8px] text-muted-foreground mt-0.5">{s.label}</p>
+                <div key={s.label} className="rounded-sm bg-muted/8 border border-border/6 p-1.5 text-center">
+                  <p className={`text-[11px] font-bold ${s.color} font-mono`}>{s.value}</p>
+                  <p className="text-2xs text-muted-foreground/30 font-mono">{s.label}</p>
                 </div>
               ))}
             </div>
@@ -248,25 +222,24 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
       </div>
 
       {/* ===== Row 3: Watchlist + Goals + Voice + News ===== */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 md:gap-4">
-
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-2">
         {/* Watchlist */}
-        <div className="sm:col-span-1 md:col-span-4 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-3.5 md:p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Eye className="h-4 w-4 text-primary" />
-            <span className="text-xs font-semibold text-foreground">רשימת מעקב</span>
+        <div className="sm:col-span-1 md:col-span-4 rounded-sm border border-border/8 bg-card p-2.5">
+          <div className="flex items-center gap-1.5 mb-2">
+            <Eye className="h-3 w-3 text-primary" />
+            <span className="text-2xs font-semibold text-foreground font-mono">WATCHLIST</span>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-0.5">
             {watchlist.map((item) => (
-              <div key={item.pair} className="flex items-center justify-between rounded-xl bg-muted/10 border border-border/15 px-2.5 md:px-3 py-2 md:py-2.5 transition-all duration-200 hover:bg-muted/20 hover:border-primary/15 cursor-pointer min-h-[44px]">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold text-foreground">{item.pair}</span>
-                  <span className="text-[8px] text-muted-foreground/60 bg-muted/30 rounded px-1 py-0.5">{item.tf}</span>
+              <div key={item.pair} className="flex items-center justify-between rounded-sm bg-muted/5 border border-border/6 px-2 py-1.5 hover:bg-muted/10 cursor-pointer transition-all min-h-[36px]">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] font-semibold text-foreground font-mono">{item.pair}</span>
+                  <span className="text-2xs text-muted-foreground/30 bg-muted/10 rounded-sm px-1 font-mono">{item.tf}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-mono text-muted-foreground">{item.price}</span>
-                  <span className={`flex items-center gap-0.5 text-[10px] font-bold ${item.chg > 0 ? "text-accent" : "text-destructive"}`}>
-                    {item.chg > 0 ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-2xs font-mono text-muted-foreground/50">{item.price}</span>
+                  <span className={`flex items-center gap-0.5 text-2xs font-bold font-mono ${item.chg > 0 ? "text-profit" : "text-loss"}`}>
+                    {item.chg > 0 ? <ArrowUpRight className="h-2.5 w-2.5" /> : <ArrowDownRight className="h-2.5 w-2.5" />}
                     {item.chg > 0 ? "+" : ""}{item.chg}%
                   </span>
                 </div>
@@ -276,112 +249,106 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
         </div>
 
         {/* Goals */}
-        <div className="sm:col-span-1 md:col-span-3 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-3.5 md:p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Target className="h-4 w-4 text-primary" />
-            <span className="text-xs font-semibold text-foreground">יעדים להיום</span>
+        <div className="sm:col-span-1 md:col-span-3 rounded-sm border border-border/8 bg-card p-2.5">
+          <div className="flex items-center gap-1.5 mb-2">
+            <Target className="h-3 w-3 text-primary" />
+            <span className="text-2xs font-semibold text-foreground font-mono">DAILY GOALS</span>
           </div>
-          <div className="space-y-4">
-            <GoalBar label="יעד רווח" current={1247} target={2000} unit="$" color="accent" />
-            <GoalBar label="עסקאות" current={2} target={5} unit="" color="primary" />
-            <GoalBar label="Win Rate" current={100} target={65} unit="%" color="accent" exceeded />
+          <div className="space-y-3">
+            <GoalBar label="יעד רווח" current={1247} target={2000} unit="$" />
+            <GoalBar label="עסקאות" current={2} target={5} unit="" />
+            <GoalBar label="Win Rate" current={100} target={65} unit="%" exceeded />
           </div>
         </div>
 
         {/* Voice Journal */}
-        <div className="sm:col-span-1 md:col-span-2 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-3.5 md:p-5 flex flex-col items-center justify-center text-center">
-          <div className="relative mb-4">
-            <div className="absolute inset-[-8px] rounded-full bg-primary/5 animate-pulse" style={{ animationDuration: "2.5s" }} />
-            <button className="interactive-btn relative flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 border border-primary/25 text-primary transition-all hover:bg-primary/20 hover:shadow-[0_0_30px_hsl(217_72%_53%/0.2)] active:scale-95">
-              <Mic className="h-7 w-7" />
+        <div className="sm:col-span-1 md:col-span-2 rounded-sm border border-border/8 bg-card p-2.5 flex flex-col items-center justify-center text-center">
+          <div className="relative mb-3">
+            <div className="absolute inset-[-6px] rounded-full bg-primary/5 animate-pulse" style={{ animationDuration: "2.5s" }} />
+            <button className="haptic-press relative flex h-12 w-12 items-center justify-center rounded-full bg-primary/8 border border-primary/15 text-primary hover:bg-primary/15 active:scale-95 transition-all">
+              <Mic className="h-5 w-5" />
             </button>
           </div>
-          <p className="text-xs font-semibold text-foreground mb-1">יומן קולי</p>
-          <p className="text-[9px] text-muted-foreground leading-relaxed">
-            מרגיש לחץ? תלחץ ותדבר אליי. אני אנתח את הקול שלך.
-          </p>
+          <p className="text-[10px] font-semibold text-foreground mb-0.5">יומן קולי</p>
+          <p className="text-2xs text-muted-foreground/40 leading-snug">לחץ ודבר. ה-AI ינתח את הקול שלך.</p>
         </div>
 
         {/* News Guard */}
-        <div className="sm:col-span-1 md:col-span-3 rounded-2xl border border-destructive/20 bg-destructive/[0.03] p-3.5 md:p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-destructive/10">
-              <Newspaper className="h-4 w-4 text-destructive" />
-            </div>
-            <span className="text-[10px] md:text-xs font-semibold text-foreground">News Guard</span>
+        <div className="sm:col-span-1 md:col-span-3 rounded-sm border border-loss/15 bg-loss/[0.02] p-2.5">
+          <div className="flex items-center gap-1.5 mb-2">
+            <Newspaper className="h-3 w-3 text-loss" />
+            <span className="text-2xs font-semibold text-foreground font-mono">NEWS GUARD</span>
           </div>
           <NewsCountdown />
-          <div className="mt-3 rounded-xl border border-destructive/15 bg-destructive/[0.04] p-3">
-            <p className="text-[9px] md:text-[10px] text-muted-foreground leading-relaxed">
-              <span className="text-destructive font-semibold">הודעת CPI</span> — המערכת תנעל פתיחת עסקאות חדשות <span className="text-destructive font-semibold">10 דקות</span> לפני ההודעה.
+          <div className="mt-2 rounded-sm border border-loss/10 bg-loss/[0.03] p-2">
+            <p className="text-2xs text-muted-foreground/50 leading-relaxed">
+              <span className="text-loss font-semibold">CPI</span> — נעילה <span className="text-loss font-semibold font-mono">10 דק׳</span> לפני ההודעה.
             </p>
           </div>
-          <div className="mt-3 space-y-1.5">
+          <div className="mt-2 space-y-0.5">
             {[
               { name: "🔴 CPI — US", time: "15:30", critical: true },
               { name: "🟡 FOMC Minutes", time: "21:00", critical: false },
             ].map((ev, i) => (
-              <div key={i} className={`flex items-center justify-between rounded-lg px-2.5 py-1.5 text-[9px] ${
-                ev.critical ? "bg-destructive/10 border border-destructive/15" : "bg-muted/20"
-              }`}>
-                <span className="text-foreground/70">{ev.name}</span>
-                <span className={ev.critical ? "text-destructive font-semibold" : "text-muted-foreground"}>{ev.time}</span>
+              <div key={i} className={`flex items-center justify-between rounded-sm px-2 py-1 text-2xs ${ev.critical ? "bg-loss/6 border border-loss/10" : "bg-muted/8"}`}>
+                <span className="text-foreground/60">{ev.name}</span>
+                <span className={`font-mono ${ev.critical ? "text-loss font-semibold" : "text-muted-foreground/40"}`}>{ev.time}</span>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* ===== Row 4: Recent Activity Feed ===== */}
-      <div className="rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-3.5 md:p-5">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-primary" />
-            <span className="text-xs md:text-sm font-semibold text-foreground">העסקאות האחרונות שלך</span>
+      {/* ===== Row 4: Recent Trades ===== */}
+      <div className="rounded-sm border border-border/8 bg-card p-2.5">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-1.5">
+            <Clock className="h-3 w-3 text-primary" />
+            <span className="text-2xs font-semibold text-foreground font-mono">RECENT TRADES</span>
           </div>
-          <button className="flex items-center gap-1 text-[10px] text-primary font-medium hover:underline">
-            ראה הכל
-            <ChevronLeft className="h-3 w-3" />
+          <button className="flex items-center gap-0.5 text-2xs text-primary font-medium hover:underline">
+            הכל
+            <ChevronLeft className="h-2.5 w-2.5" />
           </button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-right min-w-[480px]">
             <thead>
-              <tr className="border-b border-border/15 text-[9px] md:text-[10px] text-muted-foreground">
-                <th className="pb-2 pr-2 font-medium">נכס</th>
-                <th className="pb-2 font-medium">כיוון</th>
-                <th className="pb-2 font-medium">כניסה</th>
-                <th className="pb-2 font-medium">יציאה</th>
-                <th className="pb-2 font-medium">P&L</th>
-                <th className="pb-2 pl-2 font-medium">שעה</th>
+              <tr className="border-b border-border/8 text-2xs text-muted-foreground/40 font-mono">
+                <th className="pb-1.5 pr-2 font-medium">ASSET</th>
+                <th className="pb-1.5 font-medium">DIR</th>
+                <th className="pb-1.5 font-medium">ENTRY</th>
+                <th className="pb-1.5 font-medium">EXIT</th>
+                <th className="pb-1.5 font-medium">P&L</th>
+                <th className="pb-1.5 pl-2 font-medium">TIME</th>
               </tr>
             </thead>
-            <tbody className="text-[10px] md:text-xs">
+            <tbody className="text-2xs">
               {recentTrades.map((t, i) => (
-                <tr key={i} className="border-b border-border/10 last:border-0 interactive-row">
-                  <td className="py-2.5 pr-2 font-semibold text-foreground">{t.pair}</td>
+                <tr key={i} className="border-b border-border/6 last:border-0 hover:bg-muted/5 transition-colors">
+                  <td className="py-1.5 pr-2 font-semibold text-foreground font-mono">{t.pair}</td>
                   <td>
-                    <span className={`inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[9px] font-semibold ${
-                      t.dir === "Long" ? "bg-accent/10 text-accent" : "bg-destructive/10 text-destructive"
+                    <span className={`inline-flex items-center gap-0.5 rounded-sm px-1 py-0.5 text-2xs font-semibold font-mono ${
+                      t.dir === "Long" ? "bg-profit/8 text-profit" : "bg-loss/8 text-loss"
                     }`}>
-                      {t.dir === "Long" ? <ArrowUpRight className="h-2.5 w-2.5" /> : <ArrowDownRight className="h-2.5 w-2.5" />}
-                      {t.dir}
+                      {t.dir === "Long" ? <ArrowUpRight className="h-2 w-2" /> : <ArrowDownRight className="h-2 w-2" />}
+                      {t.dir === "Long" ? "L" : "S"}
                     </span>
                   </td>
-                  <td className="text-muted-foreground font-mono">{t.entry}</td>
-                  <td className="text-muted-foreground font-mono">{t.exit}</td>
-                  <td className={`font-bold ${t.pnl > 0 ? "text-accent" : "text-destructive"}`}>
+                  <td className="text-muted-foreground/50 font-mono">{t.entry}</td>
+                  <td className="text-muted-foreground/50 font-mono">{t.exit}</td>
+                  <td className={`font-bold font-mono ${t.pnl > 0 ? "text-profit" : "text-loss"}`}>
                     {t.pnl > 0 ? "+" : ""}{t.pnl}$
                   </td>
-                  <td className="py-2.5 pl-2 text-muted-foreground">{t.time}</td>
+                  <td className="py-1.5 pl-2 text-muted-foreground/40 font-mono">{t.time}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <div className="mt-3 flex items-center gap-1.5 rounded-xl bg-primary/[0.04] border border-primary/10 px-3 py-2">
-          <Zap className="h-3 w-3 text-primary" />
-          <span className="text-[9px] md:text-[10px] text-muted-foreground">העסקאות מיובאות אוטומטית מחשבון הברוקר שלך</span>
+        <div className="mt-2 flex items-center gap-1 rounded-sm bg-primary/[0.03] border border-primary/6 px-2 py-1.5">
+          <Zap className="h-2.5 w-2.5 text-primary/50" />
+          <span className="text-2xs text-muted-foreground/40">העסקאות מיובאות אוטומטית מחשבון הברוקר</span>
         </div>
       </div>
     </div>
@@ -391,54 +358,43 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
 /* ===== Sub Components ===== */
 
 const TiltGauge = ({ value }: { value: number }) => {
-  // Arc gauge: 0=calm(green), 50=anxious(yellow), 100=tilt(red)
   const angle = -90 + (value / 100) * 180;
   const getColor = () => {
-    if (value < 35) return "hsl(var(--accent))";
+    if (value < 35) return "hsl(var(--profit))";
     if (value < 65) return "hsl(45 90% 55%)";
-    return "hsl(var(--destructive))";
+    return "hsl(var(--loss))";
   };
 
   return (
-    <div className="relative w-28 h-16 overflow-hidden">
+    <div className="relative w-24 h-14 overflow-hidden">
       <svg viewBox="0 0 120 70" className="w-full h-full">
-        {/* Background arc */}
-        <path d="M 10 65 A 50 50 0 0 1 110 65" fill="none" stroke="hsl(var(--muted))" strokeWidth="8" strokeLinecap="round" />
-        {/* Colored segments */}
-        <path d="M 10 65 A 50 50 0 0 1 43 18" fill="none" stroke="hsl(var(--accent))" strokeWidth="8" strokeLinecap="round" opacity="0.3" />
-        <path d="M 43 18 A 50 50 0 0 1 77 18" fill="none" stroke="hsl(45 90% 55%)" strokeWidth="8" strokeLinecap="round" opacity="0.3" />
-        <path d="M 77 18 A 50 50 0 0 1 110 65" fill="none" stroke="hsl(var(--destructive))" strokeWidth="8" strokeLinecap="round" opacity="0.3" />
-        {/* Needle */}
-        <line
-          x1="60" y1="65" x2="60" y2="20"
-          stroke={getColor()}
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          transform={`rotate(${angle}, 60, 65)`}
-          style={{ transition: "all 1s ease-out" }}
-        />
-        <circle cx="60" cy="65" r="4" fill={getColor()} />
+        <path d="M 10 65 A 50 50 0 0 1 110 65" fill="none" stroke="hsl(var(--muted))" strokeWidth="6" strokeLinecap="round" />
+        <path d="M 10 65 A 50 50 0 0 1 43 18" fill="none" stroke="hsl(var(--profit))" strokeWidth="6" strokeLinecap="round" opacity="0.3" />
+        <path d="M 43 18 A 50 50 0 0 1 77 18" fill="none" stroke="hsl(45 90% 55%)" strokeWidth="6" strokeLinecap="round" opacity="0.3" />
+        <path d="M 77 18 A 50 50 0 0 1 110 65" fill="none" stroke="hsl(var(--loss))" strokeWidth="6" strokeLinecap="round" opacity="0.3" />
+        <line x1="60" y1="65" x2="60" y2="22" stroke={getColor()} strokeWidth="2" strokeLinecap="round" transform={`rotate(${angle}, 60, 65)`} style={{ transition: "all 1s ease-out" }} />
+        <circle cx="60" cy="65" r="3.5" fill={getColor()} />
       </svg>
     </div>
   );
 };
 
-const GoalBar = ({ label, current, target, unit, color, exceeded }: {
-  label: string; current: number; target: number; unit: string; color: string; exceeded?: boolean;
+const GoalBar = ({ label, current, target, unit, exceeded }: {
+  label: string; current: number; target: number; unit: string; exceeded?: boolean;
 }) => {
   const pct = Math.min((current / target) * 100, 100);
   return (
     <div>
-      <div className="flex items-center justify-between mb-1.5">
-        <span className="text-[10px] font-medium text-foreground">{label}</span>
-        <span className="text-[9px] text-muted-foreground">
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-2xs font-medium text-foreground/60">{label}</span>
+        <span className="text-2xs text-muted-foreground/40 font-mono">
           {unit === "$" ? `$${current}` : `${current}${unit}`} / {unit === "$" ? `$${target}` : `${target}${unit}`}
         </span>
       </div>
-      <div className="h-2 w-full rounded-full bg-muted">
-        <div className={`h-2 rounded-full bg-${color} transition-all`} style={{ width: `${pct}%` }} />
+      <div className="h-1 w-full rounded-sm bg-muted/15">
+        <div className="h-1 rounded-sm bg-primary transition-all" style={{ width: `${pct}%` }} />
       </div>
-      {exceeded && <p className="text-[9px] text-accent mt-1">🎯 עברת את היעד!</p>}
+      {exceeded && <p className="text-2xs text-profit mt-0.5 font-mono">🎯 TARGET EXCEEDED</p>}
     </div>
   );
 };
@@ -447,9 +403,7 @@ const NewsCountdown = () => {
   const [seconds, setSeconds] = useState(45 * 60 + 20);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setSeconds((s) => (s > 0 ? s - 1 : 0));
-    }, 1000);
+    const interval = setInterval(() => { setSeconds((s) => (s > 0 ? s - 1 : 0)); }, 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -459,17 +413,17 @@ const NewsCountdown = () => {
   const pad = (n: number) => n.toString().padStart(2, "0");
 
   return (
-    <div className="flex items-center justify-center gap-2 my-3" dir="ltr">
+    <div className="flex items-center justify-center gap-1.5 my-2" dir="ltr">
       {[
-        { val: pad(hrs), label: "שעות" },
-        { val: pad(mins), label: "דקות" },
-        { val: pad(secs), label: "שניות" },
+        { val: pad(hrs), label: "H" },
+        { val: pad(mins), label: "M" },
+        { val: pad(secs), label: "S" },
       ].map((t, i) => (
         <div key={i} className="flex flex-col items-center">
-          <div className="rounded-xl bg-destructive/10 border border-destructive/20 px-3 py-2 min-w-[44px] text-center">
-            <span className="font-mono text-lg md:text-xl font-bold text-destructive">{t.val}</span>
+          <div className="rounded-sm bg-loss/8 border border-loss/15 px-2 py-1.5 min-w-[36px] text-center">
+            <span className="font-mono text-sm font-bold text-loss">{t.val}</span>
           </div>
-          <span className="text-[8px] text-muted-foreground mt-1">{t.label}</span>
+          <span className="text-2xs text-muted-foreground/30 mt-0.5 font-mono">{t.label}</span>
         </div>
       ))}
     </div>
@@ -477,7 +431,6 @@ const NewsCountdown = () => {
 };
 
 /* ===== Static Data ===== */
-
 const chartData = Array.from({ length: 50 }, (_, i) => ({
   body: 12 + Math.sin(i * 0.3) * 15 + Math.random() * 20,
   wick: 3 + Math.random() * 12,
