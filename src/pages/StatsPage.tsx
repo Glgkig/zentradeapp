@@ -30,7 +30,7 @@ const StatsPage = () => {
   const circumference = 2 * Math.PI * 54;
 
   return (
-    <div className="mx-auto max-w-[1280px]">
+    <div className="mx-auto max-w-[1280px] space-y-3 md:space-y-0">
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3">
