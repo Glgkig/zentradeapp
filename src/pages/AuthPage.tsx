@@ -494,6 +494,26 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
   const navigate = useNavigate();
   const { signIn, signUp, updateProfile } = useAuth();
 
+  const handleGoogleSignIn = async () => {
+    setSubmitting(true);
+    try {
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
+      });
+      if (result.error) {
+        toast.error("שגיאה בהתחברות עם Google");
+        return;
+      }
+      if (result.redirected) return;
+      toast.success("התחברת בהצלחה!");
+      navigate("/dashboard");
+    } catch {
+      toast.error("שגיאה לא צפויה");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
