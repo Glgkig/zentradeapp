@@ -347,7 +347,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
         <div className="overflow-x-auto">
           <table className="w-full text-right">
             <thead>
-              <tr className="border-b border-border text-[9px] md:text-[10px] text-muted-foreground">
+              <tr className="border-b border-border/15 text-[9px] md:text-[10px] text-muted-foreground">
                 <th className="pb-2 pr-2 font-medium">נכס</th>
                 <th className="pb-2 font-medium">כיוון</th>
                 <th className="pb-2 font-medium">כניסה</th>
