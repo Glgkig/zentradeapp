@@ -4,15 +4,15 @@ import {
   AlertTriangle, Volume2, Mail, Smartphone, Sparkles, Save,
   Eye, Palette, CreditCard, Key, Database, Zap, Link2, Plus, Check, X,
 } from "lucide-react";
-import logoTradingView from "@/assets/logos/tradingview.png";
-import logoTradeLocker from "@/assets/logos/tradelocker.png";
-import logoMt5 from "@/assets/logos/mt5.png";
-import logoBinance from "@/assets/logos/binance.png";
-import logoTopstep from "@/assets/logos/topstep.png";
-import logoRithmic from "@/assets/logos/rithmic.png";
-import logoNinjaTrader from "@/assets/logos/ninjatrader.png";
-import logoIbkr from "@/assets/logos/ibkr.png";
-import logoForex from "@/assets/logos/forexcom.png";
+import logoTradingView from "@/assets/logos/tradingview-full.png";
+import logoTradeLocker from "@/assets/logos/tradelocker-full.png";
+import logoMt5 from "@/assets/logos/mt5-full.png";
+import logoBinance from "@/assets/logos/binance-full.png";
+import logoTopstep from "@/assets/logos/topstepx-full.png";
+import logoRithmic from "@/assets/logos/rithmic-full.png";
+import logoNinjaTrader from "@/assets/logos/ninjatrader-full.png";
+import logoIbkr from "@/assets/logos/ibkr-full.png";
+import logoForex from "@/assets/logos/forex-full.png";
 
 /* ===== Tab Config ===== */
 const tabs = [
