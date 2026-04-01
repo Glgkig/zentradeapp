@@ -130,7 +130,7 @@ const AuthPage = () => {
         </div>
 
         {/* Mobile Menu */}
-        {mobileMenu && (
+        {!isEditorCanvas && mobileMenu && (
           <div className="md:hidden border-t border-border/30 bg-background/95 backdrop-blur-xl px-4 py-4 space-y-2">
             <a href="#features" onClick={() => setMobileMenu(false)} className="block py-2 text-sm text-foreground/70">למה ZenTrade?</a>
             <a href="#testimonials" onClick={() => setMobileMenu(false)} className="block py-2 text-sm text-foreground/70">ביקורות</a>
