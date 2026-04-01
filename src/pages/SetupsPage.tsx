@@ -475,7 +475,7 @@ const SetupsPage = () => {
               </button>
               <button
                 onClick={() => setSelectedId(null)}
-                className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-muted/10 border border-border/15 py-2.5 text-[11px] font-bold text-muted-foreground/50 hover:text-foreground transition-all duration-300"
+                className="interactive-btn flex-1 flex items-center justify-center gap-2 rounded-xl bg-muted/10 border border-border/15 py-2.5 text-[11px] font-bold text-muted-foreground/50 hover:text-foreground transition-all duration-300 min-h-[44px]"
               >
                 סגור
               </button>

@@ -350,7 +350,7 @@ const FilterSelect = ({ value, onChange, children }: { value: string; onChange: 
 );
 
 const SummaryCard = ({ value, label, icon, accent }: { value: string; label: string; icon: React.ReactNode; accent: string }) => (
-  <div className="relative rounded-2xl border border-border/25 bg-secondary/20 p-3.5 md:p-5 text-center overflow-hidden group hover:border-border/40 transition-all duration-300">
+  <div className="relative rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-3.5 md:p-5 text-center overflow-hidden group hover:border-primary/15 transition-all duration-300">
     <div className={`absolute -top-8 -right-8 w-20 h-20 rounded-full blur-2xl pointer-events-none opacity-30 ${
       accent === "accent" ? "bg-accent/20" : accent === "destructive" ? "bg-destructive/20" : "bg-primary/20"
     }`} />

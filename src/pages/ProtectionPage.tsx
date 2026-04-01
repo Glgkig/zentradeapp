@@ -249,7 +249,7 @@ const ProtectionPage = () => {
         {/* ══ Activate Shield Button ══ */}
         <button
           onClick={() => setActivated(true)}
-          className={`w-full flex items-center justify-center gap-2.5 rounded-2xl border py-4 text-sm font-extrabold transition-all duration-500 ${
+          className={`interactive-btn w-full flex items-center justify-center gap-2.5 rounded-2xl border py-4 text-sm font-extrabold transition-all duration-500 min-h-[52px] ${
             activated
               ? "bg-accent/15 border-accent/25 text-accent shadow-[0_0_30px_hsl(var(--accent)/0.1)]"
               : "bg-primary/12 border-primary/20 text-primary hover:bg-primary/20 hover:shadow-[0_0_25px_hsl(var(--primary)/0.12)]"

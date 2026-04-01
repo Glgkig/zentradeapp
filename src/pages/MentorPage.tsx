@@ -225,7 +225,7 @@ const MentorPage = () => {
               <button
                 key={pill.text}
                 onClick={() => sendMessage(pill.text)}
-                className={`group flex items-center gap-1.5 shrink-0 rounded-xl border px-3 py-2 transition-all duration-300 ${colors.bg}`}
+                className={`interactive-btn group flex items-center gap-1.5 shrink-0 rounded-xl border px-3 py-2 transition-all duration-300 min-h-[40px] ${colors.bg}`}
               >
                 <pill.icon className={`h-3 w-3 shrink-0 ${colors.icon}`} />
                 <span className={`text-[9px] md:text-[10px] font-semibold whitespace-nowrap ${colors.text}`}>
