@@ -139,7 +139,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
 
         {/* Compact Chart */}
-        <div className="md:col-span-5 rounded-2xl border border-border bg-secondary/30 overflow-hidden">
+        <div className="md:col-span-5 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm overflow-hidden">
           <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
             <div className="flex items-center gap-2">
               <BarChart3 className="h-3.5 w-3.5 text-primary" />
