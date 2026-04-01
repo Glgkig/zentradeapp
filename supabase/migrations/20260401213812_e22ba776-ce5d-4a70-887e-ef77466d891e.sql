@@ -1,0 +1,2 @@
+CREATE POLICY "Users can update own events" ON behavioral_events FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can delete own events" ON behavioral_events FOR DELETE TO authenticated USING (auth.uid() = user_id);
