@@ -224,7 +224,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               {/* User Dropdown — Bottom sheet on mobile, dropdown on desktop */}
               {userMenu && (
                 <>
-                  <div className="fixed inset-0 z-40 bg-background/60 md:bg-transparent" onClick={() => setUserMenu(false)} />
+                  <div className="fixed inset-0 z-[60] bg-background/60 md:bg-transparent" onClick={() => setUserMenu(false)} />
 
                   {/* Desktop dropdown */}
                   <div className="hidden md:block absolute left-0 md:left-auto md:right-0 top-full mt-2 w-56 z-50 rounded-2xl border border-border/30 bg-secondary shadow-2xl shadow-background/60 animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden">
