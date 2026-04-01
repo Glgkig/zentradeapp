@@ -556,19 +556,19 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
 /* ===== Upgrade Modal ===== */
 const plans = [
   {
-    id: "basic", name: "בסיסי", nameEn: "STARTER", price: "40", yearlyPrice: "36", icon: Zap,
+    id: "basic", name: "בסיסי", nameEn: "STARTER", price: "40", yearlyTotal: "432", icon: Zap,
     features: ["3 סטאפים", "יומן בסיסי", "סטטיסטיקות שבועיות", "התראות מייל"],
     missing: ["מנטור AI", "בקטסטינג"],
     cta: "התחל", popular: false,
   },
   {
-    id: "pro", name: "Pro", nameEn: "PRO", price: "80", yearlyPrice: "72", icon: Star,
+    id: "pro", name: "Pro", nameEn: "PRO", price: "80", yearlyTotal: "864", icon: Star,
     features: ["סטאפים ∞", "מנטור AI מתקדם", "Real-Time סטטיסטיקות", "בקטסטינג מלא", "Push + מייל", "ייצוא PDF"],
     missing: [],
     cta: "שדרג ל-Pro", popular: true,
   },
   {
-    id: "vip", name: "VIP", nameEn: "VIP", price: "150", yearlyPrice: "135", icon: Crown,
+    id: "vip", name: "VIP", nameEn: "VIP", price: "150", yearlyTotal: "1,620", icon: Crown,
     features: ["הכול ב-Pro +", "API גישה מלאה", "מנטור 1:1", "חוקי ברזל מותאמים", "VIP טלגרם", "תמיכה 24/7", "גישה מוקדמת"],
     missing: [],
     cta: "הצטרף ל-VIP", popular: false,
