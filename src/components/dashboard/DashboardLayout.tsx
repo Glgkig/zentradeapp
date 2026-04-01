@@ -172,7 +172,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
       {/* ===== Main Area ===== */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top Header */}
-        <header className="flex items-center justify-between glass-header px-4 py-2.5 md:px-6 md:py-3 shrink-0">
+        <header className="flex items-center justify-between glass-header px-4 py-2.5 md:px-6 md:py-3 shrink-0 relative z-50">
           <div className="flex items-center gap-2.5">
             {/* Mobile brand (replaces hamburger) */}
             <div className="flex md:hidden items-center gap-2">
@@ -224,10 +224,10 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               {/* User Dropdown — Bottom sheet on mobile, dropdown on desktop */}
               {userMenu && (
                 <>
-                  <div className="fixed inset-0 z-40 bg-background/60 md:bg-transparent" onClick={() => setUserMenu(false)} />
+                  <div className="fixed inset-0 z-[60] bg-background/60 md:bg-transparent" onClick={() => setUserMenu(false)} />
 
                   {/* Desktop dropdown */}
-                  <div className="hidden md:block absolute left-0 md:left-auto md:right-0 top-full mt-2 w-56 z-50 rounded-2xl border border-border/30 bg-secondary shadow-2xl shadow-background/60 animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden">
+                  <div className="hidden md:block absolute left-0 md:left-auto md:right-0 top-full mt-2 w-56 z-[70] rounded-2xl border border-border/30 bg-secondary shadow-2xl shadow-background/60 animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden">
                     <UserMenuContent
                       onClose={() => setUserMenu(false)}
                       onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
@@ -236,7 +236,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                   </div>
 
                   {/* Mobile bottom sheet */}
-                  <div className="md:hidden fixed inset-x-0 bottom-0 z-50 rounded-t-3xl border-t border-border/20 bg-secondary animate-in slide-in-from-bottom duration-300 overflow-hidden">
+                  <div className="md:hidden fixed inset-x-0 bottom-0 z-[70] rounded-t-3xl border-t border-border/20 bg-secondary animate-in slide-in-from-bottom duration-300 overflow-hidden">
                     <div className="flex justify-center pt-3 pb-1"><div className="w-10 h-1 rounded-full bg-muted-foreground/15" /></div>
                     <UserMenuContent
                       onClose={() => setUserMenu(false)}
