@@ -4,8 +4,9 @@ import {
   Shield, BarChart3, ChevronDown, Bot, Zap, Lock, X, Menu,
   FlaskConical, Mic, Newspaper, ArrowUp, Activity, AlertTriangle,
   CheckCircle2, TrendingUp, Quote, Star, Brain, BookOpen, Calendar,
-  XCircle, ChevronRight, Sparkles, MessageCircle, MapPin,
+  XCircle, ChevronRight, Sparkles, MapPin,
 } from "lucide-react";
+import WhatsAppWidget from "@/components/WhatsAppWidget";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import logoMt5 from "@/assets/logos/mt5-full.png";
 import logoBinance from "@/assets/logos/binance-full.png";
