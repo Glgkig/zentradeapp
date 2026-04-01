@@ -288,7 +288,7 @@ const AuthPage = () => {
               <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-foreground">
                 הכלים שמפרידים בין <span className="text-primary">מנצחים</span> למפסידים
               </h2>
-              <p className="mt-4 max-w-2xl mx-auto text-sm md:text-base text-muted-foreground leading-relaxed">
+              <p className="mt-4 max-w-2xl mx-auto text-sm md:text-base text-foreground/70 leading-relaxed">
                 ארבעה כלים קריטיים, פלטפורמה אחת. הכל מונע AI.
               </p>
             </div>
