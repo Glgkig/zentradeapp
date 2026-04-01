@@ -54,8 +54,9 @@ const SettingsPage = () => {
                   }`}>
                     <tab.icon className={`h-3.5 w-3.5 ${active ? "text-primary" : "text-muted-foreground/40"}`} />
                   </div>
-                  <span className="flex-1 text-right">{tab.label}</span>
-                  {active && <ChevronRight className="h-3 w-3 text-primary/40 rotate-180" />}
+                  <span className="flex-1 text-right hidden md:inline">{tab.label}</span>
+                  <span className="md:hidden">{tab.label}</span>
+                  {active && <ChevronRight className="h-3 w-3 text-primary/40 rotate-180 hidden md:block" />}
                 </button>
               );
             })}

@@ -251,7 +251,7 @@ const StatsPage = () => {
       </div>
 
       {/* Row 2: Heatmap (Full Width) */}
-      <div className="rounded-xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4">
+      <div className="rounded-xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-3 md:p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
