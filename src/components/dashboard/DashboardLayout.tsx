@@ -14,6 +14,7 @@ import HomeDashboard from "@/components/dashboard/HomeDashboard";
 import OnboardingModal from "@/components/dashboard/OnboardingModal";
 import BacktestingPage from "@/pages/BacktestingPage";
 import ProtectionPage from "@/pages/ProtectionPage";
+import logoBinanceFull from "@/assets/logos/binance-full.png";
 
 /* ===== Nav Config ===== */
 const navItems = [
