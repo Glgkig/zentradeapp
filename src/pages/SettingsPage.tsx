@@ -187,18 +187,15 @@ const ProfileTab = () => (
 
 /* ===== Connections Tab ===== */
 const brokers = [
-  { name: "TradingView", short: "TV", color: "#2962FF", connected: true },
-  { name: "TradeLocker", short: "TL", color: "#00E676", connected: false },
-  { name: "MetaTrader 5", short: "MT5", color: "#4A90D9", connected: true },
-  { name: "Binance", short: "BN", color: "#F0B90B", connected: false },
-  { name: "TopstepX", short: "TS", color: "#1DB954", connected: false },
-  { name: "Rithmic", short: "R+", color: "#FF6B35", connected: false },
-  { name: "NinjaTrader", short: "NT", color: "#E84E0F", connected: false },
-  { name: "Interactive Brokers", short: "IB", color: "#DC143C", connected: false },
-  { name: "Forex.com", short: "FX", color: "#0891B2", connected: false },
-  { name: "Bybit", short: "BY", color: "#F7A600", connected: false },
-  { name: "cTrader", short: "cT", color: "#6366F1", connected: false },
-  { name: "DXtrade", short: "DX", color: "#10B981", connected: false },
+  { name: "TradingView", short: "TV", color: "#2962FF", connected: true, logo: logoTradingView },
+  { name: "TradeLocker", short: "TL", color: "#00E676", connected: false, logo: logoTradeLocker },
+  { name: "MetaTrader 5", short: "MT5", color: "#4A90D9", connected: true, logo: logoMt5 },
+  { name: "Binance", short: "BN", color: "#F0B90B", connected: false, logo: logoBinance },
+  { name: "TopstepX", short: "TS", color: "#1DB954", connected: false, logo: logoTopstep },
+  { name: "Rithmic", short: "R+", color: "#FF6B35", connected: false, logo: logoRithmic },
+  { name: "NinjaTrader", short: "NT", color: "#E84E0F", connected: false, logo: logoNinjaTrader },
+  { name: "Interactive Brokers", short: "IB", color: "#DC143C", connected: false, logo: logoIbkr },
+  { name: "Forex.com", short: "FX", color: "#0891B2", connected: false, logo: logoForex },
 ];
 
 const ConnectionsTab = () => {
