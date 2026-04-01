@@ -111,7 +111,7 @@ const JournalPage = () => {
               כל העסקאות מנותחות אוטומטית ע״י ה-AI — תובנות, דפוסים פסיכולוגיים, וציוני משמעת
             </p>
           </div>
-          <button className="group flex items-center gap-2 self-start rounded-xl bg-primary/10 border border-primary/20 px-4 py-2.5 text-[11px] font-bold text-primary hover:bg-primary/20 hover:border-primary/30 transition-all duration-300">
+          <button className="interactive-btn group flex items-center gap-2 self-start rounded-xl bg-primary/10 border border-primary/20 px-4 py-2.5 text-[11px] font-bold text-primary hover:bg-primary/20 hover:border-primary/30 hover:shadow-[0_0_15px_hsl(var(--primary)/0.1)] transition-all duration-300 min-h-[44px]">
             <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary/20 group-hover:bg-primary/30 transition-colors">
               <Mic className="h-3 w-3" />
             </div>
