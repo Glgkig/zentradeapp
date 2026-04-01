@@ -578,6 +578,35 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
             </p>
           </div>
 
+          {forgotMode ? (
+            resetSent ? (
+              <div className="text-center space-y-4 py-4">
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-500/10">
+                  <CheckCircle2 className="h-6 w-6 text-green-500" />
+                </div>
+                <p className="text-sm text-foreground">נשלח קישור לאיפוס סיסמה לאימייל שלך</p>
+                <p className="text-xs text-muted-foreground">בדוק את תיבת הדואר שלך ולחץ על הקישור</p>
+                <button onClick={() => { setForgotMode(false); setResetSent(false); }} className="text-xs text-primary hover:underline">
+                  חזרה להתחברות
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleForgotPassword} className="space-y-3">
+                <div>
+                  <label className="mb-1 block text-[10px] md:text-xs font-medium text-foreground/70">אימייל</label>
+                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" dir="ltr"
+                    className="w-full rounded-lg border border-border bg-muted/30 px-3 py-2.5 text-xs md:text-sm text-foreground text-left placeholder:text-muted-foreground/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" />
+                </div>
+                <button type="submit" disabled={submitting} className="w-full rounded-xl bg-primary py-3 text-xs md:text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 active:scale-[0.98] disabled:opacity-60">
+                  {submitting ? "שולח..." : "שלח קישור לאיפוס"}
+                </button>
+                <p className="text-center">
+                  <button type="button" onClick={() => setForgotMode(false)} className="text-xs text-primary hover:underline">חזרה להתחברות</button>
+                </p>
+              </form>
+            )
+          ) : (
+            <>
           <div className="mb-5 md:mb-6 flex gap-1 rounded-xl bg-muted p-1">
             {[{ label: "התחברות", login: true }, { label: "הרשמה", login: false }].map(({ label, login }) => (
               <button
@@ -640,7 +669,7 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
 
             {isLogin && (
               <div className="text-left">
-                <button type="button" className="text-[10px] md:text-xs text-primary hover:underline">שכחת סיסמה?</button>
+                <button type="button" onClick={() => setForgotMode(true)} className="text-[10px] md:text-xs text-primary hover:underline">שכחת סיסמה?</button>
               </div>
             )}
 
