@@ -331,25 +331,6 @@ const ConnectionsTab = () => {
               })}
             </svg>
           </div>
-
-          {/* Connecting Lines from center to each broker */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100">
-            {brokers.map((broker, i) => {
-              const angle = (i / brokers.length) * 2 * Math.PI - Math.PI / 2;
-              const radius = 42;
-              const x = 50 + radius * Math.cos(angle);
-              const y = 50 + radius * Math.sin(angle);
-              return (
-                <line
-                  key={broker.name}
-                  x1="50" y1="50" x2={x} y2={y}
-                  stroke={broker.connected ? "hsl(var(--accent))" : "hsl(var(--muted-foreground) / 0.06)"}
-                  strokeWidth={broker.connected ? "0.3" : "0.15"}
-                  strokeDasharray={broker.connected ? "none" : "1,1"}
-                />
-              );
-            })}
-          </svg>
         </div>
       </div>
 
