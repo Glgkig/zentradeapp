@@ -543,7 +543,7 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
               </div>
             )}
             <div>
-              <label className="mb-1 block text-[10px] md:text-xs font-medium text-muted-foreground">אימייל</label>
+              <label className="mb-1 block text-[10px] md:text-xs font-medium text-foreground/70">אימייל</label>
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" dir="ltr"
                 className="w-full rounded-lg border border-border bg-muted/30 px-3 py-2.5 text-xs md:text-sm text-foreground text-left placeholder:text-muted-foreground/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" />
             </div>
