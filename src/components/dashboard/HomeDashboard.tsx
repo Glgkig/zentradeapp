@@ -54,7 +54,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
         </div>
 
         {/* 2. Psychological Tilt Meter */}
-        <div className="md:col-span-3 rounded-2xl border border-border bg-secondary/30 p-5">
+        <div className="md:col-span-3 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-5">
           <div className="flex items-center gap-2 mb-4">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
               <Activity className="h-4 w-4 text-accent" />
@@ -83,7 +83,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
         </div>
 
         {/* 3. Hard Protection Limits */}
-        <div className="md:col-span-4 rounded-2xl border border-border bg-secondary/30 p-5">
+        <div className="md:col-span-4 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-5">
           <div className="flex items-center gap-2 mb-4">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
               <Shield className="h-4 w-4 text-primary" />
@@ -139,8 +139,8 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
 
         {/* Compact Chart */}
-        <div className="md:col-span-5 rounded-2xl border border-border bg-secondary/30 overflow-hidden">
-          <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
+        <div className="md:col-span-5 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm overflow-hidden">
+          <div className="flex items-center justify-between border-b border-border/15 px-4 py-2.5">
             <div className="flex items-center gap-2">
               <BarChart3 className="h-3.5 w-3.5 text-primary" />
               <span className="text-[10px] md:text-xs font-semibold text-foreground">EUR/USD — M15</span>
@@ -170,7 +170,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
         </div>
 
         {/* Live AI Signals Feed */}
-        <div className="md:col-span-4 rounded-2xl border border-border bg-secondary/30 p-4 md:p-5">
+        <div className="md:col-span-4 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4 md:p-5">
           <div className="flex items-center gap-2 mb-3">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
               <Zap className="h-3.5 w-3.5 text-primary" />
@@ -185,7 +185,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
               { icon: <Eye className="h-3 w-3 text-accent shrink-0" />, text: "GBP/USD — אזור ביקוש חזק ב-1.2680", time: "לפני 20 דק׳", border: "border-accent/20 bg-accent/[0.04]" },
               { icon: <Shield className="h-3 w-3 text-primary shrink-0" />, text: "הגנת סטופ הוזזה ל-Break Even", time: "לפני 25 דק׳", border: "border-primary/20 bg-primary/[0.04]" },
             ].map((sig, i) => (
-              <div key={i} className={`flex items-start gap-2.5 rounded-xl border ${sig.border} px-3 py-2.5 transition-all hover:scale-[1.01]`}>
+              <div key={i} className={`flex items-start gap-2.5 rounded-xl border ${sig.border} px-3 py-2.5 transition-all duration-200 hover:scale-[1.01] cursor-default`}>
                 <div className="mt-0.5">{sig.icon}</div>
                 <div className="flex-1 min-w-0">
                   <p className="text-[9px] md:text-[10px] font-medium text-foreground leading-relaxed">{sig.text}</p>
@@ -199,7 +199,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
         {/* Market Sentiment + Quick Stats */}
         <div className="md:col-span-3 space-y-4">
           {/* Sentiment */}
-          <div className="rounded-2xl border border-border bg-secondary/30 p-4">
+          <div className="rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4">
             <div className="flex items-center gap-2 mb-3">
               <Activity className="h-3.5 w-3.5 text-primary" />
               <span className="text-[10px] font-semibold text-foreground">סנטימנט שוק</span>
@@ -225,7 +225,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
           </div>
 
           {/* Quick Performance */}
-          <div className="rounded-2xl border border-border bg-secondary/30 p-4">
+          <div className="rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4">
             <div className="flex items-center gap-2 mb-3">
               <TrendingUp className="h-3.5 w-3.5 text-accent" />
               <span className="text-[10px] font-semibold text-foreground">ביצועים מהירים</span>
@@ -251,14 +251,14 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
 
         {/* Watchlist */}
-        <div className="md:col-span-4 rounded-2xl border border-border bg-secondary/30 p-4 md:p-5">
+        <div className="md:col-span-4 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4 md:p-5">
           <div className="flex items-center gap-2 mb-4">
             <Eye className="h-4 w-4 text-primary" />
             <span className="text-xs font-semibold text-foreground">רשימת מעקב</span>
           </div>
           <div className="space-y-2">
             {watchlist.map((item) => (
-              <div key={item.pair} className="flex items-center justify-between rounded-xl bg-muted/15 border border-border/40 px-3 py-2.5 transition-all hover:bg-muted/25">
+              <div key={item.pair} className="flex items-center justify-between rounded-xl bg-muted/10 border border-border/15 px-3 py-2.5 transition-all duration-200 hover:bg-muted/20 hover:border-primary/15 cursor-pointer min-h-[48px]">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-semibold text-foreground">{item.pair}</span>
                   <span className="text-[8px] text-muted-foreground/60 bg-muted/30 rounded px-1 py-0.5">{item.tf}</span>
@@ -276,7 +276,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
         </div>
 
         {/* Goals */}
-        <div className="md:col-span-3 rounded-2xl border border-border bg-secondary/30 p-4 md:p-5">
+        <div className="md:col-span-3 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4 md:p-5">
           <div className="flex items-center gap-2 mb-4">
             <Target className="h-4 w-4 text-primary" />
             <span className="text-xs font-semibold text-foreground">יעדים להיום</span>
@@ -289,10 +289,10 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
         </div>
 
         {/* Voice Journal */}
-        <div className="md:col-span-2 rounded-2xl border border-border bg-secondary/30 p-4 md:p-5 flex flex-col items-center justify-center text-center">
+        <div className="md:col-span-2 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4 md:p-5 flex flex-col items-center justify-center text-center">
           <div className="relative mb-4">
             <div className="absolute inset-[-8px] rounded-full bg-primary/5 animate-pulse" style={{ animationDuration: "2.5s" }} />
-            <button className="relative flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 border border-primary/25 text-primary transition-all hover:bg-primary/20 hover:shadow-[0_0_30px_hsl(217_72%_53%/0.2)] active:scale-95">
+            <button className="interactive-btn relative flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 border border-primary/25 text-primary transition-all hover:bg-primary/20 hover:shadow-[0_0_30px_hsl(217_72%_53%/0.2)] active:scale-95">
               <Mic className="h-7 w-7" />
             </button>
           </div>
@@ -333,7 +333,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
       </div>
 
       {/* ===== Row 4: Recent Activity Feed ===== */}
-      <div className="rounded-2xl border border-border bg-secondary/30 p-4 md:p-5">
+      <div className="rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4 md:p-5">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4 text-primary" />
@@ -347,7 +347,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
         <div className="overflow-x-auto">
           <table className="w-full text-right">
             <thead>
-              <tr className="border-b border-border text-[9px] md:text-[10px] text-muted-foreground">
+              <tr className="border-b border-border/15 text-[9px] md:text-[10px] text-muted-foreground">
                 <th className="pb-2 pr-2 font-medium">נכס</th>
                 <th className="pb-2 font-medium">כיוון</th>
                 <th className="pb-2 font-medium">כניסה</th>
@@ -358,7 +358,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
             </thead>
             <tbody className="text-[10px] md:text-xs">
               {recentTrades.map((t, i) => (
-                <tr key={i} className="border-b border-border/30 last:border-0">
+                <tr key={i} className="border-b border-border/10 last:border-0 interactive-row">
                   <td className="py-2.5 pr-2 font-semibold text-foreground">{t.pair}</td>
                   <td>
                     <span className={`inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[9px] font-semibold ${

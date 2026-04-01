@@ -25,7 +25,7 @@ const SettingsPage = () => {
             <Input value="yehonatan@zentrade.io" placeholder="name@example.com" dir="ltr" />
           </Field>
         </div>
-        <button className="mt-3 flex items-center gap-1.5 rounded-lg border border-border bg-muted/30 px-3 py-1.5 text-[11px] font-medium text-foreground hover:bg-muted/50 transition-all">
+        <button className="interactive-btn mt-3 flex items-center gap-1.5 rounded-lg border border-border/15 bg-muted/15 px-4 py-2 text-[11px] font-medium text-foreground hover:bg-muted/30 hover:border-primary/20 transition-all min-h-[44px]">
           <Lock className="h-3 w-3 text-muted-foreground" />
           שנה סיסמה
         </button>
@@ -133,8 +133,8 @@ const SettingsPage = () => {
 const Section = ({ title, icon, highlight, children }: {
   title: string; icon: React.ReactNode; highlight?: boolean; children: React.ReactNode;
 }) => (
-  <div className={`rounded-xl border p-4 md:p-5 ${
-    highlight ? "border-primary/20 bg-primary/[0.02]" : "border-border bg-secondary/20"
+  <div className={`rounded-xl border p-4 md:p-5 transition-all duration-300 ${
+    highlight ? "border-primary/20 bg-primary/[0.02]" : "border-border/15 bg-secondary/15 backdrop-blur-sm"
   }`}>
     <div className="flex items-center gap-2.5 mb-4">
       <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${
@@ -165,7 +165,7 @@ const Input = ({ value, placeholder, type = "text", dir, prefix }: {
       defaultValue={value}
       placeholder={placeholder}
       dir={dir}
-      className={`w-full rounded-lg border border-border bg-muted/20 py-2 text-xs text-foreground placeholder:text-muted-foreground/30 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all ${prefix ? "px-7" : "px-3"}`}
+      className={`w-full rounded-lg border border-border/15 bg-muted/15 py-2.5 text-xs text-foreground placeholder:text-muted-foreground/30 focus:border-primary/30 focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all min-h-[44px] ${prefix ? "px-7" : "px-3"}`}
     />
   </div>
 );
@@ -174,7 +174,7 @@ const Select = ({ options, defaultValue }: { options: { value: string; label: st
   <div className="relative">
     <select
       defaultValue={defaultValue}
-      className="w-full appearance-none rounded-lg border border-border bg-muted/20 px-3 py-2 text-xs text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all"
+      className="w-full appearance-none rounded-lg border border-border/15 bg-muted/15 px-3 py-2.5 text-xs text-foreground focus:border-primary/30 focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all min-h-[44px]"
     >
       {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
@@ -185,7 +185,7 @@ const Select = ({ options, defaultValue }: { options: { value: string; label: st
 const Toggle = ({ label, sub, defaultChecked }: { label: string; sub?: string; defaultChecked?: boolean }) => {
   const [on, setOn] = useState(defaultChecked ?? false);
   return (
-    <div className="flex items-center justify-between rounded-lg border border-border bg-muted/10 px-3 py-2.5">
+    <div className="flex items-center justify-between rounded-lg border border-border/15 bg-muted/10 px-3 py-2.5 transition-all duration-200 hover:bg-muted/15 min-h-[48px]">
       <div>
         <p className="text-[11px] md:text-xs font-medium text-foreground">{label}</p>
         {sub && <p className="text-[9px] text-muted-foreground mt-0.5">{sub}</p>}

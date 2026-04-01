@@ -290,7 +290,7 @@ const SetupsPage = () => {
             ה-Playbook האישי שלך. כל סטאפ מנוטר בזמן אמת ע״י ה-AI
           </p>
         </div>
-        <button className="group flex items-center gap-2 self-start rounded-xl bg-primary/8 border border-primary/15 px-4 py-2.5 text-[11px] font-bold text-primary hover:bg-primary/15 hover:border-primary/25 transition-all duration-300">
+        <button className="interactive-btn group flex items-center gap-2 self-start rounded-xl bg-primary/8 border border-primary/15 px-4 py-2.5 text-[11px] font-bold text-primary hover:bg-primary/15 hover:border-primary/25 hover:shadow-[0_0_15px_hsl(var(--primary)/0.1)] transition-all duration-300 min-h-[44px]">
           <Plus className="h-3.5 w-3.5" />
           סטאפ חדש
         </button>
@@ -302,7 +302,7 @@ const SetupsPage = () => {
           <button
             key={s.id}
             onClick={() => setSelectedId(s.id)}
-            className="group text-right rounded-2xl border border-border/15 bg-secondary/10 hover:bg-secondary/20 hover:border-primary/20 transition-all duration-300 overflow-hidden"
+            className="interactive-btn group text-right rounded-2xl border border-border/15 bg-secondary/10 hover:bg-secondary/20 hover:border-primary/20 hover:shadow-[0_4px_20px_hsl(var(--primary)/0.04)] transition-all duration-300 overflow-hidden"
           >
             {/* Chart thumbnail */}
             <div className="relative h-28 md:h-32 bg-[hsl(0,0%,3%)] overflow-hidden">
@@ -469,13 +469,13 @@ const SetupsPage = () => {
 
             {/* Action Buttons */}
             <div className="sticky bottom-0 px-5 py-4 border-t border-border/10 bg-[hsl(222,47%,5%)]/90 backdrop-blur-md flex items-center gap-2">
-              <button className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary/10 border border-primary/20 py-2.5 text-[11px] font-bold text-primary hover:bg-primary/15 transition-all duration-300">
+              <button className="interactive-btn flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary/10 border border-primary/20 py-2.5 text-[11px] font-bold text-primary hover:bg-primary/15 hover:shadow-[0_0_12px_hsl(var(--primary)/0.1)] transition-all duration-300 min-h-[44px]">
                 <Edit3 className="h-3.5 w-3.5" />
                 ערוך סטאפ
               </button>
               <button
                 onClick={() => setSelectedId(null)}
-                className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-muted/10 border border-border/15 py-2.5 text-[11px] font-bold text-muted-foreground/50 hover:text-foreground transition-all duration-300"
+                className="interactive-btn flex-1 flex items-center justify-center gap-2 rounded-xl bg-muted/10 border border-border/15 py-2.5 text-[11px] font-bold text-muted-foreground/50 hover:text-foreground transition-all duration-300 min-h-[44px]"
               >
                 סגור
               </button>

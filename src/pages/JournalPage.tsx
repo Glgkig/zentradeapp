@@ -111,7 +111,7 @@ const JournalPage = () => {
               כל העסקאות מנותחות אוטומטית ע״י ה-AI — תובנות, דפוסים פסיכולוגיים, וציוני משמעת
             </p>
           </div>
-          <button className="group flex items-center gap-2 self-start rounded-xl bg-primary/10 border border-primary/20 px-4 py-2.5 text-[11px] font-bold text-primary hover:bg-primary/20 hover:border-primary/30 transition-all duration-300">
+          <button className="interactive-btn group flex items-center gap-2 self-start rounded-xl bg-primary/10 border border-primary/20 px-4 py-2.5 text-[11px] font-bold text-primary hover:bg-primary/20 hover:border-primary/30 hover:shadow-[0_0_15px_hsl(var(--primary)/0.1)] transition-all duration-300 min-h-[44px]">
             <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary/20 group-hover:bg-primary/30 transition-colors">
               <Mic className="h-3 w-3" />
             </div>
@@ -134,7 +134,7 @@ const JournalPage = () => {
             <option value="plan">לפי תוכנית</option>
           </FilterSelect>
 
-          <button className="rounded-xl border border-border/30 bg-muted/10 px-3.5 py-2 text-[10px] md:text-[11px] text-muted-foreground/60 flex items-center gap-1.5 hover:text-foreground hover:border-border/50 transition-all duration-300">
+          <button className="interactive-btn rounded-xl border border-border/30 bg-muted/10 px-3.5 py-2 text-[10px] md:text-[11px] text-muted-foreground/60 flex items-center gap-1.5 hover:text-foreground hover:border-border/50 transition-all duration-300 min-h-[44px]">
             <Calendar className="h-3 w-3" />
             טווח תאריכים
           </button>
@@ -350,7 +350,7 @@ const FilterSelect = ({ value, onChange, children }: { value: string; onChange: 
 );
 
 const SummaryCard = ({ value, label, icon, accent }: { value: string; label: string; icon: React.ReactNode; accent: string }) => (
-  <div className="relative rounded-2xl border border-border/25 bg-secondary/20 p-3.5 md:p-5 text-center overflow-hidden group hover:border-border/40 transition-all duration-300">
+  <div className="relative rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-3.5 md:p-5 text-center overflow-hidden group hover:border-primary/15 transition-all duration-300">
     <div className={`absolute -top-8 -right-8 w-20 h-20 rounded-full blur-2xl pointer-events-none opacity-30 ${
       accent === "accent" ? "bg-accent/20" : accent === "destructive" ? "bg-destructive/20" : "bg-primary/20"
     }`} />

@@ -39,7 +39,7 @@ const StatsPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-3 mb-3">
 
         {/* Discipline Score */}
-        <div className="md:col-span-4 rounded-xl border border-border bg-secondary/30 p-4">
+        <div className="md:col-span-4 rounded-xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4">
           <div className="flex items-center gap-2 mb-4">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
               <Shield className="h-3.5 w-3.5 text-primary" />
@@ -125,7 +125,7 @@ const StatsPage = () => {
         </div>
 
         {/* Classic Metrics */}
-        <div className="md:col-span-5 rounded-xl border border-border bg-secondary/30 p-4">
+        <div className="md:col-span-5 rounded-xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4">
           <div className="flex items-center gap-2 mb-4">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent/10">
               <BarChart3 className="h-3.5 w-3.5 text-accent" />
@@ -170,7 +170,7 @@ const StatsPage = () => {
       </div>
 
       {/* Row 2: Heatmap (Full Width) */}
-      <div className="rounded-xl border border-border bg-secondary/30 p-4">
+      <div className="rounded-xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
@@ -200,7 +200,7 @@ const StatsPage = () => {
                 {hours.map((h) => (
                   <div
                     key={h}
-                    className={`flex-1 h-6 md:h-7 rounded-[3px] transition-all hover:scale-110 hover:z-10 ${heatColor(heatData[day][h])}`}
+                    className={`flex-1 h-6 md:h-7 rounded-[4px] transition-all duration-200 hover:scale-110 hover:z-10 cursor-pointer ${heatColor(heatData[day][h])}`}
                     title={`${day} ${h}:00 — ${heatData[day][h] > 0 ? "+" : ""}${heatData[day][h]}`}
                   />
                 ))}

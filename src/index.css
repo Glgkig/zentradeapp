@@ -9,8 +9,8 @@
     --background: 222 47% 6%;
     --foreground: 210 20% 92%;
 
-    --card: 0 0% 98%;
-    --card-foreground: 222 47% 8%;
+    --card: 222 40% 9%;
+    --card-foreground: 210 20% 92%;
 
     --popover: 222 40% 10%;
     --popover-foreground: 210 20% 92%;
@@ -93,6 +93,32 @@
   body {
     @apply bg-background text-foreground font-body antialiased;
     direction: rtl;
+  }
+}
+
+/* ===== Micro-interaction utilities ===== */
+@layer utilities {
+  .interactive-card {
+    @apply transition-all duration-300 hover:border-primary/20 hover:bg-secondary/30;
+  }
+  .interactive-btn {
+    @apply transition-all duration-200 active:scale-[0.97];
+  }
+  .interactive-row {
+    @apply transition-all duration-200 hover:bg-muted/10;
+  }
+  .glass-card {
+    @apply border border-border/15 bg-secondary/15 backdrop-blur-md;
+  }
+  .glass-header {
+    @apply border-b border-border/15 bg-sidebar/60 backdrop-blur-xl;
+  }
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
   }
 }
 

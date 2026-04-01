@@ -113,7 +113,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   return (
     <div className="flex h-screen w-full overflow-hidden" dir="rtl">
       {/* ===== Desktop Sidebar (hidden on mobile) ===== */}
-      <aside className="hidden md:flex h-full w-[260px] flex-col border-l border-border bg-sidebar/80 backdrop-blur-xl shrink-0">
+      <aside className="hidden md:flex h-full w-[260px] flex-col border-l border-border/15 bg-sidebar/80 backdrop-blur-xl shrink-0">
         {/* Brand */}
         <div className="flex items-center border-b border-border px-5 py-5">
           <div className="flex items-center gap-2.5">
@@ -132,7 +132,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               <button
                 key={item.id}
                 onClick={() => handleNav(item.id)}
-                className={`group flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-200 ${
+                className={`interactive-btn group flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-200 ${
                   active
                     ? "bg-primary/12 text-primary shadow-[inset_0_0_20px_hsl(217_72%_53%/0.06)]"
                     : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
@@ -172,7 +172,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
       {/* ===== Main Area ===== */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top Header */}
-        <header className="flex items-center justify-between border-b border-border bg-sidebar/50 backdrop-blur-lg px-4 py-2.5 md:px-6 md:py-3 shrink-0">
+        <header className="flex items-center justify-between glass-header px-4 py-2.5 md:px-6 md:py-3 shrink-0">
           <div className="flex items-center gap-2.5">
             {/* Mobile brand (replaces hamburger) */}
             <div className="flex md:hidden items-center gap-2">
@@ -199,10 +199,10 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             {/* Theme */}
             <button
               onClick={() => setDark(!dark)}
-              className="flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-xl border border-border bg-muted/20 text-muted-foreground transition-all hover:bg-muted/50"
+              className="interactive-btn flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-xl border border-border/20 bg-muted/15 text-muted-foreground transition-all duration-300 hover:bg-primary/10 hover:text-primary hover:border-primary/20 hover:shadow-[0_0_12px_hsl(var(--primary)/0.1)]"
               title={dark ? "מצב בהיר" : "מצב כהה"}
             >
-              {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {dark ? <Sun className="h-4 w-4 transition-transform duration-300 hover:rotate-45" /> : <Moon className="h-4 w-4 transition-transform duration-300 hover:-rotate-12" />}
             </button>
 
             {/* User */}
@@ -262,7 +262,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
       </div>
 
       {/* ===== Mobile Bottom Tab Bar ===== */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 border-t border-border/30 bg-sidebar/85 backdrop-blur-xl">
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 border-t border-border/15 bg-sidebar/90 backdrop-blur-2xl">
         <div className="flex items-center justify-around px-1 pt-1.5 pb-[env(safe-area-inset-bottom,8px)]">
           {bottomTabs.map((tab) => {
             const active = tab.id !== "more" && activeNav === tab.id;
@@ -270,7 +270,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               <button
                 key={tab.id}
                 onClick={() => handleNav(tab.id)}
-                className={`flex flex-col items-center gap-0.5 py-1.5 px-3 min-w-[56px] rounded-xl transition-all duration-200 ${
+                className={`interactive-btn flex flex-col items-center gap-0.5 py-1.5 px-3 min-w-[56px] rounded-xl transition-all duration-200 ${
                   active ? "text-primary" : "text-muted-foreground/40"
                 }`}
               >

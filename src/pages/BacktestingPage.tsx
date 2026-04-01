@@ -332,7 +332,7 @@ const BacktestingPage = () => {
         </div>
 
         {/* ── Side Panel ── */}
-        <div className={`${showPanel ? "flex" : "hidden"} md:flex flex-col w-full md:w-72 shrink-0 rounded-2xl border border-border/15 bg-secondary/10 overflow-hidden`}>
+        <div className={`${showPanel ? "flex" : "hidden"} md:flex flex-col w-full md:w-72 shrink-0 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm overflow-hidden`}>
           {/* Panel header */}
           <div className="px-4 py-3.5 border-b border-border/10">
             <h2 className="text-[12px] font-bold text-foreground/80 mb-0.5">בחר אסטרטגיה למבחן</h2>
