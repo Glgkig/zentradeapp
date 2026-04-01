@@ -1,71 +1,42 @@
 import { useState, useRef, useEffect } from "react";
-import {
-  Mic, Send, Bot, Sparkles, Shield, Heart,
-  Flame, AlertTriangle, Zap, Trophy, ChevronLeft,
-} from "lucide-react";
+import { Mic, Send, Bot, Sparkles, Shield, Heart, Flame, AlertTriangle, Zap, Trophy, ChevronLeft } from "lucide-react";
 
-/* ===== Types ===== */
-interface Message {
-  id: number;
-  role: "ai" | "user";
-  text: string;
-  time: string;
-}
+interface Message { id: number; role: "ai" | "user"; text: string; time: string; }
 
-/* ===== Tilt Pills ===== */
 const tiltPills = [
-  { text: "נקמה בשוק", icon: Flame, color: "destructive" as const, full: "בא לי לנקום בשוק" },
-  { text: "שברתי חוקים", icon: AlertTriangle, color: "warning" as const, full: "שברתי את כל החוקים שלי" },
-  { text: "FOMO מטורף", icon: Zap, color: "warning" as const, full: "אני בפומו מטורף" },
+  { text: "נקמה בשוק", icon: Flame, color: "loss" as const, full: "בא לי לנקום בשוק" },
+  { text: "שברתי חוקים", icon: AlertTriangle, color: "warn" as const, full: "שברתי את כל החוקים שלי" },
+  { text: "FOMO מטורף", icon: Zap, color: "warn" as const, full: "אני בפומו מטורף" },
   { text: "חרדה מהשוק", icon: Heart, color: "info" as const, full: "אני מרגיש חרדה מהשוק" },
-  { text: "לא מצליח לעצור", icon: Shield, color: "warning" as const, full: "אני לא מצליח לעצור לסחור" },
-  { text: "מחקתי פראפ", icon: Trophy, color: "destructive" as const, full: "מחקתי אתגר פראפ" },
+  { text: "לא מצליח לעצור", icon: Shield, color: "warn" as const, full: "אני לא מצליח לעצור לסחור" },
+  { text: "מחקתי פראפ", icon: Trophy, color: "loss" as const, full: "מחקתי אתגר פראפ" },
 ];
 
-const pillColorMap = {
-  destructive: {
-    bg: "bg-destructive/6 hover:bg-destructive/12 border-destructive/12 hover:border-destructive/25",
-    text: "text-destructive/70 group-hover:text-destructive",
-    icon: "text-destructive/50",
-  },
-  warning: {
-    bg: "bg-yellow-400/6 hover:bg-yellow-400/12 border-yellow-400/12 hover:border-yellow-400/25",
-    text: "text-yellow-400/70 group-hover:text-yellow-400",
-    icon: "text-yellow-400/50",
-  },
-  info: {
-    bg: "bg-primary/6 hover:bg-primary/12 border-primary/12 hover:border-primary/25",
-    text: "text-primary/70 group-hover:text-primary",
-    icon: "text-primary/50",
-  },
+const pillColors = {
+  loss: { bg: "bg-loss/5 hover:bg-loss/10 border-loss/10", text: "text-loss/60 group-hover:text-loss", icon: "text-loss/40" },
+  warn: { bg: "bg-yellow-400/5 hover:bg-yellow-400/10 border-yellow-400/10", text: "text-yellow-400/60 group-hover:text-yellow-400", icon: "text-yellow-400/40" },
+  info: { bg: "bg-primary/5 hover:bg-primary/10 border-primary/10", text: "text-primary/60 group-hover:text-primary", icon: "text-primary/40" },
 };
 
-/* ===== AI Response Simulation ===== */
 const aiResponses: Record<string, string> = {
-  "בא לי לנקום בשוק": "אני שומע אותך. הרגש הזה — הרצון לתקן, להחזיר מה שהשוק לקח ממך — הוא אנושי לחלוטין. אבל בוא נעצור רגע ונשאל: האם העסקה הבאה שאתה מתכנן היא מהראש, או מהבטן?\n\nמסחר נקמה הוא הסיבה מספר 1 להפסדים מצטברים. הסטטיסטיקה שלך מראה שאחרי הפסד, ב-73% מהמקרים העסקה הבאה שלך גם הפסידה.\n\n**מה אני מציע:** קח הפסקה של 15 דקות. צא מהמסך. שתה מים. תחזור רק כשאתה יכול לנשום עמוק בלי לחשוב על הגרף.",
-  "שברתי את כל החוקים שלי": "קודם כל — עצם זה שאתה אומר את זה בקול, שאתה מודע לזה, זה כבר צעד ענק. רוב הסוחרים ממשיכים בלי להודות.\n\nבוא נעשה סדר:\n1. **כמה חוקים נשברו היום?**\n2. **מה היה הטריגר?** — לחץ? שעמום? ניצחון קודם שנתן תחושת חוסר פגיעות?\n\nאני לא כאן כדי לשפוט. אני כאן כדי לעזור לך להבין את הדפוס, כי ברגע שתזהה אותו — תוכל לשבור אותו.",
-  "אני בפומו מטורף": "FOMO — הפחד לפספס. זה אחד הרגשות הכי חזקים בשוק, ואתה לא לבד בזה.\n\nשאלה אחת: **האם יש לך סטאפ מוגדר לעסקה שאתה רוצה לפתוח?** אם התשובה היא לא, אתה לא מפספס כלום — אתה פשוט רואה תנועה ורוצה להיות חלק ממנה.\n\nהשוק פתוח מחר. ומחרתיים. וכל יום. ההזדמנות הבאה תבוא. אבל הכסף שתפסיד מכניסה בלי סטאפ? הוא לא חוזר.",
-  "מחקתי אתגר פראפ": "אני יודע שזה מרגיש כמו סוף העולם. המון עבודה, זמן, כסף על האתגר — והכל נעלם.\n\nאבל תקשיב לי: **אתגר פראפ הוא לא הקריירה שלך.** זה כלי. אתה יכול לקנות עוד אחד. מה שאתה לא יכול לקנות זה את הביטחון העצמי שלך אם תמשיך להלקות את עצמך.\n\n**מה עכשיו?**\n- תנתח מה בדיוק קרה\n- תזהה את הרגע שבו איבדת שליטה\n- תבנה תוכנית חדשה עם גבולות יותר ברורים\n\nאני כאן אם אתה רוצה לעבור על זה ביחד.",
-  "אני מרגיש חרדה מהשוק": "חרדה מהשוק היא תגובה נורמלית לסביבה של אי-ודאות. אתה שם כסף אמיתי על הקו — כמובן שזה מלחיץ.\n\nאבל יש הבדל בין **לחץ בריא** שמחדד אותך, לבין **חרדה משתקת** שגורמת לך לפחד מלפתוח עסקאות או להיכנס למצב של הקפאה.\n\n**תרגיל מהיר:** עצום עיניים. 4 שניות שאיפה, 4 שניות עצירה, 4 שניות נשיפה. חזור על זה 3 פעמים. אני ממתין כאן.",
-  "אני לא מצליח לעצור לסחור": "Overtrading — סימן קלאסי לכך שאתה סוחר מרגש ולא מתוכנית.\n\nשאלות שעוזרות לי להבין:\n- **כמה עסקאות פתחת היום?**\n- **כמה מהן היו בתוכנית?**\n- **מה קורה כשאתה מנסה לסגור את המחשב?**\n\nאם אתה מרגיש שאתה לא יכול לעצור, זה לא חולשה — זה דפוס נוירולוגי שנבנה מחיפוש אחר דופמין. ואנחנו יכולים לשבור אותו.",
+  "בא לי לנקום בשוק": "אני שומע אותך. הרגש הזה אנושי. אבל בוא נעצור: האם העסקה הבאה מהראש, או מהבטן?\n\nהסטטיסטיקה שלך: אחרי הפסד, 73% מהעסקאות הבאות גם הפסידו.\n\n**מה אני מציע:** הפסקה של 15 דקות. צא מהמסך. חזור כשאתה נושם.",
+  "שברתי את כל החוקים שלי": "עצם שאתה אומר את זה בקול — צעד ענק. רוב הסוחרים לא מודים.\n\n1. **כמה חוקים נשברו?**\n2. **מה הטריגר?**\n\nאני לא שופט. אני עוזר לך להבין את הדפוס.",
+  "אני בפומו מטורף": "FOMO — פחד לפספס. שאלה: **יש לך סטאפ מוגדר?** אם לא — אתה לא מפספס כלום.\n\nהשוק פתוח מחר. הכסף שתפסיד מכניסה בלי סטאפ לא חוזר.",
+  "מחקתי אתגר פראפ": "זה מרגיש כמו סוף העולם. אבל **אתגר פראפ הוא לא הקריירה שלך.** מה שחשוב:\n- נתח מה קרה\n- זהה את רגע אובדן השליטה\n- בנה תוכנית עם גבולות ברורים",
+  "אני מרגיש חרדה מהשוק": "חרדה מהשוק = תגובה נורמלית. ההבדל: **לחץ בריא** vs **חרדה משתקת**.\n\n**תרגיל:** 4 שניות שאיפה, 4 עצירה, 4 נשיפה. חזור 3 פעמים. אני ממתין.",
+  "אני לא מצליח לעצור לסחור": "Overtrading = סימן לסחר מרגש, לא מתוכנית.\n\n- כמה עסקאות היום?\n- כמה היו בתוכנית?\n\nזה דפוס נוירולוגי. אפשר לשבור אותו.",
 };
 
-const defaultAiResponse = "אני שומע אותך. ספר לי עוד — אני כאן בשבילך, בלי שיפוט, בלי לחץ. כל מה שאתה אומר נשאר בינינו.";
+const defaultAiResponse = "אני שומע אותך. ספר עוד — אני כאן, בלי שיפוט.";
 
 const getTime = () => {
   const now = new Date();
   return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 };
 
-/* ===== Page Component ===== */
 const MentorPage = () => {
   const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      role: "ai",
-      text: "אני פה איתך. בלי פילטרים, בלי לשפוט.\n\nספר לי מה יושב עליך, או פשוט תלחץ על המיקרופון ותפרוק הכל. השוק לא יברח, אנחנו מנצחים את זה ביחד. 💙",
-      time: getTime(),
-    },
+    { id: 1, role: "ai", text: "אני פה איתך. בלי פילטרים.\n\nספר לי מה עובר עליך, או לחץ על המיקרופון. השוק לא יברח.", time: getTime() },
   ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -73,253 +44,163 @@ const MentorPage = () => {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isTyping]);
+  useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, isTyping]);
 
   const sendMessage = (text: string) => {
     if (!text.trim()) return;
-
-    const userMsg: Message = {
-      id: Date.now(),
-      role: "user",
-      text: text.trim(),
-      time: getTime(),
-    };
-    setMessages((prev) => [...prev, userMsg]);
+    setMessages((prev) => [...prev, { id: Date.now(), role: "user", text: text.trim(), time: getTime() }]);
     setInput("");
     setIsTyping(true);
-
-    // Simulate AI response
     setTimeout(() => {
-      const aiText = aiResponses[text.trim()] || defaultAiResponse;
-      const aiMsg: Message = {
-        id: Date.now() + 1,
-        role: "ai",
-        text: aiText,
-        time: getTime(),
-      };
-      setMessages((prev) => [...prev, aiMsg]);
+      setMessages((prev) => [...prev, { id: Date.now() + 1, role: "ai", text: aiResponses[text.trim()] || defaultAiResponse, time: getTime() }]);
       setIsTyping(false);
-    }, 1200 + Math.random() * 800);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    sendMessage(input);
+    }, 1000 + Math.random() * 600);
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-120px)] md:h-[calc(100vh-64px)] max-w-3xl mx-auto -mt-1 md:-mt-4">
-      {/* ── Header ── */}
-      <div className="shrink-0 px-1 pt-1 pb-4">
-        <div className="relative rounded-2xl border border-border/20 bg-secondary/20 px-5 py-4 overflow-hidden">
-          {/* Ambient glow */}
-          <div className="absolute -top-12 -right-12 w-40 h-40 rounded-full bg-primary/[0.04] blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-accent/[0.03] blur-3xl pointer-events-none" />
-
-          <div className="relative flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 border border-primary/15">
-              <Bot className="h-5 w-5 text-primary" />
+    <div className="flex flex-col h-[calc(100vh-100px)] md:h-[calc(100vh-56px)] max-w-3xl mx-auto">
+      {/* Header */}
+      <div className="shrink-0 px-1 pt-1 pb-3">
+        <div className="rounded-sm border border-border/10 bg-card px-3 py-2.5">
+          <div className="flex items-center gap-2.5">
+            <div className="relative">
+              <div className="absolute inset-[-2px] rounded-sm bg-primary/6 ai-breathe" />
+              <div className="relative flex h-8 w-8 items-center justify-center rounded-sm bg-primary/8 border border-primary/10">
+                <Bot className="h-4 w-4 text-primary" />
+              </div>
             </div>
             <div>
-              <h1 className="font-heading text-base md:text-lg font-extrabold text-foreground tracking-tight">
-                המנטור האישי שלך
-              </h1>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="relative flex h-2 w-2">
+              <h1 className="font-heading text-[12px] font-bold text-foreground">המנטור האישי</h1>
+              <div className="flex items-center gap-1 mt-0.5">
+                <span className="relative flex h-1.5 w-1.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary/40" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary/70" />
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary/60" />
                 </span>
-                <p className="text-[10px] md:text-[11px] text-muted-foreground/50 font-medium">
-                  מרחב בטוח. נטול שיפוטיות. אני מקשיב
-                </p>
+                <p className="text-2xs text-muted-foreground/40 font-mono">SAFE SPACE · NO JUDGMENT</p>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ── Chat Area ── */}
-      <div className="flex-1 overflow-y-auto px-1 space-y-3 scrollbar-none">
-        {/* Ambient center glow */}
-        <div className="pointer-events-none fixed inset-0 flex items-center justify-center z-0">
-          <div className="w-96 h-96 rounded-full bg-primary/[0.02] blur-[100px]" />
-        </div>
-
+      {/* Chat */}
+      <div className="flex-1 overflow-y-auto px-1 space-y-2 scrollbar-none">
         {messages.map((msg) => (
           <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-start" : "justify-end"} relative z-10`}>
-            {msg.role === "ai" && (
-              <div className="flex items-end gap-2 max-w-[85%] md:max-w-[75%]">
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-primary/8 border border-primary/10 mb-1">
-                  <Sparkles className="h-3 w-3 text-primary/60" />
+            {msg.role === "ai" ? (
+              <div className="flex items-end gap-1.5 max-w-[85%] md:max-w-[75%]">
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-sm bg-primary/6 border border-primary/8 mb-1">
+                  <Sparkles className="h-2.5 w-2.5 text-primary/50" />
                 </div>
                 <div>
-                  <div className="rounded-2xl rounded-br-md border border-border/15 bg-secondary/30 px-4 py-3">
+                  <div className="rounded-sm rounded-br-none border border-border/10 bg-card px-3 py-2">
                     {msg.text.split("\n").map((line, i) => {
-                      if (line.startsWith("**") && line.endsWith("**")) {
-                        return <p key={i} className="text-[11px] md:text-xs font-bold text-foreground/90 mt-2 mb-1">{line.replace(/\*\*/g, "")}</p>;
-                      }
-                      if (line.startsWith("- ")) {
-                        return <p key={i} className="text-[10px] md:text-[11px] text-muted-foreground/70 leading-[1.9] pr-3">• {line.slice(2)}</p>;
-                      }
-                      if (line.match(/^\d+\./)) {
-                        return <p key={i} className="text-[10px] md:text-[11px] text-muted-foreground/70 leading-[1.9]">{line}</p>;
-                      }
-                      if (line === "") {
-                        return <div key={i} className="h-2" />;
-                      }
-                      return <p key={i} className="text-[10px] md:text-[11px] text-muted-foreground/70 leading-[1.9]">{line}</p>;
+                      if (line.startsWith("**") && line.endsWith("**")) return <p key={i} className="text-[10px] font-bold text-foreground/80 mt-1.5 mb-0.5">{line.replace(/\*\*/g, "")}</p>;
+                      if (line.startsWith("- ")) return <p key={i} className="text-2xs text-muted-foreground/60 leading-[1.8] pr-2">• {line.slice(2)}</p>;
+                      if (line.match(/^\d+\./)) return <p key={i} className="text-2xs text-muted-foreground/60 leading-[1.8]">{line}</p>;
+                      if (line === "") return <div key={i} className="h-1.5" />;
+                      return <p key={i} className="text-2xs text-muted-foreground/60 leading-[1.8]">{line}</p>;
                     })}
                   </div>
-                  <p className="text-[8px] text-muted-foreground/25 mt-1 mr-2 font-medium">{msg.time}</p>
+                  <p className="text-2xs text-muted-foreground/20 mt-0.5 mr-1 font-mono">{msg.time}</p>
                 </div>
               </div>
-            )}
-
-            {msg.role === "user" && (
+            ) : (
               <div className="max-w-[80%] md:max-w-[70%]">
-                <div className="rounded-2xl rounded-bl-md bg-primary/12 border border-primary/15 px-4 py-3">
-                  <p className="text-[11px] md:text-xs text-foreground/85 leading-[1.8]">{msg.text}</p>
+                <div className="rounded-sm rounded-bl-none bg-primary/8 border border-primary/10 px-3 py-2">
+                  <p className="text-[10px] text-foreground/80 leading-[1.8]">{msg.text}</p>
                 </div>
-                <p className="text-[8px] text-muted-foreground/25 mt-1 ml-2 text-left font-medium">{msg.time}</p>
+                <p className="text-2xs text-muted-foreground/20 mt-0.5 ml-1 text-left font-mono">{msg.time}</p>
               </div>
             )}
           </div>
         ))}
 
-        {/* Typing indicator */}
         {isTyping && (
           <div className="flex justify-end relative z-10">
-            <div className="flex items-end gap-2">
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-primary/8 border border-primary/10 mb-1">
-                <Sparkles className="h-3 w-3 text-primary/60" />
+            <div className="flex items-end gap-1.5">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-sm bg-primary/6 border border-primary/8 mb-1">
+                <Sparkles className="h-2.5 w-2.5 text-primary/50" />
               </div>
-              <div className="rounded-2xl rounded-br-md border border-border/15 bg-secondary/30 px-4 py-3">
-                <div className="flex items-center gap-1.5">
-                  <div className="flex gap-1">
-                    {[0, 1, 2].map((i) => (
-                      <span
-                        key={i}
-                        className="h-1.5 w-1.5 rounded-full bg-primary/40 animate-bounce"
-                        style={{ animationDelay: `${i * 150}ms`, animationDuration: "0.8s" }}
-                      />
-                    ))}
-                  </div>
-                  <span className="text-[9px] text-muted-foreground/30 mr-1">חושב...</span>
+              <div className="rounded-sm border border-border/10 bg-card px-3 py-2">
+                <div className="flex items-center gap-1">
+                  {[0, 1, 2].map((i) => (
+                    <span key={i} className="h-1 w-1 rounded-full bg-primary/30 animate-bounce" style={{ animationDelay: `${i * 150}ms`, animationDuration: "0.8s" }} />
+                  ))}
+                  <span className="text-2xs text-muted-foreground/20 mr-1 font-mono">...</span>
                 </div>
               </div>
             </div>
           </div>
         )}
-
         <div ref={chatEndRef} />
       </div>
 
-      {/* ── Quick Actions Grid ── */}
-      <div className="shrink-0 px-1 pt-3">
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+      {/* Tilt Pills */}
+      <div className="shrink-0 px-1 pt-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-1">
           {tiltPills.map((pill, index) => {
-            const colors = pillColorMap[pill.color];
+            const colors = pillColors[pill.color];
             return (
               <button
                 key={pill.text}
                 onClick={() => sendMessage(pill.full)}
-                className={`haptic-press group flex items-center justify-center gap-1.5 rounded-xl border px-2 py-2.5 transition-all duration-200 animate-in fade-in slide-in-from-bottom-2 fill-mode-both ${colors.bg}`}
-                style={{ animationDelay: `${index * 80}ms`, animationDuration: '400ms' }}
+                className={`haptic-press group flex items-center justify-center gap-1 rounded-sm border px-1.5 py-2 transition-all animate-in fade-in slide-in-from-bottom-1 fill-mode-both ${colors.bg}`}
+                style={{ animationDelay: `${index * 60}ms`, animationDuration: '300ms' }}
               >
-                <pill.icon className={`h-3 w-3 shrink-0 ${colors.icon}`} />
-                <span className={`text-[9px] md:text-[10px] font-semibold ${colors.text}`}>
-                  {pill.text}
-                </span>
+                <pill.icon className={`h-2.5 w-2.5 shrink-0 ${colors.icon}`} />
+                <span className={`text-2xs font-semibold ${colors.text}`}>{pill.text}</span>
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* ── Input Area ── */}
-      <div className="shrink-0 px-1 pb-2 pt-2">
+      {/* Input */}
+      <div className="shrink-0 px-1 pb-1.5 pt-1.5">
         <form
-          onSubmit={handleSubmit}
-          className="relative flex items-center gap-2.5 rounded-2xl border border-border/20 bg-secondary/30 backdrop-blur-sm px-3 py-2.5 transition-all duration-300 focus-within:border-primary/25 focus-within:bg-secondary/40 focus-within:shadow-[0_0_20px_hsl(var(--primary)/0.06)]"
+          onSubmit={(e) => { e.preventDefault(); sendMessage(input); }}
+          className="relative flex items-center gap-2 rounded-sm border border-border/10 bg-card px-2.5 py-2 focus-within:border-primary/15 transition-all"
         >
-          {/* Mic button */}
           <button
             type="button"
             onClick={() => setIsRecording(!isRecording)}
-            className={`haptic-press flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-300 ${
+            className={`haptic-press flex h-8 w-8 shrink-0 items-center justify-center rounded-sm transition-all ${
               isRecording
-                ? "bg-destructive/15 border border-destructive/25 text-destructive shadow-[0_0_16px_hsl(var(--destructive)/0.15)]"
-                : "bg-muted/15 border border-border/15 text-muted-foreground/40 hover:text-primary hover:bg-primary/10 hover:border-primary/20"
+                ? "bg-loss/10 border border-loss/20 text-loss"
+                : "bg-muted/10 border border-border/10 text-muted-foreground/30 hover:text-primary hover:bg-primary/8 hover:border-primary/15"
             }`}
           >
-            <Mic className={`h-4 w-4 ${isRecording ? "animate-pulse" : ""}`} />
+            <Mic className={`h-3.5 w-3.5 ${isRecording ? "animate-pulse" : ""}`} />
           </button>
 
-          {/* Recording state */}
-          {isRecording && (
-            <div className="flex items-center gap-3 flex-1">
-              {/* Timer */}
-              <div className="flex items-center gap-1.5 shrink-0">
-                <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_8px_hsl(var(--primary)/0.5)]" />
-                <span className="text-[11px] text-primary font-mono font-semibold tabular-nums">0:04</span>
+          {isRecording ? (
+            <div className="flex items-center gap-2 flex-1">
+              <div className="flex items-center gap-1 shrink-0">
+                <span className="h-1 w-1 rounded-full bg-primary animate-pulse" />
+                <span className="text-2xs text-primary font-mono font-semibold">0:04</span>
               </div>
-
-              {/* Waveform — thin elegant bars */}
-              <div className="flex-1 flex items-center justify-center gap-[2px] h-8">
-                {Array.from({ length: 40 }, (_, i) => {
-                  const center = 20;
-                  const dist = Math.abs(i - center) / center;
-                  const baseH = 15 + (1 - dist) * 70 + Math.sin(i * 0.8) * 15;
-                  return (
-                    <div
-                      key={i}
-                      className="w-[2px] rounded-full bg-primary/50 transition-all"
-                      style={{
-                        height: `${baseH}%`,
-                        animation: `waveform ${0.4 + Math.random() * 0.4}s ease-in-out ${i * 30}ms infinite alternate`,
-                      }}
-                    />
-                  );
-                })}
+              <div className="flex-1 flex items-center justify-center gap-[1.5px] h-6">
+                {Array.from({ length: 35 }, (_, i) => (
+                  <div key={i} className="w-[1.5px] rounded-full bg-primary/40" style={{ height: `${15 + Math.sin(i * 0.8) * 40 + Math.random() * 30}%`, animation: `waveform ${0.4 + Math.random() * 0.3}s ease-in-out ${i * 25}ms infinite alternate` }} />
+                ))}
               </div>
-
-              {/* Send */}
-              <button
-                type="button"
-                onClick={() => {
-                  setIsRecording(false);
-                  sendMessage("(הודעה קולית) אני מרגיש לחוץ היום מהשוק, הפסדתי שתי עסקאות ואני לא יודע אם להמשיך");
-                }}
-                className="haptic-press flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/15 border border-primary/25 text-primary transition-all hover:bg-primary/25 hover:shadow-[0_0_12px_hsl(var(--primary)/0.15)]"
-              >
-                <Send className="h-3.5 w-3.5" />
+              <button type="button" onClick={() => { setIsRecording(false); sendMessage("(קולי) אני מרגיש לחוץ, הפסדתי שתי עסקאות"); }}
+                className="haptic-press flex h-7 w-7 shrink-0 items-center justify-center rounded-sm bg-primary/10 border border-primary/15 text-primary">
+                <Send className="h-3 w-3" />
               </button>
             </div>
-          )}
-
-          {/* Text input */}
-          {!isRecording && (
+          ) : (
             <>
-              <input
-                ref={inputRef}
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="ספר לי מה עובר עליך..."
-                className="flex-1 bg-transparent text-[12px] md:text-[13px] text-foreground placeholder:text-muted-foreground/25 outline-none px-1 font-medium leading-relaxed"
+              <input ref={inputRef} type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="ספר לי מה עובר עליך..."
+                className="flex-1 bg-transparent text-[11px] text-foreground placeholder:text-muted-foreground/20 outline-none px-1 font-medium"
               />
-              <button
-                type="submit"
-                disabled={!input.trim()}
-                className={`haptic-press flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-300 ${
-                  input.trim()
-                    ? "bg-primary/15 border border-primary/30 text-primary shadow-[0_0_14px_hsl(var(--primary)/0.12)] hover:bg-primary/25"
-                    : "bg-muted/8 border border-border/10 text-muted-foreground/15 cursor-not-allowed"
+              <button type="submit" disabled={!input.trim()}
+                className={`haptic-press flex h-8 w-8 shrink-0 items-center justify-center rounded-sm transition-all ${
+                  input.trim() ? "bg-primary/10 border border-primary/20 text-primary" : "bg-muted/5 border border-border/6 text-muted-foreground/10 cursor-not-allowed"
                 }`}
               >
-                <Send className="h-4 w-4 rotate-180" />
+                <Send className="h-3.5 w-3.5 rotate-180" />
               </button>
             </>
           )}
