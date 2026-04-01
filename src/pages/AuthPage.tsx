@@ -4,8 +4,9 @@ import {
   Shield, BarChart3, ChevronDown, Bot, Zap, Lock, X, Menu,
   FlaskConical, Mic, Newspaper, ArrowUp, Activity, AlertTriangle,
   CheckCircle2, TrendingUp, Quote, Star, Brain, BookOpen, Calendar,
-  XCircle, ChevronRight, Sparkles, MessageCircle, MapPin,
+  XCircle, ChevronRight, Sparkles, MapPin,
 } from "lucide-react";
+import WhatsAppWidget from "@/components/WhatsAppWidget";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import logoMt5 from "@/assets/logos/mt5-full.png";
 import logoBinance from "@/assets/logos/binance-full.png";
@@ -431,20 +432,8 @@ const AuthPage = () => {
         </RevealSection>
       </section>
 
-      {/* ===== WhatsApp FAB ===== */}
-      <a
-        href="https://wa.me/972504433779"
-        target="_blank"
-        rel="noopener noreferrer"
-        title="Support"
-        className="group fixed bottom-6 left-6 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-xl transition-transform duration-200 hover:scale-110"
-        style={{ backgroundColor: '#25D366' }}
-      >
-        <MessageCircle className="h-7 w-7 text-white" />
-        <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 rounded-md bg-card px-3 py-1 text-xs font-medium text-foreground shadow-lg opacity-0 transition-opacity group-hover:opacity-100 border border-border">
-          Support
-        </span>
-      </a>
+      {/* ===== WhatsApp Chat Widget ===== */}
+      <WhatsAppWidget />
 
       {/* ===== FOOTER ===== */}
       <footer className="border-t border-border/30 px-4 py-8 md:px-8 md:py-10">
