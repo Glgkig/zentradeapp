@@ -318,12 +318,12 @@ const StatsPage = () => {
             })}
 
             {/* Column totals */}
-            <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-border/10 pr-16">
+            <div className="flex items-center gap-1 mt-1.5 pt-1.5 border-t border-border/10 pr-12">
               {hours.map((h) => {
                 const colTotal = days.reduce((sum, day) => sum + heatData[day][h].pnl, 0);
                 return (
                   <div key={h} className="flex-1 text-center">
-                    <span className={`text-[8px] font-bold ${colTotal >= 0 ? "text-accent" : "text-destructive"}`}>
+                    <span className={`text-[6px] font-bold ${colTotal >= 0 ? "text-accent" : "text-destructive"}`}>
                       {colTotal >= 0 ? "+" : ""}{colTotal}$
                     </span>
                   </div>
