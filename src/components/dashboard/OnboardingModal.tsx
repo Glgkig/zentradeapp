@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Bot, Send, Sparkles, CheckCircle2, User } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 /* ===== Types ===== */
 type ChatMessage = {
