@@ -240,7 +240,7 @@ const ProtectionPage = () => {
             מרגיש שאיבדת שליטה? תן ל-AI לנתק אותך מהברוקר עכשיו. החשבון יינעל ל-24 שעות ואין אפשרות לבטל.
           </p>
 
-          <button className="flex items-center justify-center gap-2 rounded-xl bg-destructive/15 border border-destructive/20 px-5 py-3 text-[11px] font-bold text-destructive/80 hover:bg-destructive/25 hover:border-destructive/30 transition-all duration-300 w-full sm:w-auto">
+          <button className="interactive-btn flex items-center justify-center gap-2 rounded-xl bg-destructive/15 border border-destructive/20 px-5 py-3 text-[11px] font-bold text-destructive/80 hover:bg-destructive/25 hover:border-destructive/30 hover:shadow-[0_0_20px_hsl(var(--destructive)/0.1)] transition-all duration-300 w-full sm:w-auto min-h-[48px]">
             <Power className="h-4 w-4" />
             נעל לי את החשבון ל-24 שעות
           </button>
