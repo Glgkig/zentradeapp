@@ -251,7 +251,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 md:gap-4">
 
         {/* Watchlist */}
-        <div className="md:col-span-4 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4 md:p-5">
+        <div className="sm:col-span-1 md:col-span-4 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-3.5 md:p-5">
           <div className="flex items-center gap-2 mb-4">
             <Eye className="h-4 w-4 text-primary" />
             <span className="text-xs font-semibold text-foreground">רשימת מעקב</span>
