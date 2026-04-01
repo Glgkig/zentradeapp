@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, BookOpen, Bot, ShieldCheck,
   LogOut, ChevronDown, Plug, Menu, X, Settings, Sun, Moon, Zap,
-  Crosshair, PieChart, History, CheckCircle2, Flame, Eye, Crown, Star, Sparkles, Calendar,
+  Crosshair, PieChart, History, CheckCircle2, Flame, Eye, Crown, Star, Sparkles,
 } from "lucide-react";
 import SettingsPage from "@/pages/SettingsPage";
 import SetupsPage from "@/pages/SetupsPage";
@@ -14,7 +14,7 @@ import HomeDashboard from "@/components/dashboard/HomeDashboard";
 import OnboardingModal from "@/components/dashboard/OnboardingModal";
 import BacktestingPage from "@/pages/BacktestingPage";
 import ProtectionPage from "@/pages/ProtectionPage";
-import CalendarPage from "@/pages/CalendarPage";
+
 import logoBinanceFull from "@/assets/logos/binance-full.png";
 import logoTradeLockerFull from "@/assets/logos/tradelocker-full.png";
 import logoTradingViewFull from "@/assets/logos/tradingview-full.png";
@@ -34,7 +34,7 @@ const navItems = [
   { id: "mentor", label: "מנטור AI", icon: Bot },
   { id: "backtesting", label: "בקטסטינג", icon: History },
   { id: "protection", label: "הגנה", icon: ShieldCheck },
-  { id: "calendar", label: "לוח כלכלי", icon: Calendar },
+  
   { id: "settings", label: "הגדרות", icon: Settings },
 ];
 
@@ -104,7 +104,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
     if (activeNav === "mentor") return <MentorPage />;
     if (activeNav === "backtesting") return <BacktestingPage />;
     if (activeNav === "protection") return <ProtectionPage />;
-    if (activeNav === "calendar") return <CalendarPage />;
+    
     return children || null;
   };
 
