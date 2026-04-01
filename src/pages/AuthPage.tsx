@@ -397,7 +397,7 @@ const AuthPage = () => {
                   <AccordionTrigger className="text-sm md:text-base font-medium text-foreground hover:no-underline py-4 md:py-5">
                     {faq.q}
                   </AccordionTrigger>
-                  <AccordionContent className="text-xs md:text-sm text-muted-foreground leading-relaxed pb-5">
+                  <AccordionContent className="text-xs md:text-sm text-foreground/70 leading-relaxed pb-5">
                     {faq.a}
                   </AccordionContent>
                 </AccordionItem>
