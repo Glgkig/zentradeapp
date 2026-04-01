@@ -21,6 +21,7 @@ import logoMT5Full from "@/assets/logos/mt5-full.png";
 import logoTopstepXFull from "@/assets/logos/topstepx-full.png";
 import logoNinjaTraderFull from "@/assets/logos/ninjatrader-full.png";
 import logoIBKRFull from "@/assets/logos/ibkr-full.png";
+import logoForexFull from "@/assets/logos/forex-full.png";
 
 /* ===== Nav Config ===== */
 const navItems = [
