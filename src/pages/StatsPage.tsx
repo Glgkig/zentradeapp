@@ -176,43 +176,80 @@ const StatsPage = () => {
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
               <Clock className="h-3.5 w-3.5 text-primary" />
             </div>
-            <span className="text-[10px] md:text-xs font-semibold text-foreground">מפת רווחיות לפי שעות</span>
+            <div>
+              <span className="text-[10px] md:text-xs font-semibold text-foreground">מפת רווחיות לפי שעות</span>
+              <p className="text-[8px] text-muted-foreground">סה״כ רווח: <span className="text-accent font-semibold">+$2,430</span> · סה״כ הפסד: <span className="text-destructive font-semibold">-$1,785</span></p>
+            </div>
           </div>
-          <div className="flex items-center gap-2 text-[8px] text-muted-foreground">
-            <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-[2px] bg-accent/50" /> רווחי</span>
-            <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-[2px] bg-destructive/50" /> הפסדי</span>
+          <div className="flex items-center gap-3 text-[8px] text-muted-foreground">
+            <span className="flex items-center gap-1"><span className="h-2.5 w-5 rounded-[3px] bg-accent/40" /> רווח</span>
+            <span className="flex items-center gap-1"><span className="h-2.5 w-5 rounded-[3px] bg-destructive/40" /> הפסד</span>
+            <span className="flex items-center gap-1"><span className="h-2.5 w-5 rounded-[3px] bg-muted/20" /> אין פעילות</span>
           </div>
         </div>
 
         <div className="overflow-x-auto">
-          <div className="min-w-[400px]">
+          <div className="min-w-[500px]">
             {/* Hours header */}
-            <div className="flex items-center gap-1 mb-1 pr-14">
+            <div className="flex items-center gap-1.5 mb-2 pr-16">
               {hours.map((h) => (
                 <div key={h} className="flex-1 text-center text-[8px] md:text-[9px] text-muted-foreground font-mono">{h}:00</div>
               ))}
             </div>
 
             {/* Grid rows */}
-            {days.map((day) => (
-              <div key={day} className="flex items-center gap-1 mb-1">
-                <span className="w-12 shrink-0 text-[9px] md:text-[10px] text-muted-foreground text-left">{day}</span>
-                {hours.map((h) => (
-                  <div
-                    key={h}
-                    className={`flex-1 h-6 md:h-7 rounded-[4px] transition-all duration-200 hover:scale-110 hover:z-10 cursor-pointer ${heatColor(heatData[day][h])}`}
-                    title={`${day} ${h}:00 — ${heatData[day][h] > 0 ? "+" : ""}${heatData[day][h]}`}
-                  />
-                ))}
-              </div>
-            ))}
+            {days.map((day) => {
+              const dayTotal = hours.reduce((sum, h) => sum + heatData[day][h].pnl, 0);
+              return (
+                <div key={day} className="flex items-center gap-1.5 mb-1.5">
+                  <div className="w-14 shrink-0 flex flex-col">
+                    <span className="text-[9px] md:text-[10px] text-foreground font-medium text-left">{day}</span>
+                    <span className={`text-[7px] font-semibold text-left ${dayTotal >= 0 ? "text-accent" : "text-destructive"}`}>
+                      {dayTotal >= 0 ? "+" : ""}{dayTotal}$
+                    </span>
+                  </div>
+                  {hours.map((h) => {
+                    const cell = heatData[day][h];
+                    return (
+                      <div
+                        key={h}
+                        className={`flex-1 h-10 md:h-12 rounded-md border transition-all duration-200 hover:scale-105 hover:z-10 cursor-pointer flex flex-col items-center justify-center gap-0.5 ${heatColor(cell.pnl)}`}
+                        title={`${day} ${h}:00 — ${cell.pnl >= 0 ? "+" : ""}$${cell.pnl} (${cell.trades} עסקאות)`}
+                      >
+                        <span className={`text-[8px] md:text-[9px] font-bold ${cell.pnl > 0 ? "text-accent" : cell.pnl < 0 ? "text-destructive" : "text-muted-foreground/50"}`}>
+                          {cell.pnl === 0 ? "—" : `${cell.pnl > 0 ? "+" : ""}${cell.pnl}$`}
+                        </span>
+                        {cell.trades > 0 && (
+                          <span className="text-[6px] md:text-[7px] text-muted-foreground">{cell.trades} עס׳</span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
+
+            {/* Column totals */}
+            <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-border/10 pr-16">
+              {hours.map((h) => {
+                const colTotal = days.reduce((sum, day) => sum + heatData[day][h].pnl, 0);
+                return (
+                  <div key={h} className="flex-1 text-center">
+                    <span className={`text-[8px] font-bold ${colTotal >= 0 ? "text-accent" : "text-destructive"}`}>
+                      {colTotal >= 0 ? "+" : ""}{colTotal}$
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 
-        <div className="mt-3 rounded-lg border border-primary/15 bg-primary/[0.04] p-2.5 flex items-start gap-2">
+        <div className="mt-4 rounded-lg border border-primary/15 bg-primary/[0.04] p-2.5 flex items-start gap-2">
           <Brain className="h-3 w-3 text-primary shrink-0 mt-0.5" />
           <p className="text-[8px] md:text-[9px] text-muted-foreground leading-relaxed">
-            <span className="text-primary font-semibold">תובנת AI:</span> ה-AI מזהה הפסדים קבועים בין 16:00 ל-17:00. מומלץ להפעיל נעילה אוטומטית בשעות אלו.
+            <span className="text-primary font-semibold">תובנת AI:</span> ה-AI מזהה הפסדים קבועים בין 16:00 ל-17:00 (סה״כ <span className="text-destructive font-semibold">-$835</span>). 
+            השעות הרווחיות ביותר שלך הן 09:00-11:00 (<span className="text-accent font-semibold">+$1,870</span>). מומלץ להפעיל נעילה אוטומטית אחרי 15:00.
           </p>
         </div>
       </div>
