@@ -643,7 +643,7 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
           </div>
 
           <div className="space-y-2 mb-4">
-            <button className="flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-muted/30 py-3 text-xs md:text-sm font-medium text-foreground transition-all hover:bg-muted/60">
+            <button onClick={handleGoogleSignIn} disabled={submitting} className="flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-muted/30 py-3 text-xs md:text-sm font-medium text-foreground transition-all hover:bg-muted/60 disabled:opacity-60">
               <GoogleIcon />
               המשך עם Google
             </button>
