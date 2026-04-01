@@ -75,9 +75,9 @@ const AuthPage = () => {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-6">
-            <a href="#features" className="text-xs text-muted-foreground hover:text-foreground transition-colors">למה ZenTrade?</a>
-            <a href="#testimonials" className="text-xs text-muted-foreground hover:text-foreground transition-colors">ביקורות</a>
-            <a href="#faq" className="text-xs text-muted-foreground hover:text-foreground transition-colors">שאלות נפוצות</a>
+            <a href="#features" className="text-xs text-foreground/70 hover:text-foreground transition-colors">למה ZenTrade?</a>
+            <a href="#testimonials" className="text-xs text-foreground/70 hover:text-foreground transition-colors">ביקורות</a>
+            <a href="#faq" className="text-xs text-foreground/70 hover:text-foreground transition-colors">שאלות נפוצות</a>
             <div className="h-4 w-px bg-border" />
             <button
               onClick={() => openModal("login")}
@@ -113,9 +113,9 @@ const AuthPage = () => {
         {/* Mobile Menu */}
         {mobileMenu && (
           <div className="md:hidden border-t border-border/30 bg-background/95 backdrop-blur-xl px-4 py-4 space-y-2">
-            <a href="#features" onClick={() => setMobileMenu(false)} className="block py-2 text-sm text-muted-foreground">למה ZenTrade?</a>
-            <a href="#testimonials" onClick={() => setMobileMenu(false)} className="block py-2 text-sm text-muted-foreground">ביקורות</a>
-            <a href="#faq" onClick={() => setMobileMenu(false)} className="block py-2 text-sm text-muted-foreground">שאלות נפוצות</a>
+            <a href="#features" onClick={() => setMobileMenu(false)} className="block py-2 text-sm text-foreground/70">למה ZenTrade?</a>
+            <a href="#testimonials" onClick={() => setMobileMenu(false)} className="block py-2 text-sm text-foreground/70">ביקורות</a>
+            <a href="#faq" onClick={() => setMobileMenu(false)} className="block py-2 text-sm text-foreground/70">שאלות נפוצות</a>
             <div className="h-px bg-border my-2" />
             <button onClick={() => openModal("login")} className="w-full rounded-xl border border-border py-3 text-sm font-medium text-foreground">התחברות</button>
             <button onClick={() => openModal("register")} className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20">הרשמה חינם</button>
@@ -153,7 +153,7 @@ const AuthPage = () => {
               </RevealSection>
 
               <RevealSection delay={200}>
-                <p className="mt-5 md:mt-6 text-sm md:text-base lg:text-lg leading-relaxed text-muted-foreground max-w-xl mx-auto lg:mx-0 lg:mr-0">
+                <p className="mt-5 md:mt-6 text-sm md:text-base lg:text-lg leading-relaxed text-foreground/80 max-w-xl mx-auto lg:mx-0 lg:mr-0">
                   תפסיק לנחש. תן ל-AI שלנו לנתח את העסקאות שלך, לזהות את הטעויות, ולאמן אותך לרווחיות עקבית.
                 </p>
               </RevealSection>
@@ -175,7 +175,7 @@ const AuthPage = () => {
                     <ChevronRight className="h-4 w-4 rotate-180" />
                   </button>
                 </div>
-                <p className="mt-3 text-[10px] md:text-xs text-muted-foreground/50">ללא כרטיס אשראי • הגדרה תוך 2 דקות</p>
+                <p className="mt-3 text-[10px] md:text-xs text-foreground/50">ללא כרטיס אשראי • הגדרה תוך 2 דקות</p>
               </RevealSection>
 
               {/* Trust stats */}
@@ -188,7 +188,7 @@ const AuthPage = () => {
                   ].map((s) => (
                     <div key={s.label} className="rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm p-3 text-center">
                       <p className={`font-heading text-lg md:text-2xl font-bold ${s.accent ? "text-primary" : "text-foreground"}`}>{s.value}</p>
-                      <p className="text-[9px] md:text-[10px] text-muted-foreground mt-0.5">{s.label}</p>
+                      <p className="text-[9px] md:text-[10px] text-foreground/60 mt-0.5">{s.label}</p>
                     </div>
                   ))}
                 </div>
@@ -207,7 +207,7 @@ const AuthPage = () => {
                     <div className="flex items-center gap-3">
                       <span className="font-heading text-sm font-bold text-foreground">ZenTrade</span>
                       <div className="h-4 w-px bg-border" />
-                      <span className="text-xs text-muted-foreground">דשבורד ראשי</span>
+                      <span className="text-xs text-foreground/60">דשבורד ראשי</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="flex items-center gap-1.5 rounded-full bg-accent/10 border border-accent/20 px-3 py-1 text-[10px] font-medium text-accent">
@@ -248,7 +248,7 @@ const AuthPage = () => {
                         <Bot className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                         <div>
                           <p className="text-xs font-semibold text-primary">המלצת AI</p>
-                          <p className="text-[10px] text-muted-foreground mt-1">ביצעת 3 עסקאות מוצלחות. מומלץ לעצור כאן ולנצל את היום הטוב. 🎯</p>
+                          <p className="text-[10px] text-foreground/70 mt-1">ביצעת 3 עסקאות מוצלחות. מומלץ לעצור כאן ולנצל את היום הטוב. 🎯</p>
                         </div>
                       </div>
                     </div>
@@ -260,7 +260,7 @@ const AuthPage = () => {
         </div>
 
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 hidden lg:flex flex-col items-center gap-1 text-muted-foreground/40">
-          <span className="text-[10px]">גלול למטה</span>
+          <span className="text-[10px] text-foreground/40">גלול למטה</span>
           <ChevronDown className="h-4 w-4 animate-bounce" />
         </div>
       </section>
@@ -271,7 +271,7 @@ const AuthPage = () => {
       <section className="border-t border-border/30 bg-card/30 px-4 py-10 md:py-14">
         <RevealSection>
           <div className="mx-auto max-w-4xl text-center">
-            <p className="text-xs text-muted-foreground mb-6">מתחבר בלייב לבורסות המובילות</p>
+            <p className="text-xs text-foreground/70 mb-6">מתחבר בלייב לבורסות המובילות</p>
             <FadingCarousel />
           </div>
         </RevealSection>
@@ -288,7 +288,7 @@ const AuthPage = () => {
               <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-foreground">
                 הכלים שמפרידים בין <span className="text-primary">מנצחים</span> למפסידים
               </h2>
-              <p className="mt-4 max-w-2xl mx-auto text-sm md:text-base text-muted-foreground leading-relaxed">
+              <p className="mt-4 max-w-2xl mx-auto text-sm md:text-base text-foreground/70 leading-relaxed">
                 ארבעה כלים קריטיים, פלטפורמה אחת. הכל מונע AI.
               </p>
             </div>
@@ -312,7 +312,7 @@ const AuthPage = () => {
                     {f.icon}
                   </div>
                   <h3 className="font-heading text-base md:text-lg font-bold text-foreground mb-2">{f.title}</h3>
-                  <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
+                  <p className="text-xs md:text-sm text-foreground/70 leading-relaxed">{f.desc}</p>
                 </div>
               </RevealSection>
             ))}
@@ -324,7 +324,7 @@ const AuthPage = () => {
               <h3 className="font-heading text-base md:text-lg font-bold text-foreground mb-4 text-center">מה לא תמצא כאן 🚫</h3>
               <div className="grid sm:grid-cols-2 gap-3">
                 {notIncluded.map((item) => (
-                  <div key={item} className="flex items-center gap-3 text-xs md:text-sm text-muted-foreground">
+                  <div key={item} className="flex items-center gap-3 text-xs md:text-sm text-foreground/70">
                     <XCircle className="h-4 w-4 text-destructive shrink-0" />
                     <span>{item}</span>
                   </div>
@@ -359,14 +359,14 @@ const AuthPage = () => {
                     ))}
                   </div>
                   <Quote className="h-5 w-5 text-primary/20 mb-3" />
-                  <p className="text-xs md:text-sm text-foreground/85 leading-relaxed flex-1">"{t.quote}"</p>
+                  <p className="text-xs md:text-sm text-foreground/90 leading-relaxed flex-1">"{t.quote}"</p>
                   <div className="mt-5 pt-4 border-t border-border/30 flex items-center gap-3">
                     <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary/20 to-accent/10 flex items-center justify-center border border-primary/20">
                       <span className="text-sm font-bold text-primary">{t.avatar}</span>
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-foreground">{t.name}</p>
-                      <p className="text-[10px] text-muted-foreground">{t.role}</p>
+                      <p className="text-[10px] text-foreground/60">{t.role}</p>
                     </div>
                   </div>
                 </div>
@@ -397,7 +397,7 @@ const AuthPage = () => {
                   <AccordionTrigger className="text-sm md:text-base font-medium text-foreground hover:no-underline py-4 md:py-5">
                     {faq.q}
                   </AccordionTrigger>
-                  <AccordionContent className="text-xs md:text-sm text-muted-foreground leading-relaxed pb-5">
+                  <AccordionContent className="text-xs md:text-sm text-foreground/70 leading-relaxed pb-5">
                     {faq.a}
                   </AccordionContent>
                 </AccordionItem>
@@ -426,7 +426,7 @@ const AuthPage = () => {
               <br />
               <span className="text-primary">על סטאפים רעים?</span>
             </h2>
-            <p className="mt-4 md:mt-5 text-sm md:text-base text-muted-foreground leading-relaxed">
+            <p className="mt-4 md:mt-5 text-sm md:text-base text-foreground/70 leading-relaxed">
               הצטרף ל-ZenTrade היום וקבל גישה מלאה למנטור AI, יומן מסחר חכם, ותובנות שוק — בחינם.
             </p>
             <button
@@ -436,7 +436,7 @@ const AuthPage = () => {
               <Zap className="h-5 w-5" />
               צור חשבון חינם
             </button>
-            <p className="mt-3 text-[10px] md:text-xs text-muted-foreground/50">ללא כרטיס אשראי • הגדרה תוך 2 דקות</p>
+            <p className="mt-3 text-[10px] md:text-xs text-foreground/50">ללא כרטיס אשראי • הגדרה תוך 2 דקות</p>
           </div>
         </RevealSection>
       </section>
@@ -450,12 +450,12 @@ const AuthPage = () => {
           <div className="flex items-center gap-2">
             <Shield className="h-4 w-4 text-primary" />
             <span className="font-heading text-sm font-bold text-foreground">ZenTrade</span>
-            <span className="text-xs text-muted-foreground">• AI-Powered Trading Coach</span>
+            <span className="text-xs text-foreground/60">• AI-Powered Trading Coach</span>
           </div>
-          <div className="flex items-center gap-6 text-xs text-muted-foreground">
+          <div className="flex items-center gap-6 text-xs text-foreground/60">
             <Link to="/terms" className="hover:text-foreground transition-colors">תנאי שימוש</Link>
           </div>
-          <p className="text-[10px] text-muted-foreground/40">© 2026 ZenTrade. כל הזכויות שמורות.</p>
+          <p className="text-[10px] text-foreground/40">© 2026 ZenTrade. כל הזכויות שמורות.</p>
         </div>
       </footer>
 
@@ -498,7 +498,7 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
               </div>
             </div>
             <h2 className="font-heading text-lg md:text-xl font-bold text-foreground">ZenTrade</h2>
-            <p className="mt-1 text-[10px] md:text-xs text-muted-foreground">
+            <p className="mt-1 text-[10px] md:text-xs text-foreground/60">
               {isLogin ? "התחבר לחשבון שלך" : "צור חשבון חדש"}
             </p>
           </div>
@@ -530,25 +530,25 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
 
           <div className="flex items-center gap-3 mb-4">
             <div className="h-px flex-1 bg-border" />
-            <span className="text-[10px] text-muted-foreground">או עם אימייל</span>
+            <span className="text-[10px] text-foreground/50">או עם אימייל</span>
             <div className="h-px flex-1 bg-border" />
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-3">
             {!isLogin && (
               <div>
-                <label className="mb-1 block text-[10px] md:text-xs font-medium text-muted-foreground">שם מלא</label>
+                <label className="mb-1 block text-[10px] md:text-xs font-medium text-foreground/70">שם מלא</label>
                 <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="הכנס את שמך"
                   className="w-full rounded-lg border border-border bg-muted/30 px-3 py-2.5 text-xs md:text-sm text-foreground placeholder:text-muted-foreground/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" />
               </div>
             )}
             <div>
-              <label className="mb-1 block text-[10px] md:text-xs font-medium text-muted-foreground">אימייל</label>
+              <label className="mb-1 block text-[10px] md:text-xs font-medium text-foreground/70">אימייל</label>
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" dir="ltr"
                 className="w-full rounded-lg border border-border bg-muted/30 px-3 py-2.5 text-xs md:text-sm text-foreground text-left placeholder:text-muted-foreground/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" />
             </div>
             <div>
-              <label className="mb-1 block text-[10px] md:text-xs font-medium text-muted-foreground">סיסמה</label>
+              <label className="mb-1 block text-[10px] md:text-xs font-medium text-foreground/70">סיסמה</label>
               <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" dir="ltr"
                 className="w-full rounded-lg border border-border bg-muted/30 px-3 py-2.5 text-xs md:text-sm text-foreground text-left placeholder:text-muted-foreground/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" />
             </div>
@@ -564,7 +564,7 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
             </button>
           </form>
 
-          <p className="mt-4 text-center text-[10px] md:text-xs text-muted-foreground/60">
+          <p className="mt-4 text-center text-[10px] md:text-xs text-foreground/50">
             {isLogin ? "אין לך חשבון?" : "כבר יש לך חשבון?"}{" "}
             <button onClick={() => setIsLogin(!isLogin)} className="text-primary hover:underline font-medium">
               {isLogin ? "הירשם עכשיו" : "התחבר"}
@@ -595,9 +595,9 @@ const AppleIcon = () => (
 
 const DashStat = ({ label, value, sub, positive }: { label: string; value: string; sub: string; positive?: boolean }) => (
   <div className="rounded-xl border border-border/50 bg-muted/10 p-3">
-    <p className="text-[9px] md:text-[10px] text-muted-foreground mb-1">{label}</p>
+    <p className="text-[9px] md:text-[10px] text-foreground/60 mb-1">{label}</p>
     <p className="font-heading text-sm md:text-lg font-bold text-foreground">{value}</p>
-    <p className={`text-[9px] md:text-[10px] mt-0.5 ${positive ? "text-accent" : "text-muted-foreground"}`}>{sub}</p>
+    <p className={`text-[9px] md:text-[10px] mt-0.5 ${positive ? "text-accent" : "text-foreground/60"}`}>{sub}</p>
   </div>
 );
 
