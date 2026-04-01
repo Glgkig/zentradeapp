@@ -92,7 +92,7 @@ const JournalPage = () => {
   return (
     <div className="mx-auto max-w-[1280px]">
       {/* ── Hero Header ── */}
-      <div className="relative mb-6 rounded-2xl border border-border/40 bg-gradient-to-bl from-secondary/60 via-secondary/30 to-transparent p-5 md:p-7 overflow-hidden">
+      <div className="relative mb-4 md:mb-6 rounded-2xl border border-border/40 bg-gradient-to-bl from-secondary/60 via-secondary/30 to-transparent p-4 md:p-7 overflow-hidden">
         {/* Decorative glow */}
         <div className="absolute -top-20 -left-20 w-60 h-60 rounded-full bg-primary/[0.07] blur-3xl pointer-events-none" />
         <div className="absolute -bottom-16 -right-16 w-48 h-48 rounded-full bg-accent/[0.05] blur-3xl pointer-events-none" />
