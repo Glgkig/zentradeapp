@@ -224,10 +224,10 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               {/* User Dropdown — Bottom sheet on mobile, dropdown on desktop */}
               {userMenu && (
                 <>
-                  <div className="fixed inset-0 z-40 bg-background/40 md:bg-transparent backdrop-blur-sm md:backdrop-blur-none" onClick={() => setUserMenu(false)} />
+                  <div className="fixed inset-0 z-40 bg-background/60 md:bg-transparent" onClick={() => setUserMenu(false)} />
 
                   {/* Desktop dropdown */}
-                  <div className="hidden md:block absolute left-0 md:left-auto md:right-0 top-full mt-2 w-56 z-50 rounded-2xl border border-border/30 bg-secondary/95 backdrop-blur-xl shadow-2xl shadow-background/60 animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden">
+                  <div className="hidden md:block absolute left-0 md:left-auto md:right-0 top-full mt-2 w-56 z-50 rounded-2xl border border-border/30 bg-secondary shadow-2xl shadow-background/60 animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden">
                     <UserMenuContent
                       onClose={() => setUserMenu(false)}
                       onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
@@ -236,7 +236,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                   </div>
 
                   {/* Mobile bottom sheet */}
-                  <div className="md:hidden fixed inset-x-0 bottom-0 z-50 rounded-t-3xl border-t border-border/20 bg-secondary/98 backdrop-blur-xl animate-in slide-in-from-bottom duration-300 overflow-hidden">
+                  <div className="md:hidden fixed inset-x-0 bottom-0 z-50 rounded-t-3xl border-t border-border/20 bg-secondary animate-in slide-in-from-bottom duration-300 overflow-hidden">
                     <div className="flex justify-center pt-3 pb-1"><div className="w-10 h-1 rounded-full bg-muted-foreground/15" /></div>
                     <UserMenuContent
                       onClose={() => setUserMenu(false)}
