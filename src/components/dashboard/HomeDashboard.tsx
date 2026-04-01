@@ -358,7 +358,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
             </thead>
             <tbody className="text-[10px] md:text-xs">
               {recentTrades.map((t, i) => (
-                <tr key={i} className="border-b border-border/30 last:border-0">
+                <tr key={i} className="border-b border-border/10 last:border-0 interactive-row">
                   <td className="py-2.5 pr-2 font-semibold text-foreground">{t.pair}</td>
                   <td>
                     <span className={`inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[9px] font-semibold ${
