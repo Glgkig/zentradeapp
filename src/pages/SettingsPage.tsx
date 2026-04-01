@@ -267,48 +267,70 @@ const ConnectionsTab = () => {
             </div>
           </div>
 
-          {/* Orbit Ring */}
-          <div className="absolute inset-4 rounded-full border border-dashed border-muted-foreground/8" />
-          <div className="absolute inset-10 rounded-full border border-dashed border-muted-foreground/5" />
+          {/* Rotating Orbit Container */}
+          <div className="absolute inset-0" style={{ animation: "spin-orbit 30s linear infinite" }}>
+            {/* Orbit Ring */}
+            <div className="absolute inset-4 rounded-full border border-dashed border-muted-foreground/8" />
+            <div className="absolute inset-10 rounded-full border border-dashed border-muted-foreground/5" />
 
-          {/* Broker Icons in Circle */}
-          {brokers.map((broker, i) => {
-            const angle = (i / brokers.length) * 2 * Math.PI - Math.PI / 2;
-            const radius = 42;
-            const x = 50 + radius * Math.cos(angle);
-            const y = 50 + radius * Math.sin(angle);
+            {/* Broker Icons in Circle */}
+            {brokers.map((broker, i) => {
+              const angle = (i / brokers.length) * 2 * Math.PI - Math.PI / 2;
+              const radius = 42;
+              const x = 50 + radius * Math.cos(angle);
+              const y = 50 + radius * Math.sin(angle);
 
-            return (
-              <button
-                key={broker.name}
-                onClick={() => setSelectedBroker(selectedBroker === broker.name ? null : broker.name)}
-                className="haptic-press absolute -translate-x-1/2 -translate-y-1/2 group transition-all duration-300 hover:scale-110 z-20"
-                style={{ left: `${x}%`, top: `${y}%` }}
-                title={broker.name}
-              >
-                <div className={`relative flex h-11 w-11 items-center justify-center rounded-xl border overflow-hidden shadow-lg transition-all duration-300 ${
-                  broker.connected
-                    ? "border-accent/30 shadow-[0_0_12px_hsl(var(--accent)/0.3)]"
-                    : "border-white/8 hover:border-white/20 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]"
-                }`}
-                  style={{ background: `linear-gradient(135deg, ${broker.color}cc, ${broker.color}66)` }}
+              return (
+                <button
+                  key={broker.name}
+                  onClick={() => setSelectedBroker(selectedBroker === broker.name ? null : broker.name)}
+                  className="haptic-press absolute -translate-x-1/2 -translate-y-1/2 group transition-all duration-300 hover:scale-110 z-20"
+                  style={{ left: `${x}%`, top: `${y}%`, animation: "counter-spin-orbit 30s linear infinite" }}
+                  title={broker.name}
                 >
-                  <img src={broker.logo} alt={broker.name} className="h-8 w-8 object-contain" loading="lazy" />
-                  {broker.connected && (
-                    <div className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent border-2 border-background">
-                      <Check className="h-2.5 w-2.5 text-background" />
-                    </div>
-                  )}
-                </div>
-                {/* Tooltip */}
-                <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                  <span className="rounded-md bg-card border border-border/20 px-2 py-0.5 text-[8px] font-semibold text-foreground/70 shadow-lg">
-                    {broker.name}
-                  </span>
-                </div>
-              </button>
-            );
-          })}
+                  <div className={`relative flex h-11 w-11 items-center justify-center rounded-xl border overflow-hidden shadow-lg transition-all duration-300 ${
+                    broker.connected
+                      ? "border-accent/30 shadow-[0_0_12px_hsl(var(--accent)/0.3)]"
+                      : "border-white/8 hover:border-white/20 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]"
+                  }`}
+                    style={{ background: `linear-gradient(135deg, ${broker.color}cc, ${broker.color}66)` }}
+                  >
+                    <img src={broker.logo} alt={broker.name} className="h-8 w-8 object-contain" loading="lazy" />
+                    {broker.connected && (
+                      <div className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent border-2 border-background">
+                        <Check className="h-2.5 w-2.5 text-background" />
+                      </div>
+                    )}
+                  </div>
+                  {/* Tooltip */}
+                  <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    <span className="rounded-md bg-card border border-border/20 px-2 py-0.5 text-[8px] font-semibold text-foreground/70 shadow-lg">
+                      {broker.name}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+
+            {/* Connecting Lines from center to each broker */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100">
+              {brokers.map((broker, i) => {
+                const angle = (i / brokers.length) * 2 * Math.PI - Math.PI / 2;
+                const radius = 42;
+                const x = 50 + radius * Math.cos(angle);
+                const y = 50 + radius * Math.sin(angle);
+                return (
+                  <line
+                    key={broker.name}
+                    x1="50" y1="50" x2={x} y2={y}
+                    stroke={broker.connected ? "hsl(var(--accent))" : "hsl(var(--muted-foreground) / 0.06)"}
+                    strokeWidth={broker.connected ? "0.3" : "0.15"}
+                    strokeDasharray={broker.connected ? "none" : "1,1"}
+                  />
+                );
+              })}
+            </svg>
+          </div>
 
           {/* Connecting Lines from center to each broker */}
           <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100">
