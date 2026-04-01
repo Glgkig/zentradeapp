@@ -492,6 +492,30 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
   const navigate = useNavigate();
   const { signIn, signUp, updateProfile } = useAuth();
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      toast.error("הזן את כתובת האימייל שלך");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) {
+        toast.error(error.message);
+      } else {
+        setResetSent(true);
+        toast.success("נשלח קישור לאיפוס סיסמה לאימייל שלך");
+      }
+    } catch {
+      toast.error("שגיאה לא צפויה");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) return;
