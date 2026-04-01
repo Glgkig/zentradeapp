@@ -190,6 +190,13 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
         {/* Top Header — Compact */}
         <header className={`flex items-center justify-between glass-header px-2.5 py-1.5 md:px-4 md:py-2 shrink-0 relative z-50 ${zenMode ? "zen-hidden" : "zen-visible"}`}>
           <div className="flex items-center gap-2">
+            {/* Mobile hamburger */}
+            <button
+              onClick={() => setMobileNavOpen(!mobileNavOpen)}
+              className="md:hidden haptic-press flex h-8 w-8 items-center justify-center rounded-sm border border-border/15 bg-muted/10 text-muted-foreground/60 hover:text-primary hover:border-primary/15 transition-all"
+            >
+              {mobileNavOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </button>
             {/* Mobile brand */}
             <div className="flex md:hidden items-center gap-1.5">
               <div className="flex h-6 w-6 items-center justify-center rounded-sm bg-primary/10 border border-primary/15">
