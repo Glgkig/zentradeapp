@@ -43,7 +43,7 @@ const SettingsPage = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`haptic-press flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-[12px] font-medium transition-all duration-200 ${
+                  className={`haptic-press flex items-center gap-2 md:gap-2.5 rounded-xl px-2.5 md:px-3 py-2 md:py-2.5 text-[11px] md:text-[12px] font-medium transition-all duration-200 whitespace-nowrap md:w-full ${
                     active
                       ? "bg-primary/10 text-primary border border-primary/12"
                       : "text-muted-foreground/50 hover:bg-muted/15 hover:text-foreground border border-transparent"
