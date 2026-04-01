@@ -132,7 +132,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               <button
                 key={item.id}
                 onClick={() => handleNav(item.id)}
-                className={`group flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-200 ${
+                className={`interactive-btn group flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-200 ${
                   active
                     ? "bg-primary/12 text-primary shadow-[inset_0_0_20px_hsl(217_72%_53%/0.06)]"
                     : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
