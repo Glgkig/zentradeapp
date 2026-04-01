@@ -279,9 +279,9 @@ const StatsPage = () => {
         <div className="overflow-x-auto">
           <div className="min-w-[500px]">
             {/* Hours header */}
-            <div className="flex items-center gap-1.5 mb-2 pr-16">
+            <div className="flex items-center gap-1 mb-1.5 pr-12">
               {hours.map((h) => (
-                <div key={h} className="flex-1 text-center text-[8px] md:text-[9px] text-muted-foreground font-mono">{h}:00</div>
+                <div key={h} className="flex-1 text-center text-[6px] md:text-[7px] text-muted-foreground font-mono">{h}:00</div>
               ))}
             </div>
 
