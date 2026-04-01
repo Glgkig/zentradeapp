@@ -125,7 +125,7 @@ const StatsPage = () => {
         </div>
 
         {/* Classic Metrics */}
-        <div className="md:col-span-5 rounded-xl border border-border bg-secondary/30 p-4">
+        <div className="md:col-span-5 rounded-xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4">
           <div className="flex items-center gap-2 mb-4">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent/10">
               <BarChart3 className="h-3.5 w-3.5 text-accent" />
