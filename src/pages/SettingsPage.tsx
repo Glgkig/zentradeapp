@@ -4,6 +4,15 @@ import {
   AlertTriangle, Volume2, Mail, Smartphone, Sparkles, Save,
   Eye, Palette, CreditCard, Key, Database, Zap, Link2, Plus, Check, X,
 } from "lucide-react";
+import logoTradingView from "@/assets/logos/tradingview.png";
+import logoTradeLocker from "@/assets/logos/tradelocker.png";
+import logoMt5 from "@/assets/logos/mt5.png";
+import logoBinance from "@/assets/logos/binance.png";
+import logoTopstep from "@/assets/logos/topstep.png";
+import logoRithmic from "@/assets/logos/rithmic.png";
+import logoNinjaTrader from "@/assets/logos/ninjatrader.png";
+import logoIbkr from "@/assets/logos/ibkr.png";
+import logoForex from "@/assets/logos/forexcom.png";
 
 /* ===== Tab Config ===== */
 const tabs = [
@@ -178,18 +187,15 @@ const ProfileTab = () => (
 
 /* ===== Connections Tab ===== */
 const brokers = [
-  { name: "TradingView", short: "TV", color: "#2962FF", connected: true },
-  { name: "TradeLocker", short: "TL", color: "#00E676", connected: false },
-  { name: "MetaTrader 5", short: "MT5", color: "#4A90D9", connected: true },
-  { name: "Binance", short: "BN", color: "#F0B90B", connected: false },
-  { name: "TopstepX", short: "TS", color: "#1DB954", connected: false },
-  { name: "Rithmic", short: "R+", color: "#FF6B35", connected: false },
-  { name: "NinjaTrader", short: "NT", color: "#E84E0F", connected: false },
-  { name: "Interactive Brokers", short: "IB", color: "#DC143C", connected: false },
-  { name: "Forex.com", short: "FX", color: "#0891B2", connected: false },
-  { name: "Bybit", short: "BY", color: "#F7A600", connected: false },
-  { name: "cTrader", short: "cT", color: "#6366F1", connected: false },
-  { name: "DXtrade", short: "DX", color: "#10B981", connected: false },
+  { name: "TradingView", short: "TV", color: "#2962FF", connected: true, logo: logoTradingView },
+  { name: "TradeLocker", short: "TL", color: "#00E676", connected: false, logo: logoTradeLocker },
+  { name: "MetaTrader 5", short: "MT5", color: "#4A90D9", connected: true, logo: logoMt5 },
+  { name: "Binance", short: "BN", color: "#F0B90B", connected: false, logo: logoBinance },
+  { name: "TopstepX", short: "TS", color: "#1DB954", connected: false, logo: logoTopstep },
+  { name: "Rithmic", short: "R+", color: "#FF6B35", connected: false, logo: logoRithmic },
+  { name: "NinjaTrader", short: "NT", color: "#E84E0F", connected: false, logo: logoNinjaTrader },
+  { name: "Interactive Brokers", short: "IB", color: "#DC143C", connected: false, logo: logoIbkr },
+  { name: "Forex.com", short: "FX", color: "#0891B2", connected: false, logo: logoForex },
 ];
 
 const ConnectionsTab = () => {
@@ -222,10 +228,10 @@ const ConnectionsTab = () => {
             <div key={broker.name} className="flex items-center justify-between rounded-xl border border-accent/12 bg-accent/[0.03] px-4 py-3 transition-all min-h-[48px]">
               <div className="flex items-center gap-3">
                 <div
-                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/5 text-[10px] font-black tracking-tight text-white shadow-lg"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/5 overflow-hidden shadow-lg"
                   style={{ background: `linear-gradient(135deg, ${broker.color}dd, ${broker.color}88)` }}
                 >
-                  {broker.short}
+                  <img src={broker.logo} alt={broker.name} className="h-7 w-7 object-contain" loading="lazy" />
                 </div>
                 <div className="text-right">
                   <p className="text-[11px] font-semibold text-foreground/80">{broker.name}</p>
@@ -280,14 +286,14 @@ const ConnectionsTab = () => {
                 style={{ left: `${x}%`, top: `${y}%` }}
                 title={broker.name}
               >
-                <div className={`relative flex h-11 w-11 items-center justify-center rounded-xl border text-[9px] font-black tracking-tight text-white shadow-lg transition-all duration-300 ${
+                <div className={`relative flex h-11 w-11 items-center justify-center rounded-xl border overflow-hidden shadow-lg transition-all duration-300 ${
                   broker.connected
                     ? "border-accent/30 shadow-[0_0_12px_hsl(var(--accent)/0.3)]"
                     : "border-white/8 hover:border-white/20 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]"
                 }`}
                   style={{ background: `linear-gradient(135deg, ${broker.color}cc, ${broker.color}66)` }}
                 >
-                  {broker.short}
+                  <img src={broker.logo} alt={broker.name} className="h-8 w-8 object-contain" loading="lazy" />
                   {broker.connected && (
                     <div className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent border-2 border-background">
                       <Check className="h-2.5 w-2.5 text-background" />
@@ -332,10 +338,10 @@ const ConnectionsTab = () => {
           <div className="rounded-2xl border border-primary/12 bg-primary/[0.02] p-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div className="flex items-center gap-3 mb-4">
               <div
-                className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 text-[12px] font-black text-white shadow-lg"
+                className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 overflow-hidden shadow-lg"
                 style={{ background: `linear-gradient(135deg, ${broker.color}dd, ${broker.color}77)` }}
               >
-                {broker.short}
+                <img src={broker.logo} alt={broker.name} className="h-9 w-9 object-contain" loading="lazy" />
               </div>
               <div>
                 <h3 className="text-[13px] font-bold text-foreground">{broker.name}</h3>
