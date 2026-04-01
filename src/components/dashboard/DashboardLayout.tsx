@@ -301,7 +301,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                     <UserMenuContent
                       onClose={() => setUserMenu(false)}
                       onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
-                      onLogout={() => { setUserMenu(false); navigate("/"); }}
+                      onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
                     />
                     <div className="px-3 pb-5 pt-1">
                       <button onClick={() => setUserMenu(false)} className="w-full rounded-sm bg-muted/10 border border-border/10 py-2.5 text-[11px] font-medium text-muted-foreground/50">סגור</button>
