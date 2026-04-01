@@ -262,7 +262,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
       </div>
 
       {/* ===== Mobile Bottom Tab Bar ===== */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 border-t border-border/30 bg-sidebar/85 backdrop-blur-xl">
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 border-t border-border/15 bg-sidebar/90 backdrop-blur-2xl">
         <div className="flex items-center justify-around px-1 pt-1.5 pb-[env(safe-area-inset-bottom,8px)]">
           {bottomTabs.map((tab) => {
             const active = tab.id !== "more" && activeNav === tab.id;
