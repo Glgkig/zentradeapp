@@ -6,7 +6,7 @@ import {
   Shield, BarChart3, ChevronDown, Bot, Zap, Lock, X, Menu,
   FlaskConical, Mic, Newspaper, ArrowUp, Activity, AlertTriangle,
   CheckCircle2, TrendingUp, Quote, Star, Brain, BookOpen, Calendar,
-  XCircle, ChevronRight, Sparkles, MapPin,
+  XCircle, ChevronRight, Sparkles, MapPin, Eye, EyeOff,
 } from "lucide-react";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -486,6 +486,7 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { signIn, signUp, updateProfile } = useAuth();
 
@@ -596,8 +597,18 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
             </div>
             <div>
               <label className="mb-1 block text-[10px] md:text-xs font-medium text-foreground/70">סיסמה</label>
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" dir="ltr"
-                className="w-full rounded-lg border border-border bg-muted/30 px-3 py-2.5 text-xs md:text-sm text-foreground text-left placeholder:text-muted-foreground/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" />
+              <div className="relative">
+                <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" dir="ltr"
+                  className="w-full rounded-lg border border-border bg-muted/30 px-3 py-2.5 pr-10 text-xs md:text-sm text-foreground text-left placeholder:text-muted-foreground/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
             </div>
 
             {isLogin && (
