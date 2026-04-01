@@ -276,7 +276,7 @@ const SetupsPage = () => {
   return (
     <div className="mx-auto max-w-[1280px]">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-4 md:mb-6">
         <div>
           <div className="flex items-center gap-3 mb-1.5">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 border border-primary/15">
