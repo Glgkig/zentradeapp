@@ -455,7 +455,7 @@ const AuthPage = () => {
           <div className="flex items-center gap-6 text-xs text-foreground/60">
             <Link to="/terms" className="hover:text-foreground transition-colors">תנאי שימוש</Link>
           </div>
-          <p className="text-[10px] text-muted-foreground/40">© 2026 ZenTrade. כל הזכויות שמורות.</p>
+          <p className="text-[10px] text-foreground/40">© 2026 ZenTrade. כל הזכויות שמורות.</p>
         </div>
       </footer>
 
