@@ -199,7 +199,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
         {/* Market Sentiment + Quick Stats */}
         <div className="md:col-span-3 space-y-4">
           {/* Sentiment */}
-          <div className="rounded-2xl border border-border bg-secondary/30 p-4">
+          <div className="rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4">
             <div className="flex items-center gap-2 mb-3">
               <Activity className="h-3.5 w-3.5 text-primary" />
               <span className="text-[10px] font-semibold text-foreground">סנטימנט שוק</span>
