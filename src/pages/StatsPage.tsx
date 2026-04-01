@@ -185,7 +185,7 @@ const StatsPage = () => {
         </div>
 
         {/* Classic Metrics - Premium Redesign */}
-        <div className="md:col-span-5 rounded-xl border border-border/15 bg-secondary/15 p-5">
+        <div className="md:col-span-5 rounded-xl border border-border/15 bg-secondary/15 p-4 md:p-5">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2.5">
               <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent/10 border border-accent/15">
