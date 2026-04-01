@@ -94,6 +94,7 @@ const SettingsPage = () => {
         {/* Content Area */}
         <div className="flex-1 min-w-0">
           {activeTab === "profile" && <ProfileTab />}
+          {activeTab === "connections" && <ConnectionsTab />}
           {activeTab === "preferences" && <PreferencesTab />}
           {activeTab === "rules" && <RulesTab />}
           {activeTab === "notifications" && <NotificationsTab />}
