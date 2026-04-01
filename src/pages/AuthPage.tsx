@@ -207,7 +207,7 @@ const AuthPage = () => {
                     <div className="flex items-center gap-3">
                       <span className="font-heading text-sm font-bold text-foreground">ZenTrade</span>
                       <div className="h-4 w-px bg-border" />
-                      <span className="text-xs text-muted-foreground">דשבורד ראשי</span>
+                      <span className="text-xs text-foreground/60">דשבורד ראשי</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="flex items-center gap-1.5 rounded-full bg-accent/10 border border-accent/20 px-3 py-1 text-[10px] font-medium text-accent">
