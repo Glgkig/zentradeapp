@@ -54,7 +54,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
         </div>
 
         {/* 2. Psychological Tilt Meter */}
-        <div className="md:col-span-3 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-5">
+        <div className="md:col-span-3 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4 md:p-5">
           <div className="flex items-center gap-2 mb-4">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
               <Activity className="h-4 w-4 text-accent" />
