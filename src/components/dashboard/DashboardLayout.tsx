@@ -429,7 +429,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
       )}
 
       {showOnboarding && (
-        <OnboardingModal userName="יהונתן" onComplete={completeOnboarding} />
+        <OnboardingModal userName={userName} onComplete={completeOnboarding} />
       )}
     </div>
   );
