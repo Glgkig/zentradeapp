@@ -6,22 +6,22 @@ import {
 /* ===== Heatmap Data ===== */
 const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי"];
 const hours = ["09", "10", "11", "12", "13", "14", "15", "16", "17"];
-const heatData: Record<string, Record<string, number>> = {
-  "ראשון": { "09": 2, "10": 3, "11": 1, "12": 0, "13": -1, "14": 2, "15": 1, "16": -2, "17": -1 },
-  "שני":   { "09": 1, "10": 2, "11": 3, "12": 1, "13": 0, "14": 1, "15": -1, "16": -3, "17": -2 },
-  "שלישי": { "09": 3, "10": 1, "11": 2, "12": 2, "13": 1, "14": 0, "15": -1, "16": -2, "17": 0 },
-  "רביעי": { "09": 0, "10": 2, "11": 1, "12": 3, "13": 2, "14": 1, "15": 0, "16": -1, "17": -3 },
-  "חמישי": { "09": 2, "10": 3, "11": 2, "12": 1, "13": 0, "14": -1, "15": -2, "16": -3, "17": -1 },
+const heatData: Record<string, Record<string, { pnl: number; trades: number }>> = {
+  "ראשון": { "09": { pnl: 120, trades: 3 }, "10": { pnl: 250, trades: 5 }, "11": { pnl: 80, trades: 2 }, "12": { pnl: 0, trades: 0 }, "13": { pnl: -45, trades: 1 }, "14": { pnl: 180, trades: 4 }, "15": { pnl: 60, trades: 2 }, "16": { pnl: -190, trades: 3 }, "17": { pnl: -75, trades: 2 } },
+  "שני":   { "09": { pnl: 90, trades: 2 }, "10": { pnl: 160, trades: 3 }, "11": { pnl: 310, trades: 6 }, "12": { pnl: 55, trades: 1 }, "13": { pnl: 0, trades: 0 }, "14": { pnl: 70, trades: 2 }, "15": { pnl: -80, trades: 2 }, "16": { pnl: -280, trades: 4 }, "17": { pnl: -150, trades: 3 } },
+  "שלישי": { "09": { pnl: 340, trades: 5 }, "10": { pnl: 95, trades: 2 }, "11": { pnl: 200, trades: 4 }, "12": { pnl: 130, trades: 3 }, "13": { pnl: 40, trades: 1 }, "14": { pnl: 0, trades: 0 }, "15": { pnl: -60, trades: 1 }, "16": { pnl: -170, trades: 3 }, "17": { pnl: 15, trades: 1 } },
+  "רביעי": { "09": { pnl: 0, trades: 0 }, "10": { pnl: 145, trades: 3 }, "11": { pnl: 75, trades: 2 }, "12": { pnl: 290, trades: 5 }, "13": { pnl: 110, trades: 2 }, "14": { pnl: 50, trades: 1 }, "15": { pnl: 0, trades: 0 }, "16": { pnl: -95, trades: 2 }, "17": { pnl: -320, trades: 5 } },
+  "חמישי": { "09": { pnl: 185, trades: 4 }, "10": { pnl: 270, trades: 5 }, "11": { pnl: 150, trades: 3 }, "12": { pnl: 60, trades: 1 }, "13": { pnl: 0, trades: 0 }, "14": { pnl: -110, trades: 2 }, "15": { pnl: -200, trades: 3 }, "16": { pnl: -350, trades: 6 }, "17": { pnl: -85, trades: 2 } },
 };
 
-const heatColor = (v: number) => {
-  if (v >= 3) return "bg-accent/70";
-  if (v >= 2) return "bg-accent/45";
-  if (v >= 1) return "bg-accent/20";
-  if (v === 0) return "bg-muted/30";
-  if (v >= -1) return "bg-destructive/20";
-  if (v >= -2) return "bg-destructive/40";
-  return "bg-destructive/60";
+const heatColor = (pnl: number) => {
+  if (pnl >= 250) return "bg-accent/60 border-accent/30";
+  if (pnl >= 100) return "bg-accent/35 border-accent/20";
+  if (pnl > 0)    return "bg-accent/15 border-accent/10";
+  if (pnl === 0)  return "bg-muted/20 border-border/10";
+  if (pnl >= -100) return "bg-destructive/15 border-destructive/10";
+  if (pnl >= -200) return "bg-destructive/30 border-destructive/15";
+  return "bg-destructive/50 border-destructive/25";
 };
 
 const StatsPage = () => {
@@ -176,43 +176,80 @@ const StatsPage = () => {
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
               <Clock className="h-3.5 w-3.5 text-primary" />
             </div>
-            <span className="text-[10px] md:text-xs font-semibold text-foreground">מפת רווחיות לפי שעות</span>
+            <div>
+              <span className="text-[10px] md:text-xs font-semibold text-foreground">מפת רווחיות לפי שעות</span>
+              <p className="text-[8px] text-muted-foreground">סה״כ רווח: <span className="text-accent font-semibold">+$2,430</span> · סה״כ הפסד: <span className="text-destructive font-semibold">-$1,785</span></p>
+            </div>
           </div>
-          <div className="flex items-center gap-2 text-[8px] text-muted-foreground">
-            <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-[2px] bg-accent/50" /> רווחי</span>
-            <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-[2px] bg-destructive/50" /> הפסדי</span>
+          <div className="flex items-center gap-3 text-[8px] text-muted-foreground">
+            <span className="flex items-center gap-1"><span className="h-2.5 w-5 rounded-[3px] bg-accent/40" /> רווח</span>
+            <span className="flex items-center gap-1"><span className="h-2.5 w-5 rounded-[3px] bg-destructive/40" /> הפסד</span>
+            <span className="flex items-center gap-1"><span className="h-2.5 w-5 rounded-[3px] bg-muted/20" /> אין פעילות</span>
           </div>
         </div>
 
         <div className="overflow-x-auto">
-          <div className="min-w-[400px]">
+          <div className="min-w-[500px]">
             {/* Hours header */}
-            <div className="flex items-center gap-1 mb-1 pr-14">
+            <div className="flex items-center gap-1.5 mb-2 pr-16">
               {hours.map((h) => (
                 <div key={h} className="flex-1 text-center text-[8px] md:text-[9px] text-muted-foreground font-mono">{h}:00</div>
               ))}
             </div>
 
             {/* Grid rows */}
-            {days.map((day) => (
-              <div key={day} className="flex items-center gap-1 mb-1">
-                <span className="w-12 shrink-0 text-[9px] md:text-[10px] text-muted-foreground text-left">{day}</span>
-                {hours.map((h) => (
-                  <div
-                    key={h}
-                    className={`flex-1 h-6 md:h-7 rounded-[4px] transition-all duration-200 hover:scale-110 hover:z-10 cursor-pointer ${heatColor(heatData[day][h])}`}
-                    title={`${day} ${h}:00 — ${heatData[day][h] > 0 ? "+" : ""}${heatData[day][h]}`}
-                  />
-                ))}
-              </div>
-            ))}
+            {days.map((day) => {
+              const dayTotal = hours.reduce((sum, h) => sum + heatData[day][h].pnl, 0);
+              return (
+                <div key={day} className="flex items-center gap-1.5 mb-1.5">
+                  <div className="w-14 shrink-0 flex flex-col">
+                    <span className="text-[9px] md:text-[10px] text-foreground font-medium text-left">{day}</span>
+                    <span className={`text-[7px] font-semibold text-left ${dayTotal >= 0 ? "text-accent" : "text-destructive"}`}>
+                      {dayTotal >= 0 ? "+" : ""}{dayTotal}$
+                    </span>
+                  </div>
+                  {hours.map((h) => {
+                    const cell = heatData[day][h];
+                    return (
+                      <div
+                        key={h}
+                        className={`flex-1 h-10 md:h-12 rounded-md border transition-all duration-200 hover:scale-105 hover:z-10 cursor-pointer flex flex-col items-center justify-center gap-0.5 ${heatColor(cell.pnl)}`}
+                        title={`${day} ${h}:00 — ${cell.pnl >= 0 ? "+" : ""}$${cell.pnl} (${cell.trades} עסקאות)`}
+                      >
+                        <span className={`text-[8px] md:text-[9px] font-bold ${cell.pnl > 0 ? "text-accent" : cell.pnl < 0 ? "text-destructive" : "text-muted-foreground/50"}`}>
+                          {cell.pnl === 0 ? "—" : `${cell.pnl > 0 ? "+" : ""}${cell.pnl}$`}
+                        </span>
+                        {cell.trades > 0 && (
+                          <span className="text-[6px] md:text-[7px] text-muted-foreground">{cell.trades} עס׳</span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
+
+            {/* Column totals */}
+            <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-border/10 pr-16">
+              {hours.map((h) => {
+                const colTotal = days.reduce((sum, day) => sum + heatData[day][h].pnl, 0);
+                return (
+                  <div key={h} className="flex-1 text-center">
+                    <span className={`text-[8px] font-bold ${colTotal >= 0 ? "text-accent" : "text-destructive"}`}>
+                      {colTotal >= 0 ? "+" : ""}{colTotal}$
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 
-        <div className="mt-3 rounded-lg border border-primary/15 bg-primary/[0.04] p-2.5 flex items-start gap-2">
+        <div className="mt-4 rounded-lg border border-primary/15 bg-primary/[0.04] p-2.5 flex items-start gap-2">
           <Brain className="h-3 w-3 text-primary shrink-0 mt-0.5" />
           <p className="text-[8px] md:text-[9px] text-muted-foreground leading-relaxed">
-            <span className="text-primary font-semibold">תובנת AI:</span> ה-AI מזהה הפסדים קבועים בין 16:00 ל-17:00. מומלץ להפעיל נעילה אוטומטית בשעות אלו.
+            <span className="text-primary font-semibold">תובנת AI:</span> ה-AI מזהה הפסדים קבועים בין 16:00 ל-17:00 (סה״כ <span className="text-destructive font-semibold">-$835</span>). 
+            השעות הרווחיות ביותר שלך הן 09:00-11:00 (<span className="text-accent font-semibold">+$1,870</span>). מומלץ להפעיל נעילה אוטומטית אחרי 15:00.
           </p>
         </div>
       </div>
