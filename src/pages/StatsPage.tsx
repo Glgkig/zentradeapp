@@ -54,7 +54,7 @@ const StatsPage = () => {
           { label: "Profit Factor", value: "1.8", sub: "רווח/הפסד ממוצע", color: "text-accent", icon: <BarChart3 className="h-3.5 w-3.5" />, borderColor: "border-accent/20" },
           { label: "ציון משמעת", value: "85/100", sub: "ביצועים מעולים", color: "text-primary", icon: <Shield className="h-3.5 w-3.5" />, borderColor: "border-primary/20" },
         ].map((item) => (
-          <div key={item.label} className={`rounded-xl border ${item.borderColor} bg-secondary/20 p-3.5 transition-all duration-200 hover:bg-secondary/30`}>
+          <div key={item.label} className={`rounded-xl border ${item.borderColor} bg-secondary/20 p-2.5 md:p-3.5 transition-all duration-200 hover:bg-secondary/30`}>
             <div className="flex items-center gap-2 mb-2">
               <div className={`${item.color} opacity-60`}>{item.icon}</div>
               <span className="text-[9px] md:text-[10px] text-muted-foreground">{item.label}</span>
