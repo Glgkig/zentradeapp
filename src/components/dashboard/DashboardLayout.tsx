@@ -185,7 +185,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
         {/* Footer */}
         <div className="border-t border-border/6 px-2 py-2">
           <button
-            onClick={() => navigate("/")}
+            onClick={async () => { await signOut(); navigate("/"); }}
             className="haptic-press flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-[11px] font-medium text-muted-foreground/30 hover:bg-destructive/6 hover:text-destructive transition-all"
           >
             <LogOut className="h-3.5 w-3.5" />
