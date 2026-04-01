@@ -377,7 +377,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
 
       {/* Mobile nav overlay */}
       {mobileNavOpen && (
-        <div className="md:hidden fixed inset-0 z-40 bg-background/30 backdrop-blur-[2px]" onClick={() => setMobileNavOpen(false)} />
+        <div className="md:hidden fixed inset-0 z-40 bg-background/40" onClick={() => setMobileNavOpen(false)} />
       )}
 
       {/* ===== Broker Modal ===== */}
