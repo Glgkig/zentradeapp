@@ -199,10 +199,10 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             {/* Theme */}
             <button
               onClick={() => setDark(!dark)}
-              className="flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-xl border border-border bg-muted/20 text-muted-foreground transition-all hover:bg-muted/50"
+              className="interactive-btn flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-xl border border-border/20 bg-muted/15 text-muted-foreground transition-all duration-300 hover:bg-primary/10 hover:text-primary hover:border-primary/20 hover:shadow-[0_0_12px_hsl(var(--primary)/0.1)]"
               title={dark ? "מצב בהיר" : "מצב כהה"}
             >
-              {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {dark ? <Sun className="h-4 w-4 transition-transform duration-300 hover:rotate-45" /> : <Moon className="h-4 w-4 transition-transform duration-300 hover:-rotate-12" />}
             </button>
 
             {/* User */}
