@@ -4,7 +4,7 @@ import {
   Shield, BarChart3, ChevronDown, Bot, Zap, Lock, X, Menu,
   FlaskConical, Mic, Newspaper, ArrowUp, Activity, AlertTriangle,
   CheckCircle2, TrendingUp, Quote, Star, Brain, BookOpen, Calendar,
-  XCircle, ChevronRight, Sparkles,
+  XCircle, ChevronRight, Sparkles, MessageCircle, Mail, MapPin,
 } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import logoMt5 from "@/assets/logos/mt5-full.png";
@@ -431,20 +431,53 @@ const AuthPage = () => {
         </RevealSection>
       </section>
 
+      {/* ===== CONTACT SECTION ===== */}
+      <RevealSection>
+        <section className="px-4 py-16 md:py-20">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground mb-3">צריך עזרה? דבר איתנו</h2>
+            <p className="text-sm md:text-base text-muted-foreground mb-8">הצוות שלנו זמין לכל שאלה — בוואטסאפ או במייל.</p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <a
+                href="https://wa.me/972504433779"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2.5 rounded-xl px-8 py-4 text-sm font-bold text-white shadow-lg transition-all hover:opacity-90 active:scale-[0.97]"
+                style={{ backgroundColor: '#25D366' }}
+              >
+                <MessageCircle className="h-5 w-5" />
+                צ'אט בוואטסאפ
+              </a>
+              <a
+                href="mailto:gonidrop9@gmail.com"
+                className="inline-flex items-center gap-2.5 rounded-xl border border-border bg-card px-8 py-4 text-sm font-bold text-foreground shadow-lg transition-all hover:bg-accent active:scale-[0.97]"
+              >
+                <Mail className="h-5 w-5" />
+                שלח מייל
+              </a>
+            </div>
+          </div>
+        </section>
+      </RevealSection>
+
       {/* ===== FOOTER ===== */}
       <footer className="border-t border-border/30 px-4 py-8 md:px-8 md:py-10">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 md:flex-row">
           <div className="flex items-center gap-2">
             <Shield className="h-4 w-4 text-primary" />
             <span className="font-heading text-sm font-bold text-foreground">ZenTrade</span>
+            <span className="text-xs text-muted-foreground">• AI-Powered Trading Coach</span>
           </div>
           <div className="flex items-center gap-6 text-xs text-muted-foreground">
             <Link to="/terms" className="hover:text-foreground transition-colors">תנאי שימוש</Link>
             <span className="cursor-pointer hover:text-foreground transition-colors">מדיניות פרטיות</span>
-            <span className="cursor-pointer hover:text-foreground transition-colors">יצירת קשר</span>
           </div>
-          <span className="text-[10px] text-muted-foreground/60">© 2026 ZenTrade. כל הזכויות שמורות.</span>
+          <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground/60">
+            <MapPin className="h-3 w-3" />
+            Merkaz Shapira, Israel
+          </div>
         </div>
+        <p className="mt-4 text-center text-[10px] text-muted-foreground/40">© 2026 ZenTrade. כל הזכויות שמורות.</p>
       </footer>
 
       {/* ===== AUTH MODAL ===== */}
