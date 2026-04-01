@@ -292,7 +292,7 @@ const HomeDashboard = ({ userName }: { userName: string }) => {
         <div className="md:col-span-2 rounded-2xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-4 md:p-5 flex flex-col items-center justify-center text-center">
           <div className="relative mb-4">
             <div className="absolute inset-[-8px] rounded-full bg-primary/5 animate-pulse" style={{ animationDuration: "2.5s" }} />
-            <button className="relative flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 border border-primary/25 text-primary transition-all hover:bg-primary/20 hover:shadow-[0_0_30px_hsl(217_72%_53%/0.2)] active:scale-95">
+            <button className="interactive-btn relative flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 border border-primary/25 text-primary transition-all hover:bg-primary/20 hover:shadow-[0_0_30px_hsl(217_72%_53%/0.2)] active:scale-95">
               <Mic className="h-7 w-7" />
             </button>
           </div>
