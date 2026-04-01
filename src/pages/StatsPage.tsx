@@ -6,22 +6,22 @@ import {
 /* ===== Heatmap Data ===== */
 const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי"];
 const hours = ["09", "10", "11", "12", "13", "14", "15", "16", "17"];
-const heatData: Record<string, Record<string, number>> = {
-  "ראשון": { "09": 2, "10": 3, "11": 1, "12": 0, "13": -1, "14": 2, "15": 1, "16": -2, "17": -1 },
-  "שני":   { "09": 1, "10": 2, "11": 3, "12": 1, "13": 0, "14": 1, "15": -1, "16": -3, "17": -2 },
-  "שלישי": { "09": 3, "10": 1, "11": 2, "12": 2, "13": 1, "14": 0, "15": -1, "16": -2, "17": 0 },
-  "רביעי": { "09": 0, "10": 2, "11": 1, "12": 3, "13": 2, "14": 1, "15": 0, "16": -1, "17": -3 },
-  "חמישי": { "09": 2, "10": 3, "11": 2, "12": 1, "13": 0, "14": -1, "15": -2, "16": -3, "17": -1 },
+const heatData: Record<string, Record<string, { pnl: number; trades: number }>> = {
+  "ראשון": { "09": { pnl: 120, trades: 3 }, "10": { pnl: 250, trades: 5 }, "11": { pnl: 80, trades: 2 }, "12": { pnl: 0, trades: 0 }, "13": { pnl: -45, trades: 1 }, "14": { pnl: 180, trades: 4 }, "15": { pnl: 60, trades: 2 }, "16": { pnl: -190, trades: 3 }, "17": { pnl: -75, trades: 2 } },
+  "שני":   { "09": { pnl: 90, trades: 2 }, "10": { pnl: 160, trades: 3 }, "11": { pnl: 310, trades: 6 }, "12": { pnl: 55, trades: 1 }, "13": { pnl: 0, trades: 0 }, "14": { pnl: 70, trades: 2 }, "15": { pnl: -80, trades: 2 }, "16": { pnl: -280, trades: 4 }, "17": { pnl: -150, trades: 3 } },
+  "שלישי": { "09": { pnl: 340, trades: 5 }, "10": { pnl: 95, trades: 2 }, "11": { pnl: 200, trades: 4 }, "12": { pnl: 130, trades: 3 }, "13": { pnl: 40, trades: 1 }, "14": { pnl: 0, trades: 0 }, "15": { pnl: -60, trades: 1 }, "16": { pnl: -170, trades: 3 }, "17": { pnl: 15, trades: 1 } },
+  "רביעי": { "09": { pnl: 0, trades: 0 }, "10": { pnl: 145, trades: 3 }, "11": { pnl: 75, trades: 2 }, "12": { pnl: 290, trades: 5 }, "13": { pnl: 110, trades: 2 }, "14": { pnl: 50, trades: 1 }, "15": { pnl: 0, trades: 0 }, "16": { pnl: -95, trades: 2 }, "17": { pnl: -320, trades: 5 } },
+  "חמישי": { "09": { pnl: 185, trades: 4 }, "10": { pnl: 270, trades: 5 }, "11": { pnl: 150, trades: 3 }, "12": { pnl: 60, trades: 1 }, "13": { pnl: 0, trades: 0 }, "14": { pnl: -110, trades: 2 }, "15": { pnl: -200, trades: 3 }, "16": { pnl: -350, trades: 6 }, "17": { pnl: -85, trades: 2 } },
 };
 
-const heatColor = (v: number) => {
-  if (v >= 3) return "bg-accent/70";
-  if (v >= 2) return "bg-accent/45";
-  if (v >= 1) return "bg-accent/20";
-  if (v === 0) return "bg-muted/30";
-  if (v >= -1) return "bg-destructive/20";
-  if (v >= -2) return "bg-destructive/40";
-  return "bg-destructive/60";
+const heatColor = (pnl: number) => {
+  if (pnl >= 250) return "bg-accent/60 border-accent/30";
+  if (pnl >= 100) return "bg-accent/35 border-accent/20";
+  if (pnl > 0)    return "bg-accent/15 border-accent/10";
+  if (pnl === 0)  return "bg-muted/20 border-border/10";
+  if (pnl >= -100) return "bg-destructive/15 border-destructive/10";
+  if (pnl >= -200) return "bg-destructive/30 border-destructive/15";
+  return "bg-destructive/50 border-destructive/25";
 };
 
 const StatsPage = () => {
