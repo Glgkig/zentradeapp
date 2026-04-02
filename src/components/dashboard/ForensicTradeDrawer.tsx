@@ -28,6 +28,11 @@ const ForensicTradeDrawer = ({ open, onClose }: ForensicTradeDrawerProps) => {
   const [selectedConfluences, setSelectedConfluences] = useState<string[]>([]);
   const [thesis, setThesis] = useState("");
   const [recordingState, setRecordingState] = useState<RecordingState>("idle");
+  const [quickDesc, setQuickDesc] = useState("");
+  const [aiExtracting, setAiExtracting] = useState(false);
+  const [asset, setAsset] = useState("");
+  const [entryPrice, setEntryPrice] = useState("");
+  const [lotSize, setLotSize] = useState("");
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
