@@ -361,7 +361,7 @@ const AuthPage = () => {
             <div className="text-center mb-12 md:mb-16">
               <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-primary">סוחרים אמיתיים, תוצאות אמיתיות</p>
               <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-foreground">
-                הם הפסיקו להפסיד. <span className="text-primary">מה איתך?</span>
+                סוחרים שהפסיקו להמר <span className="text-primary">והתחילו לעבוד חכם</span>
               </h2>
             </div>
           </RevealSection>
