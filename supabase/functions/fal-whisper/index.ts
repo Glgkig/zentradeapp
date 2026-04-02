@@ -35,11 +35,35 @@ Deno.serve(async (req) => {
       bytes[i] = binaryStr.charCodeAt(i)
     }
 
-    // Upload to Fal storage using their CDN upload endpoint
-    const uploadRes = await fetch('https://fal.ai/api/storage/upload', {
-      method: 'PUT',
+    // Step 1: Get upload token from Fal CDN
+    const tokenRes = await fetch('https://rest.alpha.fal.ai/storage/auth/token?storage_type=fal-cdn-v3', {
+      method: 'POST',
       headers: {
         'Authorization': `Key ${FAL_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({}),
+    })
+
+    if (!tokenRes.ok) {
+      const errText = await tokenRes.text()
+      console.error('Token request failed:', tokenRes.status, errText)
+      return new Response(JSON.stringify({ error: 'Failed to get upload token', details: errText }), {
+        status: 502,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    const tokenData = await tokenRes.json()
+    const uploadToken = tokenData.token
+    const baseUrl = tokenData.base_url
+    console.log('Got upload token, base_url:', baseUrl)
+
+    // Step 2: Upload file to Fal CDN
+    const uploadRes = await fetch(`${baseUrl}/files/upload`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${uploadToken}`,
         'Content-Type': mimeType,
       },
       body: bytes,
@@ -47,45 +71,16 @@ Deno.serve(async (req) => {
 
     if (!uploadRes.ok) {
       const errText = await uploadRes.text()
-      console.error('Fal upload failed:', uploadRes.status, errText)
-      
-      // Fallback: try the REST API upload endpoint
-      const formData = new FormData()
-      const blob = new Blob([bytes], { type: mimeType })
-      formData.append('file', blob, 'audio.webm')
-      
-      const restRes = await fetch('https://fal.ai/api/storage/upload', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Key ${FAL_KEY}`,
-        },
-        body: formData,
+      console.error('Upload failed:', uploadRes.status, errText)
+      return new Response(JSON.stringify({ error: 'Failed to upload audio', details: errText }), {
+        status: 502,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
-
-      if (!restRes.ok) {
-        const restErr = await restRes.text()
-        console.error('Fal REST upload also failed:', restRes.status, restErr)
-        return new Response(JSON.stringify({ error: 'Failed to upload audio', details: restErr }), {
-          status: 502,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        })
-      }
-
-      const restData = await restRes.json()
-      const fileUrl = restData.url || restData.file_url || restData.access_url
-      if (!fileUrl) {
-        return new Response(JSON.stringify({ error: 'No URL from upload', data: restData }), {
-          status: 502,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        })
-      }
-      
-      return await callWhisper(FAL_KEY, fileUrl, corsHeaders)
     }
 
     const uploadData = await uploadRes.json()
-    const fileUrl = uploadData.url || uploadData.file_url || uploadData.access_url
-    console.log('Uploaded to Fal:', fileUrl)
+    const fileUrl = uploadData.access_url || uploadData.url || uploadData.file_url
+    console.log('Uploaded to Fal CDN:', fileUrl)
 
     if (!fileUrl) {
       return new Response(JSON.stringify({ error: 'No URL from upload', data: uploadData }), {
@@ -94,7 +89,39 @@ Deno.serve(async (req) => {
       })
     }
 
-    return await callWhisper(FAL_KEY, fileUrl, corsHeaders)
+    // Step 3: Call Whisper with the uploaded file URL
+    const whisperRes = await fetch('https://fal.run/fal-ai/whisper', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Key ${FAL_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        audio_url: fileUrl,
+        task: 'transcribe',
+        language: 'he',
+        chunk_level: 'segment',
+      }),
+    })
+
+    const whisperText = await whisperRes.text()
+    console.log('Whisper status:', whisperRes.status)
+    console.log('Whisper body:', whisperText.substring(0, 500))
+
+    if (!whisperRes.ok) {
+      return new Response(JSON.stringify({ error: `Whisper API error ${whisperRes.status}`, details: whisperText }), {
+        status: 502,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    const result = JSON.parse(whisperText)
+    const transcribedText = result.text || ''
+    console.log('Transcribed:', transcribedText)
+
+    return new Response(JSON.stringify({ text: transcribedText }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   } catch (error) {
     console.error('Edge function error:', error)
     return new Response(JSON.stringify({ error: String(error?.message || error) }), {
@@ -103,40 +130,3 @@ Deno.serve(async (req) => {
     })
   }
 })
-
-async function callWhisper(falKey: string, audioUrl: string, headers: Record<string, string>) {
-  console.log('Calling Whisper with URL:', audioUrl)
-  
-  const whisperRes = await fetch('https://fal.run/fal-ai/whisper', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Key ${falKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      audio_url: audioUrl,
-      task: 'transcribe',
-      language: 'he',
-      chunk_level: 'segment',
-    }),
-  })
-
-  const whisperText = await whisperRes.text()
-  console.log('Whisper status:', whisperRes.status)
-  console.log('Whisper body:', whisperText.substring(0, 500))
-
-  if (!whisperRes.ok) {
-    return new Response(JSON.stringify({ error: `Whisper API error ${whisperRes.status}`, details: whisperText }), {
-      status: 502,
-      headers: { ...headers, 'Content-Type': 'application/json' },
-    })
-  }
-
-  const result = JSON.parse(whisperText)
-  const transcribedText = result.text || ''
-  console.log('Transcribed:', transcribedText)
-
-  return new Response(JSON.stringify({ text: transcribedText }), {
-    headers: { ...headers, 'Content-Type': 'application/json' },
-  })
-}
