@@ -5,7 +5,7 @@ import {
   Newspaper, ChevronLeft, Zap, Mic, AlertTriangle, Lock,
 } from "lucide-react";
 
-const HomeDashboard = ({ userName }: { userName: string }) => {
+const HomeDashboard = ({ userName, onOpenTrade }: { userName: string; onOpenTrade?: () => void }) => {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "בוקר טוב" : hour < 17 ? "צהריים טובים" : "ערב טוב";
 
