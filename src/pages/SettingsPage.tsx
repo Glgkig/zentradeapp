@@ -1,8 +1,9 @@
 import { useState } from "react";
+import AvatarPicker, { UserAvatar } from "@/components/AvatarPicker";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   Shield, User, Globe, Lock, Bell, ChevronDown, ChevronRight,
-  AlertTriangle, Volume2, Mail, Smartphone, Sparkles, Save,
+  AlertTriangle, Volume2, Mail, Smartphone, Sparkles, Save, Camera,
   Eye, Palette, CreditCard, Key, Database, Zap, Link2, Plus, Check, X,
 } from "lucide-react";
 import logoTradingView from "@/assets/logos/tradingview-full.png";
@@ -121,6 +122,7 @@ const ProfileTab = () => {
   const userName = profile?.full_name || "";
   const [name, setName] = useState(userName);
   const [saving, setSaving] = useState(false);
+  const [avatarPickerOpen, setAvatarPickerOpen] = useState(false);
 
   const handleSave = async () => {
     setSaving(true);
@@ -136,15 +138,17 @@ const ProfileTab = () => {
   };
 
   return (
+  <>
   <div className="space-y-4 animate-in fade-in slide-in-from-left-2 duration-300">
     <div className="rounded-2xl border border-border/10 bg-card/50 p-5">
       <div className="flex items-center gap-4 mb-5">
         <div className="relative">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/12 border border-primary/15 text-2xl font-bold text-primary">
-            {(name || userName).charAt(0) || "?"}
-          </div>
-          <button className="absolute -bottom-1 -left-1 flex h-6 w-6 items-center justify-center rounded-lg bg-primary/15 border border-primary/20 text-primary hover:bg-primary/25 transition-all">
-            <Eye className="h-3 w-3" />
+          <UserAvatar avatarUrl={profile?.avatar_url} userName={name || userName} size="lg" className="rounded-2xl border border-primary/15" />
+          <button
+            onClick={() => setAvatarPickerOpen(true)}
+            className="absolute -bottom-1 -left-1 flex h-6 w-6 items-center justify-center rounded-lg bg-primary/15 border border-primary/20 text-primary hover:bg-primary/25 transition-all"
+          >
+            <Camera className="h-3 w-3" />
           </button>
         </div>
         <div>
@@ -226,6 +230,8 @@ const ProfileTab = () => {
       {saving ? "שומר..." : "שמור שינויים"}
     </button>
   </div>
+  <AvatarPicker open={avatarPickerOpen} onOpenChange={setAvatarPickerOpen} />
+  </>
   );
 };
 

@@ -19,6 +19,7 @@ import ProtectionPage from "@/pages/ProtectionPage";
 import TaxCalculatorPage from "@/pages/TaxCalculatorPage";
 import EconomicNewsPage from "@/pages/EconomicNewsPage";
 import ForensicTradeDrawer from "@/components/dashboard/ForensicTradeDrawer";
+import AvatarPicker, { UserAvatar } from "@/components/AvatarPicker";
 
 import logoBinanceFull from "@/assets/logos/binance-full.png";
 import logoTradeLockerFull from "@/assets/logos/tradelocker-full.png";
@@ -292,9 +293,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                 onClick={() => setUserMenu(!userMenu)}
                 className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-2 py-1.5 hover:bg-white/[0.06] transition-all"
               >
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-2xs font-bold text-primary font-mono">
-                  {userName.charAt(0).toUpperCase()}
-                </div>
+                <UserAvatar avatarUrl={profile?.avatar_url} userName={userName} size="sm" />
                 <div className="hidden md:block text-right">
                   <p className="text-[11px] font-semibold text-foreground leading-none">{userName}</p>
                   <p className="text-2xs text-accent font-mono font-bold">PRO</p>
@@ -310,6 +309,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                     <UserMenuContent
                       userName={userName}
                       userEmail={userEmail}
+                      avatarUrl={profile?.avatar_url}
                       onClose={() => setUserMenu(false)}
                       onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
                       onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
@@ -322,6 +322,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                     <UserMenuContent
                       userName={userName}
                       userEmail={userEmail}
+                      avatarUrl={profile?.avatar_url}
                       onClose={() => setUserMenu(false)}
                       onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
                       onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
@@ -466,11 +467,11 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
 };
 
 /* ===== User Menu ===== */
-const UserMenuContent = ({ userName, userEmail, onClose, onSettings, onLogout }: { userName: string; userEmail: string; onClose: () => void; onSettings: () => void; onLogout: () => void }) => (
+const UserMenuContent = ({ userName, userEmail, avatarUrl, onClose, onSettings, onLogout }: { userName: string; userEmail: string; avatarUrl?: string | null; onClose: () => void; onSettings: () => void; onLogout: () => void }) => (
   <>
     <div className="px-4 py-3 border-b border-white/[0.06]">
       <div className="flex items-center gap-2.5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-xs font-bold text-primary font-mono">{userName.charAt(0).toUpperCase()}</div>
+        <UserAvatar avatarUrl={avatarUrl} userName={userName} size="md" />
         <div>
           <p className="text-[12px] font-bold text-foreground">{userName}</p>
           <p className="text-2xs text-muted-foreground/40 font-mono">{userEmail}</p>
