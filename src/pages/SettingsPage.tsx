@@ -27,6 +27,9 @@ const tabs = [
 type TabId = (typeof tabs)[number]["id"];
 
 const SettingsPage = () => {
+  const { profile, user } = useAuth();
+  const userEmail = user?.email || "";
+  const userName = profile?.full_name || "סוחר";
   const [activeTab, setActiveTab] = useState<TabId>("profile");
 
   return (
