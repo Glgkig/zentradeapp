@@ -394,7 +394,74 @@ const AuthPage = () => {
       </section>
 
       {/* ================================================ */}
-      {/* S5 — FAQ                                          */}
+      {/* S5 — PRICING                                      */}
+      {/* ================================================ */}
+      <section id="pricing" className="border-t border-border/30 px-4 py-16 md:py-24 lg:py-32">
+        <div className="mx-auto max-w-6xl">
+          <RevealSection>
+            <div className="text-center mb-12 md:mb-16">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-primary">תמחור</p>
+              <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-foreground">
+                בחר את התוכנית <span className="text-primary">שמתאימה לך</span>
+              </h2>
+              <p className="mt-4 max-w-xl mx-auto text-sm md:text-base text-foreground/70">
+                התחל בחינם ושדרג כשתרגיש מוכן
+              </p>
+            </div>
+          </RevealSection>
+
+          <div className="grid md:grid-cols-3 gap-4 md:gap-6 max-w-4xl mx-auto">
+            {pricingPlans.map((plan, i) => (
+              <RevealSection key={plan.name} delay={i * 150}>
+                <div className={`relative rounded-2xl border p-6 md:p-7 h-full flex flex-col transition-all duration-300 hover:shadow-xl ${
+                  plan.recommended
+                    ? "border-primary/50 bg-primary/[0.06] backdrop-blur-sm shadow-lg shadow-primary/10 ring-1 ring-primary/20"
+                    : "border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/20 hover:shadow-primary/5"
+                }`}>
+                  {plan.recommended && (
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-[10px] font-bold text-primary-foreground uppercase tracking-wider flex items-center gap-1">
+                      <Crown className="h-3 w-3" />
+                      מומלץ
+                    </span>
+                  )}
+                  <div className="text-center mb-5">
+                    <div className={`mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl ${plan.recommended ? "bg-primary/20" : "bg-primary/10"}`}>
+                      {plan.icon}
+                    </div>
+                    <h3 className="font-heading text-lg font-bold text-foreground">{plan.name}</h3>
+                    <p className="text-[10px] text-foreground/50 mt-1">{plan.subtitle}</p>
+                  </div>
+                  <div className="text-center mb-5">
+                    <span className="font-heading text-3xl md:text-4xl font-extrabold text-foreground">{plan.price}</span>
+                    {plan.period && <span className="text-xs text-foreground/50 mr-1">/{plan.period}</span>}
+                  </div>
+                  <ul className="space-y-2.5 mb-6 flex-1">
+                    {plan.features.map((f) => (
+                      <li key={f} className="flex items-start gap-2 text-xs text-foreground/70">
+                        <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <button
+                    onClick={() => openModal("register")}
+                    className={`w-full rounded-xl py-3 text-sm font-bold transition-all active:scale-[0.97] ${
+                      plan.recommended
+                        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/90"
+                        : "border border-border bg-secondary/50 text-foreground hover:bg-secondary"
+                    }`}
+                  >
+                    {plan.cta}
+                  </button>
+                </div>
+              </RevealSection>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ================================================ */}
+      {/* S6 — FAQ                                          */}
       {/* ================================================ */}
       <section id="faq" className="border-t border-border/30 px-4 py-16 md:py-24 lg:py-32">
         <div className="mx-auto max-w-3xl">
