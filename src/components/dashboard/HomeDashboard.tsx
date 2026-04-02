@@ -9,11 +9,21 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-/* ── Equity curve mock data (30 days) ── */
-const equityData = Array.from({ length: 30 }, (_, i) => {
-  const base = 10000;
-  const growth = i * 145 + Math.sin(i * 0.8) * 400 + Math.random() * 200;
-  return { day: i + 1, balance: Math.round(base + growth) };
+/* ── Monthly P&L data ── */
+const monthlyData = [
+  { month: "ינו׳", pnl: 1200 },
+  { month: "פבר׳", pnl: 3800 },
+  { month: "מרץ", pnl: -650 },
+  { month: "אפר׳", pnl: 4250 },
+  { month: "מאי", pnl: 2100 },
+  { month: "יוני", pnl: -300 },
+  { month: "יולי", pnl: 1850 },
+  { month: "אוג׳", pnl: 3200 },
+  { month: "ספט׳", pnl: 950 },
+  { month: "אוק׳", pnl: 2700 },
+  { month: "נוב׳", pnl: -420 },
+  { month: "דצמ׳", pnl: 1600 },
+];
 });
 
 /* ── Setup performance data ── */
