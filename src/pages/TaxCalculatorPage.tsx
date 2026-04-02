@@ -161,6 +161,8 @@ const TaxCalculatorPage = () => {
   const [traderName, setTraderName] = useState("");
   const [brokerage, setBrokerage] = useState("");
   const [downloading, setDownloading] = useState(false);
+  const [aiAdvice, setAiAdvice] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
 
   const calc = useMemo(() => {
     const profit = parseFloat(grossProfit) || 0;
