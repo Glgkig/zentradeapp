@@ -8,6 +8,7 @@ import {
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 
 /* ── Monthly P&L data ── */
 const monthlyData = [
