@@ -239,7 +239,6 @@ const HomeDashboard = ({ userName, onOpenTrade }: { userName: string; onOpenTrad
             </ResponsiveContainer>
           </div>
         </div>
-        </div>
 
         {/* Setup Performance — 2/5 */}
         <div className="lg:col-span-2 rounded-2xl border border-border/30 bg-card/40 backdrop-blur-md p-4">
