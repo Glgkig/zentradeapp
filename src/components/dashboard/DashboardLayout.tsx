@@ -19,6 +19,7 @@ import ProtectionPage from "@/pages/ProtectionPage";
 import TaxCalculatorPage from "@/pages/TaxCalculatorPage";
 import EconomicNewsPage from "@/pages/EconomicNewsPage";
 import ForensicTradeDrawer from "@/components/dashboard/ForensicTradeDrawer";
+import AvatarPicker, { UserAvatar } from "@/components/AvatarPicker";
 
 import logoBinanceFull from "@/assets/logos/binance-full.png";
 import logoTradeLockerFull from "@/assets/logos/tradelocker-full.png";
