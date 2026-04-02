@@ -16,22 +16,28 @@ const topMetrics = [
   { label: "זמן ממוצע בעסקה", sublabel: "AVG HOLD TIME", value: "45 דק׳", sub: "מכניסה ליציאה", color: "text-primary", icon: <Clock className="h-4 w-4" />, glow: "primary" },
 ];
 
-// Calendar heatmap for current month
-const calendarData = (() => {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const firstDayOfWeek = new Date(year, month, 1).getDay();
-  const pnls = [
-    320, -80, 0, 150, 210, 0, 0,
-    -120, 450, 90, 0, -200, 380, 0,
-    0, 270, -150, 60, 0, 190, 0,
-    -310, 0, 520, 110, 0, -90, 0,
-    240, 0, 180,
-  ];
-  return { daysInMonth, firstDayOfWeek, pnls: pnls.slice(0, daysInMonth) };
-})();
+// Day×Hour heatmap data (06:00–22:00)
+const heatDays = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
+const heatHours = Array.from({ length: 17 }, (_, i) => i + 6); // 6..22
+const heatMap: Record<string, number[]> = {
+  "ראשון":  [0,120,250,80,0,-45,180,60,-190,-75,45,0,-30,0,0,0,0],
+  "שני":    [0,90,160,310,55,0,70,-80,-280,-150,0,65,-40,0,0,0,0],
+  "שלישי":  [0,340,95,200,130,40,0,-60,-170,15,85,0,-25,50,0,0,0],
+  "רביעי":  [0,0,145,75,290,110,50,0,-95,-320,0,35,0,-55,0,0,0],
+  "חמישי":  [0,185,270,150,60,0,-110,-200,-350,-85,0,0,70,0,-40,0,0],
+  "שישי":   [0,0,0,95,140,0,60,0,0,-45,120,80,0,-35,0,0,0],
+  "שבת":    [0,0,0,0,0,0,0,0,75,110,0,55,-60,0,0,0,0],
+};
+
+const heatCellColor = (pnl: number) => {
+  if (pnl >= 250) return "bg-profit/55";
+  if (pnl >= 100) return "bg-profit/30";
+  if (pnl > 0) return "bg-profit/14";
+  if (pnl === 0) return "bg-white/[0.025]";
+  if (pnl >= -100) return "bg-loss/14";
+  if (pnl >= -200) return "bg-loss/28";
+  return "bg-loss/45";
+};
 
 const dayOfWeekData = [
   { name: "ראשון", winRate: 65 },
@@ -47,18 +53,6 @@ const longShortData = [
   { name: "Short", value: 1250, fill: "hsl(var(--loss))" },
 ];
 
-const weekDays = ["א׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "ש׳"];
-
-/* ===== Helpers ===== */
-const calColor = (pnl: number) => {
-  if (pnl >= 400) return "bg-profit/60 border-profit/30 shadow-[0_0_6px_hsl(var(--profit)/0.2)]";
-  if (pnl >= 150) return "bg-profit/35 border-profit/20";
-  if (pnl > 0) return "bg-profit/15 border-profit/10";
-  if (pnl === 0) return "bg-white/[0.03] border-white/[0.04]";
-  if (pnl >= -150) return "bg-loss/15 border-loss/10";
-  if (pnl >= -250) return "bg-loss/30 border-loss/15";
-  return "bg-loss/50 border-loss/25 shadow-[0_0_6px_hsl(var(--loss)/0.2)]";
-};
 
 /* ===== Custom Tooltip ===== */
 const ChartTooltip = ({ active, payload, label }: any) => {
@@ -122,70 +116,68 @@ const StatsPage = () => {
         ))}
       </div>
 
-      {/* ===== 2. CALENDAR HEATMAP ===== */}
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-md p-5 relative overflow-hidden">
+      {/* ===== 2. DAY×HOUR HEATMAP ===== */}
+      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-md p-3 md:p-4 relative overflow-hidden">
         <div className="absolute bottom-0 right-0 w-48 h-32 bg-primary/[0.03] rounded-full blur-[80px] pointer-events-none" />
 
         <div className="relative">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/8 border border-primary/12">
-                <Calendar className="h-4 w-4 text-primary/70" />
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/8 border border-primary/12">
+                <Calendar className="h-3.5 w-3.5 text-primary/70" />
               </div>
               <div>
-                <h2 className="text-[14px] font-bold text-foreground">מפת ביצועים חודשית</h2>
-                <p className="text-2xs text-muted-foreground/30 font-mono">MONTHLY PERFORMANCE MAP</p>
+                <h2 className="text-[12px] font-bold text-foreground">מפת רווחיות — יום × שעה</h2>
+                <p className="text-[8px] text-muted-foreground/30 font-mono">PERFORMANCE HEATMAP</p>
               </div>
             </div>
-            <div className="hidden md:flex items-center gap-3 text-2xs text-muted-foreground/35">
-              <span className="flex items-center gap-1"><span className="h-2.5 w-5 rounded bg-profit/40" /> רווחי</span>
-              <span className="flex items-center gap-1"><span className="h-2.5 w-5 rounded bg-loss/40" /> הפסד</span>
-              <span className="flex items-center gap-1"><span className="h-2.5 w-5 rounded bg-white/[0.04]" /> ללא מסחר</span>
+            <div className="hidden md:flex items-center gap-2.5 text-[8px] text-muted-foreground/30">
+              <span className="flex items-center gap-1"><span className="h-2 w-4 rounded-sm bg-profit/35" /> רווח</span>
+              <span className="flex items-center gap-1"><span className="h-2 w-4 rounded-sm bg-loss/35" /> הפסד</span>
+              <span className="flex items-center gap-1"><span className="h-2 w-4 rounded-sm bg-white/[0.03]" /> ריק</span>
             </div>
           </div>
 
-          {/* Week day headers */}
-          <div className="grid grid-cols-7 gap-1.5 mb-1.5">
-            {weekDays.map(d => (
-              <div key={d} className="text-center text-2xs text-muted-foreground/30 font-mono py-1">{d}</div>
-            ))}
-          </div>
-
-          {/* Calendar grid */}
-          <div className="grid grid-cols-7 gap-1.5">
-            {/* Empty cells for offset */}
-            {Array.from({ length: calendarData.firstDayOfWeek }).map((_, i) => (
-              <div key={`empty-${i}`} className="aspect-square rounded-lg" />
-            ))}
-            {/* Day cells */}
-            {calendarData.pnls.map((pnl, i) => (
-              <div
-                key={i}
-                className={`aspect-square rounded-lg border flex flex-col items-center justify-center cursor-pointer transition-all duration-200 hover:scale-105 ${calColor(pnl)}`}
-                title={`יום ${i + 1}: ${pnl === 0 ? "ללא מסחר" : `${pnl > 0 ? "+" : ""}$${pnl}`}`}
-              >
-                <span className="text-2xs text-foreground/40 font-mono">{i + 1}</span>
-                {pnl !== 0 && (
-                  <span className={`text-[7px] font-bold font-mono ${pnl > 0 ? "text-profit" : "text-loss"}`}>
-                    {pnl > 0 ? "+" : ""}{pnl}
-                  </span>
-                )}
+          <div className="overflow-x-auto scrollbar-none">
+            <div className="min-w-[480px]">
+              {/* Hour headers */}
+              <div className="flex items-center gap-px mr-14 mb-px">
+                {heatHours.map(h => (
+                  <div key={h} className="flex-1 text-center text-[7px] text-muted-foreground/25 font-mono py-0.5">
+                    {h.toString().padStart(2, "0")}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          {/* Summary */}
-          <div className="grid grid-cols-3 gap-2 mt-4">
-            {[
-              { label: "ימים רווחיים", value: calendarData.pnls.filter(p => p > 0).length.toString(), total: calendarData.pnls.filter(p => p !== 0).length, color: "text-profit" },
-              { label: "ימים מפסידים", value: calendarData.pnls.filter(p => p < 0).length.toString(), total: calendarData.pnls.filter(p => p !== 0).length, color: "text-loss" },
-              { label: "סה״כ P&L", value: `$${calendarData.pnls.reduce((s, p) => s + p, 0).toLocaleString()}`, total: 0, color: calendarData.pnls.reduce((s, p) => s + p, 0) >= 0 ? "text-profit" : "text-loss" },
-            ].map(s => (
-              <div key={s.label} className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-2.5 text-center">
-                <p className="text-2xs text-muted-foreground/35 mb-0.5">{s.label}</p>
-                <p className={`text-[15px] font-black font-mono ${s.color}`}>{s.value}</p>
-              </div>
-            ))}
+              {/* Rows */}
+              {heatDays.map(day => {
+                const row = heatMap[day];
+                const total = row.reduce((s, v) => s + v, 0);
+                return (
+                  <div key={day} className="flex items-center gap-px mb-px">
+                    <div className="w-14 shrink-0 flex items-center justify-between pr-1">
+                      <span className="text-[9px] text-foreground/50 font-medium">{day}</span>
+                      <span className={`text-[7px] font-bold font-mono ${total >= 0 ? "text-profit/60" : "text-loss/60"}`}>
+                        {total >= 0 ? "+" : ""}{total}
+                      </span>
+                    </div>
+                    {row.map((pnl, i) => (
+                      <div
+                        key={i}
+                        className={`flex-1 h-6 md:h-7 rounded-[3px] flex items-center justify-center cursor-pointer transition-all hover:scale-110 hover:z-10 ${heatCellColor(pnl)}`}
+                        title={`${day} ${(i + 6).toString().padStart(2, "0")}:00 — ${pnl === 0 ? "ריק" : `${pnl > 0 ? "+" : ""}$${pnl}`}`}
+                      >
+                        {pnl !== 0 && (
+                          <span className={`text-[6px] font-bold font-mono ${pnl > 0 ? "text-profit" : "text-loss"}`}>
+                            {pnl > 0 ? "+" : ""}{pnl}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
