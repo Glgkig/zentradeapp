@@ -57,6 +57,10 @@ export default {
         },
         profit: "hsl(var(--profit))",
         loss: "hsl(var(--loss))",
+        gold: {
+          DEFAULT: "hsl(var(--gold))",
+          foreground: "hsl(var(--gold-foreground))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

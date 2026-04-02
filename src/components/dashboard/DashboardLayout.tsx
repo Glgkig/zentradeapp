@@ -5,6 +5,7 @@ import {
   LayoutDashboard, BookOpen, Bot, ShieldCheck,
   LogOut, ChevronDown, Plug, Menu, X, Settings, Sun, Moon, Zap,
   Crosshair, PieChart, History, CheckCircle2, Flame, Eye, Crown, Star, Sparkles,
+  Calculator, Plus, ShieldAlert,
 } from "lucide-react";
 import SettingsPage from "@/pages/SettingsPage";
 import SetupsPage from "@/pages/SetupsPage";
@@ -15,6 +16,8 @@ import HomeDashboard from "@/components/dashboard/HomeDashboard";
 import OnboardingModal from "@/components/dashboard/OnboardingModal";
 import BacktestingPage from "@/pages/BacktestingPage";
 import ProtectionPage from "@/pages/ProtectionPage";
+import TaxCalculatorPage from "@/pages/TaxCalculatorPage";
+import ForensicTradeDrawer from "@/components/dashboard/ForensicTradeDrawer";
 
 import logoBinanceFull from "@/assets/logos/binance-full.png";
 import logoTradeLockerFull from "@/assets/logos/tradelocker-full.png";
@@ -27,18 +30,29 @@ import logoForexFull from "@/assets/logos/forex-full.png";
 import logoRithmicFull from "@/assets/logos/rithmic-full.png";
 
 /* ===== Nav Config ===== */
-const navItems = [
-  { id: "dashboard", label: "דשבורד", icon: LayoutDashboard },
-  { id: "setups", label: "סטאפים", icon: Crosshair },
-  { id: "journal", label: "יומן", icon: BookOpen },
-  { id: "stats", label: "סטטיסטיקות", icon: PieChart },
-  { id: "mentor", label: "מנטור AI", icon: Bot },
-  { id: "backtesting", label: "בקטסטינג", icon: History },
-  { id: "protection", label: "הגנה", icon: ShieldCheck },
-  
-  { id: "settings", label: "הגדרות", icon: Settings },
+const navSections = [
+  {
+    label: "ניווט",
+    items: [
+      { id: "dashboard", label: "דשבורד", icon: LayoutDashboard },
+      { id: "setups", label: "סטאפים", icon: Crosshair },
+      { id: "journal", label: "יומן פורנזי", icon: BookOpen },
+      { id: "tax", label: "מחשבון מס", icon: Calculator },
+      { id: "stats", label: "סטטיסטיקות", icon: PieChart },
+    ],
+  },
+  {
+    label: "כלים",
+    items: [
+      { id: "mentor", label: "מנטור AI", icon: Bot },
+      { id: "backtesting", label: "סימולטור", icon: History },
+      { id: "protection", label: "הגנה", icon: ShieldCheck },
+      { id: "settings", label: "הגדרות", icon: Settings },
+    ],
+  },
 ];
 
+const allNavItems = navSections.flatMap((s) => s.items);
 
 const brokers = [
   { name: "TradingView", initials: "TV", connected: false, account: null, logo: logoTradingViewFull },
@@ -63,6 +77,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   const [zenMode, setZenMode] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [upgradeModal, setUpgradeModal] = useState(false);
+  const [tradeDrawerOpen, setTradeDrawerOpen] = useState(false);
   const [dark, setDark] = useState(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("zentrade-theme") !== "light";
@@ -70,7 +85,6 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
     return true;
   });
 
-  // Show onboarding if profile exists and not completed
   useEffect(() => {
     if (profile && !profile.onboarding_completed) {
       setShowOnboarding(true);
@@ -95,7 +109,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   const userName = profile?.full_name || "סוחר";
 
   const renderContent = () => {
-    if (activeNav === "dashboard") return <HomeDashboard userName={userName} />;
+    if (activeNav === "dashboard") return <HomeDashboard userName={userName} onOpenTrade={() => setTradeDrawerOpen(true)} />;
     if (activeNav === "setups") return <SetupsPage />;
     if (activeNav === "stats") return <StatsPage />;
     if (activeNav === "journal") return <JournalPage />;
@@ -103,7 +117,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
     if (activeNav === "mentor") return <MentorPage />;
     if (activeNav === "backtesting") return <BacktestingPage />;
     if (activeNav === "protection") return <ProtectionPage />;
-    
+    if (activeNav === "tax") return <TaxCalculatorPage />;
     return children || null;
   };
 
@@ -112,81 +126,91 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
       <div className="ambient-bg" />
 
       {/* ===== Desktop Sidebar ===== */}
-      <aside className={`hidden md:flex h-full w-[220px] flex-col border-l border-border/8 bg-sidebar shrink-0 relative z-10 ${zenMode ? "zen-hidden" : "zen-visible"}`}>
+      <aside className={`hidden md:flex h-full w-[240px] flex-col bg-white/[0.02] backdrop-blur-xl border-l border-white/[0.06] shrink-0 relative z-10 ${zenMode ? "zen-hidden" : "zen-visible"}`}>
         {/* Brand */}
-        <div className="flex items-center px-4 py-3 border-b border-border/8">
-          <div className="flex items-center gap-2.5">
+        <div className="flex items-center px-5 py-4 border-b border-white/[0.06]">
+          <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="absolute inset-[-2px] rounded-sm bg-primary/6 ai-breathe" />
-              <div className="relative flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 border border-primary/15">
-                <ShieldCheck className="h-4 w-4 text-primary" />
+              <div className="absolute inset-[-3px] rounded-xl bg-primary/8 ai-breathe" />
+              <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 border border-primary/15">
+                <ShieldCheck className="h-5 w-5 text-primary" />
               </div>
             </div>
             <div>
-              <span className="font-heading text-[13px] font-bold text-foreground tracking-tight block">ZenTrade</span>
-              <span className="text-2xs text-muted-foreground/30 font-mono">v2.4</span>
+              <span className="font-heading text-sm font-bold text-foreground tracking-tight block">ZenTrade</span>
+              <span className="text-2xs text-muted-foreground/40 font-mono">v3.0 Elite</span>
             </div>
           </div>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 space-y-px px-2 py-3 overflow-y-auto scrollbar-none">
-          <p className="text-2xs font-semibold text-muted-foreground/25 uppercase tracking-[0.12em] px-2 mb-1.5">ניווט</p>
-          {navItems.slice(0, 4).map((item) => {
-            const active = activeNav === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => handleNav(item.id)}
-                className={`haptic-press group flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-[11px] font-medium transition-all duration-150 ${
-                  active
-                    ? "bg-primary/8 text-primary border-r-2 border-primary"
-                    : "text-muted-foreground/50 hover:bg-muted/10 hover:text-foreground"
-                }`}
-              >
-                <item.icon className={`h-3.5 w-3.5 ${active ? "text-primary" : "text-muted-foreground/30 group-hover:text-foreground/60"}`} />
-                <span className="flex-1 text-right">{item.label}</span>
-              </button>
-            );
-          })}
-
-          <p className="text-2xs font-semibold text-muted-foreground/25 uppercase tracking-[0.12em] px-2 mt-3 mb-1.5">כלים</p>
-          {navItems.slice(4).map((item) => {
-            const active = activeNav === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => handleNav(item.id)}
-                className={`haptic-press group flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-[11px] font-medium transition-all duration-150 ${
-                  active
-                    ? "bg-primary/8 text-primary border-r-2 border-primary"
-                    : "text-muted-foreground/50 hover:bg-muted/10 hover:text-foreground"
-                }`}
-              >
-                <item.icon className={`h-3.5 w-3.5 ${active ? "text-primary" : "text-muted-foreground/30 group-hover:text-foreground/60"}`} />
-                <span className="flex-1 text-right">{item.label}</span>
-              </button>
-            );
-          })}
+        <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto scrollbar-none">
+          {navSections.map((section) => (
+            <div key={section.label} className="mb-4">
+              <p className="text-2xs font-semibold text-muted-foreground/30 uppercase tracking-[0.12em] px-3 mb-2">{section.label}</p>
+              <div className="space-y-0.5">
+                {section.items.map((item) => {
+                  const active = activeNav === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => handleNav(item.id)}
+                      className={`haptic-press group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[12px] font-medium transition-all duration-200 ${
+                        active
+                          ? "bg-primary/10 text-primary border border-primary/15"
+                          : "text-muted-foreground/60 hover:bg-white/[0.04] hover:text-foreground border border-transparent"
+                      }`}
+                    >
+                      <div className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${active ? "bg-primary/15" : "bg-white/[0.04] group-hover:bg-white/[0.06]"}`}>
+                        <item.icon className={`h-3.5 w-3.5 ${active ? "text-primary" : "text-muted-foreground/40 group-hover:text-foreground/60"}`} />
+                      </div>
+                      <span className="flex-1 text-right">{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
 
           {/* Broker Connect */}
-          <div className="pt-2 mt-2 border-t border-border/6">
+          <div className="pt-2 border-t border-white/[0.04]">
             <button
               onClick={() => setBrokerModal(true)}
-              className="haptic-press group flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-[11px] font-medium text-muted-foreground/50 hover:bg-primary/6 hover:text-primary transition-all"
+              className="haptic-press group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[12px] font-medium text-muted-foreground/60 hover:bg-white/[0.04] hover:text-primary transition-all"
             >
-              <Plug className="h-3.5 w-3.5 text-muted-foreground/30 group-hover:text-primary" />
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/[0.04] group-hover:bg-primary/10">
+                <Plug className="h-3.5 w-3.5 text-muted-foreground/40 group-hover:text-primary" />
+              </div>
               <span className="flex-1 text-right">חבר ברוקר</span>
-              <span className="rounded-sm bg-primary/10 border border-primary/10 px-1 py-px text-2xs font-bold text-primary font-mono">2</span>
+              <span className="rounded-lg bg-primary/10 border border-primary/15 px-1.5 py-0.5 text-2xs font-bold text-primary font-mono">2</span>
             </button>
           </div>
         </nav>
 
+        {/* PRO Upgrade Section */}
+        <div className="px-3 pb-3">
+          <button
+            onClick={() => setUpgradeModal(true)}
+            className="haptic-press w-full rounded-2xl border border-accent/20 bg-accent/[0.06] p-4 text-right transition-all hover:bg-accent/10 hover:border-accent/30 gold-glow group"
+          >
+            <div className="flex items-center gap-2.5 mb-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent/15 border border-accent/20">
+                <Crown className="h-4 w-4 text-accent" />
+              </div>
+              <div>
+                <p className="text-[11px] font-bold text-accent">שדרג תוכנית</p>
+                <p className="text-2xs text-accent/50 font-mono">PRO</p>
+              </div>
+            </div>
+            <p className="text-2xs text-muted-foreground/40 leading-relaxed">פתח את כל הפיצ׳רים כולל AI מתקדם ובקטסטינג</p>
+          </button>
+        </div>
+
         {/* Footer */}
-        <div className="border-t border-border/6 px-2 py-2">
+        <div className="border-t border-white/[0.04] px-3 py-3">
           <button
             onClick={async () => { await signOut(); navigate("/"); }}
-            className="haptic-press flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-[11px] font-medium text-muted-foreground/30 hover:bg-destructive/6 hover:text-destructive transition-all"
+            className="haptic-press flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[12px] font-medium text-muted-foreground/40 hover:bg-destructive/[0.06] hover:text-destructive transition-all"
           >
             <LogOut className="h-3.5 w-3.5" />
             התנתק
@@ -196,9 +220,9 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
 
       {/* ===== Main Area ===== */}
       <div className="flex flex-1 flex-col overflow-hidden relative z-10">
-        {/* Top Header — Compact */}
-        <header className={`flex items-center justify-between glass-header px-2.5 py-1.5 md:px-4 md:py-2 shrink-0 relative z-50 ${zenMode ? "zen-hidden" : "zen-visible"}`}>
-          <div className="flex items-center gap-2">
+        {/* Top Header */}
+        <header className={`flex items-center justify-between glass-header px-3 py-2 md:px-5 md:py-3 shrink-0 relative z-50 ${zenMode ? "zen-hidden" : "zen-visible"}`}>
+          <div className="flex items-center gap-2.5">
             {/* Mobile hamburger */}
             <button
               onClick={() => {
@@ -208,80 +232,77 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               }}
               aria-expanded={mobileNavOpen}
               aria-label={mobileNavOpen ? "סגור תפריט ניווט" : "פתח תפריט ניווט"}
-              className="md:hidden haptic-press flex h-8 w-8 items-center justify-center rounded-sm border border-border/15 bg-muted/10 text-muted-foreground/60 hover:text-primary hover:border-primary/15 transition-all duration-200 active:scale-95"
+              className="md:hidden haptic-press flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.04] text-muted-foreground/60 hover:text-primary hover:border-primary/15 transition-all duration-200 active:scale-95"
             >
-              {mobileNavOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+              {mobileNavOpen ? <X className="h-4.5 w-4.5" /> : <Menu className="h-4.5 w-4.5" />}
             </button>
             {/* Mobile brand */}
-            <div className="flex md:hidden items-center gap-1.5">
-              <div className="flex h-6 w-6 items-center justify-center rounded-sm bg-primary/10 border border-primary/15">
-                <ShieldCheck className="h-3 w-3 text-primary" />
+            <div className="flex md:hidden items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 border border-primary/15">
+                <ShieldCheck className="h-4 w-4 text-primary" />
               </div>
-              <span className="font-heading text-[11px] font-bold text-foreground">ZenTrade</span>
+              <span className="font-heading text-[13px] font-bold text-foreground">ZenTrade</span>
             </div>
-            <h1 className="hidden md:block font-heading text-[12px] font-semibold text-foreground/70">
-              {navItems.find((n) => n.id === activeNav)?.label}
+            <h1 className="hidden md:block font-heading text-sm font-semibold text-foreground/70">
+              {allNavItems.find((n) => n.id === activeNav)?.label}
             </h1>
           </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
+            {/* Bodyguard Badge */}
+            <div className="hidden sm:flex items-center gap-1.5 rounded-xl border border-primary/15 bg-primary/[0.06] px-3 py-1.5 cyan-glow">
+              <ShieldAlert className="h-3 w-3 text-primary" />
+              <span className="text-2xs font-bold text-primary font-mono">Bodyguard: ACTIVE 🛡️</span>
+            </div>
+
             {/* Streak */}
-            <div className="hidden sm:flex streak-badge items-center gap-1 rounded-sm border border-orange-500/20 bg-orange-500/6 px-2 py-1 cursor-default">
-              <Flame className="h-2.5 w-2.5 text-orange-400" />
+            <div className="hidden sm:flex streak-badge items-center gap-1 rounded-xl border border-orange-500/20 bg-orange-500/[0.06] px-2.5 py-1.5 cursor-default">
+              <Flame className="h-3 w-3 text-orange-400" />
               <span className="text-2xs font-bold text-orange-400 font-mono">5D</span>
             </div>
 
-            {/* AI Status */}
-            <div className="hidden md:flex items-center gap-1.5 rounded-sm border border-primary/15 bg-primary/5 px-2 py-1">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-50" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
-              </span>
-              <span className="text-2xs font-medium text-primary font-mono">AI ACTIVE</span>
-            </div>
-
-            {/* Upgrade */}
+            {/* New Trade CTA */}
             <button
-              onClick={() => setUpgradeModal(true)}
-              className="haptic-press flex items-center gap-1 rounded-sm bg-primary px-2 py-1 text-2xs font-bold text-primary-foreground transition-all hover:bg-primary/90"
+              onClick={() => setTradeDrawerOpen(true)}
+              className="haptic-press flex items-center gap-1.5 rounded-xl bg-accent/15 border border-accent/25 px-3 py-1.5 text-2xs font-bold text-accent transition-all hover:bg-accent/25 gold-glow"
             >
-              <Crown className="h-3 w-3" />
-              <span className="hidden sm:inline">שדרוג</span>
+              <Plus className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">עסקה חדשה</span>
             </button>
 
             {/* Zen */}
             <button
               onClick={() => setZenMode(!zenMode)}
-              className={`haptic-press flex h-7 w-7 items-center justify-center rounded-sm border transition-all ${
+              className={`haptic-press flex h-9 w-9 items-center justify-center rounded-xl border transition-all ${
                 zenMode
                   ? "border-primary/30 bg-primary/10 text-primary"
-                  : "border-border/15 bg-muted/10 text-muted-foreground/40 hover:text-primary hover:border-primary/15"
+                  : "border-white/[0.08] bg-white/[0.04] text-muted-foreground/40 hover:text-primary hover:border-primary/15"
               }`}
               title={zenMode ? "צא ממצב פוקוס" : "מצב פוקוס"}
             >
-              <Eye className="h-3.5 w-3.5" />
+              <Eye className="h-4 w-4" />
             </button>
 
             {/* Theme */}
             <button
               onClick={() => setDark(!dark)}
-              className="haptic-press flex h-7 w-7 items-center justify-center rounded-sm border border-border/15 bg-muted/10 text-muted-foreground/40 hover:text-primary hover:border-primary/15 transition-all"
+              className="haptic-press flex h-9 w-9 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.04] text-muted-foreground/40 hover:text-primary hover:border-primary/15 transition-all"
             >
-              {dark ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+              {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
 
             {/* User */}
             <div className="relative">
               <button
                 onClick={() => setUserMenu(!userMenu)}
-                className="flex items-center gap-1.5 rounded-sm border border-border/10 bg-muted/10 px-1.5 py-1 hover:bg-muted/20 transition-all"
+                className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-2 py-1.5 hover:bg-white/[0.06] transition-all"
               >
-                <div className="flex h-6 w-6 items-center justify-center rounded-sm bg-primary/10 text-2xs font-bold text-primary font-mono">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-2xs font-bold text-primary font-mono">
                   {userName.charAt(0).toUpperCase()}
                 </div>
                 <div className="hidden md:block text-right">
-                  <p className="text-[10px] font-semibold text-foreground leading-none">{userName}</p>
-                  <p className="text-2xs text-muted-foreground/40 font-mono">PRO</p>
+                  <p className="text-[11px] font-semibold text-foreground leading-none">{userName}</p>
+                  <p className="text-2xs text-accent font-mono font-bold">PRO</p>
                 </div>
                 <ChevronDown className={`h-3 w-3 text-muted-foreground/30 hidden md:block transition-transform ${userMenu ? "rotate-180" : ""}`} />
               </button>
@@ -289,22 +310,22 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               {userMenu && (
                 <>
                   <div className="fixed inset-0 z-[60] bg-background/50 md:bg-transparent" onClick={() => setUserMenu(false)} />
-                  <div className="hidden md:block absolute left-0 md:left-auto md:right-0 top-full mt-1 w-52 z-[70] rounded-sm border border-border/15 bg-card shadow-2xl animate-in fade-in slide-in-from-top-1 duration-150 overflow-hidden">
+                  <div className="hidden md:block absolute left-0 md:left-auto md:right-0 top-full mt-1 w-52 z-[70] rounded-2xl border border-white/[0.08] bg-card shadow-2xl animate-in fade-in slide-in-from-top-1 duration-150 overflow-hidden">
                     <UserMenuContent
                       onClose={() => setUserMenu(false)}
                       onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
                       onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
                     />
                   </div>
-                  <div className="md:hidden fixed inset-x-0 bottom-0 z-[70] rounded-t-xl border-t border-border/15 bg-card animate-in slide-in-from-bottom duration-200 overflow-hidden">
-                    <div className="flex justify-center pt-2 pb-1"><div className="w-8 h-0.5 rounded-full bg-muted-foreground/15" /></div>
+                  <div className="md:hidden fixed inset-x-0 bottom-0 z-[70] rounded-t-3xl border-t border-white/[0.08] bg-card animate-in slide-in-from-bottom duration-200 overflow-hidden">
+                    <div className="flex justify-center pt-3 pb-1"><div className="w-10 h-1 rounded-full bg-muted-foreground/15" /></div>
                     <UserMenuContent
                       onClose={() => setUserMenu(false)}
                       onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
                       onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
                     />
-                    <div className="px-3 pb-5 pt-1">
-                      <button onClick={() => setUserMenu(false)} className="w-full rounded-sm bg-muted/10 border border-border/10 py-2.5 text-[11px] font-medium text-muted-foreground/50">סגור</button>
+                    <div className="px-4 pb-6 pt-2">
+                      <button onClick={() => setUserMenu(false)} className="w-full rounded-xl bg-white/[0.04] border border-white/[0.06] py-3 text-[12px] font-medium text-muted-foreground/50">סגור</button>
                     </div>
                   </div>
                 </>
@@ -313,62 +334,66 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
           </div>
         </header>
 
-        {/* Main Content */}
         {/* Mobile Nav Dropdown */}
         <div
-          className={`md:hidden relative z-40 origin-top overflow-hidden border-b border-border/10 bg-sidebar shadow-lg transition-all duration-300 ease-out ${
+          className={`md:hidden relative z-40 origin-top overflow-hidden border-b border-white/[0.06] bg-white/[0.02] backdrop-blur-xl shadow-lg transition-all duration-300 ease-out ${
             mobileNavOpen
               ? "max-h-[620px] translate-y-0 opacity-100"
               : "pointer-events-none max-h-0 -translate-y-2 opacity-0 border-b-0"
           }`}
         >
-          <div className={`px-3 py-3 transition-transform duration-300 ease-out ${mobileNavOpen ? "translate-y-0" : "-translate-y-2"}`}>
-            <div className="space-y-px">
-              {navItems.map((item, i) => {
+          <div className={`px-3 py-4 transition-transform duration-300 ease-out ${mobileNavOpen ? "translate-y-0" : "-translate-y-2"}`}>
+            <div className="space-y-1">
+              {allNavItems.map((item, i) => {
                 const active = activeNav === item.id;
                 return (
                   <button
                     key={item.id}
                     onClick={() => handleNav(item.id)}
                     style={{ transitionDelay: mobileNavOpen ? `${i * 35}ms` : "0ms" }}
-                    className={`haptic-press flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium min-h-[42px] transition-all duration-300 ${
+                    className={`haptic-press flex w-full items-center gap-3 rounded-xl px-3 py-3 text-[13px] font-medium min-h-[48px] transition-all duration-300 ${
                       mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
                     } ${
-                      active ? "bg-primary/8 text-primary" : "text-muted-foreground/60 hover:bg-muted/10 hover:text-foreground"
+                      active ? "bg-primary/10 text-primary border border-primary/15" : "text-muted-foreground/60 hover:bg-white/[0.04] hover:text-foreground border border-transparent"
                     }`}
                   >
-                    <item.icon className={`h-4 w-4 ${active ? "text-primary" : "text-muted-foreground/30"}`} />
+                    <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${active ? "bg-primary/15" : "bg-white/[0.04]"}`}>
+                      <item.icon className={`h-4 w-4 ${active ? "text-primary" : "text-muted-foreground/30"}`} />
+                    </div>
                     {item.label}
                   </button>
                 );
               })}
-              <div className="my-1 h-px bg-border/10" />
+              <div className="my-2 h-px bg-white/[0.04]" />
               <button
                 onClick={() => { setMobileNavOpen(false); setBrokerModal(true); }}
-                style={{ transitionDelay: mobileNavOpen ? `${navItems.length * 35}ms` : "0ms" }}
-                className={`flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium text-muted-foreground/60 min-h-[42px] hover:bg-muted/10 transition-all duration-300 ${
+                style={{ transitionDelay: mobileNavOpen ? `${allNavItems.length * 35}ms` : "0ms" }}
+                className={`haptic-press flex w-full items-center gap-3 rounded-xl px-3 py-3 text-[13px] font-medium text-muted-foreground/60 min-h-[48px] hover:bg-white/[0.04] transition-all duration-300 ${
                   mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
                 }`}
               >
-                <Plug className="h-4 w-4 text-muted-foreground/30" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04]">
+                  <Plug className="h-4 w-4 text-muted-foreground/30" />
+                </div>
                 חבר ברוקר
-                <span className="mr-auto rounded-sm bg-primary/10 border border-primary/10 px-1 py-px text-2xs font-bold text-primary font-mono">2</span>
+                <span className="mr-auto rounded-lg bg-primary/10 border border-primary/15 px-1.5 py-0.5 text-2xs font-bold text-primary font-mono">2</span>
               </button>
               <button
                 onClick={() => { setMobileNavOpen(false); setUpgradeModal(true); }}
-                style={{ transitionDelay: mobileNavOpen ? `${(navItems.length + 1) * 35}ms` : "0ms" }}
-                className={`flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium text-primary min-h-[42px] bg-primary/5 hover:bg-primary/8 transition-all duration-300 ${
+                style={{ transitionDelay: mobileNavOpen ? `${(allNavItems.length + 1) * 35}ms` : "0ms" }}
+                className={`haptic-press flex w-full items-center gap-3 rounded-xl px-3 py-3 text-[13px] font-bold text-accent min-h-[48px] bg-accent/[0.06] border border-accent/15 hover:bg-accent/10 transition-all duration-300 gold-glow ${
                   mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
                 }`}
               >
-                <Crown className="h-4 w-4" />
-                שדרג תוכנית
-                <span className="mr-auto rounded-sm bg-primary/10 px-1.5 py-px text-2xs font-bold text-primary font-mono">PRO</span>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/15">
+                  <Crown className="h-4 w-4 text-accent" />
+                </div>
+                שדרג תוכנית — PRO
               </button>
               <button
                 onClick={async () => { setMobileNavOpen(false); await signOut(); navigate("/"); }}
-                style={{ transitionDelay: mobileNavOpen ? `${(navItems.length + 2) * 35}ms` : "0ms" }}
-                className={`flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-[12px] font-medium text-destructive/50 min-h-[42px] hover:bg-destructive/5 transition-all duration-300 ${
+                style={{ transitionDelay: mobileNavOpen ? `${(allNavItems.length + 2) * 35}ms` : "0ms" }}
+                className={`haptic-press flex w-full items-center gap-3 rounded-xl px-3 py-3 text-[13px] font-medium text-destructive/50 min-h-[48px] hover:bg-destructive/[0.05] transition-all duration-300 ${
                   mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
                 }`}
               >
@@ -379,15 +404,15 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
           </div>
         </div>
 
-        <main className="relative flex-1 overflow-y-auto bg-background p-2 md:p-4 md:pb-4">
+        <main className="relative flex-1 overflow-y-auto bg-background p-3 md:p-6">
           {renderContent()}
           {zenMode && (
             <button
               onClick={() => setZenMode(false)}
-              className="fixed bottom-5 left-5 z-[80] flex items-center gap-1.5 rounded-sm border border-primary/20 bg-card px-3 py-2 shadow-lg haptic-press animate-in fade-in slide-in-from-bottom-4"
+              className="fixed bottom-5 left-5 z-[80] flex items-center gap-2 rounded-xl border border-primary/20 bg-card px-4 py-2.5 shadow-lg haptic-press animate-in fade-in slide-in-from-bottom-4"
             >
-              <Eye className="h-3.5 w-3.5 text-primary" />
-              <span className="text-[10px] font-semibold text-foreground">יציאה מפוקוס</span>
+              <Eye className="h-4 w-4 text-primary" />
+              <span className="text-[11px] font-semibold text-foreground">יציאה מפוקוס</span>
             </button>
           )}
         </main>
@@ -400,6 +425,9 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
         />
       </div>
 
+      {/* ===== Forensic Trade Drawer ===== */}
+      <ForensicTradeDrawer open={tradeDrawerOpen} onClose={() => setTradeDrawerOpen(false)} />
+
       {/* ===== Broker Modal ===== */}
       {brokerModal && (
         <>
@@ -407,8 +435,8 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
           <div className="hidden md:flex fixed inset-0 z-[61] items-center justify-center p-4">
             <BrokerModalContent onClose={() => setBrokerModal(false)} />
           </div>
-          <div className="md:hidden fixed inset-x-0 bottom-0 z-[61] max-h-[85vh] rounded-t-xl border-t border-border/15 bg-card animate-in slide-in-from-bottom duration-200 overflow-y-auto">
-            <div className="flex justify-center pt-2 pb-1"><div className="w-8 h-0.5 rounded-full bg-muted-foreground/15" /></div>
+          <div className="md:hidden fixed inset-x-0 bottom-0 z-[61] max-h-[85vh] rounded-t-3xl border-t border-white/[0.08] bg-card animate-in slide-in-from-bottom duration-200 overflow-y-auto">
+            <div className="flex justify-center pt-3 pb-1"><div className="w-10 h-1 rounded-full bg-muted-foreground/15" /></div>
             <BrokerModalContent onClose={() => setBrokerModal(false)} mobile />
           </div>
         </>
@@ -421,8 +449,8 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
           <div className="hidden md:flex fixed inset-0 z-[61] items-center justify-center p-4">
             <UpgradeModalContent onClose={() => setUpgradeModal(false)} />
           </div>
-          <div className="md:hidden fixed inset-x-0 bottom-0 z-[61] max-h-[90vh] rounded-t-xl border-t border-border/15 bg-card animate-in slide-in-from-bottom duration-200 overflow-y-auto">
-            <div className="flex justify-center pt-2 pb-1"><div className="w-8 h-0.5 rounded-full bg-muted-foreground/15" /></div>
+          <div className="md:hidden fixed inset-x-0 bottom-0 z-[61] max-h-[90vh] rounded-t-3xl border-t border-white/[0.08] bg-card animate-in slide-in-from-bottom duration-200 overflow-y-auto">
+            <div className="flex justify-center pt-3 pb-1"><div className="w-10 h-1 rounded-full bg-muted-foreground/15" /></div>
             <UpgradeModalContent onClose={() => setUpgradeModal(false)} mobile />
           </div>
         </>
@@ -438,34 +466,34 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
 /* ===== User Menu ===== */
 const UserMenuContent = ({ onClose, onSettings, onLogout }: { onClose: () => void; onSettings: () => void; onLogout: () => void }) => (
   <>
-    <div className="px-3 py-2.5 border-b border-border/10">
-      <div className="flex items-center gap-2">
-        <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-xs font-bold text-primary font-mono">Y</div>
+    <div className="px-4 py-3 border-b border-white/[0.06]">
+      <div className="flex items-center gap-2.5">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-xs font-bold text-primary font-mono">Y</div>
         <div>
-          <p className="text-[11px] font-bold text-foreground">יהונתן</p>
+          <p className="text-[12px] font-bold text-foreground">יהונתן</p>
           <p className="text-2xs text-muted-foreground/40 font-mono">yonatan@email.com</p>
         </div>
       </div>
     </div>
-    <div className="px-3 py-1.5 border-b border-border/8">
+    <div className="px-4 py-2 border-b border-white/[0.04]">
       <div className="flex items-center justify-between">
         <span className="text-2xs text-muted-foreground/40">תוכנית</span>
-        <span className="rounded-sm bg-primary/8 border border-primary/10 px-1.5 py-px text-2xs font-bold text-primary font-mono">PRO</span>
+        <span className="rounded-lg bg-accent/10 border border-accent/15 px-2 py-0.5 text-2xs font-bold text-accent font-mono">PRO</span>
       </div>
     </div>
     <div className="py-1">
-      <button onClick={onClose} className="w-full flex items-center gap-2.5 px-3 py-2 text-right hover:bg-primary/5 transition-colors min-h-[40px]">
-        <Zap className="h-3.5 w-3.5 text-primary/50" />
-        <p className="text-[11px] font-medium text-foreground/70">שדרג חשבון</p>
+      <button onClick={onClose} className="w-full flex items-center gap-3 px-4 py-2.5 text-right hover:bg-primary/[0.04] transition-colors min-h-[44px]">
+        <Zap className="h-4 w-4 text-accent/50" />
+        <p className="text-[12px] font-medium text-foreground/70">שדרג חשבון</p>
       </button>
-      <button onClick={onSettings} className="w-full flex items-center gap-2.5 px-3 py-2 text-right hover:bg-muted/10 transition-colors min-h-[40px]">
-        <Settings className="h-3.5 w-3.5 text-muted-foreground/40" />
-        <p className="text-[11px] font-medium text-foreground/70">הגדרות</p>
+      <button onClick={onSettings} className="w-full flex items-center gap-3 px-4 py-2.5 text-right hover:bg-white/[0.04] transition-colors min-h-[44px]">
+        <Settings className="h-4 w-4 text-muted-foreground/40" />
+        <p className="text-[12px] font-medium text-foreground/70">הגדרות</p>
       </button>
-      <div className="mx-3 my-0.5 border-t border-border/6" />
-      <button onClick={onLogout} className="w-full flex items-center gap-2.5 px-3 py-2 text-right hover:bg-destructive/5 transition-colors min-h-[40px]">
-        <LogOut className="h-3.5 w-3.5 text-destructive/50" />
-        <p className="text-[11px] font-medium text-destructive/60">התנתק</p>
+      <div className="mx-4 my-1 border-t border-white/[0.04]" />
+      <button onClick={onLogout} className="w-full flex items-center gap-3 px-4 py-2.5 text-right hover:bg-destructive/[0.04] transition-colors min-h-[44px]">
+        <LogOut className="h-4 w-4 text-destructive/50" />
+        <p className="text-[12px] font-medium text-destructive/60">התנתק</p>
       </button>
     </div>
   </>
@@ -477,90 +505,72 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
   const disconnected = brokers.filter(b => !b.connected);
 
   return (
-    <div className={mobile ? "" : "w-full max-w-md rounded-sm border border-border/15 bg-card shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200 overflow-hidden"}>
-      <div className="px-4 pt-4 pb-3">
+    <div className={mobile ? "" : "w-full max-w-md rounded-2xl border border-white/[0.08] bg-card shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200 overflow-hidden"}>
+      <div className="px-5 pt-5 pb-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-sm bg-primary/8 border border-primary/10">
-              <Plug className="h-4 w-4 text-primary" />
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/[0.08] border border-primary/10">
+              <Plug className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h2 className="text-[13px] font-bold text-foreground">חיבורי ברוקר</h2>
+              <h2 className="text-sm font-bold text-foreground">חיבורי ברוקר</h2>
               <p className="text-2xs text-muted-foreground/40">ניהול פלטפורמות מסחר</p>
             </div>
           </div>
-          <button onClick={onClose} className="haptic-press flex h-7 w-7 items-center justify-center rounded-sm border border-border/15 bg-muted/10 text-muted-foreground/40 hover:text-foreground transition-all">
-            <X className="h-3.5 w-3.5" />
+          <button onClick={onClose} className="haptic-press flex h-8 w-8 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.04] text-muted-foreground/40 hover:text-foreground transition-all">
+            <X className="h-4 w-4" />
           </button>
-        </div>
-        <div className="mt-3 flex items-center gap-2">
-          <div className="flex-1 rounded-sm bg-primary/5 border border-primary/8 px-2.5 py-1.5 flex items-center justify-between">
-            <span className="text-2xs text-muted-foreground/40">מחוברות</span>
-            <span className="text-[11px] font-bold text-primary font-mono">{connected.length}</span>
-          </div>
-          <div className="flex-1 rounded-sm bg-muted/8 border border-border/8 px-2.5 py-1.5 flex items-center justify-between">
-            <span className="text-2xs text-muted-foreground/40">ממתינות</span>
-            <span className="text-[11px] font-bold text-muted-foreground font-mono">{disconnected.length}</span>
-          </div>
         </div>
       </div>
 
       {connected.length > 0 && (
-        <div className="px-4 pb-2">
-          <p className="text-2xs font-semibold text-muted-foreground/30 uppercase tracking-wider mb-1.5 font-mono">CONNECTED</p>
-          <div className="space-y-1">
+        <div className="px-5 pb-3">
+          <p className="text-2xs font-semibold text-muted-foreground/30 uppercase tracking-wider mb-2 font-mono">CONNECTED</p>
+          <div className="space-y-1.5">
             {connected.map((b) => (
-              <div key={b.name} className="flex items-center justify-between rounded-sm bg-primary/[0.03] border border-primary/8 px-3 py-2">
-                <div className="flex items-center gap-2.5">
-                  {(b as any).logo ? (
-                    <div className="flex h-7 w-7 items-center justify-center rounded-sm overflow-hidden">
-                      <img src={(b as any).logo} alt={b.name} className="h-7 w-7 object-cover rounded-sm" />
-                    </div>
-                  ) : (
-                    <div className="flex h-7 w-7 items-center justify-center rounded-sm bg-primary/8 text-2xs font-bold text-primary font-mono">{b.initials}</div>
-                  )}
+              <div key={b.name} className="flex items-center justify-between rounded-xl glass-card px-4 py-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg overflow-hidden">
+                    <img src={b.logo} alt={b.name} className="h-8 w-8 object-cover rounded-lg" />
+                  </div>
                   <div>
-                    <p className="text-[11px] font-semibold text-foreground">{b.name}</p>
+                    <p className="text-[12px] font-semibold text-foreground">{b.name}</p>
                     <div className="flex items-center gap-1 mt-0.5">
-                      <span className="h-1 w-1 rounded-full bg-profit" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-profit" />
                       <span className="text-2xs text-profit font-mono">{b.account}</span>
                     </div>
                   </div>
                 </div>
-                <CheckCircle2 className="h-3.5 w-3.5 text-profit" />
+                <CheckCircle2 className="h-4 w-4 text-profit" />
               </div>
             ))}
           </div>
         </div>
       )}
 
-      <div className="px-4 pb-3">
-        <p className="text-2xs font-semibold text-muted-foreground/30 uppercase tracking-wider mb-1.5 font-mono">AVAILABLE</p>
-        <div className={`space-y-0.5 ${mobile ? "max-h-[35vh]" : "max-h-[30vh]"} overflow-y-auto scrollbar-none`}>
+      <div className="px-5 pb-4">
+        <p className="text-2xs font-semibold text-muted-foreground/30 uppercase tracking-wider mb-2 font-mono">AVAILABLE</p>
+        <div className={`space-y-1 ${mobile ? "max-h-[35vh]" : "max-h-[30vh]"} overflow-y-auto scrollbar-none`}>
           {disconnected.map((b) => (
-            <div key={b.name} className="flex items-center justify-between rounded-sm bg-muted/[0.03] border border-border/6 px-3 py-2 hover:bg-muted/8 group transition-all">
-              <div className="flex items-center gap-2.5">
-                {(b as any).logo ? (
-                  <div className="flex h-7 w-7 items-center justify-center rounded-sm overflow-hidden">
-                    <img src={(b as any).logo} alt={b.name} className="h-7 w-7 object-cover rounded-sm" />
-                  </div>
-                ) : (
-                  <div className="flex h-7 w-7 items-center justify-center rounded-sm bg-muted/10 border border-border/8 text-2xs font-bold text-muted-foreground/40 font-mono group-hover:text-primary/60">{b.initials}</div>
-                )}
-                <p className="text-[11px] font-medium text-muted-foreground/60 group-hover:text-foreground">{b.name}</p>
+            <div key={b.name} className="flex items-center justify-between rounded-xl bg-white/[0.02] border border-white/[0.05] px-4 py-3 hover:bg-white/[0.04] group transition-all">
+              <div className="flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg overflow-hidden">
+                  <img src={b.logo} alt={b.name} className="h-8 w-8 object-cover rounded-lg" />
+                </div>
+                <p className="text-[12px] font-medium text-muted-foreground/60 group-hover:text-foreground">{b.name}</p>
               </div>
-              <button className="haptic-press rounded-sm bg-primary/6 border border-primary/10 px-2 py-1 text-2xs font-semibold text-primary/60 hover:bg-primary/12 hover:text-primary transition-all">חבר</button>
+              <button className="haptic-press rounded-xl bg-primary/[0.06] border border-primary/15 px-3 py-1.5 text-2xs font-semibold text-primary/60 hover:bg-primary/12 hover:text-primary transition-all">חבר</button>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="border-t border-border/6 px-4 py-2.5 flex items-center justify-between bg-muted/[0.02]">
-        <div className="flex items-center gap-1">
-          <ShieldCheck className="h-2.5 w-2.5 text-muted-foreground/20" />
+      <div className="border-t border-white/[0.04] px-5 py-3 flex items-center justify-between bg-white/[0.01]">
+        <div className="flex items-center gap-1.5">
+          <ShieldCheck className="h-3 w-3 text-muted-foreground/20" />
           <p className="text-2xs text-muted-foreground/20 font-mono">AES-256</p>
         </div>
-        <button onClick={onClose} className="haptic-press rounded-sm bg-muted/8 border border-border/10 px-3 py-1.5 text-[10px] font-medium text-muted-foreground/50 hover:text-foreground transition-all">סגור</button>
+        <button onClick={onClose} className="haptic-press rounded-xl bg-white/[0.04] border border-white/[0.06] px-4 py-2 text-[11px] font-medium text-muted-foreground/50 hover:text-foreground transition-all">סגור</button>
       </div>
     </div>
   );
@@ -592,102 +602,93 @@ const UpgradeModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?
   const [isYearly, setIsYearly] = useState(false);
 
   return (
-    <div className={mobile ? "px-3 pb-6" : "w-full max-w-2xl rounded-sm border border-border/15 bg-card shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200 overflow-hidden p-5"}>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+    <div className={mobile ? "px-4 pb-6" : "w-full max-w-2xl rounded-2xl border border-white/[0.08] bg-card shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200 overflow-hidden p-6"}>
+      <div className="flex items-center justify-between mb-5">
         <div>
-          <h2 className="text-[14px] font-bold text-foreground">שדרוג תוכנית</h2>
-          <p className="text-2xs text-muted-foreground/40 mt-0.5">בחר את התוכנית שמתאימה לך</p>
+          <h2 className="text-base font-bold text-foreground">שדרוג תוכנית</h2>
+          <p className="text-2xs text-muted-foreground/40 mt-1">בחר את התוכנית שמתאימה לך</p>
         </div>
-        <button onClick={onClose} className="haptic-press flex h-7 w-7 items-center justify-center rounded-sm border border-border/15 bg-muted/10 text-muted-foreground/40 hover:text-foreground transition-all">
-          <X className="h-3.5 w-3.5" />
+        <button onClick={onClose} className="haptic-press flex h-8 w-8 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.04] text-muted-foreground/40 hover:text-foreground transition-all">
+          <X className="h-4 w-4" />
         </button>
       </div>
 
-      {/* Billing Toggle */}
-      <div className="flex items-center justify-center gap-3 mb-5">
+      <div className="flex items-center justify-center gap-3 mb-6">
         <span className={`text-xs font-medium transition-colors ${!isYearly ? "text-foreground" : "text-muted-foreground/40"}`}>חודשי</span>
         <button
           onClick={() => setIsYearly(!isYearly)}
-          className={`relative h-6 w-11 rounded-full transition-colors duration-200 ${isYearly ? "bg-primary" : "bg-muted/30 border border-border/20"}`}
+          className={`relative h-6 w-11 rounded-full transition-colors duration-200 ${isYearly ? "bg-primary" : "bg-muted/30 border border-white/[0.08]"}`}
         >
           <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-all duration-200 ${isYearly ? "right-0.5" : "right-[22px]"}`} />
         </button>
         <span className={`text-xs font-medium transition-colors ${isYearly ? "text-foreground" : "text-muted-foreground/40"}`}>שנתי</span>
         {isYearly && (
-          <span className="rounded-full bg-profit/15 border border-profit/20 px-2 py-0.5 text-2xs font-bold text-profit font-mono animate-in fade-in zoom-in-95 duration-200">
+          <span className="rounded-full bg-profit/15 border border-profit/20 px-2.5 py-0.5 text-2xs font-bold text-profit font-mono animate-in fade-in zoom-in-95 duration-200">
             10% הנחה
           </span>
         )}
       </div>
 
-      {/* Plans Grid */}
-      <div className={`grid ${mobile ? "grid-cols-1 gap-2" : "grid-cols-3 gap-2.5"}`}>
+      <div className={`grid ${mobile ? "grid-cols-1 gap-3" : "grid-cols-3 gap-3"}`}>
         {plans.map((plan) => {
           const originalYearly = Number(plan.price) * 12;
           return (
             <div
               key={plan.id}
-              className={`rounded-sm border p-3 transition-all ${
+              className={`rounded-2xl border p-4 transition-all ${
                 plan.popular
-                  ? "border-primary/25 bg-primary/[0.04] shadow-[0_0_20px_hsl(var(--primary)/0.08)]"
-                  : "border-border/10 bg-muted/[0.03] hover:border-border/20"
+                  ? "border-accent/25 bg-accent/[0.04] gold-glow"
+                  : "border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12]"
               }`}
             >
               {plan.popular && (
-                <div className="flex items-center gap-1 mb-2">
-                  <span className="rounded-sm bg-primary/10 border border-primary/15 px-1.5 py-px text-2xs font-bold text-primary font-mono">POPULAR</span>
+                <div className="flex items-center gap-1 mb-2.5">
+                  <span className="rounded-lg bg-accent/15 border border-accent/20 px-2 py-0.5 text-2xs font-bold text-accent font-mono">POPULAR</span>
                 </div>
               )}
-              <div className="flex items-center gap-2 mb-2">
-                <plan.icon className={`h-4 w-4 ${plan.popular ? "text-primary" : "text-muted-foreground/40"}`} />
-                <span className="text-[12px] font-bold text-foreground">{plan.name}</span>
+              <div className="flex items-center gap-2.5 mb-3">
+                <plan.icon className={`h-5 w-5 ${plan.popular ? "text-accent" : "text-muted-foreground/40"}`} />
+                <span className="text-[13px] font-bold text-foreground">{plan.name}</span>
                 <span className="text-2xs text-muted-foreground/30 font-mono">{plan.nameEn}</span>
               </div>
-              <div className="mb-3">
+              <div className="mb-4">
                 {isYearly ? (
                   <>
-                    <span className="text-xl font-bold text-foreground font-mono">₪{plan.yearlyTotal}</span>
+                    <span className="text-2xl font-bold text-foreground font-mono">₪{plan.yearlyTotal}</span>
                     <span className="text-2xs text-muted-foreground/40">/שנה</span>
                     <span className="mr-2 text-2xs text-muted-foreground/30 line-through font-mono">₪{originalYearly.toLocaleString()}</span>
                   </>
                 ) : (
                   <>
-                    <span className="text-xl font-bold text-foreground font-mono">₪{plan.price}</span>
+                    <span className="text-2xl font-bold text-foreground font-mono">₪{plan.price}</span>
                     <span className="text-2xs text-muted-foreground/40">/חודש</span>
                   </>
                 )}
               </div>
-              <div className="space-y-1 mb-3">
+              <div className="space-y-1.5 mb-4">
                 {plan.features.map((f) => (
-                  <div key={f} className="flex items-center gap-1.5 text-2xs text-muted-foreground/60">
-                    <CheckCircle2 className="h-2.5 w-2.5 text-profit shrink-0" />
+                  <div key={f} className="flex items-center gap-2 text-2xs text-muted-foreground/60">
+                    <CheckCircle2 className="h-3 w-3 text-profit shrink-0" />
                     {f}
                   </div>
                 ))}
                 {plan.missing?.map((f) => (
-                  <div key={f} className="flex items-center gap-1.5 text-2xs text-muted-foreground/20 line-through">
-                    <X className="h-2.5 w-2.5 shrink-0" />
+                  <div key={f} className="flex items-center gap-2 text-2xs text-muted-foreground/20 line-through">
+                    <X className="h-3 w-3 text-muted-foreground/10 shrink-0" />
                     {f}
                   </div>
                 ))}
               </div>
-              <button className={`haptic-press w-full rounded-sm py-2 text-[11px] font-bold transition-all ${
+              <button className={`haptic-press w-full rounded-xl py-2.5 text-[12px] font-bold transition-all min-h-[44px] ${
                 plan.popular
-                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                  : "bg-muted/10 border border-border/10 text-foreground/60 hover:bg-muted/20"
+                  ? "bg-accent text-accent-foreground hover:bg-accent/90 gold-glow"
+                  : "bg-white/[0.06] border border-white/[0.08] text-foreground hover:bg-white/[0.1]"
               }`}>
                 {plan.cta}
               </button>
             </div>
           );
         })}
-      </div>
-
-      {/* Social proof */}
-      <div className="mt-3 flex items-center justify-center gap-2 text-2xs text-muted-foreground/25">
-        <ShieldCheck className="h-3 w-3" />
-        <span className="font-mono">+2,847 סוחרים · ביטול בכל עת</span>
       </div>
     </div>
   );
