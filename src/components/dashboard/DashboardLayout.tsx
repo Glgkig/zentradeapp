@@ -466,14 +466,14 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
 };
 
 /* ===== User Menu ===== */
-const UserMenuContent = ({ onClose, onSettings, onLogout }: { onClose: () => void; onSettings: () => void; onLogout: () => void }) => (
+const UserMenuContent = ({ userName, userEmail, onClose, onSettings, onLogout }: { userName: string; userEmail: string; onClose: () => void; onSettings: () => void; onLogout: () => void }) => (
   <>
     <div className="px-4 py-3 border-b border-white/[0.06]">
       <div className="flex items-center gap-2.5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-xs font-bold text-primary font-mono">Y</div>
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-xs font-bold text-primary font-mono">{userName.charAt(0).toUpperCase()}</div>
         <div>
-          <p className="text-[12px] font-bold text-foreground">יהונתן</p>
-          <p className="text-2xs text-muted-foreground/40 font-mono">yonatan@email.com</p>
+          <p className="text-[12px] font-bold text-foreground">{userName}</p>
+          <p className="text-2xs text-muted-foreground/40 font-mono">{userEmail}</p>
         </div>
       </div>
     </div>
