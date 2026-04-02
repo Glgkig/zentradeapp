@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { createChart, type IChartApi, type ISeriesApi, type CandlestickData, type Time } from "lightweight-charts";
+import { createChart, CandlestickSeries, type IChartApi, type ISeriesApi, type CandlestickData, type Time } from "lightweight-charts";
 import {
   Play, Pause, SkipForward, Rewind,
   TrendingUp, Target, BarChart3, ArrowUpRight, ArrowDownRight,
