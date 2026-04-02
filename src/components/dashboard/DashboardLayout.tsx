@@ -44,6 +44,7 @@ const navSections = [
   {
     label: "כלים",
     items: [
+      { id: "tradingview", label: "גרף מסחר", icon: Eye },
       { id: "mentor", label: "מנטור AI", icon: Bot },
       { id: "backtesting", label: "סימולטור", icon: History },
       { id: "protection", label: "הגנה", icon: ShieldCheck },
