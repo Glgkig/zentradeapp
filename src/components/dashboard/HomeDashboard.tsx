@@ -220,7 +220,7 @@ const HomeDashboard = ({ userName, onOpenTrade }: { userName: string; onOpenTrad
                       <div className="rounded-lg border border-border/50 bg-card/90 backdrop-blur-md px-3 py-2 shadow-xl">
                         <p className="text-2xs text-muted-foreground/60 font-mono">{payload[0].payload.month}</p>
                         <p className={`text-sm font-bold font-mono ${positive ? "text-primary" : "text-destructive"}`}>
-                          {positive ? "+" : ""}${Math.abs(val).toLocaleString()}
+                          {positive ? "+" : ""}{"$"}{Math.abs(val).toLocaleString()}
                         </p>
                       </div>
                     );
