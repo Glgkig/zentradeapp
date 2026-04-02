@@ -138,6 +138,7 @@ const ProfileTab = () => {
   };
 
   return (
+  <>
   <div className="space-y-4 animate-in fade-in slide-in-from-left-2 duration-300">
     <div className="rounded-2xl border border-border/10 bg-card/50 p-5">
       <div className="flex items-center gap-4 mb-5">
@@ -228,10 +229,10 @@ const ProfileTab = () => {
       )}
       {saving ? "שומר..." : "שמור שינויים"}
     </button>
-   </div>
-   <AvatarPicker open={avatarPickerOpen} onOpenChange={setAvatarPickerOpen} />
-   );
-};
+  </div>
+  <AvatarPicker open={avatarPickerOpen} onOpenChange={setAvatarPickerOpen} />
+  </>
+  );
 };
 
 /* ===== Connections Tab ===== */
