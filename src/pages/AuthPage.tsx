@@ -7,6 +7,7 @@ import {
   FlaskConical, Mic, Newspaper, ArrowUp, Activity, AlertTriangle,
   CheckCircle2, TrendingUp, Quote, Star, Brain, BookOpen, Calendar,
   XCircle, ChevronRight, Sparkles, MapPin, Eye, EyeOff,
+  Calculator, PlayCircle, Check, Crown,
 } from "lucide-react";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 import { supabase } from "@/integrations/supabase/client";
@@ -92,6 +93,7 @@ const AuthPage = () => {
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-6">
             <a href="#features" className="text-xs text-foreground/70 hover:text-foreground transition-colors">למה ZenTrade?</a>
+            <a href="#pricing" className="text-xs text-foreground/70 hover:text-foreground transition-colors">תמחור</a>
             <a href="#testimonials" className="text-xs text-foreground/70 hover:text-foreground transition-colors">ביקורות</a>
             <a href="#faq" className="text-xs text-foreground/70 hover:text-foreground transition-colors">שאלות נפוצות</a>
             <div className="h-4 w-px bg-border" />
@@ -130,6 +132,7 @@ const AuthPage = () => {
         {!isEditorCanvas && mobileMenu && (
           <div className="md:hidden border-t border-border/30 bg-background/95 backdrop-blur-xl px-4 py-4 space-y-2">
             <a href="#features" onClick={() => setMobileMenu(false)} className="block py-2 text-sm text-foreground/70">למה ZenTrade?</a>
+            <a href="#pricing" onClick={() => setMobileMenu(false)} className="block py-2 text-sm text-foreground/70">תמחור</a>
             <a href="#testimonials" onClick={() => setMobileMenu(false)} className="block py-2 text-sm text-foreground/70">ביקורות</a>
             <a href="#faq" onClick={() => setMobileMenu(false)} className="block py-2 text-sm text-foreground/70">שאלות נפוצות</a>
             <div className="h-px bg-border my-2" />
@@ -305,12 +308,12 @@ const AuthPage = () => {
                 הכלים שמפרידים בין <span className="text-primary">מנצחים</span> למפסידים
               </h2>
               <p className="mt-4 max-w-2xl mx-auto text-sm md:text-base text-foreground/70 leading-relaxed">
-                ארבעה כלים קריטיים, פלטפורמה אחת. הכל מונע AI.
+                שישה כלים קריטיים, פלטפורמה אחת. הכל מונע AI.
               </p>
             </div>
           </RevealSection>
 
-          <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {features.map((f, i) => (
               <RevealSection key={f.title} delay={i * 150}>
                 <div className={`group relative rounded-2xl border bg-card/50 backdrop-blur-sm p-6 md:p-8 transition-all duration-500 hover:shadow-xl h-full ${
@@ -360,7 +363,7 @@ const AuthPage = () => {
             <div className="text-center mb-12 md:mb-16">
               <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-primary">סוחרים אמיתיים, תוצאות אמיתיות</p>
               <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-foreground">
-                הם הפסיקו להפסיד. <span className="text-primary">מה איתך?</span>
+                סוחרים שהפסיקו להמר <span className="text-primary">והתחילו לעבוד חכם</span>
               </h2>
             </div>
           </RevealSection>
@@ -393,7 +396,74 @@ const AuthPage = () => {
       </section>
 
       {/* ================================================ */}
-      {/* S5 — FAQ                                          */}
+      {/* S5 — PRICING                                      */}
+      {/* ================================================ */}
+      <section id="pricing" className="border-t border-border/30 px-4 py-16 md:py-24 lg:py-32">
+        <div className="mx-auto max-w-6xl">
+          <RevealSection>
+            <div className="text-center mb-12 md:mb-16">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-primary">תמחור</p>
+              <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-foreground">
+                בחר את התוכנית <span className="text-primary">שמתאימה לך</span>
+              </h2>
+              <p className="mt-4 max-w-xl mx-auto text-sm md:text-base text-foreground/70">
+                התחל בחינם ושדרג כשתרגיש מוכן
+              </p>
+            </div>
+          </RevealSection>
+
+          <div className="grid md:grid-cols-3 gap-4 md:gap-6 max-w-4xl mx-auto">
+            {pricingPlans.map((plan, i) => (
+              <RevealSection key={plan.name} delay={i * 150}>
+                <div className={`relative rounded-2xl border p-6 md:p-7 h-full flex flex-col transition-all duration-300 hover:shadow-xl ${
+                  plan.recommended
+                    ? "border-primary/50 bg-primary/[0.06] backdrop-blur-sm shadow-lg shadow-primary/10 ring-1 ring-primary/20"
+                    : "border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/20 hover:shadow-primary/5"
+                }`}>
+                  {plan.recommended && (
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-[10px] font-bold text-primary-foreground uppercase tracking-wider flex items-center gap-1">
+                      <Crown className="h-3 w-3" />
+                      מומלץ
+                    </span>
+                  )}
+                  <div className="text-center mb-5">
+                    <div className={`mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl ${plan.recommended ? "bg-primary/20" : "bg-primary/10"}`}>
+                      {plan.icon}
+                    </div>
+                    <h3 className="font-heading text-lg font-bold text-foreground">{plan.name}</h3>
+                    <p className="text-[10px] text-foreground/50 mt-1">{plan.subtitle}</p>
+                  </div>
+                  <div className="text-center mb-5">
+                    <span className="font-heading text-3xl md:text-4xl font-extrabold text-foreground">{plan.price}</span>
+                    {plan.period && <span className="text-xs text-foreground/50 mr-1">/{plan.period}</span>}
+                  </div>
+                  <ul className="space-y-2.5 mb-6 flex-1">
+                    {plan.features.map((f) => (
+                      <li key={f} className="flex items-start gap-2 text-xs text-foreground/70">
+                        <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <button
+                    onClick={() => openModal("register")}
+                    className={`w-full rounded-xl py-3 text-sm font-bold transition-all active:scale-[0.97] ${
+                      plan.recommended
+                        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/90"
+                        : "border border-border bg-secondary/50 text-foreground hover:bg-secondary"
+                    }`}
+                  >
+                    {plan.cta}
+                  </button>
+                </div>
+              </RevealSection>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ================================================ */}
+      {/* S6 — FAQ                                          */}
       {/* ================================================ */}
       <section id="faq" className="border-t border-border/30 px-4 py-16 md:py-24 lg:py-32">
         <div className="mx-auto max-w-3xl">
@@ -798,18 +868,29 @@ const features = [
   {
     icon: <Shield className="h-6 w-6" />,
     title: "Mindset Guard & FOMO Detection",
-    desc: "ה-AI שלנו לא רק מנתח גרפים — הוא מנתח אותך. על ידי מעקב אחרי התנהגות על המסך, תנועות עכבר חריגות ולחיצות מהירות, ZenTrade מזהה FOMO ומסחר אימפולסיבי בזמן אמת. אנחנו מתריעים ומתערבים לפני שתבצע עסקה רגשית שעלולה לפוצץ את החשבון.",
+    desc: "ה-AI שלנו לא רק מנתח גרפים — הוא מנתח אותך. על ידי מעקב אחרי התנהגות על המסך, תנועות עכבר חריגות ולחיצות מהירות, ZenTrade מזהה FOMO ומסחר אימפולסיבי בזמן אמת.",
     highlight: true,
   },
   {
-    icon: <BookOpen className="h-6 w-6" />,
-    title: "יומן מסחר חכם",
-    desc: "יבוא אוטומטי של כל העסקאות ישירות מהברוקר. שכח מאקסלים ורישום ידני — הכל מתועד, מסווג ומנותח אוטומטית.",
+    icon: <Mic className="h-6 w-6" />,
+    title: "יומן מסחר חכם + Voice AI",
+    desc: "אל תקליד, פשוט תדבר. ייבוא אוטומטי מהברוקר משולב עם יומן קולי מבוסס AI שמתמלל ומנתח את התזה שלך.",
   },
   {
     icon: <Calendar className="h-6 w-6" />,
     title: "לוח כלכלי ותובנות שוק",
     desc: "הכל מובנה בפלטפורמה אחת: לוח כלכלי חכם, התראות לפני אירועים קריטיים, וניתוח השפעה על הנכסים שאתה סוחר.",
+  },
+  {
+    icon: <Calculator className="h-6 w-6" />,
+    title: "מחשבון מס ישראלי 25% מובנה",
+    desc: "חסוך שעות של בירוקרטיה. המערכת מחשבת אוטומטית רווחים, מקזזת הפסדים ומציגה לך את חבות המס המדויקת למס הכנסה. כולל הורדת דו\"ח PDF לרואה חשבון.",
+    highlight: true,
+  },
+  {
+    icon: <PlayCircle className="h-6 w-6" />,
+    title: "סימולטור מסחר מתקדם",
+    desc: "תבחן את האסטרטגיה שלך על נתוני עבר. הרץ עסקאות בלייב על הגרף וה-AI ינתח את אחוזי ההצלחה שלך. בקטסטינג חכם שחוסך לך הון.",
   },
 ];
 
@@ -825,7 +906,7 @@ const testimonials = [
     name: "דניאל כ.",
     avatar: "ד",
     role: "סוחר פורקס • 3 שנות ניסיון",
-    quote: "מאז שהתחלתי להשתמש ב-ZenTrade, ה-Win Rate שלי עלה ב-15%. ה-AI תפס לי דפוס של Revenge Trading שלא הייתי מודע לו. המנטור הזה שווה זהב.",
+    quote: "המערכת הצילה אותי מ-FOMO פעם אחר פעם. מאז שהתחלתי להשתמש ב-ZenTrade, ה-Win Rate שלי עלה ב-15%. המנטור הזה שווה זהב.",
   },
   {
     name: "שירה מ.",
@@ -838,6 +919,58 @@ const testimonials = [
     avatar: "א",
     role: "סוחר קריפטו • 5 שנות ניסיון",
     quote: "היומן האוטומטי חסך לי שעות כל שבוע. במקום לרשום עסקאות ידנית, אני מקבל ניתוח מלא עם תובנות AI. זה כמו לשדרג מאקסל לפרארי.",
+  },
+];
+
+const pricingPlans = [
+  {
+    name: "מתחיל",
+    subtitle: "לסוחרים שרק מתחילים",
+    price: "חינם",
+    period: null,
+    icon: <Zap className="h-5 w-5 text-primary" />,
+    recommended: false,
+    cta: "התחל בחינם",
+    features: [
+      "יומן מסחר בסיסי",
+      "עד 30 עסקאות בחודש",
+      "ניתוח סטטיסטי בסיסי",
+      "לוח כלכלי",
+    ],
+  },
+  {
+    name: "מקצוען",
+    subtitle: "לסוחרים רציניים",
+    price: "₪99",
+    period: "חודש",
+    icon: <Shield className="h-5 w-5 text-primary" />,
+    recommended: true,
+    cta: "שדרג למקצוען",
+    features: [
+      "עסקאות ללא הגבלה",
+      "מנטור AI מתקדם",
+      "Bodyguard & FOMO Detection",
+      "מחשבון מס ישראלי + PDF",
+      "יומן קולי Voice AI",
+      "ניתוח סטטיסטי מלא",
+    ],
+  },
+  {
+    name: "פרופ-פירם",
+    subtitle: "לסוחרים ממומנים ומקצועיים",
+    price: "₪199",
+    period: "חודש",
+    icon: <Crown className="h-5 w-5 text-primary" />,
+    recommended: false,
+    cta: "שדרג לאליט",
+    features: [
+      "הכל בחבילת מקצוען",
+      "סימולטור בקטסטינג AI",
+      "גישה ל-API מלאה",
+      "הגנת Prop Firm אוטומטית",
+      "קבוצת VIP בטלגרם",
+      "תמיכה עדיפה 24/7",
+    ],
   },
 ];
 
