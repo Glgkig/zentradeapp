@@ -904,7 +904,7 @@ const testimonials = [
     name: "דניאל כ.",
     avatar: "ד",
     role: "סוחר פורקס • 3 שנות ניסיון",
-    quote: "מאז שהתחלתי להשתמש ב-ZenTrade, ה-Win Rate שלי עלה ב-15%. ה-AI תפס לי דפוס של Revenge Trading שלא הייתי מודע לו. המנטור הזה שווה זהב.",
+    quote: "המערכת הצילה אותי מ-FOMO פעם אחר פעם. מאז שהתחלתי להשתמש ב-ZenTrade, ה-Win Rate שלי עלה ב-15%. המנטור הזה שווה זהב.",
   },
   {
     name: "שירה מ.",
@@ -917,6 +917,58 @@ const testimonials = [
     avatar: "א",
     role: "סוחר קריפטו • 5 שנות ניסיון",
     quote: "היומן האוטומטי חסך לי שעות כל שבוע. במקום לרשום עסקאות ידנית, אני מקבל ניתוח מלא עם תובנות AI. זה כמו לשדרג מאקסל לפרארי.",
+  },
+];
+
+const pricingPlans = [
+  {
+    name: "מתחיל",
+    subtitle: "לסוחרים שרק מתחילים",
+    price: "חינם",
+    period: null,
+    icon: <Zap className="h-5 w-5 text-primary" />,
+    recommended: false,
+    cta: "התחל בחינם",
+    features: [
+      "יומן מסחר בסיסי",
+      "עד 30 עסקאות בחודש",
+      "ניתוח סטטיסטי בסיסי",
+      "לוח כלכלי",
+    ],
+  },
+  {
+    name: "מקצוען",
+    subtitle: "לסוחרים רציניים",
+    price: "₪99",
+    period: "חודש",
+    icon: <Shield className="h-5 w-5 text-primary" />,
+    recommended: true,
+    cta: "שדרג למקצוען",
+    features: [
+      "עסקאות ללא הגבלה",
+      "מנטור AI מתקדם",
+      "Bodyguard & FOMO Detection",
+      "מחשבון מס ישראלי + PDF",
+      "יומן קולי Voice AI",
+      "ניתוח סטטיסטי מלא",
+    ],
+  },
+  {
+    name: "פרופ-פירם",
+    subtitle: "לסוחרים ממומנים ומקצועיים",
+    price: "₪199",
+    period: "חודש",
+    icon: <Crown className="h-5 w-5 text-primary" />,
+    recommended: false,
+    cta: "שדרג לאליט",
+    features: [
+      "הכל בחבילת מקצוען",
+      "סימולטור בקטסטינג AI",
+      "גישה ל-API מלאה",
+      "הגנת Prop Firm אוטומטית",
+      "קבוצת VIP בטלגרם",
+      "תמיכה עדיפה 24/7",
+    ],
   },
 ];
 
