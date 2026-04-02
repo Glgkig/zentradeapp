@@ -169,6 +169,34 @@ const EconomicNewsPage = () => {
     });
   };
 
+  const handleAddToGoogleCalendar = (event: EconomicEvent) => {
+    const eventDate = new Date(event.date);
+    const endDate = new Date(eventDate.getTime() + 30 * 60 * 1000); // 30 min duration
+
+    const formatGCal = (d: Date) =>
+      d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+
+    const title = `🔴 ${event.titleHe} (${event.region})`;
+    const details = [
+      `דוח כלכלי בעל השפעה גבוהה`,
+      event.forecast ? `צפי: ${event.forecast}` : "",
+      event.previous ? `קודם: ${event.previous}` : "",
+      `מקור: ZenTrade`,
+    ].filter(Boolean).join("\n");
+
+    const url = new URL("https://calendar.google.com/calendar/render");
+    url.searchParams.set("action", "TEMPLATE");
+    url.searchParams.set("text", title);
+    url.searchParams.set("dates", `${formatGCal(eventDate)}/${formatGCal(endDate)}`);
+    url.searchParams.set("details", details);
+    url.searchParams.set("ctz", "Asia/Jerusalem");
+
+    window.open(url.toString(), "_blank");
+    toast.success("נפתח Google Calendar", {
+      description: `"${event.titleHe}" — הוסף התראה בלוח השנה שלך`,
+    });
+  };
+
   const dayButtons = Array.from({ length: 7 }, (_, i) => addDays(new Date(), i - 3));
 
   // Count events per day for indicators
