@@ -323,28 +323,37 @@ const ForensicTradeDrawer = ({ open, onClose }: ForensicTradeDrawerProps) => {
               <button
                 onClick={toggleRecording}
                 disabled={recordingState === "processing"}
-                className={`haptic-press flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] font-medium transition-all ${
+                className={`haptic-press group relative flex items-center gap-2 rounded-xl px-3.5 py-2 text-[11px] font-semibold tracking-wide uppercase transition-all duration-300 overflow-hidden ${
                   recordingState === "recording"
-                    ? "bg-loss/15 text-loss border border-loss/30 animate-pulse"
+                    ? "bg-gradient-to-r from-loss/20 to-loss/10 text-loss border border-loss/40 shadow-[0_0_15px_rgba(239,68,68,0.3)]"
                     : recordingState === "processing"
-                    ? "bg-primary/10 text-primary border border-primary/20 cursor-wait"
-                    : "bg-white/[0.04] text-muted-foreground/60 border border-white/[0.08] hover:bg-white/[0.08] hover:text-foreground"
+                    ? "bg-gradient-to-r from-primary/15 to-primary/5 text-primary border border-primary/30 cursor-wait shadow-[0_0_12px_rgba(0,212,170,0.2)]"
+                    : "bg-gradient-to-r from-[#00D4AA]/10 to-[#00D4AA]/5 text-[#00D4AA] border border-[#00D4AA]/25 hover:border-[#00D4AA]/50 hover:shadow-[0_0_20px_rgba(0,212,170,0.25)] hover:from-[#00D4AA]/15 hover:to-[#00D4AA]/10"
                 }`}
               >
+                {/* Animated glow ring behind icon */}
+                <span className={`absolute inset-0 rounded-xl transition-opacity duration-500 ${
+                  recordingState === "recording" 
+                    ? "opacity-100 animate-pulse bg-gradient-to-r from-loss/10 via-transparent to-loss/10" 
+                    : "opacity-0"
+                }`} />
                 {recordingState === "recording" ? (
                   <>
-                    <MicOff className="h-3.5 w-3.5" />
-                    <span>מקליט...</span>
+                    <span className="relative flex h-5 w-5 items-center justify-center">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-loss/40" />
+                      <MicOff className="relative h-3.5 w-3.5" />
+                    </span>
+                    <span className="relative">עצור הקלטה</span>
                   </>
                 ) : recordingState === "processing" ? (
                   <>
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    <span>מעבד...</span>
+                    <Loader2 className="relative h-3.5 w-3.5 animate-spin" />
+                    <span className="relative">מתמלל...</span>
                   </>
                 ) : (
                   <>
-                    <Mic className="h-3.5 w-3.5" />
-                    <span>הקלט</span>
+                    <Mic className="relative h-3.5 w-3.5 group-hover:scale-110 transition-transform duration-200" />
+                    <span className="relative">🎙️ Voice-to-Text</span>
                   </>
                 )}
               </button>
