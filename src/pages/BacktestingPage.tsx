@@ -52,7 +52,7 @@ const allCandles = generateOHLC(200);
 const BacktestingPage = () => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
-  const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
+  const seriesRef = useRef<any>(null);
 
   const [visibleCount, setVisibleCount] = useState(60);
   const [isPlaying, setIsPlaying] = useState(false);
