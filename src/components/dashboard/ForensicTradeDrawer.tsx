@@ -202,6 +202,35 @@ const ForensicTradeDrawer = ({ open, onClose }: ForensicTradeDrawerProps) => {
         </div>
 
         <div className="p-5 space-y-5">
+          {/* AI Quick Extract */}
+          <div className="rounded-2xl border border-primary/20 bg-primary/[0.04] p-4 space-y-3">
+            <label className="text-2xs font-semibold text-primary/70 mb-1 block font-mono uppercase">תיאור עסקה מהיר</label>
+            <textarea
+              rows={2}
+              value={quickDesc}
+              onChange={(e) => setQuickDesc(e.target.value)}
+              placeholder="למשל: נכנסתי ללונג על נאסדק במחיר 18500"
+              className="w-full rounded-xl border border-primary/15 bg-white/[0.03] px-4 py-3 text-[12px] text-foreground placeholder:text-muted-foreground/30 outline-none focus:border-primary/30 resize-none transition-all leading-relaxed"
+            />
+            <button
+              onClick={handleAiExtract}
+              disabled={aiExtracting || !quickDesc.trim()}
+              className="haptic-press w-full flex items-center justify-center gap-2 rounded-xl border border-primary/25 bg-primary/10 py-3 text-[13px] font-bold text-primary transition-all hover:bg-primary/20 disabled:opacity-40 disabled:cursor-not-allowed min-h-[44px]"
+            >
+              {aiExtracting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>מעבד...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4" />
+                  <span>✨ מילוי אוטומטי (AI)</span>
+                </>
+              )}
+            </button>
+          </div>
+
           {/* Asset */}
           <div>
             <label className="text-2xs font-semibold text-muted-foreground/50 mb-1.5 block font-mono uppercase">נכס</label>
