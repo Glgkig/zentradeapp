@@ -7,7 +7,7 @@ import {
   FlaskConical, Mic, Newspaper, ArrowUp, Activity, AlertTriangle,
   CheckCircle2, TrendingUp, Quote, Star, Brain, BookOpen, Calendar,
   XCircle, ChevronRight, Sparkles, MapPin, Eye, EyeOff,
-  Calculator, PlayCircle, Check, Crown,
+  Calculator, PlayCircle, Check, Crown, Loader2,
 } from "lucide-react";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 import { supabase } from "@/integrations/supabase/client";
