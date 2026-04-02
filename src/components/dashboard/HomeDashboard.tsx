@@ -42,16 +42,6 @@ const recentTrades = [
   { asset: "GBPJPY", direction: "Long", setup: "FVG", pnl: -42, time: "08:15" },
 ];
 
-/* ── Custom tooltip ── */
-const ChartTooltip = ({ active, payload }: any) => {
-  if (!active || !payload?.length) return null;
-  return (
-    <div className="rounded-lg border border-border/50 bg-card/90 backdrop-blur-md px-3 py-2 shadow-xl">
-      <p className="text-2xs text-muted-foreground/60 font-mono">יום {payload[0].payload.day}</p>
-      <p className="text-sm font-bold text-primary font-mono">${payload[0].value.toLocaleString()}</p>
-    </div>
-  );
-};
 
 /* ── Component ── */
 const HomeDashboard = ({ userName, onOpenTrade }: { userName: string; onOpenTrade?: () => void }) => {
