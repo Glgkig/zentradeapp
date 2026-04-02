@@ -92,7 +92,7 @@ const BacktestingPage = () => {
       },
     });
 
-    const series = chart.addCandlestickSeries({
+    const series = chart.addSeries(CandlestickSeries, {
       upColor: "#00D4AA",
       downColor: "#FF3366",
       borderUpColor: "#00D4AA",
