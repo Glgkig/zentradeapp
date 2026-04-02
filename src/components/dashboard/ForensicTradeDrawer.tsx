@@ -278,6 +278,8 @@ const ForensicTradeDrawer = ({ open, onClose }: ForensicTradeDrawerProps) => {
               <label className="text-2xs font-semibold text-muted-foreground/50 mb-1.5 block font-mono uppercase">מחיר כניסה</label>
               <input
                 type="number"
+                value={entryPrice}
+                onChange={(e) => setEntryPrice(e.target.value)}
                 placeholder="Entry"
                 className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-[13px] font-mono text-foreground placeholder:text-muted-foreground/20 outline-none focus:border-primary/30 transition-all min-h-[48px]"
               />
@@ -286,6 +288,8 @@ const ForensicTradeDrawer = ({ open, onClose }: ForensicTradeDrawerProps) => {
               <label className="text-2xs font-semibold text-muted-foreground/50 mb-1.5 block font-mono uppercase">לוט / כמות</label>
               <input
                 type="number"
+                value={lotSize}
+                onChange={(e) => setLotSize(e.target.value)}
                 placeholder="0.01"
                 step="0.01"
                 className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-[13px] font-mono text-foreground placeholder:text-muted-foreground/20 outline-none focus:border-primary/30 transition-all min-h-[48px]"
