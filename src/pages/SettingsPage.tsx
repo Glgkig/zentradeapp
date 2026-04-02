@@ -1,4 +1,5 @@
 import { useState } from "react";
+import AvatarPicker, { UserAvatar } from "@/components/AvatarPicker";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   Shield, User, Globe, Lock, Bell, ChevronDown, ChevronRight,
