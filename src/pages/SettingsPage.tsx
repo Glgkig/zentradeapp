@@ -228,8 +228,10 @@ const ProfileTab = () => {
       )}
       {saving ? "שומר..." : "שמור שינויים"}
     </button>
-  </div>
-  );
+   </div>
+   <AvatarPicker open={avatarPickerOpen} onOpenChange={setAvatarPickerOpen} />
+   );
+};
 };
 
 /* ===== Connections Tab ===== */
