@@ -311,7 +311,7 @@ const AuthPage = () => {
             </div>
           </RevealSection>
 
-          <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {features.map((f, i) => (
               <RevealSection key={f.title} delay={i * 150}>
                 <div className={`group relative rounded-2xl border bg-card/50 backdrop-blur-sm p-6 md:p-8 transition-all duration-500 hover:shadow-xl h-full ${
