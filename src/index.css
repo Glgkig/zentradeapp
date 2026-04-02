@@ -6,47 +6,52 @@
 
 @layer base {
   :root {
-    --background: 240 10% 4%;
-    --foreground: 220 15% 88%;
+    --background: 240 6% 4%;
+    --foreground: 220 15% 90%;
 
-    --card: 240 8% 7%;
-    --card-foreground: 220 15% 88%;
+    --card: 240 5% 8%;
+    --card-foreground: 220 15% 90%;
 
-    --popover: 240 8% 8%;
-    --popover-foreground: 220 15% 88%;
+    --popover: 240 5% 8%;
+    --popover-foreground: 220 15% 90%;
 
-    --primary: 187 100% 50%;
-    --primary-foreground: 240 10% 4%;
+    --primary: 160 100% 42%;
+    --primary-foreground: 240 6% 4%;
 
-    --secondary: 220 10% 10%;
-    --secondary-foreground: 220 15% 88%;
+    --secondary: 240 4% 12%;
+    --secondary-foreground: 220 15% 90%;
 
-    --muted: 220 8% 14%;
-    --muted-foreground: 220 10% 45%;
+    --muted: 220 6% 16%;
+    --muted-foreground: 220 10% 50%;
 
-    --accent: 187 100% 50%;
-    --accent-foreground: 240 10% 4%;
+    --accent: 43 72% 52%;
+    --accent-foreground: 240 6% 4%;
 
-    --destructive: 0 80% 60%;
+    --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --profit: 145 80% 50%;
-    --loss: 0 80% 60%;
+    --profit: 160 70% 48%;
+    --loss: 0 72% 55%;
 
-    --border: 220 8% 14%;
-    --input: 220 8% 16%;
-    --ring: 187 100% 50%;
+    --border: 220 6% 14%;
+    --input: 220 6% 16%;
+    --ring: 160 100% 42%;
 
-    --radius: 0.25rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 240 8% 5%;
-    --sidebar-foreground: 220 15% 88%;
-    --sidebar-primary: 187 100% 50%;
-    --sidebar-primary-foreground: 240 10% 4%;
-    --sidebar-accent: 220 8% 12%;
-    --sidebar-accent-foreground: 220 15% 88%;
-    --sidebar-border: 220 8% 12%;
-    --sidebar-ring: 187 100% 50%;
+    --sidebar-background: 240 6% 5%;
+    --sidebar-foreground: 220 15% 90%;
+    --sidebar-primary: 160 100% 42%;
+    --sidebar-primary-foreground: 240 6% 4%;
+    --sidebar-accent: 220 6% 12%;
+    --sidebar-accent-foreground: 220 15% 90%;
+    --sidebar-border: 220 6% 12%;
+    --sidebar-ring: 160 100% 42%;
+
+    /* Elite Fintech tokens */
+    --gold: 43 72% 52%;
+    --gold-foreground: 240 6% 4%;
+    --cyan-ai: 160 100% 42%;
   }
 
   .light {
@@ -59,7 +64,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 8%;
 
-    --primary: 200 90% 45%;
+    --primary: 160 80% 38%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 220 12% 93%;
@@ -68,27 +73,27 @@
     --muted: 220 10% 90%;
     --muted-foreground: 220 8% 42%;
 
-    --accent: 200 90% 45%;
+    --accent: 43 72% 45%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 80% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --profit: 145 70% 40%;
+    --profit: 160 60% 38%;
     --loss: 0 70% 55%;
 
     --border: 220 12% 82%;
     --input: 220 10% 85%;
-    --ring: 200 90% 45%;
+    --ring: 160 80% 38%;
 
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 240 10% 8%;
-    --sidebar-primary: 200 90% 45%;
+    --sidebar-primary: 160 80% 38%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 220 12% 93%;
     --sidebar-accent-foreground: 240 10% 8%;
     --sidebar-border: 220 12% 82%;
-    --sidebar-ring: 200 90% 45%;
+    --sidebar-ring: 160 80% 38%;
   }
 }
 
@@ -102,22 +107,25 @@
   }
 }
 
-/* ===== Micro-interaction utilities ===== */
+/* ===== Glass morphism ===== */
 @layer utilities {
+  .glass-card {
+    @apply bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-2xl;
+  }
+  .glass-card-hover {
+    @apply glass-card transition-all duration-300 hover:bg-white/[0.06] hover:border-white/[0.12] hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)];
+  }
+  .glass-header {
+    @apply bg-white/[0.03] backdrop-blur-xl border-b border-white/[0.06];
+  }
   .interactive-card {
-    @apply transition-all duration-200 hover:border-primary/20 hover:bg-secondary/30;
+    @apply transition-all duration-200 hover:border-primary/20 hover:bg-white/[0.06];
   }
   .interactive-btn {
     @apply transition-all duration-150 active:scale-[0.97];
   }
   .interactive-row {
     @apply transition-all duration-150 hover:bg-muted/10;
-  }
-  .glass-card {
-    @apply border border-border/10 bg-secondary/10 backdrop-blur-md;
-  }
-  .glass-header {
-    @apply border-b border-border/10 bg-sidebar/80 backdrop-blur-xl;
   }
   .scrollbar-none {
     -ms-overflow-style: none;
@@ -135,18 +143,24 @@
   .data-value {
     @apply font-mono tabular-nums tracking-tight;
   }
+  .gold-glow {
+    box-shadow: 0 0 20px hsl(43 72% 52% / 0.15), 0 0 60px hsl(43 72% 52% / 0.05);
+  }
+  .cyan-glow {
+    box-shadow: 0 0 20px hsl(160 100% 42% / 0.15), 0 0 60px hsl(160 100% 42% / 0.05);
+  }
 }
 
 /* ===== AI Breathing Animation ===== */
 @keyframes ai-breathe {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 hsl(187 100% 50% / 0.1);
+    box-shadow: 0 0 0 0 hsl(160 100% 42% / 0.1);
     opacity: 0.8;
   }
   50% {
     transform: scale(1.04);
-    box-shadow: 0 0 20px 4px hsl(187 100% 50% / 0.2);
+    box-shadow: 0 0 20px 4px hsl(160 100% 42% / 0.2);
     opacity: 1;
   }
 }
@@ -195,7 +209,7 @@
   width: 50%;
   height: 50%;
   border-radius: 50%;
-  background: radial-gradient(circle, hsl(187 100% 50% / 0.04) 0%, transparent 70%);
+  background: radial-gradient(circle, hsl(160 100% 42% / 0.03) 0%, transparent 70%);
   animation: ambient-shift 12s ease-in-out infinite;
 }
 
@@ -207,16 +221,8 @@
   width: 40%;
   height: 40%;
   border-radius: 50%;
-  background: radial-gradient(circle, hsl(200 80% 40% / 0.03) 0%, transparent 70%);
+  background: radial-gradient(circle, hsl(43 72% 52% / 0.02) 0%, transparent 70%);
   animation: ambient-shift 15s ease-in-out infinite reverse;
-}
-
-.ambient-bg.stress-warning::before {
-  background: radial-gradient(circle, hsl(30 90% 50% / 0.05) 0%, transparent 70%);
-}
-
-.ambient-bg.stress-warning::after {
-  background: radial-gradient(circle, hsl(0 80% 50% / 0.03) 0%, transparent 70%);
 }
 
 /* ===== Streak Badge Glow ===== */
@@ -245,7 +251,7 @@
 }
 
 .auth-input {
-  @apply w-full rounded-sm border border-card-foreground/10 bg-card-foreground/[0.03] px-3 py-2 text-xs text-card-foreground placeholder:text-card-foreground/30 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all;
+  @apply w-full rounded-lg border border-card-foreground/10 bg-card-foreground/[0.03] px-3 py-2 text-xs text-card-foreground placeholder:text-card-foreground/30 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all;
 }
 
 @keyframes marquee {
@@ -267,8 +273,8 @@
 }
 
 select option {
-  background-color: hsl(240, 8%, 7%);
-  color: hsl(220, 15%, 88%);
+  background-color: hsl(240, 5%, 8%);
+  color: hsl(220, 15%, 90%);
 }
 
 @keyframes spin-orbit {
@@ -278,4 +284,18 @@ select option {
 @keyframes counter-spin-orbit {
   from { transform: translate(-50%, -50%) rotate(0deg); }
   to { transform: translate(-50%, -50%) rotate(-360deg); }
+}
+
+/* ===== Pulse glow for mic ===== */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 hsl(160 100% 42% / 0.3);
+  }
+  50% {
+    box-shadow: 0 0 24px 8px hsl(160 100% 42% / 0.15);
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2.5s ease-in-out infinite;
 }
