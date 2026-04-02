@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, BookOpen, Bot, ShieldCheck,
   LogOut, ChevronDown, Plug, Menu, X, Settings, Sun, Moon, Zap,
-  Crosshair, PieChart, History, CheckCircle2, Flame, Eye, Crown, Star, Sparkles,
+  Crosshair, PieChart, History, CheckCircle2, Flame, Eye, Crown, Star, Sparkles, Newspaper,
   Calculator, Plus, ShieldAlert,
 } from "lucide-react";
 import SettingsPage from "@/pages/SettingsPage";
@@ -17,6 +17,7 @@ import OnboardingModal from "@/components/dashboard/OnboardingModal";
 import BacktestingPage from "@/pages/BacktestingPage";
 import ProtectionPage from "@/pages/ProtectionPage";
 import TaxCalculatorPage from "@/pages/TaxCalculatorPage";
+import EconomicNewsPage from "@/pages/EconomicNewsPage";
 import ForensicTradeDrawer from "@/components/dashboard/ForensicTradeDrawer";
 
 import logoBinanceFull from "@/assets/logos/binance-full.png";
@@ -39,6 +40,7 @@ const navSections = [
       { id: "journal", label: "יומן פורנזי", icon: BookOpen },
       { id: "tax", label: "מחשבון מס", icon: Calculator },
       { id: "stats", label: "סטטיסטיקות", icon: PieChart },
+      { id: "news", label: "חדשות כלכליות", icon: Newspaper },
     ],
   },
   {
@@ -119,6 +121,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
     if (activeNav === "backtesting") return <BacktestingPage />;
     if (activeNav === "protection") return <ProtectionPage />;
     if (activeNav === "tax") return <TaxCalculatorPage />;
+    if (activeNav === "news") return <EconomicNewsPage />;
     if (activeNav === "tradingview") return (
       <div className="flex items-center justify-center h-full min-h-[60vh] text-muted-foreground text-lg">
         בקרוב — גרף TradingView
