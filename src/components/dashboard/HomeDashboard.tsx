@@ -4,17 +4,26 @@ import {
   Sparkles, Loader2, BarChart3, Crosshair, Zap, ChevronLeft,
 } from "lucide-react";
 import {
-  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  AreaChart, Area, BarChart, Bar, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-/* ── Equity curve mock data (30 days) ── */
-const equityData = Array.from({ length: 30 }, (_, i) => {
-  const base = 10000;
-  const growth = i * 145 + Math.sin(i * 0.8) * 400 + Math.random() * 200;
-  return { day: i + 1, balance: Math.round(base + growth) };
-});
+/* ── Monthly P&L data ── */
+const monthlyData = [
+  { month: "ינו׳", pnl: 1200 },
+  { month: "פבר׳", pnl: 3800 },
+  { month: "מרץ", pnl: -650 },
+  { month: "אפר׳", pnl: 4250 },
+  { month: "מאי", pnl: 2100 },
+  { month: "יוני", pnl: -300 },
+  { month: "יולי", pnl: 1850 },
+  { month: "אוג׳", pnl: 3200 },
+  { month: "ספט׳", pnl: 950 },
+  { month: "אוק׳", pnl: 2700 },
+  { month: "נוב׳", pnl: -420 },
+  { month: "דצמ׳", pnl: 1600 },
+];
 
 /* ── Setup performance data ── */
 const setups = [
@@ -33,16 +42,6 @@ const recentTrades = [
   { asset: "GBPJPY", direction: "Long", setup: "FVG", pnl: -42, time: "08:15" },
 ];
 
-/* ── Custom tooltip ── */
-const ChartTooltip = ({ active, payload }: any) => {
-  if (!active || !payload?.length) return null;
-  return (
-    <div className="rounded-lg border border-border/50 bg-card/90 backdrop-blur-md px-3 py-2 shadow-xl">
-      <p className="text-2xs text-muted-foreground/60 font-mono">יום {payload[0].payload.day}</p>
-      <p className="text-sm font-bold text-primary font-mono">${payload[0].value.toLocaleString()}</p>
-    </div>
-  );
-};
 
 /* ── Component ── */
 const HomeDashboard = ({ userName, onOpenTrade }: { userName: string; onOpenTrade?: () => void }) => {
@@ -192,41 +191,51 @@ const HomeDashboard = ({ userName, onOpenTrade }: { userName: string; onOpenTrad
       {/* ═══════ MIDDLE ROW: Equity + Setups ═══════ */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
 
-        {/* Equity Curve — 3/5 */}
+        {/* Monthly P&L Bar Chart — 3/5 */}
         <div className="lg:col-span-3 rounded-2xl border border-border/30 bg-card/40 backdrop-blur-md p-4 overflow-hidden">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-primary" />
-              <span className="text-sm font-bold text-foreground">התפתחות תיק</span>
+              <BarChart3 className="h-4 w-4 text-primary" />
+              <span className="text-sm font-bold text-foreground">רווח / הפסד חודשי</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <ArrowUpRight className="h-3 w-3 text-primary" />
-              <span className="text-2xs text-primary font-mono font-bold">+42.5%</span>
-              <span className="text-2xs text-muted-foreground/30 font-mono mr-1">30D</span>
-            </div>
+            <span className="text-2xs text-muted-foreground/30 font-mono">2026 · שנתי</span>
           </div>
           <div className="h-[220px] -mr-2 -ml-2">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={equityData} margin={{ top: 5, right: 5, left: 5, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="equityGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="hsl(160, 100%, 42%)" stopOpacity={0.3} />
-                    <stop offset="100%" stopColor="hsl(160, 100%, 42%)" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <XAxis dataKey="day" hide />
-                <YAxis hide domain={["dataMin - 200", "dataMax + 200"]} />
-                <Tooltip content={<ChartTooltip />} />
-                <Area
-                  type="monotone"
-                  dataKey="balance"
-                  stroke="hsl(160, 100%, 42%)"
-                  strokeWidth={2}
-                  fill="url(#equityGradient)"
-                  dot={false}
-                  activeDot={{ r: 4, fill: "hsl(160, 100%, 42%)", strokeWidth: 0 }}
+              <BarChart data={monthlyData} margin={{ top: 5, right: 10, left: 10, bottom: 0 }}>
+                <XAxis
+                  dataKey="month"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 11, fill: "hsl(220, 10%, 50%)" }}
                 />
-              </AreaChart>
+                <YAxis hide />
+                <Tooltip
+                  cursor={{ fill: "hsl(220, 6%, 14%)", opacity: 0.5 }}
+                  content={({ active, payload }) => {
+                    if (!active || !payload?.length) return null;
+                    const val = payload[0].value as number;
+                    const positive = val >= 0;
+                    return (
+                      <div className="rounded-lg border border-border/50 bg-card/90 backdrop-blur-md px-3 py-2 shadow-xl">
+                        <p className="text-2xs text-muted-foreground/60 font-mono">{payload[0].payload.month}</p>
+                        <p className={`text-sm font-bold font-mono ${positive ? "text-primary" : "text-destructive"}`}>
+                          {positive ? "+" : ""}{"$"}{Math.abs(val).toLocaleString()}
+                        </p>
+                      </div>
+                    );
+                  }}
+                />
+                <Bar dataKey="pnl" radius={[6, 6, 0, 0]} maxBarSize={36}>
+                  {monthlyData.map((entry, index) => (
+                    <Cell
+                      key={index}
+                      fill={entry.pnl >= 0 ? "hsl(160, 100%, 42%)" : "hsl(0, 72%, 55%)"}
+                      fillOpacity={0.8}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
