@@ -320,6 +320,8 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                   <div className="md:hidden fixed inset-x-0 bottom-0 z-[70] rounded-t-3xl border-t border-white/[0.08] bg-[#111116] animate-in slide-in-from-bottom duration-200 overflow-hidden safe-area-bottom">
                     <div className="flex justify-center pt-3 pb-1"><div className="w-10 h-1 rounded-full bg-muted-foreground/15" /></div>
                     <UserMenuContent
+                      userName={userName}
+                      userEmail={userEmail}
                       onClose={() => setUserMenu(false)}
                       onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
                       onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
