@@ -68,12 +68,16 @@ const ForensicTradeDrawer = ({ open, onClose }: ForensicTradeDrawerProps) => {
         mediaRecorder.stream.getTracks().forEach((t) => t.stop());
 
         try {
-          const audioFile = new File([audioBlob], "recording.webm", { type: "audio/webm" });
-          const formData = new FormData();
-          formData.append("audio", audioFile);
+          // Convert blob to base64 Data URL
+          const base64DataUrl = await new Promise<string>((res, rej) => {
+            const reader = new FileReader();
+            reader.onloadend = () => res(reader.result as string);
+            reader.onerror = () => rej(new Error("Failed to read audio blob"));
+            reader.readAsDataURL(audioBlob);
+          });
 
           const { data, error } = await supabase.functions.invoke("fal-whisper", {
-            body: formData,
+            body: { audio_url: base64DataUrl },
           });
 
           if (error) {
