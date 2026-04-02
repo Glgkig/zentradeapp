@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Shield, User, Globe, Lock, Bell, ChevronDown, ChevronRight,
   AlertTriangle, Volume2, Mail, Smartphone, Sparkles, Save,
