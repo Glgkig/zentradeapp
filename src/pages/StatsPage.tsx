@@ -39,6 +39,20 @@ const heatCellColor = (pnl: number) => {
   return "bg-loss/45";
 };
 
+const dayOfWeekData = [
+  { name: "ראשון", winRate: 65 },
+  { name: "שני", winRate: 72 },
+  { name: "שלישי", winRate: 68 },
+  { name: "רביעי", winRate: 61 },
+  { name: "חמישי", winRate: 58 },
+  { name: "שישי", winRate: 20 },
+];
+
+const longShortData = [
+  { name: "Long", value: 3000, fill: "hsl(var(--profit))" },
+  { name: "Short", value: 1250, fill: "hsl(var(--loss))" },
+];
+
 
 /* ===== Custom Tooltip ===== */
 const ChartTooltip = ({ active, payload, label }: any) => {
