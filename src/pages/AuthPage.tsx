@@ -306,7 +306,7 @@ const AuthPage = () => {
                 הכלים שמפרידים בין <span className="text-primary">מנצחים</span> למפסידים
               </h2>
               <p className="mt-4 max-w-2xl mx-auto text-sm md:text-base text-foreground/70 leading-relaxed">
-                ארבעה כלים קריטיים, פלטפורמה אחת. הכל מונע AI.
+                שישה כלים קריטיים, פלטפורמה אחת. הכל מונע AI.
               </p>
             </div>
           </RevealSection>
