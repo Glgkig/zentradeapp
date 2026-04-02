@@ -309,6 +309,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                     <UserMenuContent
                       userName={userName}
                       userEmail={userEmail}
+                      avatarUrl={profile?.avatar_url}
                       onClose={() => setUserMenu(false)}
                       onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
                       onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
