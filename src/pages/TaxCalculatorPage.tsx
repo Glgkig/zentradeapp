@@ -2,7 +2,10 @@ import { useState, useMemo } from "react";
 import {
   Calculator, TrendingUp, TrendingDown, DollarSign, Percent,
   ArrowDownRight, Download, FileText, Info, CalendarDays, Loader2,
+  Sparkles, Brain,
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 /* ===== PDF Generation ===== */
 const generatePDF = async (data: TaxData) => {
