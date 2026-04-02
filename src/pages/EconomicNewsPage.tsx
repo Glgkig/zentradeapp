@@ -430,14 +430,24 @@ const EconomicNewsPage = () => {
                               )}
                             </div>
                           </div>
-                          <button
-                            onClick={() => handleAddToJournal(event)}
-                            className="haptic-press opacity-0 group-hover:opacity-100 flex items-center gap-1 rounded-lg border border-primary/15 bg-primary/5 px-2 py-1 text-primary hover:bg-primary/15 transition-all shrink-0"
-                            title="הוסף ליומן"
-                          >
-                            <BookOpen className="h-3 w-3" />
-                            <span className="text-2xs font-medium hidden sm:inline">ליומן</span>
-                          </button>
+                          <div className="flex flex-col gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-all">
+                            <button
+                              onClick={() => handleAddToGoogleCalendar(event)}
+                              className="haptic-press flex items-center gap-1 rounded-lg border border-accent/20 bg-accent/5 px-2 py-1 text-accent hover:bg-accent/15 transition-all"
+                              title="הוסף ל-Google Calendar"
+                            >
+                              <CalendarPlus className="h-3 w-3" />
+                              <span className="text-2xs font-medium hidden sm:inline">יומן Google</span>
+                            </button>
+                            <button
+                              onClick={() => handleAddToJournal(event)}
+                              className="haptic-press flex items-center gap-1 rounded-lg border border-primary/15 bg-primary/5 px-2 py-1 text-primary hover:bg-primary/15 transition-all"
+                              title="הוסף ליומן מסחר"
+                            >
+                              <BookOpen className="h-3 w-3" />
+                              <span className="text-2xs font-medium hidden sm:inline">ליומן</span>
+                            </button>
+                          </div>
                         </div>
                       </div>
                     );
