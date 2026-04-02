@@ -46,6 +46,7 @@ const recentTrades = [
 
 /* ── Component ── */
 const HomeDashboard = ({ userName, onOpenTrade }: { userName: string; onOpenTrade?: () => void }) => {
+  const { userProfile } = useUserProfile();
   const [aiBriefing, setAiBriefing] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
 
