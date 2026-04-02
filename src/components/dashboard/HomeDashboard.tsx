@@ -12,8 +12,84 @@ const HomeDashboard = ({ userName, onOpenTrade }: { userName: string; onOpenTrad
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "בוקר טוב" : hour < 17 ? "צהריים טובים" : "ערב טוב";
 
+  const [aiBriefing, setAiBriefing] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
+
+  const handleAiAnalyst = async () => {
+    setAiLoading(true);
+    setAiBriefing("");
+    try {
+      const { data, error } = await supabase.functions.invoke("dashboard-ai-analyst", {
+        body: { winRate: 68, profitFactor: 2.4, totalPnl: 4250 },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setAiBriefing(data.briefing);
+    } catch (e: any) {
+      toast.error(e.message || "שגיאה בניתוח AI");
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   return (
     <div className="mx-auto max-w-[1280px] space-y-2">
+      {/* ===== AI Chief Analyst Banner ===== */}
+      <div className="rounded-sm border border-primary/15 bg-primary/[0.03] p-3 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-40 h-40 bg-primary/[0.04] rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-32 h-32 bg-accent/[0.03] rounded-full blur-3xl" />
+        <div className="relative z-10">
+          {!aiBriefing ? (
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-sm bg-primary/10 border border-primary/15">
+                  <Brain className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <p className="text-[11px] font-bold text-foreground font-mono">AI CHIEF ANALYST</p>
+                  <p className="text-2xs text-muted-foreground/40">סקירה מקצועית מבוססת נתוני הביצועים שלך</p>
+                </div>
+              </div>
+              <button
+                onClick={handleAiAnalyst}
+                disabled={aiLoading}
+                className="inline-flex items-center gap-2 rounded-sm bg-primary/10 border border-primary/20 px-4 py-2 text-2xs font-bold text-primary transition-all hover:bg-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100"
+              >
+                {aiLoading ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <span>חושב...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-3.5 w-3.5" />
+                    <span>✨ קבל סקירת אנליסט AI</span>
+                  </>
+                )}
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-start gap-3 animate-in fade-in slide-in-from-bottom-3 duration-500">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-primary/10 border border-primary/15">
+                <Brain className="h-4 w-4 text-primary" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-1.5">
+                  <p className="text-2xs font-bold text-primary/60 uppercase tracking-wider font-mono">AI CHIEF ANALYST — DAILY BRIEFING</p>
+                  <button
+                    onClick={() => setAiBriefing("")}
+                    className="text-2xs text-muted-foreground/30 hover:text-muted-foreground/60 transition-colors"
+                  >
+                    סגור
+                  </button>
+                </div>
+                <p className="text-[12px] text-foreground/80 leading-relaxed">{aiBriefing}</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* ===== Row 1: AI + Tilt + Protection ===== */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-2">
         {/* AI Status */}
