@@ -68,24 +68,35 @@ const ForensicTradeDrawer = ({ open, onClose }: ForensicTradeDrawerProps) => {
         mediaRecorder.stream.getTracks().forEach((t) => t.stop());
 
         try {
+          const audioFile = new File([audioBlob], "recording.webm", { type: "audio/webm" });
           const formData = new FormData();
-          formData.append("audio", audioBlob, "recording.webm");
+          formData.append("audio", audioFile);
 
           const { data, error } = await supabase.functions.invoke("fal-whisper", {
             body: formData,
           });
 
-          if (error) throw error;
+          if (error) {
+            console.error("Invoke error:", error);
+            toast.error(`שגיאת שרת: ${error.message || JSON.stringify(error)}`);
+            return;
+          }
 
-          if (data?.text) {
-            setThesis((prev) => (prev ? prev + " " + data.text : data.text));
+          if (data?.error) {
+            console.error("API error:", data.error, data.details);
+            toast.error(`שגיאת API: ${data.error}${data.details ? ' — ' + data.details : ''}`);
+            return;
+          }
+
+          if (data?.text && data.text.trim()) {
+            setThesis((prev) => (prev ? prev + " " + data.text.trim() : data.text.trim()));
             toast.success("התמלול הושלם!");
           } else {
-            toast.warning("לא זוהה טקסט בהקלטה.");
+            toast.warning("לא זוהה טקסט בהקלטה. נסה שוב.");
           }
         } catch (err: any) {
           console.error("Whisper error:", err);
-          toast.error("שגיאה בתמלול. נסה שוב.");
+          toast.error(`שגיאה: ${err?.message || String(err)}`);
         } finally {
           setRecordingState("idle");
           resolve();
