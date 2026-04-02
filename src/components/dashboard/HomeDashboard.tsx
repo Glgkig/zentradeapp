@@ -340,17 +340,6 @@ const HomeDashboard = ({ userName, onOpenTrade }: { userName: string; onOpenTrad
           </div>
         </div>
 
-        {/* Voice Journal */}
-        <div className="sm:col-span-1 md:col-span-2 rounded-sm border border-border/8 bg-card p-2.5 flex flex-col items-center justify-center text-center">
-          <div className="relative mb-3">
-            <div className="absolute inset-[-6px] rounded-full bg-primary/5 animate-pulse" style={{ animationDuration: "2.5s" }} />
-            <button className="haptic-press relative flex h-12 w-12 items-center justify-center rounded-full bg-primary/8 border border-primary/15 text-primary hover:bg-primary/15 active:scale-95 transition-all">
-              <Mic className="h-5 w-5" />
-            </button>
-          </div>
-          <p className="text-[10px] font-semibold text-foreground mb-0.5">יומן קולי</p>
-          <p className="text-2xs text-muted-foreground/40 leading-snug">לחץ ודבר. ה-AI ינתח את הקול שלך.</p>
-        </div>
 
         {/* News Guard */}
         <div className="sm:col-span-1 md:col-span-3 rounded-sm border border-loss/15 bg-loss/[0.02] p-2.5">
