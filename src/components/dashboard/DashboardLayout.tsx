@@ -237,11 +237,14 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               <span className="text-2xs font-bold text-primary font-mono">Bodyguard: ACTIVE 🛡️</span>
             </div>
 
-            {/* Streak */}
-            <div className="hidden sm:flex streak-badge items-center gap-1 rounded-xl border border-orange-500/20 bg-orange-500/[0.06] px-2.5 py-1.5 cursor-default">
-              <Flame className="h-3 w-3 text-orange-400" />
-              <span className="text-2xs font-bold text-orange-400 font-mono">5D</span>
-            </div>
+            {/* Upgrade CTA */}
+            <button
+              onClick={() => setUpgradeModal(true)}
+              className="hidden sm:flex haptic-press items-center gap-1.5 rounded-xl border border-accent/20 bg-accent/[0.06] px-3 py-1.5 text-2xs font-bold text-accent transition-all hover:bg-accent/15 hover:border-accent/30"
+            >
+              <Crown className="h-3 w-3" />
+              <span>שדרג PRO</span>
+            </button>
 
             {/* New Trade CTA */}
             <button
