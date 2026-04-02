@@ -303,22 +303,25 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
 
               {userMenu && (
                 <>
-                  <div className="fixed inset-0 z-[60] bg-background/50 md:bg-transparent" onClick={() => setUserMenu(false)} />
-                  <div className="hidden md:block absolute left-0 md:left-auto md:right-0 top-full mt-1 w-52 z-[70] rounded-2xl border border-white/[0.08] bg-card shadow-2xl animate-in fade-in slide-in-from-top-1 duration-150 overflow-hidden">
+                  <div className="fixed inset-0 z-[60]" onClick={() => setUserMenu(false)} />
+                  {/* Desktop dropdown */}
+                  <div className="hidden md:block absolute left-0 top-full mt-2 w-56 z-[70] rounded-2xl border border-white/[0.08] bg-[#111116] shadow-2xl shadow-black/40 animate-in fade-in slide-in-from-top-1 duration-150 overflow-hidden">
                     <UserMenuContent
                       onClose={() => setUserMenu(false)}
                       onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
                       onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
                     />
                   </div>
-                  <div className="md:hidden fixed inset-x-0 bottom-0 z-[70] rounded-t-3xl border-t border-white/[0.08] bg-card animate-in slide-in-from-bottom duration-200 overflow-hidden">
+                  {/* Mobile bottom sheet */}
+                  <div className="md:hidden fixed inset-0 z-[65] bg-black/50" onClick={() => setUserMenu(false)} />
+                  <div className="md:hidden fixed inset-x-0 bottom-0 z-[70] rounded-t-3xl border-t border-white/[0.08] bg-[#111116] animate-in slide-in-from-bottom duration-200 overflow-hidden safe-area-bottom">
                     <div className="flex justify-center pt-3 pb-1"><div className="w-10 h-1 rounded-full bg-muted-foreground/15" /></div>
                     <UserMenuContent
                       onClose={() => setUserMenu(false)}
                       onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
                       onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
                     />
-                    <div className="px-4 pb-6 pt-2">
+                    <div className="px-4 pb-8 pt-2">
                       <button onClick={() => setUserMenu(false)} className="w-full rounded-xl bg-white/[0.04] border border-white/[0.06] py-3 text-[12px] font-medium text-muted-foreground/50">סגור</button>
                     </div>
                   </div>
