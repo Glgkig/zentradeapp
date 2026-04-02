@@ -3,7 +3,10 @@ import {
   Bot, Shield, TrendingUp, Activity, CheckCircle2,
   BarChart3, Target, Eye, ArrowUpRight, ArrowDownRight, Clock,
   Newspaper, ChevronLeft, Zap, Mic, AlertTriangle, Lock,
+  Sparkles, Loader2, Brain,
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const HomeDashboard = ({ userName, onOpenTrade }: { userName: string; onOpenTrade?: () => void }) => {
   const hour = new Date().getHours();
