@@ -17,6 +17,7 @@ import OnboardingModal from "@/components/dashboard/OnboardingModal";
 import BacktestingPage from "@/pages/BacktestingPage";
 import ProtectionPage from "@/pages/ProtectionPage";
 import TaxCalculatorPage from "@/pages/TaxCalculatorPage";
+import EconomicNewsPage from "@/pages/EconomicNewsPage";
 import ForensicTradeDrawer from "@/components/dashboard/ForensicTradeDrawer";
 
 import logoBinanceFull from "@/assets/logos/binance-full.png";
