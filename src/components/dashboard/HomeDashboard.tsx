@@ -8,6 +8,7 @@ import {
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 
 /* ── Monthly P&L data ── */
 const monthlyData = [
@@ -45,6 +46,7 @@ const recentTrades = [
 
 /* ── Component ── */
 const HomeDashboard = ({ userName, onOpenTrade }: { userName: string; onOpenTrade?: () => void }) => {
+  const { userProfile } = useUserProfile();
   const [aiBriefing, setAiBriefing] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
 
@@ -74,6 +76,16 @@ const HomeDashboard = ({ userName, onOpenTrade }: { userName: string; onOpenTrad
           <h1 className="font-heading text-xl md:text-2xl font-bold text-foreground tracking-tight">
             שלום, {userName}. <span className="text-primary">השוק פתוח.</span>
           </h1>
+          {userProfile.weakness && (
+            <p className="text-xs text-accent/70 mt-1 font-medium">
+              🎯 זכור — המטרה שלך היום היא להתגבר על ה-{
+                userProfile.weakness === "overtrading" ? "Overtrading" :
+                userProfile.weakness === "fomo" ? "FOMO" :
+                userProfile.weakness === "cutting-winners" ? "חיתוך רווחים מוקדם" :
+                userProfile.weakness === "moving-sl" ? "הזזת סטופ-לוס" : ""
+              }.
+            </p>
+          )}
           <p className="text-xs text-muted-foreground/50 mt-0.5 font-mono">
             {new Date().toLocaleDateString("he-IL", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
           </p>

@@ -1,101 +1,46 @@
-import { useState, useRef, useEffect } from "react";
-import { Bot, Send, Sparkles, CheckCircle2, User } from "lucide-react";
+import { useState } from "react";
+import { Sparkles, ChevronLeft, Check, Crosshair, Wallet, Brain } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 
-/* ===== Types ===== */
-type ChatMessage = {
-  id: string;
-  role: "bot" | "user";
-  content: string;
-  chips?: { label: string; value: string }[];
-  multiSelect?: boolean;
-  inputType?: "text" | "number" | "textarea";
-  inputPlaceholder?: string;
-};
-
-type QuestionDef = {
-  id: string;
-  botMessage: string;
-  chips?: { label: string; value: string }[];
-  multiSelect?: boolean;
-  inputType?: "text" | "number" | "textarea";
-  inputPlaceholder?: string;
-};
-
-/* ===== Questions ===== */
-const questions: QuestionDef[] = [
+const steps = [
   {
-    id: "name",
-    botMessage: "היי! 👋 אני ZenTrade AI — השומר שלך בשוק.\n\nלפני שנתחיל, ספר לי — מה השם שלך?",
-    inputType: "text",
-    inputPlaceholder: "הקלד את שמך...",
-  },
-  {
-    id: "experience",
-    botMessage: "נעים מאוד! 🤝\n\nכמה ניסיון יש לך במסחר?",
-    chips: [
-      { label: "🌱 מתחיל", value: "beginner" },
-      { label: "📊 פחות משנה", value: "<1year" },
-      { label: "📈 1-3 שנים", value: "1-3years" },
-      { label: "🏆 3+ שנים", value: "3+years" },
+    id: "tradingStyle" as const,
+    icon: Crosshair,
+    title: "מה סגנון המסחר העיקרי שלך?",
+    subtitle: "נשתמש בזה כדי להתאים את ה-Playbook שלך",
+    options: [
+      { value: "smc", label: "SMC", desc: "Smart Money Concepts — Liquidity Sweeps, BOS, CHoCH" },
+      { value: "ict", label: "ICT", desc: "Inner Circle Trader — FVG, Order Blocks, Kill Zones" },
+      { value: "price-action", label: "Price Action", desc: "נרות, תבניות מחיר, Support & Resistance" },
+      { value: "indicators", label: "אינדיקטורים", desc: "RSI, MACD, Bollinger Bands, Moving Averages" },
     ],
   },
   {
-    id: "risk",
-    botMessage: "מעולה. עכשיו בוא נדבר על ניהול סיכונים — זה הלב של הכל 💎\n\nכמה אחוז מההון שלך אתה מוכן לסכן בעסקה בודדת?",
-    chips: [
-      { label: "1%", value: "1%" },
-      { label: "2%", value: "2%" },
-      { label: "3%", value: "3%" },
-      { label: "✏️ אחוז מותאם", value: "custom" },
+    id: "accountType" as const,
+    icon: Wallet,
+    title: "איזה סוג חשבון אתה מנהל?",
+    subtitle: "נתאים את ניהול הסיכונים בהתאם",
+    options: [
+      { value: "funded", label: "Funded Account", desc: "חשבון ממומן — כללים קפדניים, Drawdown מוגבל" },
+      { value: "personal", label: "חשבון אישי", desc: "הון עצמי — גמישות מלאה בניהול" },
+      { value: "demo", label: "Demo", desc: "חשבון תרגול — בלי סיכון אמיתי" },
     ],
   },
   {
-    id: "capital",
-    botMessage: "מהו גודל התיק שלך, או כמה הון אתה מוכן להשקיע? 💰",
-    chips: [
-      { label: "עד $1,000", value: "<1k" },
-      { label: "$1,000 - $5,000", value: "1k-5k" },
-      { label: "$5,000 - $25,000", value: "5k-25k" },
-      { label: "$25,000 - $100,000", value: "25k-100k" },
-      { label: "$100,000+", value: "100k+" },
+    id: "weakness" as const,
+    icon: Brain,
+    title: "מה החולשה הפסיכולוגית הכי גדולה שלך?",
+    subtitle: "ה-AI ישים דגש מיוחד על זה בניתוח שלך",
+    options: [
+      { value: "overtrading", label: "Overtrading", desc: "פותח יותר מדי עסקאות — לא יודע לעצור" },
+      { value: "fomo", label: "FOMO", desc: "נכנס לעסקאות מפחד לפספס — בלי אישור" },
+      { value: "cutting-winners", label: "חותך רווחים מוקדם", desc: "סוגר עסקה רווחית לפני שהיא מגיעה ליעד" },
+      { value: "moving-sl", label: "מזיז סטופ-לוס", desc: "משנה את הסטופ במהלך העסקה — מגדיל סיכון" },
     ],
-  },
-  {
-    id: "methodology",
-    botMessage: "איזה סגנון מסחר הולך לך? בחר כמה שמתאימים 🎯",
-    multiSelect: true,
-    chips: [
-      { label: "Price Action", value: "price-action" },
-      { label: "SMC", value: "smc" },
-      { label: "Supply & Demand", value: "supply-demand" },
-      { label: "Order Blocks", value: "order-blocks" },
-      { label: "אינדיקטורים", value: "indicators" },
-      { label: "Elliott Wave", value: "elliott-wave" },
-      { label: "אחר", value: "other" },
-    ],
-  },
-  {
-    id: "assets",
-    botMessage: "על מה אתה סוחר? בחר את הנכסים שלך 📊",
-    multiSelect: true,
-    chips: [
-      { label: "🌍 Forex", value: "forex" },
-      { label: "📊 מדדים", value: "indices" },
-      { label: "📈 מניות", value: "stocks" },
-      { label: "₿ קריפטו", value: "crypto" },
-      { label: "🥇 סחורות/זהב", value: "commodities" },
-    ],
-  },
-  {
-    id: "goal",
-    botMessage: "שאלה אחרונה — ואולי הכי חשובה 🔥\n\nמה המטרה הכי גדולה שלך, או מה האתגר שהכי שורף אותך עכשיו במסחר?",
-    inputType: "textarea",
-    inputPlaceholder: "ספר לי מה עובר עליך...",
   },
 ];
 
-/* ===== Component ===== */
 interface OnboardingModalProps {
   userName: string;
   onComplete: () => void;
@@ -103,319 +48,175 @@ interface OnboardingModalProps {
 
 const OnboardingModal = ({ onComplete }: OnboardingModalProps) => {
   const { updateProfile } = useAuth();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [currentQ, setCurrentQ] = useState(-1); // -1 = not started
-  const [userProfile, setUserProfile] = useState<Record<string, string | string[]>>({});
-  const [inputValue, setInputValue] = useState("");
-  const [multiSelected, setMultiSelected] = useState<string[]>([]);
-  const [typing, setTyping] = useState(false);
-  const [completed, setCompleted] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const { userProfile, updateField, setUserProfile } = useUserProfile();
+  const [step, setStep] = useState(0);
+  const [selections, setSelections] = useState<Record<string, string>>({});
+  const [completing, setCompleting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  const scrollToBottom = () => {
-    setTimeout(() => {
-      scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-    }, 50);
+  const currentStep = steps[step];
+  const selectedValue = selections[currentStep.id] || "";
+  const StepIcon = currentStep.icon;
+
+  const handleSelect = (value: string) => {
+    setSelections(prev => ({ ...prev, [currentStep.id]: value }));
   };
 
-  // Start onboarding
-  useEffect(() => {
-    if (currentQ === -1) {
-      setTyping(true);
-      setTimeout(() => {
-        const q = questions[0];
-        setMessages([{
-          id: "q-0",
-          role: "bot",
-          content: q.botMessage,
-          chips: q.chips,
-          multiSelect: q.multiSelect,
-          inputType: q.inputType,
-          inputPlaceholder: q.inputPlaceholder,
-        }]);
-        setCurrentQ(0);
-        setTyping(false);
-        scrollToBottom();
-      }, 800);
-    }
-  }, []);
+  const handleNext = async () => {
+    if (!selectedValue) return;
 
-  const advanceToNext = (answerDisplay: string, profileKey: string, profileValue: string | string[]) => {
-    // Add user message
-    const userMsg: ChatMessage = { id: `u-${currentQ}`, role: "user", content: answerDisplay };
-    setMessages((prev) => [...prev, userMsg]);
-    setUserProfile((prev) => ({ ...prev, [profileKey]: profileValue }));
-    setInputValue("");
-    setMultiSelected([]);
-    scrollToBottom();
+    updateField(currentStep.id, selectedValue as any);
 
-    const nextIdx = currentQ + 1;
-
-    if (nextIdx >= questions.length) {
-      // All done — show summary
-      setTyping(true);
-      scrollToBottom();
-      setTimeout(() => {
-        const name = userProfile.name || answerDisplay;
-        const summaryMsg: ChatMessage = {
-          id: "summary",
-          role: "bot",
-          content: `🎉 מושלם, ${typeof name === 'string' ? name : ''}!\n\nהפרופיל שלך מוכן. הנה הסיכום:\n\n✅ ניסיון: ${userProfile.experience || profileValue}\n✅ סיכון לעסקה: ${userProfile.risk || ''}\n✅ גודל תיק: ${userProfile.capital || ''}\n✅ סגנון מסחר: ${Array.isArray(userProfile.methodology) ? userProfile.methodology.join(', ') : userProfile.methodology || ''}\n✅ נכסים: ${Array.isArray(userProfile.assets) ? userProfile.assets.join(', ') : userProfile.assets || ''}\n\nאני כאן בשבילך — לשמור, לנתח, ולדאוג שלא תחרוג מהתוכנית 🛡️\n\nבוא נתחיל לעבוד!`,
-        };
-        setMessages((prev) => [...prev, summaryMsg]);
-        setTyping(false);
-        setCompleted(true);
-        scrollToBottom();
-      }, 1200);
-      return;
-    }
-
-    // Next question
-    setTyping(true);
-    scrollToBottom();
-    setTimeout(() => {
-      const q = questions[nextIdx];
-      const botMsg: ChatMessage = {
-        id: `q-${nextIdx}`,
-        role: "bot",
-        content: q.botMessage,
-        chips: q.chips,
-        multiSelect: q.multiSelect,
-        inputType: q.inputType,
-        inputPlaceholder: q.inputPlaceholder,
-      };
-      setMessages((prev) => [...prev, botMsg]);
-      setCurrentQ(nextIdx);
-      setTyping(false);
-      scrollToBottom();
-    }, 900);
-  };
-
-  const handleChipClick = (value: string, label: string) => {
-    const q = questions[currentQ];
-    if (q.multiSelect) {
-      setMultiSelected((prev) =>
-        prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
-      );
+    if (step < steps.length - 1) {
+      setStep(step + 1);
     } else {
-      advanceToNext(label, q.id, value);
+      // Final step — save everything
+      setCompleting(true);
+      const finalProfile = {
+        ...userProfile,
+        tradingStyle: (selections.tradingStyle || userProfile.tradingStyle) as any,
+        accountType: (selections.accountType || userProfile.accountType) as any,
+        weakness: (selections.weakness || selectedValue) as any,
+      };
+      setUserProfile(finalProfile);
+
+      // Save to DB too
+      const styleMap: Record<string, string> = {
+        "smc": "day_trading", "ict": "day_trading",
+        "price-action": "swing", "indicators": "swing",
+      };
+      await updateProfile({
+        onboarding_completed: true,
+        trading_style: styleMap[finalProfile.tradingStyle] || "day_trading",
+      });
+
+      setShowSuccess(true);
+      setTimeout(() => onComplete(), 2000);
     }
   };
 
-  const handleSubmitMulti = () => {
-    if (multiSelected.length === 0) return;
-    const q = questions[currentQ];
-    const labels = multiSelected.map((v) => q.chips?.find((c) => c.value === v)?.label || v);
-    advanceToNext(labels.join("، "), q.id, multiSelected);
+  const handleBack = () => {
+    if (step > 0) setStep(step - 1);
   };
 
-  const handleSubmitInput = () => {
-    if (!inputValue.trim()) return;
-    const q = questions[currentQ];
-    advanceToNext(inputValue.trim(), q.id, inputValue.trim());
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmitInput();
-    }
-  };
-
-  // Find current active question for input UI
-  const activeQ = currentQ >= 0 && currentQ < questions.length ? questions[currentQ] : null;
-  const isLastBotMsg = (msgId: string) => {
-    const botMsgs = messages.filter((m) => m.role === "bot");
-    return botMsgs[botMsgs.length - 1]?.id === msgId;
-  };
-
-  return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-2 md:p-6" dir="rtl">
-      <div className="absolute inset-0 bg-[hsl(var(--background)/0.95)] backdrop-blur-xl" />
-
-      <div className="relative z-10 w-full max-w-xl h-[90vh] md:h-[85vh] flex flex-col animate-in zoom-in-95 fade-in duration-500">
-        <div className="flex flex-col h-full rounded-xl border border-border/20 bg-card shadow-2xl overflow-hidden">
-          {/* Header */}
-          <div className="flex items-center gap-3 px-4 py-3 border-b border-border/10 bg-card/80 backdrop-blur-sm">
-            <div className="relative">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 border border-primary/15">
-                <Bot className="h-5 w-5 text-primary" />
-              </div>
-              <span className="absolute -bottom-0.5 -left-0.5 h-2.5 w-2.5 rounded-full bg-profit border-2 border-card" />
-            </div>
-            <div>
-              <h2 className="font-heading text-sm font-bold text-foreground">ZenTrade AI</h2>
-              <p className="text-2xs text-muted-foreground/50">בונה את הפרופיל שלך...</p>
-            </div>
-            <div className="mr-auto flex items-center gap-1 px-2 py-1 rounded-md bg-primary/5 border border-primary/10">
-              <Sparkles className="h-3 w-3 text-primary" />
-              <span className="text-2xs text-primary font-semibold">{Math.min(currentQ + 1, 7)}/7</span>
-            </div>
+  if (showSuccess) {
+    const weaknessLabel = steps[2].options.find(o => o.value === (selections.weakness || userProfile.weakness))?.label || "";
+    return (
+      <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" dir="rtl">
+        <div className="absolute inset-0 bg-[#0A0A0F]/98 backdrop-blur-xl" />
+        <div className="relative z-10 text-center animate-in zoom-in-95 fade-in duration-500 max-w-md">
+          <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-accent/15 border border-accent/20 mx-auto mb-6">
+            <Check className="h-10 w-10 text-accent" />
           </div>
-
-          {/* Messages */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 md:px-4 py-4 space-y-3 scrollbar-none">
-            {messages.map((msg) => (
-              <div key={msg.id} className={`flex gap-2 ${msg.role === "user" ? "flex-row-reverse" : ""} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
-                {/* Avatar */}
-                {msg.role === "bot" ? (
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/8 border border-primary/10 mt-0.5">
-                    <Bot className="h-3.5 w-3.5 text-primary" />
-                  </div>
-                ) : (
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-muted/20 border border-border/10 mt-0.5">
-                    <User className="h-3.5 w-3.5 text-muted-foreground" />
-                  </div>
-                )}
-
-                {/* Bubble */}
-                <div className={`max-w-[80%] ${msg.role === "user" ? "ml-auto" : ""}`}>
-                  <div className={`rounded-xl px-3.5 py-2.5 text-[12px] leading-[1.8] whitespace-pre-line ${
-                    msg.role === "bot"
-                      ? "bg-muted/10 border border-border/10 text-foreground"
-                      : "bg-primary text-primary-foreground"
-                  }`}>
-                    {msg.content}
-                  </div>
-
-                  {/* Chips (only on last bot msg) */}
-                  {msg.role === "bot" && msg.chips && isLastBotMsg(msg.id) && !completed && (
-                    <div className="mt-2 flex flex-wrap gap-1.5">
-                      {msg.chips.map((chip) => {
-                        const selected = msg.multiSelect
-                          ? multiSelected.includes(chip.value)
-                          : false;
-                        return (
-                          <button
-                            key={chip.value}
-                            onClick={() => handleChipClick(chip.value, chip.label)}
-                            className={`inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-[11px] font-medium border transition-all active:scale-[0.96] ${
-                              selected
-                                ? "border-primary/30 bg-primary/10 text-primary"
-                                : "border-border/15 bg-card hover:border-primary/20 hover:bg-primary/5 text-foreground"
-                            }`}
-                          >
-                            {chip.label}
-                            {selected && <CheckCircle2 className="h-3 w-3 text-primary" />}
-                          </button>
-                        );
-                      })}
-                      {msg.multiSelect && multiSelected.length > 0 && (
-                        <button
-                          onClick={handleSubmitMulti}
-                          className="inline-flex items-center gap-1 rounded-lg px-4 py-1.5 text-[11px] font-bold bg-primary text-primary-foreground transition-all hover:bg-primary/90 active:scale-[0.96]"
-                        >
-                          <Send className="h-3 w-3" />
-                          אישור ({multiSelected.length})
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-
-            {/* Typing indicator */}
-            {typing && (
-              <div className="flex gap-2 animate-in fade-in duration-300">
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/8 border border-primary/10">
-                  <Bot className="h-3.5 w-3.5 text-primary" />
-                </div>
-                <div className="rounded-xl bg-muted/10 border border-border/10 px-4 py-3">
-                  <div className="flex gap-1">
-                    <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/30 animate-bounce" style={{ animationDelay: "0ms" }} />
-                    <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/30 animate-bounce" style={{ animationDelay: "150ms" }} />
-                    <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/30 animate-bounce" style={{ animationDelay: "300ms" }} />
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Input Area */}
-          <div className="border-t border-border/10 bg-card/80 backdrop-blur-sm px-3 md:px-4 py-3">
-            {completed ? (
-              <button
-                onClick={async () => {
-                  // Map onboarding answers to profile fields
-                  const experienceMap: Record<string, number> = { "beginner": 0, "<1year": 1, "1-3years": 2, "3+years": 4 };
-                  const capitalMap: Record<string, number> = { "<1k": 500, "1k-5k": 3000, "5k-25k": 15000, "25k-100k": 62500, "100k+": 150000 };
-                  const styleMap: Record<string, string> = { "price-action": "day_trading", "smc": "day_trading", "indicators": "swing" };
-                  
-                  const updates: Record<string, any> = {
-                    onboarding_completed: true,
-                  };
-                  if (userProfile.name && typeof userProfile.name === "string") updates.full_name = userProfile.name;
-                  if (userProfile.experience && typeof userProfile.experience === "string") updates.experience_years = experienceMap[userProfile.experience] ?? 1;
-                  if (userProfile.capital && typeof userProfile.capital === "string") updates.account_size = capitalMap[userProfile.capital] ?? null;
-                  if (userProfile.assets && Array.isArray(userProfile.assets)) updates.primary_instruments = userProfile.assets;
-                  if (userProfile.goal && typeof userProfile.goal === "string") updates.goals = userProfile.goal;
-                  if (userProfile.methodology && Array.isArray(userProfile.methodology)) {
-                    updates.trading_style = styleMap[userProfile.methodology[0]] ?? "day_trading";
-                  }
-
-                  await updateProfile(updates);
-                  onComplete();
-                }}
-                className="w-full flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-[13px] font-bold text-primary-foreground transition-all hover:bg-primary/90 active:scale-[0.97]"
-              >
-                <Sparkles className="h-4 w-4" />
-                בוא נתחיל לעבוד!
-              </button>
-            ) : activeQ?.inputType === "text" || activeQ?.inputType === "textarea" ? (
-              <div className="flex items-end gap-2">
-                {activeQ.inputType === "textarea" ? (
-                  <textarea
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder={activeQ.inputPlaceholder}
-                    rows={2}
-                    className="flex-1 resize-none rounded-lg border border-border/15 bg-muted/5 px-3 py-2.5 text-[12px] text-foreground placeholder:text-muted-foreground/25 focus:border-primary/30 focus:outline-none transition-all"
-                  />
-                ) : (
-                  <input
-                    type="text"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder={activeQ.inputPlaceholder}
-                    autoFocus
-                    className="flex-1 rounded-lg border border-border/15 bg-muted/5 px-3 py-2.5 text-[12px] text-foreground placeholder:text-muted-foreground/25 focus:border-primary/30 focus:outline-none transition-all"
-                  />
-                )}
-                <button
-                  onClick={handleSubmitInput}
-                  disabled={!inputValue.trim()}
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground disabled:opacity-20 transition-all hover:bg-primary/90 active:scale-[0.95]"
-                >
-                  <Send className="h-4 w-4" />
-                </button>
-              </div>
-            ) : activeQ?.inputType === "number" ? (
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder={activeQ.inputPlaceholder}
-                  autoFocus
-                  className="flex-1 rounded-lg border border-border/15 bg-muted/5 px-3 py-2.5 text-[12px] text-foreground placeholder:text-muted-foreground/25 focus:border-primary/30 focus:outline-none transition-all font-mono"
-                />
-                <button
-                  onClick={handleSubmitInput}
-                  disabled={!inputValue.trim()}
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground disabled:opacity-20 transition-all hover:bg-primary/90 active:scale-[0.95]"
-                >
-                  <Send className="h-4 w-4" />
-                </button>
-              </div>
-            ) : (
-              <p className="text-center text-2xs text-muted-foreground/30 py-1">בחר אחת מהאפשרויות למעלה ☝️</p>
-            )}
+          <h1 className="font-heading text-3xl font-black text-foreground mb-3">הפרופיל מוכן! 🎯</h1>
+          <p className="text-sm text-muted-foreground/60 leading-relaxed">
+            המערכת מותאמת אישית. המטרה שלך:{" "}
+            <span className="text-accent font-bold">להתגבר על ה-{weaknessLabel}</span>
+          </p>
+          <div className="mt-6 flex items-center justify-center gap-1.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent animate-bounce" style={{ animationDelay: "0ms" }} />
+            <span className="h-1.5 w-1.5 rounded-full bg-accent animate-bounce" style={{ animationDelay: "150ms" }} />
+            <span className="h-1.5 w-1.5 rounded-full bg-accent animate-bounce" style={{ animationDelay: "300ms" }} />
           </div>
         </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" dir="rtl">
+      <div className="absolute inset-0 bg-[#0A0A0F]/98 backdrop-blur-xl" />
+
+      {/* Decorative glows */}
+      <div className="absolute top-1/4 right-1/4 w-80 h-80 rounded-full bg-primary/[0.04] blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-1/4 left-1/4 w-60 h-60 rounded-full bg-accent/[0.03] blur-[80px] pointer-events-none" />
+
+      <div className="relative z-10 w-full max-w-lg animate-in fade-in slide-in-from-bottom-4 duration-500">
+        {/* Progress */}
+        <div className="flex items-center justify-center gap-2 mb-8">
+          {steps.map((_, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <div className={`h-2.5 rounded-full transition-all duration-500 ${
+                i === step ? "w-10 bg-primary" : i < step ? "w-6 bg-accent" : "w-6 bg-white/[0.08]"
+              }`} />
+            </div>
+          ))}
+        </div>
+
+        {/* Step Content */}
+        <div className="text-center mb-8">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 border border-primary/15 mx-auto mb-5">
+            <StepIcon className="h-7 w-7 text-primary" />
+          </div>
+          <h2 className="font-heading text-xl md:text-2xl font-black text-foreground mb-2">
+            {currentStep.title}
+          </h2>
+          <p className="text-xs text-muted-foreground/50">{currentStep.subtitle}</p>
+        </div>
+
+        {/* Options */}
+        <div className="space-y-2.5 mb-8">
+          {currentStep.options.map((opt) => {
+            const isSelected = selectedValue === opt.value;
+            return (
+              <button
+                key={opt.value}
+                onClick={() => handleSelect(opt.value)}
+                className={`w-full text-right rounded-2xl border p-4 transition-all duration-300 group ${
+                  isSelected
+                    ? "border-primary/30 bg-primary/[0.08] shadow-[0_0_25px_hsl(var(--primary)/0.08)]"
+                    : "border-white/[0.06] bg-white/[0.025] hover:border-white/[0.12] hover:bg-white/[0.04]"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <p className={`text-sm font-bold mb-0.5 transition-colors ${isSelected ? "text-primary" : "text-foreground"}`}>
+                      {opt.label}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground/45 leading-relaxed">{opt.desc}</p>
+                  </div>
+                  <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-all mr-3 ${
+                    isSelected ? "border-primary bg-primary" : "border-white/[0.15] bg-transparent"
+                  }`}>
+                    {isSelected && <Check className="h-3.5 w-3.5 text-primary-foreground" />}
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Navigation */}
+        <div className="flex items-center gap-3">
+          {step > 0 && (
+            <button
+              onClick={handleBack}
+              className="flex items-center gap-1.5 rounded-xl bg-white/[0.05] border border-white/[0.08] px-5 py-3 text-xs font-bold text-muted-foreground/60 hover:text-foreground transition-all"
+            >
+              <ChevronLeft className="h-4 w-4 rotate-180" />
+              חזור
+            </button>
+          )}
+          <button
+            onClick={handleNext}
+            disabled={!selectedValue || completing}
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground disabled:opacity-30 hover:bg-primary/90 transition-all active:scale-[0.97]"
+          >
+            {completing ? (
+              <span className="animate-spin h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full" />
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4" />
+                {step === steps.length - 1 ? "סיים והתחל לעבוד" : "הבא"}
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Step counter */}
+        <p className="text-center text-[10px] text-muted-foreground/25 mt-4 font-medium">
+          שלב {step + 1} מתוך {steps.length}
+        </p>
       </div>
     </div>
   );
