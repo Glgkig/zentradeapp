@@ -1,7 +1,11 @@
-import { useState, useRef, useEffect } from "react";
-import { Mic, Send, Bot, Sparkles, Shield, Heart, Flame, AlertTriangle, Zap, Trophy, ChevronLeft } from "lucide-react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { Mic, MicOff, Send, Bot, Sparkles, Shield, Heart, Flame, AlertTriangle, Zap, Trophy, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface Message { id: number; role: "ai" | "user"; text: string; time: string; }
+
+type RecordingState = "idle" | "recording" | "processing";
 
 const tiltPills = [
   { text: "נקמה בשוק", icon: Flame, color: "loss" as const, full: "בא לי לנקום בשוק" },
@@ -40,11 +44,22 @@ const MentorPage = () => {
   ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
+  const [recordingState, setRecordingState] = useState<RecordingState>("idle");
+  const [recordingDuration, setRecordingDuration] = useState(0);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, isTyping]);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
 
   const sendMessage = (text: string) => {
     if (!text.trim()) return;
@@ -56,6 +71,96 @@ const MentorPage = () => {
       setIsTyping(false);
     }, 1000 + Math.random() * 600);
   };
+
+  const startRecording = useCallback(async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+      mediaRecorderRef.current = mediaRecorder;
+      chunksRef.current = [];
+      setRecordingDuration(0);
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
+
+      mediaRecorder.start();
+      setRecordingState("recording");
+
+      // Start duration timer
+      timerRef.current = setInterval(() => {
+        setRecordingDuration((prev) => prev + 1);
+      }, 1000);
+    } catch {
+      toast.error("לא ניתן לגשת למיקרופון. בדוק הרשאות.");
+    }
+  }, []);
+
+  const stopRecording = useCallback(async () => {
+    const mediaRecorder = mediaRecorderRef.current;
+    if (!mediaRecorder) return;
+
+    // Stop timer
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+
+    return new Promise<void>((resolve) => {
+      mediaRecorder.onstop = async () => {
+        setRecordingState("processing");
+        const audioBlob = new Blob(chunksRef.current, { type: "audio/webm" });
+        mediaRecorder.stream.getTracks().forEach((t) => t.stop());
+
+        try {
+          const base64DataUrl = await new Promise<string>((res, rej) => {
+            const reader = new FileReader();
+            reader.onloadend = () => res(reader.result as string);
+            reader.onerror = () => rej(new Error("Failed to read audio"));
+            reader.readAsDataURL(audioBlob);
+          });
+
+          const { data, error } = await supabase.functions.invoke("fal-whisper", {
+            body: { audio_url: base64DataUrl },
+          });
+
+          if (error) {
+            toast.error(`שגיאת שרת: ${error.message || JSON.stringify(error)}`);
+            return;
+          }
+          if (data?.error) {
+            toast.error(`שגיאה: ${data.error}`);
+            return;
+          }
+
+          if (data?.text && data.text.trim()) {
+            // Send the transcribed text as a message
+            sendMessage(data.text.trim());
+            toast.success("התמלול הושלם!");
+          } else {
+            toast.warning("לא זוהה טקסט בהקלטה. נסה שוב.");
+          }
+        } catch (err: any) {
+          toast.error(`שגיאה: ${err?.message || String(err)}`);
+        } finally {
+          setRecordingState("idle");
+          setRecordingDuration(0);
+          resolve();
+        }
+      };
+      mediaRecorder.stop();
+    });
+  }, []);
+
+  const toggleRecording = () => {
+    if (recordingState === "recording") {
+      stopRecording();
+    } else if (recordingState === "idle") {
+      startRecording();
+    }
+  };
+
+  const formatDuration = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
   return (
     <div className="flex flex-col h-[calc(100vh-100px)] md:h-[calc(100vh-56px)] max-w-3xl mx-auto">
@@ -162,33 +267,64 @@ const MentorPage = () => {
           onSubmit={(e) => { e.preventDefault(); sendMessage(input); }}
           className="relative flex items-center gap-2 rounded-sm border border-border/10 bg-card px-2.5 py-2 focus-within:border-primary/15 transition-all"
         >
+          {/* Premium Mic Button */}
           <button
             type="button"
-            onClick={() => setIsRecording(!isRecording)}
-            className={`haptic-press flex h-8 w-8 shrink-0 items-center justify-center rounded-sm transition-all ${
-              isRecording
-                ? "bg-loss/10 border border-loss/20 text-loss"
-                : "bg-muted/10 border border-border/10 text-muted-foreground/30 hover:text-primary hover:bg-primary/8 hover:border-primary/15"
+            onClick={toggleRecording}
+            disabled={recordingState === "processing"}
+            className={`haptic-press group relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-all duration-300 overflow-hidden ${
+              recordingState === "recording"
+                ? "bg-gradient-to-br from-loss/20 to-loss/10 border border-loss/40 text-loss shadow-[0_0_18px_rgba(239,68,68,0.3)]"
+                : recordingState === "processing"
+                ? "bg-gradient-to-br from-[#00D4AA]/15 to-[#00D4AA]/5 border border-[#00D4AA]/30 text-[#00D4AA] cursor-wait shadow-[0_0_12px_rgba(0,212,170,0.2)]"
+                : "bg-gradient-to-br from-[#00D4AA]/10 to-[#00D4AA]/5 border border-[#00D4AA]/20 text-[#00D4AA]/60 hover:text-[#00D4AA] hover:border-[#00D4AA]/40 hover:shadow-[0_0_20px_rgba(0,212,170,0.25)] hover:from-[#00D4AA]/15"
             }`}
           >
-            <Mic className={`h-3.5 w-3.5 ${isRecording ? "animate-pulse" : ""}`} />
+            {recordingState === "recording" ? (
+              <span className="relative flex items-center justify-center">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-loss/30" />
+                <MicOff className="relative h-4 w-4" />
+              </span>
+            ) : recordingState === "processing" ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Mic className="h-4 w-4 group-hover:scale-110 transition-transform duration-200" />
+            )}
           </button>
 
-          {isRecording ? (
-            <div className="flex items-center gap-2 flex-1">
-              <div className="flex items-center gap-1 shrink-0">
-                <span className="h-1 w-1 rounded-full bg-primary animate-pulse" />
-                <span className="text-2xs text-primary font-mono font-semibold">0:04</span>
+          {recordingState === "recording" ? (
+            <div className="flex items-center gap-3 flex-1">
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-loss/50" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-loss" />
+                </span>
+                <span className="text-xs text-loss font-mono font-bold tracking-wider">{formatDuration(recordingDuration)}</span>
               </div>
               <div className="flex-1 flex items-center justify-center gap-[1.5px] h-6">
                 {Array.from({ length: 35 }, (_, i) => (
-                  <div key={i} className="w-[1.5px] rounded-full bg-primary/40" style={{ height: `${15 + Math.sin(i * 0.8) * 40 + Math.random() * 30}%`, animation: `waveform ${0.4 + Math.random() * 0.3}s ease-in-out ${i * 25}ms infinite alternate` }} />
+                  <div key={i} className="w-[1.5px] rounded-full bg-loss/40" style={{ height: `${15 + Math.sin(i * 0.8) * 40 + Math.random() * 30}%`, animation: `waveform ${0.4 + Math.random() * 0.3}s ease-in-out ${i * 25}ms infinite alternate` }} />
                 ))}
               </div>
-              <button type="button" onClick={() => { setIsRecording(false); sendMessage("(קולי) אני מרגיש לחוץ, הפסדתי שתי עסקאות"); }}
-                className="haptic-press flex h-7 w-7 shrink-0 items-center justify-center rounded-sm bg-primary/10 border border-primary/15 text-primary">
-                <Send className="h-3 w-3" />
+              <button 
+                type="button" 
+                onClick={toggleRecording}
+                className="haptic-press flex h-8 items-center gap-1.5 rounded-lg bg-loss/10 border border-loss/25 px-3 text-loss text-[11px] font-semibold hover:bg-loss/20 transition-all"
+              >
+                <Send className="h-3 w-3 rotate-180" />
+                <span>שלח</span>
               </button>
+            </div>
+          ) : recordingState === "processing" ? (
+            <div className="flex items-center gap-2 flex-1">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-[#00D4AA] font-mono font-semibold">מתמלל...</span>
+                <div className="flex gap-1">
+                  {[0, 1, 2].map((i) => (
+                    <span key={i} className="h-1.5 w-1.5 rounded-full bg-[#00D4AA]/50 animate-bounce" style={{ animationDelay: `${i * 150}ms` }} />
+                  ))}
+                </div>
+              </div>
             </div>
           ) : (
             <>
