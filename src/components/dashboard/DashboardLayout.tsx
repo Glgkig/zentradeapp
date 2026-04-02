@@ -293,9 +293,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                 onClick={() => setUserMenu(!userMenu)}
                 className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-2 py-1.5 hover:bg-white/[0.06] transition-all"
               >
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-2xs font-bold text-primary font-mono">
-                  {userName.charAt(0).toUpperCase()}
-                </div>
+                <UserAvatar avatarUrl={profile?.avatar_url} userName={userName} size="sm" />
                 <div className="hidden md:block text-right">
                   <p className="text-[11px] font-semibold text-foreground leading-none">{userName}</p>
                   <p className="text-2xs text-accent font-mono font-bold">PRO</p>
