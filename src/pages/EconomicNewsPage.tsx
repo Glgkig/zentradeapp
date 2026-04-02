@@ -3,7 +3,7 @@ import { format, addDays, subDays, isToday, parseISO, isSameDay } from "date-fns
 import { he } from "date-fns/locale";
 import {
   Newspaper, TrendingUp, Calendar as CalendarIcon, ChevronRight, ChevronLeft,
-  BookOpen, Clock, Globe, Flame, Star, Loader2, RefreshCw,
+  BookOpen, Clock, Globe, Flame, Star, Loader2, RefreshCw, CalendarPlus,
 } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
