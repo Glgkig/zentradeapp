@@ -3,16 +3,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-function uint8ArrayToBase64(bytes: Uint8Array): string {
-  let binary = ''
-  const chunkSize = 8192
-  for (let i = 0; i < bytes.length; i += chunkSize) {
-    const chunk = bytes.subarray(i, i + chunkSize)
-    binary += String.fromCharCode(...chunk)
-  }
-  return btoa(binary)
-}
-
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -21,47 +11,22 @@ Deno.serve(async (req) => {
   try {
     const FAL_KEY = Deno.env.get('FAL_KEY')
     if (!FAL_KEY) {
-      return new Response(JSON.stringify({ error: 'FAL_KEY is not configured in secrets' }), {
+      return new Response(JSON.stringify({ error: 'FAL_KEY is not configured' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
-    const formData = await req.formData()
-    const audioFile = formData.get('audio') as File
-    if (!audioFile) {
-      return new Response(JSON.stringify({ error: 'No audio file provided' }), {
+    const { audio_url } = await req.json()
+    if (!audio_url || !audio_url.startsWith('data:audio/')) {
+      return new Response(JSON.stringify({ error: 'Invalid or missing audio_url. Must be a data:audio/... Data URL.' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
-    // Step 1: Upload audio to fal storage to get a URL
-    const audioBytes = new Uint8Array(await audioFile.arrayBuffer())
-    
-    const uploadRes = await fetch('https://fal.ai/api/storage/upload', {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Key ${FAL_KEY}`,
-        'Content-Type': audioFile.type || 'audio/webm',
-      },
-      body: audioBytes,
-    })
+    console.log('Calling Whisper with data URL length:', audio_url.length)
 
-    if (!uploadRes.ok) {
-      const errText = await uploadRes.text()
-      console.error('Fal storage upload error:', uploadRes.status, errText)
-      return new Response(JSON.stringify({ error: `Storage upload failed: ${uploadRes.status}`, details: errText }), {
-        status: 502,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
-
-    const uploadData = await uploadRes.json()
-    const audioUrl = uploadData.url
-    console.log('Audio uploaded to fal storage:', audioUrl)
-
-    // Step 2: Call whisper with the uploaded URL
     const whisperRes = await fetch('https://fal.run/fal-ai/whisper', {
       method: 'POST',
       headers: {
@@ -69,7 +34,7 @@ Deno.serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        audio_url: audioUrl,
+        audio_url: audio_url,
         task: 'transcribe',
         language: 'he',
         chunk_level: 'segment',
@@ -77,11 +42,11 @@ Deno.serve(async (req) => {
     })
 
     const whisperText = await whisperRes.text()
-    console.log('Whisper response status:', whisperRes.status)
-    console.log('Whisper response body:', whisperText)
+    console.log('Whisper status:', whisperRes.status)
+    console.log('Whisper body:', whisperText.substring(0, 500))
 
     if (!whisperRes.ok) {
-      return new Response(JSON.stringify({ error: `Whisper API error: ${whisperRes.status}`, details: whisperText }), {
+      return new Response(JSON.stringify({ error: `Whisper API error ${whisperRes.status}`, details: whisperText }), {
         status: 502,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
@@ -89,7 +54,7 @@ Deno.serve(async (req) => {
 
     const result = JSON.parse(whisperText)
     const transcribedText = result.text || ''
-    console.log('Transcribed text:', transcribedText)
+    console.log('Transcribed:', transcribedText)
 
     return new Response(JSON.stringify({ text: transcribedText }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
