@@ -4,7 +4,7 @@ import {
   Sparkles, Loader2, BarChart3, Crosshair, Zap, ChevronLeft,
 } from "lucide-react";
 import {
-  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  AreaChart, Area, BarChart, Bar, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
