@@ -123,6 +123,40 @@ const ForensicTradeDrawer = ({ open, onClose }: ForensicTradeDrawerProps) => {
     }
   };
 
+  const handleAiExtract = async () => {
+    if (!quickDesc.trim()) {
+      toast.error("כתוב תיאור עסקה לפני מילוי אוטומטי");
+      return;
+    }
+    setAiExtracting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("trade-ai-extract", {
+        body: { description: quickDesc },
+      });
+      if (error) {
+        toast.error(`שגיאה: ${error.message}`);
+        return;
+      }
+      if (data?.error) {
+        toast.error(data.error);
+        return;
+      }
+      const ext = data?.extracted;
+      if (ext) {
+        if (ext.asset) setAsset(ext.asset);
+        if (ext.direction === "long" || ext.direction === "short") setDirection(ext.direction);
+        if (ext.price != null) setEntryPrice(String(ext.price));
+        toast.success("השדות מולאו אוטומטית ✨");
+      } else {
+        toast.warning("לא הצלחתי לחלץ נתונים מהטקסט");
+      }
+    } catch (err: any) {
+      toast.error(`שגיאה: ${err?.message || String(err)}`);
+    } finally {
+      setAiExtracting(false);
+    }
+  };
+
   if (!open) return null;
 
   return (
