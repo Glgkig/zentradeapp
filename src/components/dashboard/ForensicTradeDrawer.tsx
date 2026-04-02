@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from "react";
-import { X, ArrowUpRight, ArrowDownRight, Plus, CheckCircle2, Mic, MicOff, Loader2 } from "lucide-react";
+import { X, ArrowUpRight, ArrowDownRight, Plus, CheckCircle2, Mic, MicOff, Loader2, Sparkles } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
