@@ -3,7 +3,7 @@ import { format, addDays, subDays, isToday, parseISO, isSameDay } from "date-fns
 import { he } from "date-fns/locale";
 import {
   Newspaper, TrendingUp, Calendar as CalendarIcon, ChevronRight, ChevronLeft,
-  BookOpen, Clock, Globe, Flame, Star, Loader2, RefreshCw,
+  BookOpen, Clock, Globe, Flame, Star, Loader2, RefreshCw, CalendarPlus,
 } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -166,6 +166,34 @@ const EconomicNewsPage = () => {
   const handleAddToJournal = (event: EconomicEvent) => {
     toast.success("נוסף ליומן המסחר", {
       description: `"${event.titleHe}" (${event.flag} ${event.region}) נשמר ביומן שלך`,
+    });
+  };
+
+  const handleAddToGoogleCalendar = (event: EconomicEvent) => {
+    const eventDate = new Date(event.date);
+    const endDate = new Date(eventDate.getTime() + 30 * 60 * 1000); // 30 min duration
+
+    const formatGCal = (d: Date) =>
+      d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+
+    const title = `🔴 ${event.titleHe} (${event.region})`;
+    const details = [
+      `דוח כלכלי בעל השפעה גבוהה`,
+      event.forecast ? `צפי: ${event.forecast}` : "",
+      event.previous ? `קודם: ${event.previous}` : "",
+      `מקור: ZenTrade`,
+    ].filter(Boolean).join("\n");
+
+    const url = new URL("https://calendar.google.com/calendar/render");
+    url.searchParams.set("action", "TEMPLATE");
+    url.searchParams.set("text", title);
+    url.searchParams.set("dates", `${formatGCal(eventDate)}/${formatGCal(endDate)}`);
+    url.searchParams.set("details", details);
+    url.searchParams.set("ctz", "Asia/Jerusalem");
+
+    window.open(url.toString(), "_blank");
+    toast.success("נפתח Google Calendar", {
+      description: `"${event.titleHe}" — הוסף התראה בלוח השנה שלך`,
     });
   };
 
@@ -402,14 +430,24 @@ const EconomicNewsPage = () => {
                               )}
                             </div>
                           </div>
-                          <button
-                            onClick={() => handleAddToJournal(event)}
-                            className="haptic-press opacity-0 group-hover:opacity-100 flex items-center gap-1 rounded-lg border border-primary/15 bg-primary/5 px-2 py-1 text-primary hover:bg-primary/15 transition-all shrink-0"
-                            title="הוסף ליומן"
-                          >
-                            <BookOpen className="h-3 w-3" />
-                            <span className="text-2xs font-medium hidden sm:inline">ליומן</span>
-                          </button>
+                          <div className="flex flex-col gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-all">
+                            <button
+                              onClick={() => handleAddToGoogleCalendar(event)}
+                              className="haptic-press flex items-center gap-1 rounded-lg border border-accent/20 bg-accent/5 px-2 py-1 text-accent hover:bg-accent/15 transition-all"
+                              title="הוסף ל-Google Calendar"
+                            >
+                              <CalendarPlus className="h-3 w-3" />
+                              <span className="text-2xs font-medium hidden sm:inline">יומן Google</span>
+                            </button>
+                            <button
+                              onClick={() => handleAddToJournal(event)}
+                              className="haptic-press flex items-center gap-1 rounded-lg border border-primary/15 bg-primary/5 px-2 py-1 text-primary hover:bg-primary/15 transition-all"
+                              title="הוסף ליומן מסחר"
+                            >
+                              <BookOpen className="h-3 w-3" />
+                              <span className="text-2xs font-medium hidden sm:inline">ליומן</span>
+                            </button>
+                          </div>
                         </div>
                       </div>
                     );
