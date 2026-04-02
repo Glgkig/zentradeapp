@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, BookOpen, Bot, ShieldCheck,
   LogOut, ChevronDown, Plug, Menu, X, Settings, Sun, Moon, Zap,
-  Crosshair, PieChart, History, CheckCircle2, Flame, Eye, Crown, Star, Sparkles,
+  Crosshair, PieChart, History, CheckCircle2, Flame, Eye, Crown, Star, Sparkles, Newspaper,
   Calculator, Plus, ShieldAlert,
 } from "lucide-react";
 import SettingsPage from "@/pages/SettingsPage";
