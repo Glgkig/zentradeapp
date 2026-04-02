@@ -132,8 +132,8 @@ const ProfileTab = () => (
           </button>
         </div>
         <div>
-          <h3 className="text-[15px] font-bold text-foreground">יהונתן</h3>
-          <p className="text-[10px] text-muted-foreground/40 mt-0.5">yehonatan@zentrade.io</p>
+          <h3 className="text-[15px] font-bold text-foreground">{userName}</h3>
+          <p className="text-[10px] text-muted-foreground/40 mt-0.5">{userEmail}</p>
           <div className="flex items-center gap-1.5 mt-1.5">
             <span className="rounded-md bg-primary/10 border border-primary/12 px-2 py-0.5 text-[8px] font-bold text-primary">Pro</span>
             <span className="rounded-md bg-accent/10 border border-accent/12 px-2 py-0.5 text-[8px] font-bold text-accent">מאומת</span>
