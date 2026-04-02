@@ -308,6 +308,8 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                   {/* Desktop dropdown */}
                   <div className="hidden md:block absolute left-0 top-full mt-2 w-56 z-[70] rounded-2xl border border-white/[0.08] bg-[#111116] shadow-2xl shadow-black/40 animate-in fade-in slide-in-from-top-1 duration-150 overflow-hidden">
                     <UserMenuContent
+                      userName={userName}
+                      userEmail={userEmail}
                       onClose={() => setUserMenu(false)}
                       onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
                       onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
