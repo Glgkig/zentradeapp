@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from "react";
-import { X, ArrowUpRight, ArrowDownRight, Plus, CheckCircle2, Mic, MicOff, Loader2 } from "lucide-react";
+import { X, ArrowUpRight, ArrowDownRight, Plus, CheckCircle2, Mic, MicOff, Loader2, Sparkles } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -28,6 +28,11 @@ const ForensicTradeDrawer = ({ open, onClose }: ForensicTradeDrawerProps) => {
   const [selectedConfluences, setSelectedConfluences] = useState<string[]>([]);
   const [thesis, setThesis] = useState("");
   const [recordingState, setRecordingState] = useState<RecordingState>("idle");
+  const [quickDesc, setQuickDesc] = useState("");
+  const [aiExtracting, setAiExtracting] = useState(false);
+  const [asset, setAsset] = useState("");
+  const [entryPrice, setEntryPrice] = useState("");
+  const [lotSize, setLotSize] = useState("");
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
@@ -118,6 +123,40 @@ const ForensicTradeDrawer = ({ open, onClose }: ForensicTradeDrawerProps) => {
     }
   };
 
+  const handleAiExtract = async () => {
+    if (!quickDesc.trim()) {
+      toast.error("כתוב תיאור עסקה לפני מילוי אוטומטי");
+      return;
+    }
+    setAiExtracting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("trade-ai-extract", {
+        body: { description: quickDesc },
+      });
+      if (error) {
+        toast.error(`שגיאה: ${error.message}`);
+        return;
+      }
+      if (data?.error) {
+        toast.error(data.error);
+        return;
+      }
+      const ext = data?.extracted;
+      if (ext) {
+        if (ext.asset) setAsset(ext.asset);
+        if (ext.direction === "long" || ext.direction === "short") setDirection(ext.direction);
+        if (ext.price != null) setEntryPrice(String(ext.price));
+        toast.success("השדות מולאו אוטומטית ✨");
+      } else {
+        toast.warning("לא הצלחתי לחלץ נתונים מהטקסט");
+      }
+    } catch (err: any) {
+      toast.error(`שגיאה: ${err?.message || String(err)}`);
+    } finally {
+      setAiExtracting(false);
+    }
+  };
+
   if (!open) return null;
 
   return (
@@ -163,11 +202,42 @@ const ForensicTradeDrawer = ({ open, onClose }: ForensicTradeDrawerProps) => {
         </div>
 
         <div className="p-5 space-y-5">
+          {/* AI Quick Extract */}
+          <div className="rounded-2xl border border-primary/20 bg-primary/[0.04] p-4 space-y-3">
+            <label className="text-2xs font-semibold text-primary/70 mb-1 block font-mono uppercase">תיאור עסקה מהיר</label>
+            <textarea
+              rows={2}
+              value={quickDesc}
+              onChange={(e) => setQuickDesc(e.target.value)}
+              placeholder="למשל: נכנסתי ללונג על נאסדק במחיר 18500"
+              className="w-full rounded-xl border border-primary/15 bg-white/[0.03] px-4 py-3 text-[12px] text-foreground placeholder:text-muted-foreground/30 outline-none focus:border-primary/30 resize-none transition-all leading-relaxed"
+            />
+            <button
+              onClick={handleAiExtract}
+              disabled={aiExtracting || !quickDesc.trim()}
+              className="haptic-press w-full flex items-center justify-center gap-2 rounded-xl border border-primary/25 bg-primary/10 py-3 text-[13px] font-bold text-primary transition-all hover:bg-primary/20 disabled:opacity-40 disabled:cursor-not-allowed min-h-[44px]"
+            >
+              {aiExtracting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>מעבד...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4" />
+                  <span>✨ מילוי אוטומטי (AI)</span>
+                </>
+              )}
+            </button>
+          </div>
+
           {/* Asset */}
           <div>
             <label className="text-2xs font-semibold text-muted-foreground/50 mb-1.5 block font-mono uppercase">נכס</label>
             <input
               type="text"
+              value={asset}
+              onChange={(e) => setAsset(e.target.value)}
               placeholder="EUR/USD, BTC, NQ..."
               className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-[13px] font-medium text-foreground placeholder:text-muted-foreground/20 outline-none focus:border-primary/30 transition-all min-h-[48px]"
             />
@@ -208,6 +278,8 @@ const ForensicTradeDrawer = ({ open, onClose }: ForensicTradeDrawerProps) => {
               <label className="text-2xs font-semibold text-muted-foreground/50 mb-1.5 block font-mono uppercase">מחיר כניסה</label>
               <input
                 type="number"
+                value={entryPrice}
+                onChange={(e) => setEntryPrice(e.target.value)}
                 placeholder="Entry"
                 className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-[13px] font-mono text-foreground placeholder:text-muted-foreground/20 outline-none focus:border-primary/30 transition-all min-h-[48px]"
               />
@@ -216,6 +288,8 @@ const ForensicTradeDrawer = ({ open, onClose }: ForensicTradeDrawerProps) => {
               <label className="text-2xs font-semibold text-muted-foreground/50 mb-1.5 block font-mono uppercase">לוט / כמות</label>
               <input
                 type="number"
+                value={lotSize}
+                onChange={(e) => setLotSize(e.target.value)}
                 placeholder="0.01"
                 step="0.01"
                 className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-[13px] font-mono text-foreground placeholder:text-muted-foreground/20 outline-none focus:border-primary/30 transition-all min-h-[48px]"
