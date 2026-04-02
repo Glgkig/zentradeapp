@@ -119,6 +119,11 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
     if (activeNav === "backtesting") return <BacktestingPage />;
     if (activeNav === "protection") return <ProtectionPage />;
     if (activeNav === "tax") return <TaxCalculatorPage />;
+    if (activeNav === "tradingview") return (
+      <div className="flex items-center justify-center h-full min-h-[60vh] text-muted-foreground text-lg">
+        בקרוב — גרף TradingView
+      </div>
+    );
     return children || null;
   };
 
