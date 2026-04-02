@@ -72,7 +72,7 @@ const brokers = [
 /* ===== Layout ===== */
 const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   const navigate = useNavigate();
-  const { profile, signOut, refreshProfile } = useAuth();
+  const { profile, user, signOut, refreshProfile } = useAuth();
   const [activeNav, setActiveNav] = useState("dashboard");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [brokerModal, setBrokerModal] = useState(false);
@@ -110,6 +110,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   };
 
   const userName = profile?.full_name || "סוחר";
+  const userEmail = user?.email || "";
 
   const renderContent = () => {
     if (activeNav === "dashboard") return <HomeDashboard userName={userName} onOpenTrade={() => setTradeDrawerOpen(true)} />;
@@ -307,6 +308,8 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                   {/* Desktop dropdown */}
                   <div className="hidden md:block absolute left-0 top-full mt-2 w-56 z-[70] rounded-2xl border border-white/[0.08] bg-[#111116] shadow-2xl shadow-black/40 animate-in fade-in slide-in-from-top-1 duration-150 overflow-hidden">
                     <UserMenuContent
+                      userName={userName}
+                      userEmail={userEmail}
                       onClose={() => setUserMenu(false)}
                       onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
                       onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
@@ -317,6 +320,8 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                   <div className="md:hidden fixed inset-x-0 bottom-0 z-[70] rounded-t-3xl border-t border-white/[0.08] bg-[#111116] animate-in slide-in-from-bottom duration-200 overflow-hidden safe-area-bottom">
                     <div className="flex justify-center pt-3 pb-1"><div className="w-10 h-1 rounded-full bg-muted-foreground/15" /></div>
                     <UserMenuContent
+                      userName={userName}
+                      userEmail={userEmail}
                       onClose={() => setUserMenu(false)}
                       onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
                       onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
@@ -461,14 +466,14 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
 };
 
 /* ===== User Menu ===== */
-const UserMenuContent = ({ onClose, onSettings, onLogout }: { onClose: () => void; onSettings: () => void; onLogout: () => void }) => (
+const UserMenuContent = ({ userName, userEmail, onClose, onSettings, onLogout }: { userName: string; userEmail: string; onClose: () => void; onSettings: () => void; onLogout: () => void }) => (
   <>
     <div className="px-4 py-3 border-b border-white/[0.06]">
       <div className="flex items-center gap-2.5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-xs font-bold text-primary font-mono">Y</div>
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-xs font-bold text-primary font-mono">{userName.charAt(0).toUpperCase()}</div>
         <div>
-          <p className="text-[12px] font-bold text-foreground">יהונתן</p>
-          <p className="text-2xs text-muted-foreground/40 font-mono">yonatan@email.com</p>
+          <p className="text-[12px] font-bold text-foreground">{userName}</p>
+          <p className="text-2xs text-muted-foreground/40 font-mono">{userEmail}</p>
         </div>
       </div>
     </div>
