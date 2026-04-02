@@ -116,25 +116,39 @@ const SettingsPage = () => {
 
 /* ===== Profile Tab ===== */
 const ProfileTab = () => {
-  const { profile, user } = useAuth();
+  const { profile, user, updateProfile } = useAuth();
   const userEmail = user?.email || "";
-  const userName = profile?.full_name || "סוחר";
+  const userName = profile?.full_name || "";
+  const [name, setName] = useState(userName);
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    setSaving(true);
+    const { error } = await updateProfile({ full_name: name });
+    setSaving(false);
+    if (error) {
+      const { toast } = await import("sonner");
+      toast.error("שגיאה בשמירה");
+    } else {
+      const { toast } = await import("sonner");
+      toast.success("הפרופיל עודכן בהצלחה ✓");
+    }
+  };
 
   return (
   <div className="space-y-4 animate-in fade-in slide-in-from-left-2 duration-300">
-    {/* Avatar + Name */}
     <div className="rounded-2xl border border-border/10 bg-card/50 p-5">
       <div className="flex items-center gap-4 mb-5">
         <div className="relative">
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/12 border border-primary/15 text-2xl font-bold text-primary">
-            {userName.charAt(0)}
+            {(name || userName).charAt(0) || "?"}
           </div>
           <button className="absolute -bottom-1 -left-1 flex h-6 w-6 items-center justify-center rounded-lg bg-primary/15 border border-primary/20 text-primary hover:bg-primary/25 transition-all">
             <Eye className="h-3 w-3" />
           </button>
         </div>
         <div>
-          <h3 className="text-[15px] font-bold text-foreground">{userName}</h3>
+          <h3 className="text-[15px] font-bold text-foreground">{name || userName}</h3>
           <p className="text-[10px] text-muted-foreground/40 mt-0.5">{userEmail}</p>
           <div className="flex items-center gap-1.5 mt-1.5">
             <span className="rounded-md bg-primary/10 border border-primary/12 px-2 py-0.5 text-[8px] font-bold text-primary">Pro</span>
@@ -145,10 +159,22 @@ const ProfileTab = () => {
 
       <div className="grid gap-3 md:grid-cols-2">
         <Field label="שם מלא">
-          <Input value={userName} placeholder="השם שלך" />
+          <input
+            type="text"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder="השם שלך"
+            className="w-full rounded-xl border border-border/10 bg-muted/[0.06] px-3.5 py-2.5 text-[12px] text-foreground placeholder:text-muted-foreground/20 focus:border-primary/25 focus:outline-none focus:ring-1 focus:ring-primary/15 focus:bg-primary/[0.02] transition-all min-h-[44px]"
+          />
         </Field>
         <Field label="אימייל">
-          <Input value={userEmail} placeholder="name@example.com" dir="ltr" />
+          <input
+            type="text"
+            value={userEmail}
+            readOnly
+            dir="ltr"
+            className="w-full rounded-xl border border-border/10 bg-muted/[0.06] px-3.5 py-2.5 text-[12px] text-foreground/50 placeholder:text-muted-foreground/20 min-h-[44px] cursor-not-allowed opacity-60"
+          />
         </Field>
       </div>
     </div>
@@ -187,7 +213,18 @@ const ProfileTab = () => {
       </div>
     </div>
 
-    <SaveButton />
+    <button
+      onClick={handleSave}
+      disabled={saving}
+      className="haptic-press w-full flex items-center justify-center gap-2 rounded-xl bg-primary/12 border border-primary/20 py-3 text-[12px] font-bold text-primary hover:bg-primary/20 hover:shadow-[0_0_20px_hsl(var(--primary)/0.1)] transition-all duration-300 min-h-[48px] disabled:opacity-50"
+    >
+      {saving ? (
+        <span className="animate-spin h-4 w-4 border-2 border-primary/30 border-t-primary rounded-full" />
+      ) : (
+        <Save className="h-4 w-4" />
+      )}
+      {saving ? "שומר..." : "שמור שינויים"}
+    </button>
   </div>
   );
 };
