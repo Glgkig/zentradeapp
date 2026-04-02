@@ -40,6 +40,7 @@ const navSections = [
       { id: "journal", label: "יומן פורנזי", icon: BookOpen },
       { id: "tax", label: "מחשבון מס", icon: Calculator },
       { id: "stats", label: "סטטיסטיקות", icon: PieChart },
+      { id: "news", label: "חדשות כלכליות", icon: Newspaper },
     ],
   },
   {
