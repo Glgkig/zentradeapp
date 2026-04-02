@@ -192,7 +192,8 @@ const ProfileTab = () => {
 
     <SaveButton />
   </div>
-);
+  );
+};
 
 /* ===== Connections Tab ===== */
 const brokers = [
