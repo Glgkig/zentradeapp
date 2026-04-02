@@ -7,7 +7,7 @@ import {
   FlaskConical, Mic, Newspaper, ArrowUp, Activity, AlertTriangle,
   CheckCircle2, TrendingUp, Quote, Star, Brain, BookOpen, Calendar,
   XCircle, ChevronRight, Sparkles, MapPin, Eye, EyeOff,
-  Calculator, PlayCircle, Check, Crown,
+  Calculator, PlayCircle, Check, Crown, Loader2,
 } from "lucide-react";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 import { supabase } from "@/integrations/supabase/client";
@@ -649,132 +649,164 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-4" dir="rtl">
-      <div className="absolute inset-0 bg-background/70 backdrop-blur-md" onClick={onClose} />
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-[#0A0A0F]/80 backdrop-blur-xl" onClick={onClose} />
 
-      <div className="relative z-10 w-[95%] max-w-md max-h-[90vh] overflow-y-auto">
-        <div className="rounded-2xl border border-primary/20 bg-card/95 backdrop-blur-xl p-5 md:p-7 shadow-2xl shadow-primary/10">
-          <button onClick={onClose} className="absolute top-3 left-3 md:top-4 md:left-4 rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
-            <X className="h-5 w-5" />
+      {/* Ambient glows behind modal */}
+      <div className="absolute top-1/4 right-1/4 w-[300px] h-[300px] bg-cyan-500/[0.08] rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 left-1/4 w-[250px] h-[250px] bg-purple-500/[0.06] rounded-full blur-[120px] pointer-events-none" />
+
+      <div className="relative z-10 w-[95%] max-w-[420px] max-h-[90vh] overflow-y-auto scrollbar-none">
+        <div className="relative rounded-3xl border border-white/[0.08] bg-white/[0.04] backdrop-blur-2xl p-6 md:p-8 shadow-2xl shadow-cyan-500/[0.06] overflow-hidden">
+          {/* Top glow line */}
+          <div className="absolute top-0 left-[15%] right-[15%] h-px bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent" />
+          {/* Inner ambient */}
+          <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[200px] h-[200px] bg-cyan-500/[0.06] rounded-full blur-[80px] pointer-events-none" />
+
+          {/* Close */}
+          <button onClick={onClose} className="absolute top-3 left-3 md:top-4 md:left-4 rounded-xl p-2 text-foreground/30 hover:text-foreground hover:bg-white/[0.06] transition-all">
+            <X className="h-4 w-4" />
           </button>
 
-          <div className="text-center mb-5 md:mb-6">
+          {/* Header */}
+          <div className="relative text-center mb-6 md:mb-7">
             <div className="flex justify-center mb-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 border border-primary/20">
-                <Shield className="h-5 w-5 text-primary" />
+              <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-500/20 shadow-lg shadow-cyan-500/10">
+                <Shield className="h-5 w-5 text-cyan-400" />
+                <div className="absolute -inset-1 rounded-2xl bg-cyan-500/10 blur-md -z-10" />
               </div>
             </div>
-            <h2 className="font-heading text-lg md:text-xl font-bold text-foreground">ZenTrade</h2>
-            <p className="mt-1 text-[10px] md:text-xs text-foreground/60">
-              {forgotMode ? "איפוס סיסמה" : isLogin ? "התחבר לחשבון שלך" : "צור חשבון חדש"}
+            <h2 className="font-heading text-xl md:text-2xl font-bold text-foreground tracking-tight">
+              {forgotMode ? "איפוס סיסמה" : isLogin ? "ברוך הבא חזרה" : "הצטרף ל-ZenTrade"}
+            </h2>
+            <p className="mt-1.5 text-xs text-foreground/40">
+              {forgotMode ? "נשלח לך קישור לאיפוס" : isLogin ? "הכנס לחשבון שלך והמשך לסחור" : "צור חשבון חינם והתחל לסחור חכם"}
             </p>
           </div>
 
           {forgotMode ? (
             resetSent ? (
               <div className="text-center space-y-4 py-4">
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-500/10">
-                  <CheckCircle2 className="h-6 w-6 text-green-500" />
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-green-500/10 border border-green-500/20">
+                  <CheckCircle2 className="h-6 w-6 text-green-400" />
                 </div>
                 <p className="text-sm text-foreground">נשלח קישור לאיפוס סיסמה לאימייל שלך</p>
-                <p className="text-xs text-muted-foreground">בדוק את תיבת הדואר שלך ולחץ על הקישור</p>
-                <button onClick={() => { setForgotMode(false); setResetSent(false); }} className="text-xs text-primary hover:underline">
+                <p className="text-xs text-foreground/40">בדוק את תיבת הדואר שלך ולחץ על הקישור</p>
+                <button onClick={() => { setForgotMode(false); setResetSent(false); }} className="text-xs text-cyan-400 hover:underline">
                   חזרה להתחברות
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleForgotPassword} className="space-y-3">
+              <form onSubmit={handleForgotPassword} className="space-y-4">
                 <div>
-                  <label className="mb-1 block text-[10px] md:text-xs font-medium text-foreground/70">אימייל</label>
+                  <label className="mb-1.5 block text-[11px] font-medium text-foreground/50">אימייל</label>
                   <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" dir="ltr"
-                    className="w-full rounded-lg border border-border bg-muted/30 px-3 py-2.5 text-xs md:text-sm text-foreground text-left placeholder:text-muted-foreground/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" />
+                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm text-foreground text-left placeholder:text-foreground/20 focus:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition-all" />
                 </div>
-                <button type="submit" disabled={submitting} className="w-full rounded-xl bg-primary py-3 text-xs md:text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 active:scale-[0.98] disabled:opacity-60">
+                <button type="submit" disabled={submitting}
+                  className="w-full rounded-xl bg-gradient-to-l from-cyan-500 to-blue-600 py-3.5 text-sm font-bold text-white shadow-lg shadow-cyan-500/25 transition-all hover:shadow-xl hover:shadow-cyan-500/35 hover:brightness-110 active:scale-[0.98] disabled:opacity-60">
                   {submitting ? "שולח..." : "שלח קישור לאיפוס"}
                 </button>
                 <p className="text-center">
-                  <button type="button" onClick={() => setForgotMode(false)} className="text-xs text-primary hover:underline">חזרה להתחברות</button>
+                  <button type="button" onClick={() => setForgotMode(false)} className="text-xs text-cyan-400 hover:underline">חזרה להתחברות</button>
                 </p>
               </form>
             )
           ) : (
             <>
-          <div className="mb-5 md:mb-6 flex gap-1 rounded-xl bg-muted p-1">
-            {[{ label: "התחברות", login: true }, { label: "הרשמה", login: false }].map(({ label, login }) => (
-              <button
-                key={label}
-                onClick={() => setIsLogin(login)}
-                className={`flex-1 rounded-lg py-2 text-xs md:text-sm font-medium transition-all duration-200 ${
-                  isLogin === login ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-
-          <div className="space-y-2 mb-4">
-            <button onClick={handleGoogleSignIn} disabled={submitting} className="flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-muted/30 py-3 text-xs md:text-sm font-medium text-foreground transition-all hover:bg-muted/60 disabled:opacity-60">
-              <GoogleIcon />
-              המשך עם Google
-            </button>
-            <button className="flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-muted/30 py-3 text-xs md:text-sm font-medium text-foreground transition-all hover:bg-muted/60">
-              <AppleIcon />
-              המשך עם Apple
-            </button>
-          </div>
-
-          <div className="flex items-center gap-3 mb-4">
-            <div className="h-px flex-1 bg-border" />
-            <span className="text-[10px] text-foreground/50">או עם אימייל</span>
-            <div className="h-px flex-1 bg-border" />
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-3">
-            {!isLogin && (
-              <div>
-                <label className="mb-1 block text-[10px] md:text-xs font-medium text-foreground/70">שם מלא</label>
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="הכנס את שמך"
-                  className="w-full rounded-lg border border-border bg-muted/30 px-3 py-2.5 text-xs md:text-sm text-foreground placeholder:text-muted-foreground/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" />
+              {/* Tab Switcher */}
+              <div className="mb-6 flex gap-1 rounded-2xl bg-white/[0.03] border border-white/[0.06] p-1">
+                {[{ label: "התחברות", login: true }, { label: "הרשמה", login: false }].map(({ label, login }) => (
+                  <button
+                    key={label}
+                    onClick={() => setIsLogin(login)}
+                    className={`flex-1 rounded-xl py-2.5 text-xs font-semibold transition-all duration-300 ${
+                      isLogin === login
+                        ? "bg-gradient-to-l from-cyan-500 to-blue-600 text-white shadow-md shadow-cyan-500/20"
+                        : "text-foreground/40 hover:text-foreground/60"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
               </div>
-            )}
-            <div>
-              <label className="mb-1 block text-[10px] md:text-xs font-medium text-foreground/70">אימייל</label>
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" dir="ltr"
-                className="w-full rounded-lg border border-border bg-muted/30 px-3 py-2.5 text-xs md:text-sm text-foreground text-left placeholder:text-muted-foreground/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" />
-            </div>
-            <div>
-              <label className="mb-1 block text-[10px] md:text-xs font-medium text-foreground/70">סיסמה</label>
-              <div className="relative">
-                <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" dir="ltr"
-                  className="w-full rounded-lg border border-border bg-muted/30 px-3 py-2.5 pr-10 text-xs md:text-sm text-foreground text-left placeholder:text-muted-foreground/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" />
+
+              {/* Social Buttons */}
+              <div className="space-y-2.5 mb-5">
+                <button onClick={handleGoogleSignIn} disabled={submitting}
+                  className="group flex w-full items-center justify-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] py-3 text-xs font-medium text-foreground/80 transition-all hover:bg-white/[0.06] hover:border-white/[0.12] disabled:opacity-60">
+                  <GoogleIcon />
+                  המשך עם Google
+                </button>
                 <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1"
-                  tabIndex={-1}
-                >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  className="group flex w-full items-center justify-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] py-3 text-xs font-medium text-foreground/80 transition-all hover:bg-white/[0.06] hover:border-white/[0.12]">
+                  <AppleIcon />
+                  המשך עם Apple
                 </button>
               </div>
-            </div>
 
-            {isLogin && (
-              <div className="text-left">
-                <button type="button" onClick={() => setForgotMode(true)} className="text-[10px] md:text-xs text-primary hover:underline">שכחת סיסמה?</button>
+              {/* Divider */}
+              <div className="flex items-center gap-3 mb-5">
+                <div className="h-px flex-1 bg-gradient-to-l from-white/[0.08] to-transparent" />
+                <span className="text-[10px] text-foreground/30 font-medium">או עם אימייל</span>
+                <div className="h-px flex-1 bg-gradient-to-r from-white/[0.08] to-transparent" />
               </div>
-            )}
 
-            <button type="submit" disabled={submitting} className="w-full rounded-xl bg-primary py-3 text-xs md:text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 active:scale-[0.98] disabled:opacity-60">
-              {submitting ? "מעבד..." : isLogin ? "היכנס לחשבון" : "צור חשבון חינם"}
-            </button>
-          </form>
+              {/* Form */}
+              <form onSubmit={handleSubmit} className="space-y-3.5">
+                {!isLogin && (
+                  <div>
+                    <label className="mb-1.5 block text-[11px] font-medium text-foreground/50">שם מלא</label>
+                    <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="הכנס את שמך"
+                      className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm text-foreground placeholder:text-foreground/20 focus:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition-all" />
+                  </div>
+                )}
+                <div>
+                  <label className="mb-1.5 block text-[11px] font-medium text-foreground/50">אימייל</label>
+                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" dir="ltr"
+                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm text-foreground text-left placeholder:text-foreground/20 focus:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition-all" />
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-[11px] font-medium text-foreground/50">סיסמה</label>
+                  <div className="relative">
+                    <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" dir="ltr"
+                      className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 pr-11 text-sm text-foreground text-left placeholder:text-foreground/20 focus:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition-all" />
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} tabIndex={-1}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/20 hover:text-foreground/50 transition-colors p-1">
+                      {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                    </button>
+                  </div>
+                </div>
 
-          <p className="mt-4 text-center text-[10px] md:text-xs text-foreground/50">
-            {isLogin ? "אין לך חשבון?" : "כבר יש לך חשבון?"}{" "}
-            <button onClick={() => setIsLogin(!isLogin)} className="text-primary hover:underline font-medium">
-              {isLogin ? "הירשם עכשיו" : "התחבר"}
-            </button>
-          </p>
+                {isLogin && (
+                  <div className="text-left">
+                    <button type="button" onClick={() => setForgotMode(true)} className="text-[11px] text-cyan-400/80 hover:text-cyan-400 hover:underline transition-colors">שכחת סיסמה?</button>
+                  </div>
+                )}
+
+                <button type="submit" disabled={submitting}
+                  className="w-full rounded-xl bg-gradient-to-l from-cyan-500 to-blue-600 py-3.5 text-sm font-bold text-white shadow-lg shadow-cyan-500/25 transition-all hover:shadow-xl hover:shadow-cyan-500/35 hover:brightness-110 active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-2">
+                  {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
+                  {submitting ? "מעבד..." : isLogin ? "היכנס לחשבון" : "צור חשבון חינם"}
+                </button>
+              </form>
+
+              {/* Footer */}
+              <p className="mt-5 text-center text-[11px] text-foreground/30">
+                {isLogin ? "אין לך חשבון?" : "כבר יש לך חשבון?"}{" "}
+                <button onClick={() => setIsLogin(!isLogin)} className="text-cyan-400 hover:underline font-medium">
+                  {isLogin ? "הירשם עכשיו" : "התחבר"}
+                </button>
+              </p>
+
+              {/* Trust */}
+              <div className="mt-5 flex items-center justify-center gap-4 text-[9px] text-foreground/20">
+                <span className="flex items-center gap-1"><Lock className="h-3 w-3" /> SSL מאובטח</span>
+                <span>•</span>
+                <span>256-bit הצפנה</span>
+                <span>•</span>
+                <span>GDPR</span>
+              </div>
             </>
           )}
         </div>
