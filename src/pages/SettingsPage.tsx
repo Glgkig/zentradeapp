@@ -122,6 +122,7 @@ const ProfileTab = () => {
   const userName = profile?.full_name || "";
   const [name, setName] = useState(userName);
   const [saving, setSaving] = useState(false);
+  const [avatarPickerOpen, setAvatarPickerOpen] = useState(false);
 
   const handleSave = async () => {
     setSaving(true);
