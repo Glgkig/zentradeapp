@@ -3,7 +3,7 @@ import AvatarPicker, { UserAvatar } from "@/components/AvatarPicker";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   Shield, User, Globe, Lock, Bell, ChevronDown, ChevronRight,
-  AlertTriangle, Volume2, Mail, Smartphone, Sparkles, Save,
+  AlertTriangle, Volume2, Mail, Smartphone, Sparkles, Save, Camera,
   Eye, Palette, CreditCard, Key, Database, Zap, Link2, Plus, Check, X,
 } from "lucide-react";
 import logoTradingView from "@/assets/logos/tradingview-full.png";
