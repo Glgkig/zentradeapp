@@ -53,13 +53,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setLoading(false);
     });
 
-    // Listen for auth changes
+    // Listen for auth changes — NEVER await inside this callback (causes deadlocks)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, s) => {
+      (_event, s) => {
         setSession(s);
         setUser(s?.user ?? null);
         if (s?.user) {
-          await fetchProfile(s.user.id);
+          // Fire-and-forget to avoid blocking auth state processing
+          fetchProfile(s.user.id);
         } else {
           setProfile(null);
         }
