@@ -16,49 +16,29 @@ const topMetrics = [
   { label: "זמן ממוצע בעסקה", sublabel: "AVG HOLD TIME", value: "45 דק׳", sub: "מכניסה ליציאה", color: "text-primary", icon: <Clock className="h-4 w-4" />, glow: "primary" },
 ];
 
-// Calendar heatmap for current month
-const calendarData = (() => {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const firstDayOfWeek = new Date(year, month, 1).getDay();
-  const pnls = [
-    320, -80, 0, 150, 210, 0, 0,
-    -120, 450, 90, 0, -200, 380, 0,
-    0, 270, -150, 60, 0, 190, 0,
-    -310, 0, 520, 110, 0, -90, 0,
-    240, 0, 180,
-  ];
-  return { daysInMonth, firstDayOfWeek, pnls: pnls.slice(0, daysInMonth) };
-})();
-
-const dayOfWeekData = [
-  { name: "ראשון", winRate: 65 },
-  { name: "שני", winRate: 72 },
-  { name: "שלישי", winRate: 68 },
-  { name: "רביעי", winRate: 61 },
-  { name: "חמישי", winRate: 58 },
-  { name: "שישי", winRate: 20 },
-];
-
-const longShortData = [
-  { name: "Long", value: 3000, fill: "hsl(var(--profit))" },
-  { name: "Short", value: 1250, fill: "hsl(var(--loss))" },
-];
-
-const weekDays = ["א׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "ש׳"];
-
-/* ===== Helpers ===== */
-const calColor = (pnl: number) => {
-  if (pnl >= 400) return "bg-profit/60 border-profit/30 shadow-[0_0_6px_hsl(var(--profit)/0.2)]";
-  if (pnl >= 150) return "bg-profit/35 border-profit/20";
-  if (pnl > 0) return "bg-profit/15 border-profit/10";
-  if (pnl === 0) return "bg-white/[0.03] border-white/[0.04]";
-  if (pnl >= -150) return "bg-loss/15 border-loss/10";
-  if (pnl >= -250) return "bg-loss/30 border-loss/15";
-  return "bg-loss/50 border-loss/25 shadow-[0_0_6px_hsl(var(--loss)/0.2)]";
+// Day×Hour heatmap data (06:00–22:00)
+const heatDays = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
+const heatHours = Array.from({ length: 17 }, (_, i) => i + 6); // 6..22
+const heatMap: Record<string, number[]> = {
+  "ראשון":  [0,120,250,80,0,-45,180,60,-190,-75,45,0,-30,0,0,0,0],
+  "שני":    [0,90,160,310,55,0,70,-80,-280,-150,0,65,-40,0,0,0,0],
+  "שלישי":  [0,340,95,200,130,40,0,-60,-170,15,85,0,-25,50,0,0,0],
+  "רביעי":  [0,0,145,75,290,110,50,0,-95,-320,0,35,0,-55,0,0,0],
+  "חמישי":  [0,185,270,150,60,0,-110,-200,-350,-85,0,0,70,0,-40,0,0],
+  "שישי":   [0,0,0,95,140,0,60,0,0,-45,120,80,0,-35,0,0,0],
+  "שבת":    [0,0,0,0,0,0,0,0,75,110,0,55,-60,0,0,0,0],
 };
+
+const heatCellColor = (pnl: number) => {
+  if (pnl >= 250) return "bg-profit/55";
+  if (pnl >= 100) return "bg-profit/30";
+  if (pnl > 0) return "bg-profit/14";
+  if (pnl === 0) return "bg-white/[0.025]";
+  if (pnl >= -100) return "bg-loss/14";
+  if (pnl >= -200) return "bg-loss/28";
+  return "bg-loss/45";
+};
+
 
 /* ===== Custom Tooltip ===== */
 const ChartTooltip = ({ active, payload, label }: any) => {
