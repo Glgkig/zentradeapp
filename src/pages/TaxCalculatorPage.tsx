@@ -2,7 +2,10 @@ import { useState, useMemo } from "react";
 import {
   Calculator, TrendingUp, TrendingDown, DollarSign, Percent,
   ArrowDownRight, Download, FileText, Info, CalendarDays, Loader2,
+  Sparkles, Brain,
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 /* ===== PDF Generation ===== */
 const generatePDF = async (data: TaxData) => {
@@ -158,6 +161,8 @@ const TaxCalculatorPage = () => {
   const [traderName, setTraderName] = useState("");
   const [brokerage, setBrokerage] = useState("");
   const [downloading, setDownloading] = useState(false);
+  const [aiAdvice, setAiAdvice] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
 
   const calc = useMemo(() => {
     const profit = parseFloat(grossProfit) || 0;
@@ -191,6 +196,23 @@ const TaxCalculatorPage = () => {
       // silently fail
     } finally {
       setDownloading(false);
+    }
+  };
+
+  const handleAiCoach = async () => {
+    setAiLoading(true);
+    setAiAdvice("");
+    try {
+      const { data, error } = await supabase.functions.invoke("tax-ai-coach", {
+        body: { profit: calc.profit, loss: calc.loss, commissions: calc.comm },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setAiAdvice(data.advice);
+    } catch (e: any) {
+      toast.error(e.message || "שגיאה בניתוח AI");
+    } finally {
+      setAiLoading(false);
     }
   };
 
@@ -334,7 +356,40 @@ const TaxCalculatorPage = () => {
         </div>
       </div>
 
-      {/* Disclaimer */}
+      {/* AI Coach */}
+      <div className="mt-4 flex flex-col items-center gap-4">
+        <button
+          onClick={handleAiCoach}
+          disabled={aiLoading}
+          className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30 px-6 py-3 text-sm font-bold text-foreground transition-all hover:from-primary/30 hover:to-accent/30 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100"
+        >
+          {aiLoading ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin text-primary" />
+              <span>חושב...</span>
+            </>
+          ) : (
+            <>
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span>✨ נתח יעילות (AI)</span>
+            </>
+          )}
+        </button>
+
+        {aiAdvice && (
+          <div className="w-full rounded-2xl border border-primary/20 bg-primary/[0.05] p-5 shadow-[0_0_30px_-10px_hsl(var(--primary)/0.2)] animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="flex items-start gap-3">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/10 border border-primary/20">
+                <Brain className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-primary/60 uppercase tracking-wider mb-1.5">AI Efficiency Coach</p>
+                <p className="text-[13px] text-foreground/80 leading-relaxed">{aiAdvice}</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
       <div className="mt-4 rounded-xl border border-white/[0.04] bg-white/[0.01] p-4">
         <p className="text-2xs text-muted-foreground/30 leading-relaxed">
           ⚠️ מחשבון זה הינו לצורכי הערכה בלבד ואינו מהווה ייעוץ מס. שיעור המס בפועל עשוי להשתנות בהתאם לנסיבות אישיות.
