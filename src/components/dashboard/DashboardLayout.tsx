@@ -110,6 +110,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   };
 
   const userName = profile?.full_name || "סוחר";
+  const userEmail = user?.email || "";
 
   const renderContent = () => {
     if (activeNav === "dashboard") return <HomeDashboard userName={userName} onOpenTrade={() => setTradeDrawerOpen(true)} />;
