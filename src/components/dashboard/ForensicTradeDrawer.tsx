@@ -1,6 +1,8 @@
-import { useState } from "react";
-import { X, ArrowUpRight, ArrowDownRight, Plus, CheckCircle2 } from "lucide-react";
+import { useState, useRef, useCallback } from "react";
+import { X, ArrowUpRight, ArrowDownRight, Plus, CheckCircle2, Mic, MicOff, Loader2 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const confluences = [
   "FVG (Fair Value Gap)",
@@ -18,15 +20,87 @@ interface ForensicTradeDrawerProps {
   onClose: () => void;
 }
 
+type RecordingState = "idle" | "recording" | "processing";
+
 const ForensicTradeDrawer = ({ open, onClose }: ForensicTradeDrawerProps) => {
   const isMobile = useIsMobile();
   const [direction, setDirection] = useState<"long" | "short">("long");
   const [selectedConfluences, setSelectedConfluences] = useState<string[]>([]);
+  const [thesis, setThesis] = useState("");
+  const [recordingState, setRecordingState] = useState<RecordingState>("idle");
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
 
   const toggleConfluence = (c: string) => {
     setSelectedConfluences((prev) =>
       prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]
     );
+  };
+
+  const startRecording = useCallback(async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+      mediaRecorderRef.current = mediaRecorder;
+      chunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
+
+      mediaRecorder.start();
+      setRecordingState("recording");
+    } catch {
+      toast.error("לא ניתן לגשת למיקרופון. בדוק הרשאות.");
+    }
+  }, []);
+
+  const stopRecording = useCallback(async () => {
+    const mediaRecorder = mediaRecorderRef.current;
+    if (!mediaRecorder) return;
+
+    return new Promise<void>((resolve) => {
+      mediaRecorder.onstop = async () => {
+        setRecordingState("processing");
+        const audioBlob = new Blob(chunksRef.current, { type: "audio/webm" });
+
+        // Stop all tracks
+        mediaRecorder.stream.getTracks().forEach((t) => t.stop());
+
+        try {
+          const formData = new FormData();
+          formData.append("audio", audioBlob, "recording.webm");
+
+          const { data, error } = await supabase.functions.invoke("fal-whisper", {
+            body: formData,
+          });
+
+          if (error) throw error;
+
+          if (data?.text) {
+            setThesis((prev) => (prev ? prev + " " + data.text : data.text));
+            toast.success("התמלול הושלם!");
+          } else {
+            toast.warning("לא זוהה טקסט בהקלטה.");
+          }
+        } catch (err: any) {
+          console.error("Whisper error:", err);
+          toast.error("שגיאה בתמלול. נסה שוב.");
+        } finally {
+          setRecordingState("idle");
+          resolve();
+        }
+      };
+      mediaRecorder.stop();
+    });
+  }, []);
+
+  const toggleRecording = () => {
+    if (recordingState === "recording") {
+      stopRecording();
+    } else if (recordingState === "idle") {
+      startRecording();
+    }
   };
 
   if (!open) return null;
@@ -39,7 +113,7 @@ const ForensicTradeDrawer = ({ open, onClose }: ForensicTradeDrawerProps) => {
         onClick={onClose}
       />
 
-      {/* Panel — bottom sheet on mobile, right slide on desktop */}
+      {/* Panel */}
       <div
         className={`fixed z-[71] overflow-y-auto bg-card border-white/[0.08] animate-in duration-300 ${
           isMobile
@@ -153,11 +227,43 @@ const ForensicTradeDrawer = ({ open, onClose }: ForensicTradeDrawerProps) => {
             </div>
           </div>
 
-          {/* Thesis */}
+          {/* Thesis with Mic */}
           <div>
-            <label className="text-2xs font-semibold text-muted-foreground/50 mb-1.5 block font-mono uppercase">התזה (Thesis)</label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-2xs font-semibold text-muted-foreground/50 font-mono uppercase">התזה (Thesis)</label>
+              <button
+                onClick={toggleRecording}
+                disabled={recordingState === "processing"}
+                className={`haptic-press flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] font-medium transition-all ${
+                  recordingState === "recording"
+                    ? "bg-loss/15 text-loss border border-loss/30 animate-pulse"
+                    : recordingState === "processing"
+                    ? "bg-primary/10 text-primary border border-primary/20 cursor-wait"
+                    : "bg-white/[0.04] text-muted-foreground/60 border border-white/[0.08] hover:bg-white/[0.08] hover:text-foreground"
+                }`}
+              >
+                {recordingState === "recording" ? (
+                  <>
+                    <MicOff className="h-3.5 w-3.5" />
+                    <span>מקליט...</span>
+                  </>
+                ) : recordingState === "processing" ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <span>מעבד...</span>
+                  </>
+                ) : (
+                  <>
+                    <Mic className="h-3.5 w-3.5" />
+                    <span>הקלט</span>
+                  </>
+                )}
+              </button>
+            </div>
             <textarea
               rows={3}
+              value={thesis}
+              onChange={(e) => setThesis(e.target.value)}
               placeholder="למה אני נכנס? מה הסטאפ? מה ה-edge שלי?"
               className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-[12px] text-foreground placeholder:text-muted-foreground/20 outline-none focus:border-primary/30 resize-none transition-all leading-relaxed"
             />
