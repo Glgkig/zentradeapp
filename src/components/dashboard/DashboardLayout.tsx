@@ -187,24 +187,6 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
           </div>
         </nav>
 
-        {/* PRO Upgrade Section */}
-        <div className="px-3 pb-3">
-          <button
-            onClick={() => setUpgradeModal(true)}
-            className="haptic-press w-full rounded-2xl border border-accent/20 bg-accent/[0.06] p-4 text-right transition-all hover:bg-accent/10 hover:border-accent/30 gold-glow group"
-          >
-            <div className="flex items-center gap-2.5 mb-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent/15 border border-accent/20">
-                <Crown className="h-4 w-4 text-accent" />
-              </div>
-              <div>
-                <p className="text-[11px] font-bold text-accent">שדרג תוכנית</p>
-                <p className="text-2xs text-accent/50 font-mono">PRO</p>
-              </div>
-            </div>
-            <p className="text-2xs text-muted-foreground/40 leading-relaxed">פתח את כל הפיצ׳רים כולל AI מתקדם ובקטסטינג</p>
-          </button>
-        </div>
 
         {/* Footer */}
         <div className="border-t border-white/[0.04] px-3 py-3">
