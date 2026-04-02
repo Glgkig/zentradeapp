@@ -1,343 +1,328 @@
+import { useMemo } from "react";
 import {
-  Shield, TrendingUp, AlertTriangle, Clock, Target,
-  Flame, Brain, BarChart3, ArrowUpRight, ArrowDownRight,
-  CheckCircle2, XCircle, Zap, Activity, Award, TrendingDown,
+  TrendingUp, TrendingDown, Clock, Target, Flame, Brain,
+  BarChart3, Activity, Zap, PieChart, Calendar, ArrowUpRight, ArrowDownRight,
 } from "lucide-react";
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
+  PieChart as RePieChart, Pie,
+} from "recharts";
 
-/* ===== Heatmap Data ===== */
-const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
-const hours = ["09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22"];
-const _h = (data: [number,number][]) => {
-  const obj: Record<string, { pnl: number; trades: number }> = {};
-  hours.forEach((h, i) => { obj[h] = { pnl: data[i]?.[0] ?? 0, trades: data[i]?.[1] ?? 0 }; });
-  return obj;
-};
-const heatData: Record<string, Record<string, { pnl: number; trades: number }>> = {
-  "ראשון": _h([[120,3],[250,5],[80,2],[0,0],[-45,1],[180,4],[60,2],[-190,3],[-75,2],[45,1],[0,0],[-30,1],[0,0],[0,0]]),
-  "שני":   _h([[90,2],[160,3],[310,6],[55,1],[0,0],[70,2],[-80,2],[-280,4],[-150,3],[0,0],[65,2],[-40,1],[0,0],[0,0]]),
-  "שלישי": _h([[340,5],[95,2],[200,4],[130,3],[40,1],[0,0],[-60,1],[-170,3],[15,1],[85,2],[0,0],[-25,1],[50,1],[0,0]]),
-  "רביעי": _h([[0,0],[145,3],[75,2],[290,5],[110,2],[50,1],[0,0],[-95,2],[-320,5],[0,0],[35,1],[0,0],[-55,1],[0,0]]),
-  "חמישי": _h([[185,4],[270,5],[150,3],[60,1],[0,0],[-110,2],[-200,3],[-350,6],[-85,2],[0,0],[0,0],[70,2],[0,0],[-40,1]]),
-  "שישי":  _h([[0,0],[0,0],[95,2],[140,3],[0,0],[60,1],[0,0],[0,0],[-45,1],[120,3],[80,2],[0,0],[-35,1],[0,0]]),
-  "שבת":   _h([[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[75,2],[110,3],[0,0],[55,1],[-60,2],[0,0],[0,0]]),
+/* ===== Mock Data ===== */
+const topMetrics = [
+  { label: "תוחלת חיובית", sublabel: "EXPECTANCY", value: "+$45.20", sub: "ממוצע לעסקה", color: "text-profit", icon: <TrendingUp className="h-4 w-4" />, glow: "profit" },
+  { label: "גורם רווח", sublabel: "PROFIT FACTOR", value: "2.1", sub: "רווח ÷ הפסד", color: "text-profit", icon: <BarChart3 className="h-4 w-4" />, glow: "profit" },
+  { label: "Drawdown מקסימלי", sublabel: "MAX DRAWDOWN", value: "-8.5%", sub: "שפל חודשי", color: "text-loss", icon: <TrendingDown className="h-4 w-4" />, glow: "loss" },
+  { label: "זמן ממוצע בעסקה", sublabel: "AVG HOLD TIME", value: "45 דק׳", sub: "מכניסה ליציאה", color: "text-primary", icon: <Clock className="h-4 w-4" />, glow: "primary" },
+];
+
+// Calendar heatmap for current month
+const calendarData = (() => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDayOfWeek = new Date(year, month, 1).getDay();
+  const pnls = [
+    320, -80, 0, 150, 210, 0, 0,
+    -120, 450, 90, 0, -200, 380, 0,
+    0, 270, -150, 60, 0, 190, 0,
+    -310, 0, 520, 110, 0, -90, 0,
+    240, 0, 180,
+  ];
+  return { daysInMonth, firstDayOfWeek, pnls: pnls.slice(0, daysInMonth) };
+})();
+
+const dayOfWeekData = [
+  { name: "ראשון", winRate: 65 },
+  { name: "שני", winRate: 72 },
+  { name: "שלישי", winRate: 68 },
+  { name: "רביעי", winRate: 61 },
+  { name: "חמישי", winRate: 58 },
+  { name: "שישי", winRate: 20 },
+];
+
+const longShortData = [
+  { name: "Long", value: 3000, fill: "hsl(var(--profit))" },
+  { name: "Short", value: 1250, fill: "hsl(var(--loss))" },
+];
+
+const weekDays = ["א׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "ש׳"];
+
+/* ===== Helpers ===== */
+const calColor = (pnl: number) => {
+  if (pnl >= 400) return "bg-profit/60 border-profit/30 shadow-[0_0_6px_hsl(var(--profit)/0.2)]";
+  if (pnl >= 150) return "bg-profit/35 border-profit/20";
+  if (pnl > 0) return "bg-profit/15 border-profit/10";
+  if (pnl === 0) return "bg-white/[0.03] border-white/[0.04]";
+  if (pnl >= -150) return "bg-loss/15 border-loss/10";
+  if (pnl >= -250) return "bg-loss/30 border-loss/15";
+  return "bg-loss/50 border-loss/25 shadow-[0_0_6px_hsl(var(--loss)/0.2)]";
 };
 
-const heatColor = (pnl: number) => {
-  if (pnl >= 250) return "bg-accent/60 border-accent/30";
-  if (pnl >= 100) return "bg-accent/35 border-accent/20";
-  if (pnl > 0)    return "bg-accent/15 border-accent/10";
-  if (pnl === 0)  return "bg-muted/20 border-border/10";
-  if (pnl >= -100) return "bg-destructive/15 border-destructive/10";
-  if (pnl >= -200) return "bg-destructive/30 border-destructive/15";
-  return "bg-destructive/50 border-destructive/25";
+/* ===== Custom Tooltip ===== */
+const ChartTooltip = ({ active, payload, label }: any) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="rounded-xl border border-white/[0.08] bg-[#111116] px-3 py-2 shadow-xl text-right">
+      <p className="text-[11px] font-bold text-foreground mb-0.5">{label}</p>
+      <p className="text-[10px] text-profit font-mono font-bold">{payload[0].value}%</p>
+    </div>
+  );
 };
 
+const PieTooltip = ({ active, payload }: any) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="rounded-xl border border-white/[0.08] bg-[#111116] px-3 py-2 shadow-xl text-right">
+      <p className="text-[11px] font-bold text-foreground">{payload[0].name}</p>
+      <p className="text-[10px] font-mono font-bold" style={{ color: payload[0].payload.fill }}>
+        +${payload[0].value.toLocaleString()}
+      </p>
+    </div>
+  );
+};
+
+/* ===== Main Page ===== */
 const StatsPage = () => {
-  const disciplineScore = 85;
-  const circumference = 2 * Math.PI * 54;
+  const totalPnl = longShortData.reduce((s, d) => s + d.value, 0);
+  const longPct = ((longShortData[0].value / totalPnl) * 100).toFixed(0);
 
   return (
-    <div className="mx-auto max-w-[1280px] space-y-3 md:space-y-0">
+    <div className="mx-auto max-w-[1100px] space-y-4">
       {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 border border-primary/20">
-            <Activity className="h-4 w-4 text-primary" />
-          </div>
-          <div>
-            <h1 className="font-heading text-lg md:text-xl font-bold text-foreground">סטטיסטיקות וביצועים</h1>
-            <p className="text-[11px] md:text-xs text-muted-foreground">
-              ניתוח מעמיק של ביצועי המסחר, משמעת, ודפוסים פסיכולוגיים
-            </p>
-          </div>
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 border border-primary/15">
+          <Activity className="h-5 w-5 text-primary" />
+        </div>
+        <div>
+          <h1 className="font-heading text-lg md:text-xl font-bold text-foreground">סטטיסטיקות וביצועים</h1>
+          <p className="text-2xs text-muted-foreground/40">Analytics & Performance Engine</p>
         </div>
       </div>
 
-      {/* Top Summary Bar */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3 md:mb-4">
-        {[
-          { label: "רווח נקי החודש", value: "+$3,020", sub: "131 עסקאות", color: "text-accent", icon: <TrendingUp className="h-3.5 w-3.5" />, borderColor: "border-accent/20" },
-          { label: "Win Rate", value: "62%", sub: "81 מתוך 131", color: "text-primary", icon: <Target className="h-3.5 w-3.5" />, borderColor: "border-primary/20" },
-          { label: "Profit Factor", value: "1.8", sub: "רווח/הפסד ממוצע", color: "text-accent", icon: <BarChart3 className="h-3.5 w-3.5" />, borderColor: "border-accent/20" },
-          { label: "ציון משמעת", value: "85/100", sub: "ביצועים מעולים", color: "text-primary", icon: <Shield className="h-3.5 w-3.5" />, borderColor: "border-primary/20" },
-        ].map((item) => (
-          <div key={item.label} className={`rounded-xl border ${item.borderColor} bg-secondary/20 p-2.5 md:p-3.5 transition-all duration-200 hover:bg-secondary/30`}>
-            <div className="flex items-center gap-2 mb-2">
-              <div className={`${item.color} opacity-60`}>{item.icon}</div>
-              <span className="text-[9px] md:text-[10px] text-muted-foreground">{item.label}</span>
+      {/* ===== 1. TOP METRICS ===== */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {topMetrics.map((m) => (
+          <div
+            key={m.sublabel}
+            className="relative rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-md p-4 overflow-hidden group hover:border-white/[0.1] transition-all duration-300"
+          >
+            <div className={`absolute top-0 left-0 w-20 h-20 bg-${m.glow}/[0.04] rounded-full blur-[40px] pointer-events-none`} />
+            <div className="relative">
+              <div className="flex items-center gap-2 mb-3">
+                <div className={`${m.color} opacity-50`}>{m.icon}</div>
+                <span className="text-2xs text-muted-foreground/40 font-mono">{m.sublabel}</span>
+              </div>
+              <p className={`text-xl md:text-2xl font-black font-mono ${m.color}`}>{m.value}</p>
+              <p className="text-2xs text-muted-foreground/35 mt-1">{m.sub}</p>
+              <p className="text-[10px] font-semibold text-foreground/60 mt-0.5">{m.label}</p>
             </div>
-            <p className={`text-lg md:text-2xl font-bold ${item.color}`}>{item.value}</p>
-            <p className="text-[8px] text-muted-foreground mt-0.5">{item.sub}</p>
           </div>
         ))}
       </div>
 
-      {/* Row 1: Discipline + Revenge + Detailed Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 mb-3">
+      {/* ===== 2. CALENDAR HEATMAP ===== */}
+      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-md p-5 relative overflow-hidden">
+        <div className="absolute bottom-0 right-0 w-48 h-32 bg-primary/[0.03] rounded-full blur-[80px] pointer-events-none" />
 
-        {/* Discipline Score - Premium Redesign */}
-        <div className="md:col-span-4 rounded-xl border border-border/15 bg-secondary/15 p-4 md:p-5">
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 border border-primary/15">
-                <Shield className="h-4 w-4 text-primary" />
+        <div className="relative">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/8 border border-primary/12">
+                <Calendar className="h-4 w-4 text-primary/70" />
               </div>
               <div>
-                <span className="text-[11px] md:text-xs font-semibold text-foreground">מדד משמעת</span>
-                <p className="text-[8px] text-muted-foreground">ניתוח שבועי</p>
+                <h2 className="text-[14px] font-bold text-foreground">מפת ביצועים חודשית</h2>
+                <p className="text-2xs text-muted-foreground/30 font-mono">MONTHLY PERFORMANCE MAP</p>
               </div>
             </div>
-            <div className="flex items-center gap-1 rounded-full bg-accent/10 border border-accent/20 px-2 py-0.5">
-              <Award className="h-2.5 w-2.5 text-accent" />
-              <span className="text-[8px] text-accent font-semibold">מעולה</span>
+            <div className="hidden md:flex items-center gap-3 text-2xs text-muted-foreground/35">
+              <span className="flex items-center gap-1"><span className="h-2.5 w-5 rounded bg-profit/40" /> רווחי</span>
+              <span className="flex items-center gap-1"><span className="h-2.5 w-5 rounded bg-loss/40" /> הפסד</span>
+              <span className="flex items-center gap-1"><span className="h-2.5 w-5 rounded bg-white/[0.04]" /> ללא מסחר</span>
             </div>
           </div>
 
-          <div className="flex flex-col items-center">
-            {/* Premium Radial Progress */}
-            <div className="relative w-32 h-32 md:w-36 md:h-36">
-              <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
-                {/* Background track */}
-                <circle cx="60" cy="60" r="54" fill="none" strokeWidth="6" className="stroke-muted/15" />
-                {/* Progress arc */}
-                <circle
-                  cx="60" cy="60" r="54" fill="none" strokeWidth="7"
-                  strokeLinecap="round"
-                  className="stroke-primary"
-                  strokeDasharray={`${(disciplineScore / 100) * circumference} ${circumference}`}
-                  style={{ filter: "drop-shadow(0 0 6px hsl(217 72% 53% / 0.4))" }}
-                />
-                {/* Glow overlay */}
-                <circle
-                  cx="60" cy="60" r="54" fill="none" strokeWidth="2"
-                  strokeLinecap="round"
-                  className="stroke-primary/30"
-                  strokeDasharray={`${(disciplineScore / 100) * circumference} ${circumference}`}
-                />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">{disciplineScore}</span>
-                <span className="text-[9px] text-muted-foreground font-medium mt-0.5">מתוך 100</span>
-              </div>
-            </div>
-
-            <div className="mt-4 w-full space-y-2">
-              {[
-                { label: "עמידה בסטופ-לוס", value: "95%", good: true, icon: <CheckCircle2 className="h-3 w-3" /> },
-                { label: "עמידה במגבלת עסקאות", value: "88%", good: true, icon: <CheckCircle2 className="h-3 w-3" /> },
-                { label: "מסחר נקמה", value: "2 מקרים", good: false, icon: <XCircle className="h-3 w-3" /> },
-                { label: "הפרת חוקים", value: "2 השבוע", good: false, icon: <AlertTriangle className="h-3 w-3" /> },
-              ].map((m) => (
-                <div key={m.label} className={`flex items-center justify-between rounded-lg px-3 py-2 border transition-colors ${m.good ? "bg-accent/[0.04] border-accent/10 hover:bg-accent/[0.07]" : "bg-destructive/[0.04] border-destructive/10 hover:bg-destructive/[0.07]"}`}>
-                  <div className="flex items-center gap-2">
-                    <span className={m.good ? "text-accent" : "text-destructive"}>{m.icon}</span>
-                    <span className="text-[9px] md:text-[10px] text-muted-foreground">{m.label}</span>
-                  </div>
-                  <span className={`text-[10px] font-bold ${m.good ? "text-accent" : "text-destructive"}`}>{m.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Revenge Trading - Premium Redesign */}
-        <div className="md:col-span-3 rounded-xl border border-destructive/15 bg-destructive/[0.02] p-4 md:p-5">
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-destructive/10 border border-destructive/15">
-                <Flame className="h-4 w-4 text-destructive" />
-              </div>
-              <div>
-                <span className="text-[11px] md:text-xs font-semibold text-foreground">עסקאות נקמה</span>
-                <p className="text-[8px] text-muted-foreground">עלות חודשית</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Big Loss Number */}
-          <div className="text-center mb-5 py-4 rounded-xl bg-destructive/[0.06] border border-destructive/10">
-            <div className="flex items-center justify-center gap-1 mb-1">
-              <TrendingDown className="h-5 w-5 text-destructive" />
-              <p className="text-3xl md:text-4xl font-bold text-destructive tracking-tight">-$340</p>
-            </div>
-            <p className="text-[9px] text-muted-foreground mt-1 leading-relaxed max-w-[180px] mx-auto">
-              כסף שהופסד מעסקאות שנפתחו מיד אחרי הפסד
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            {[
-              { label: "עסקאות נקמה", value: "7", sub: "החודש" },
-              { label: "Win Rate בנקמה", value: "14%", sub: "1 מתוך 7" },
-              { label: "ממוצע הפסד", value: "-$48.5", sub: "לעסקה" },
-            ].map((item) => (
-              <div key={item.label} className="flex items-center justify-between rounded-lg bg-destructive/[0.04] border border-destructive/8 px-3 py-2.5 transition-colors hover:bg-destructive/[0.06]">
-                <div>
-                  <span className="text-[9px] md:text-[10px] text-muted-foreground block">{item.label}</span>
-                  <span className="text-[7px] text-muted-foreground/60">{item.sub}</span>
-                </div>
-                <span className="text-[11px] font-bold text-destructive">{item.value}</span>
-              </div>
+          {/* Week day headers */}
+          <div className="grid grid-cols-7 gap-1.5 mb-1.5">
+            {weekDays.map(d => (
+              <div key={d} className="text-center text-2xs text-muted-foreground/30 font-mono py-1">{d}</div>
             ))}
           </div>
 
-          <div className="mt-3 rounded-xl border border-destructive/15 bg-destructive/[0.04] p-3 flex items-start gap-2.5">
-            <div className="flex h-5 w-5 items-center justify-center rounded-lg bg-destructive/15 shrink-0 mt-0.5">
-              <Brain className="h-3 w-3 text-destructive" />
-            </div>
-            <p className="text-[8px] md:text-[9px] text-muted-foreground leading-relaxed">
-              <span className="text-destructive font-semibold">תובנת AI:</span> 71% מעסקאות הנקמה שלך קרו בין 15:00-17:00. שקול נעילה אוטומטית.
-            </p>
-          </div>
-        </div>
-
-        {/* Classic Metrics - Premium Redesign */}
-        <div className="md:col-span-5 rounded-xl border border-border/15 bg-secondary/15 p-4 md:p-5">
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent/10 border border-accent/15">
-                <BarChart3 className="h-4 w-4 text-accent" />
-              </div>
-              <div>
-                <span className="text-[11px] md:text-xs font-semibold text-foreground">מדדים מרכזיים</span>
-                <p className="text-[8px] text-muted-foreground">סיכום ביצועים</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-1 rounded-full bg-accent/10 border border-accent/15 px-2 py-0.5">
-              <Zap className="h-2.5 w-2.5 text-accent" />
-              <span className="text-[8px] text-accent font-semibold">חיובי</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 mb-3">
-            {[
-              { label: "Win Rate", value: "62%", sub: "81/131 עסקאות", icon: <Target className="h-3.5 w-3.5" />, color: "text-accent", bgColor: "bg-accent/[0.06] border-accent/10" },
-              { label: "Profit Factor", value: "1.8", sub: "יחס רווח/הפסד", icon: <TrendingUp className="h-3.5 w-3.5" />, color: "text-accent", bgColor: "bg-accent/[0.06] border-accent/10" },
-              { label: "Average R:R", value: "1:2.5", sub: "סיכון/תגמול", icon: <BarChart3 className="h-3.5 w-3.5" />, color: "text-primary", bgColor: "bg-primary/[0.06] border-primary/10" },
-              { label: "Sharpe Ratio", value: "1.42", sub: "יחס שארפ", icon: <Shield className="h-3.5 w-3.5" />, color: "text-primary", bgColor: "bg-primary/[0.06] border-primary/10" },
-            ].map((m) => (
-              <div key={m.label} className={`rounded-xl border p-3.5 text-center transition-all duration-200 hover:scale-[1.02] ${m.bgColor}`}>
-                <div className={`flex justify-center mb-1.5 ${m.color} opacity-50`}>{m.icon}</div>
-                <p className={`text-xl md:text-2xl font-bold ${m.color} tracking-tight`}>{m.value}</p>
-                <p className="text-[8px] text-muted-foreground font-medium mt-0.5">{m.label}</p>
-                <p className="text-[7px] text-muted-foreground/60 mt-0.5">{m.sub}</p>
-              </div>
+          {/* Calendar grid */}
+          <div className="grid grid-cols-7 gap-1.5">
+            {/* Empty cells for offset */}
+            {Array.from({ length: calendarData.firstDayOfWeek }).map((_, i) => (
+              <div key={`empty-${i}`} className="aspect-square rounded-lg" />
             ))}
-          </div>
-
-          {/* Monthly P&L Summary */}
-          <div className="rounded-xl border border-border/15 bg-muted/[0.06] p-3.5">
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-[10px] font-semibold text-foreground">P&L חודשי</p>
-              <p className="text-[8px] text-muted-foreground">3 חודשים אחרונים</p>
-            </div>
-            <div className="space-y-2">
-              {[
-                { month: "ינואר", pnl: 1240, trades: 42 },
-                { month: "פברואר", pnl: -320, trades: 38 },
-                { month: "מרץ", pnl: 2100, trades: 51 },
-              ].map((m) => (
-                <div key={m.month} className={`flex items-center justify-between rounded-lg px-3 py-2 border transition-colors ${m.pnl >= 0 ? "bg-accent/[0.03] border-accent/8 hover:bg-accent/[0.06]" : "bg-destructive/[0.03] border-destructive/8 hover:bg-destructive/[0.06]"}`}>
-                  <div className="flex items-center gap-2">
-                    <div className={`flex h-5 w-5 items-center justify-center rounded-md ${m.pnl >= 0 ? "bg-accent/15" : "bg-destructive/15"}`}>
-                      {m.pnl > 0 ? <ArrowUpRight className="h-3 w-3 text-accent" /> : <ArrowDownRight className="h-3 w-3 text-destructive" />}
-                    </div>
-                    <div>
-                      <span className="text-[9px] md:text-[10px] text-foreground font-medium block">{m.month}</span>
-                      <span className="text-[7px] text-muted-foreground">{m.trades} עסקאות</span>
-                    </div>
-                  </div>
-                  <span className={`text-[11px] md:text-xs font-bold ${m.pnl > 0 ? "text-accent" : "text-destructive"}`}>
-                    {m.pnl > 0 ? "+" : ""}{m.pnl.toLocaleString()}$
+            {/* Day cells */}
+            {calendarData.pnls.map((pnl, i) => (
+              <div
+                key={i}
+                className={`aspect-square rounded-lg border flex flex-col items-center justify-center cursor-pointer transition-all duration-200 hover:scale-105 ${calColor(pnl)}`}
+                title={`יום ${i + 1}: ${pnl === 0 ? "ללא מסחר" : `${pnl > 0 ? "+" : ""}$${pnl}`}`}
+              >
+                <span className="text-2xs text-foreground/40 font-mono">{i + 1}</span>
+                {pnl !== 0 && (
+                  <span className={`text-[7px] font-bold font-mono ${pnl > 0 ? "text-profit" : "text-loss"}`}>
+                    {pnl > 0 ? "+" : ""}{pnl}
                   </span>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Summary */}
+          <div className="grid grid-cols-3 gap-2 mt-4">
+            {[
+              { label: "ימים רווחיים", value: calendarData.pnls.filter(p => p > 0).length.toString(), total: calendarData.pnls.filter(p => p !== 0).length, color: "text-profit" },
+              { label: "ימים מפסידים", value: calendarData.pnls.filter(p => p < 0).length.toString(), total: calendarData.pnls.filter(p => p !== 0).length, color: "text-loss" },
+              { label: "סה״כ P&L", value: `$${calendarData.pnls.reduce((s, p) => s + p, 0).toLocaleString()}`, total: 0, color: calendarData.pnls.reduce((s, p) => s + p, 0) >= 0 ? "text-profit" : "text-loss" },
+            ].map(s => (
+              <div key={s.label} className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-2.5 text-center">
+                <p className="text-2xs text-muted-foreground/35 mb-0.5">{s.label}</p>
+                <p className={`text-[15px] font-black font-mono ${s.color}`}>{s.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ===== 3. CHARTS ROW ===== */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Bar Chart: Performance by Day */}
+        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-md p-5 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-32 h-32 bg-profit/[0.03] rounded-full blur-[60px] pointer-events-none" />
+          <div className="relative">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-profit/8 border border-profit/12">
+                <BarChart3 className="h-4 w-4 text-profit/70" />
+              </div>
+              <div>
+                <h2 className="text-[13px] font-bold text-foreground">ביצועים לפי ימי השבוע</h2>
+                <p className="text-2xs text-muted-foreground/30 font-mono">WIN RATE BY DAY</p>
+              </div>
+            </div>
+
+            <div className="h-[220px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={dayOfWeekData} barCategoryGap="20%">
+                  <XAxis
+                    dataKey="name"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "hsl(var(--muted-foreground) / 0.4)", fontSize: 10 }}
+                  />
+                  <YAxis
+                    domain={[0, 100]}
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "hsl(var(--muted-foreground) / 0.25)", fontSize: 9 }}
+                    tickFormatter={v => `${v}%`}
+                    width={35}
+                  />
+                  <Tooltip content={<ChartTooltip />} cursor={{ fill: "hsl(var(--muted) / 0.06)" }} />
+                  <Bar dataKey="winRate" radius={[6, 6, 0, 0]} maxBarSize={36}>
+                    {dayOfWeekData.map((entry, i) => (
+                      <Cell
+                        key={i}
+                        fill={entry.winRate >= 50 ? "hsl(var(--profit))" : "hsl(var(--loss))"}
+                        fillOpacity={entry.winRate >= 50 ? 0.7 : 0.6}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Friday warning */}
+            <div className="mt-3 rounded-xl border border-loss/10 bg-loss/[0.03] p-2.5 flex items-start gap-2">
+              <Brain className="h-3.5 w-3.5 text-loss/60 shrink-0 mt-0.5" />
+              <p className="text-2xs text-muted-foreground/50 leading-relaxed">
+                <span className="text-loss font-bold">שים לב:</span> Win Rate בשישי עומד על <span className="text-loss font-bold font-mono">20%</span> בלבד. שקול להימנע ממסחר בימי שישי.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Donut: Long vs Short */}
+        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-md p-5 relative overflow-hidden">
+          <div className="absolute bottom-0 right-0 w-32 h-32 bg-primary/[0.03] rounded-full blur-[60px] pointer-events-none" />
+          <div className="relative">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/8 border border-primary/12">
+                <PieChart className="h-4 w-4 text-primary/70" />
+              </div>
+              <div>
+                <h2 className="text-[13px] font-bold text-foreground">לונג מול שורט</h2>
+                <p className="text-2xs text-muted-foreground/30 font-mono">LONG VS SHORT P&L</p>
+              </div>
+            </div>
+
+            <div className="h-[220px] relative">
+              <ResponsiveContainer width="100%" height="100%">
+                <RePieChart>
+                  <Pie
+                    data={longShortData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={65}
+                    outerRadius={90}
+                    paddingAngle={4}
+                    dataKey="value"
+                    strokeWidth={0}
+                  >
+                    {longShortData.map((entry, i) => (
+                      <Cell key={i} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<PieTooltip />} />
+                </RePieChart>
+              </ResponsiveContainer>
+              {/* Center label */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <p className="text-2xl font-black font-mono text-foreground">62%</p>
+                <p className="text-2xs text-muted-foreground/40">Win Rate</p>
+              </div>
+            </div>
+
+            {/* Legend */}
+            <div className="grid grid-cols-2 gap-2 mt-3">
+              <div className="rounded-xl bg-profit/[0.04] border border-profit/10 p-2.5 text-center">
+                <div className="flex items-center justify-center gap-1.5 mb-1">
+                  <ArrowUpRight className="h-3 w-3 text-profit" />
+                  <span className="text-2xs text-muted-foreground/40">Long</span>
                 </div>
-              ))}
+                <p className="text-[15px] font-black font-mono text-profit">+$3,000</p>
+                <p className="text-[8px] text-profit/50 font-mono">{longPct}% מהרווח</p>
+              </div>
+              <div className="rounded-xl bg-loss/[0.04] border border-loss/10 p-2.5 text-center">
+                <div className="flex items-center justify-center gap-1.5 mb-1">
+                  <ArrowDownRight className="h-3 w-3 text-loss" />
+                  <span className="text-2xs text-muted-foreground/40">Short</span>
+                </div>
+                <p className="text-[15px] font-black font-mono text-loss">+$1,250</p>
+                <p className="text-[8px] text-loss/50 font-mono">{100 - parseInt(longPct)}% מהרווח</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Row 2: Heatmap (Full Width) */}
-      <div className="rounded-xl border border-border/15 bg-secondary/15 backdrop-blur-sm p-3 md:p-4">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-              <Clock className="h-3.5 w-3.5 text-primary" />
-            </div>
-            <div>
-              <span className="text-[10px] md:text-xs font-semibold text-foreground">מפת רווחיות לפי שעות</span>
-              <p className="text-[8px] text-muted-foreground">סה״כ רווח: <span className="text-accent font-semibold">+$2,430</span> · סה״כ הפסד: <span className="text-destructive font-semibold">-$1,785</span></p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 text-[8px] text-muted-foreground">
-            <span className="flex items-center gap-1"><span className="h-2.5 w-5 rounded-[3px] bg-accent/40" /> רווח</span>
-            <span className="flex items-center gap-1"><span className="h-2.5 w-5 rounded-[3px] bg-destructive/40" /> הפסד</span>
-            <span className="flex items-center gap-1"><span className="h-2.5 w-5 rounded-[3px] bg-muted/20" /> אין פעילות</span>
-          </div>
+      {/* AI Insight */}
+      <div className="rounded-2xl border border-primary/10 bg-primary/[0.03] backdrop-blur-md p-4 flex items-start gap-3">
+        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 border border-primary/15 shrink-0">
+          <Zap className="h-4 w-4 text-primary" />
         </div>
-
-        <div className="overflow-x-auto">
-          <div className="min-w-[500px]">
-            {/* Hours header */}
-            <div className="flex items-center gap-1 mb-1.5 pr-12">
-              {hours.map((h) => (
-                <div key={h} className="flex-1 text-center text-[6px] md:text-[7px] text-muted-foreground font-mono">{h}:00</div>
-              ))}
-            </div>
-
-            {/* Grid rows */}
-            {days.map((day) => {
-              const dayTotal = hours.reduce((sum, h) => sum + heatData[day][h].pnl, 0);
-              return (
-                <div key={day} className="flex items-center gap-1 mb-1">
-                  <div className="w-12 shrink-0 flex flex-col">
-                    <span className="text-[8px] md:text-[9px] text-foreground font-medium text-left">{day}</span>
-                    <span className={`text-[6px] font-semibold text-left ${dayTotal >= 0 ? "text-accent" : "text-destructive"}`}>
-                      {dayTotal >= 0 ? "+" : ""}{dayTotal}$
-                    </span>
-                  </div>
-                  {hours.map((h) => {
-                    const cell = heatData[day][h];
-                    return (
-                      <div
-                        key={h}
-                        className={`flex-1 h-8 md:h-9 rounded-[3px] border transition-all duration-200 hover:scale-105 hover:z-10 cursor-pointer flex flex-col items-center justify-center ${heatColor(cell.pnl)}`}
-                        title={`${day} ${h}:00 — ${cell.pnl >= 0 ? "+" : ""}$${cell.pnl} (${cell.trades} עסקאות)`}
-                      >
-                        <span className={`text-[6px] md:text-[7px] font-bold ${cell.pnl > 0 ? "text-accent" : cell.pnl < 0 ? "text-destructive" : "text-muted-foreground/50"}`}>
-                          {cell.pnl === 0 ? "—" : `${cell.pnl > 0 ? "+" : ""}${cell.pnl}$`}
-                        </span>
-                        {cell.trades > 0 && (
-                          <span className="text-[5px] text-muted-foreground">{cell.trades} עס׳</span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              );
-            })}
-
-            {/* Column totals */}
-            <div className="flex items-center gap-1 mt-1.5 pt-1.5 border-t border-border/10 pr-12">
-              {hours.map((h) => {
-                const colTotal = days.reduce((sum, day) => sum + heatData[day][h].pnl, 0);
-                return (
-                  <div key={h} className="flex-1 text-center">
-                    <span className={`text-[6px] font-bold ${colTotal >= 0 ? "text-accent" : "text-destructive"}`}>
-                      {colTotal >= 0 ? "+" : ""}{colTotal}$
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-4 rounded-lg border border-primary/15 bg-primary/[0.04] p-2.5 flex items-start gap-2">
-          <Brain className="h-3 w-3 text-primary shrink-0 mt-0.5" />
-          <p className="text-[8px] md:text-[9px] text-muted-foreground leading-relaxed">
-            <span className="text-primary font-semibold">תובנת AI:</span> ה-AI מזהה הפסדים קבועים בין 16:00 ל-17:00 (סה״כ <span className="text-destructive font-semibold">-$835</span>). 
-            השעות הרווחיות ביותר שלך הן 09:00-11:00 (<span className="text-accent font-semibold">+$1,870</span>). מומלץ להפעיל נעילה אוטומטית אחרי 15:00.
+        <div>
+          <p className="text-[11px] font-bold text-primary mb-0.5">תובנת AI מתקדמת</p>
+          <p className="text-2xs text-muted-foreground/50 leading-relaxed">
+            הנתונים מראים שה-Win Rate שלך ב<span className="text-profit font-bold">עסקאות Long</span> גבוה משמעותית.
+            תוחלת הרווח שלך חיובית ב-<span className="text-profit font-bold font-mono">$45.20</span> לעסקה.
+            נקודת חולשה: <span className="text-loss font-bold">ימי שישי</span> — מומלץ להפחית חשיפה או לא לסחור בכלל.
+            ה-Drawdown המקסימלי החודשי (<span className="text-loss font-mono font-bold">-8.5%</span>) בגבולות הסביר לחשבון ממומן.
           </p>
         </div>
       </div>
