@@ -199,6 +199,23 @@ const TaxCalculatorPage = () => {
     }
   };
 
+  const handleAiCoach = async () => {
+    setAiLoading(true);
+    setAiAdvice("");
+    try {
+      const { data, error } = await supabase.functions.invoke("tax-ai-coach", {
+        body: { profit: calc.profit, loss: calc.loss, commissions: calc.comm },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setAiAdvice(data.advice);
+    } catch (e: any) {
+      toast.error(e.message || "שגיאה בניתוח AI");
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   return (
     <div className="mx-auto max-w-[900px]">
       {/* Header */}
