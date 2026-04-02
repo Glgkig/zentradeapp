@@ -24,7 +24,6 @@ const monthlyData = [
   { month: "נוב׳", pnl: -420 },
   { month: "דצמ׳", pnl: 1600 },
 ];
-});
 
 /* ── Setup performance data ── */
 const setups = [
