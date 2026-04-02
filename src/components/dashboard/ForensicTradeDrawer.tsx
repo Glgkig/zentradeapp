@@ -236,6 +236,8 @@ const ForensicTradeDrawer = ({ open, onClose }: ForensicTradeDrawerProps) => {
             <label className="text-2xs font-semibold text-muted-foreground/50 mb-1.5 block font-mono uppercase">נכס</label>
             <input
               type="text"
+              value={asset}
+              onChange={(e) => setAsset(e.target.value)}
               placeholder="EUR/USD, BTC, NQ..."
               className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-[13px] font-medium text-foreground placeholder:text-muted-foreground/20 outline-none focus:border-primary/30 transition-all min-h-[48px]"
             />
