@@ -379,7 +379,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                 <span className="mr-auto rounded-lg bg-primary/10 border border-primary/15 px-1.5 py-0.5 text-2xs font-bold text-primary font-mono">2</span>
               </button>
               <button
-                onClick={() => { setMobileNavOpen(false); setUpgradeModal(true); }}
+                onClick={() => { setMobileNavOpen(false); navigate("/pricing"); }}
                 style={{ transitionDelay: mobileNavOpen ? `${(allNavItems.length + 1) * 35}ms` : "0ms" }}
                 className={`haptic-press flex w-full items-center gap-3 rounded-xl px-3 py-3 text-[13px] font-bold text-accent min-h-[48px] bg-accent/[0.06] border border-accent/15 hover:bg-accent/10 transition-all duration-300 gold-glow ${
                   mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
