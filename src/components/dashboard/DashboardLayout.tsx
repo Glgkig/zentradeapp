@@ -491,7 +491,7 @@ const UserMenuContent = ({ userName, userEmail, avatarUrl, onClose, onSettings, 
       </div>
     </div>
     <div className="py-1">
-      <button onClick={onClose} className="w-full flex items-center gap-3 px-4 py-2.5 text-right hover:bg-primary/[0.04] transition-colors min-h-[44px]">
+      <button onClick={onUpgrade} className="w-full flex items-center gap-3 px-4 py-2.5 text-right hover:bg-primary/[0.04] transition-colors min-h-[44px]">
         <Zap className="h-4 w-4 text-accent/50" />
         <p className="text-[12px] font-medium text-foreground/70">שדרג חשבון</p>
       </button>
