@@ -233,8 +233,8 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             </button>
             {/* Mobile brand */}
             <div className="flex md:hidden items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 border border-primary/15">
-                <ShieldCheck className="h-4 w-4 text-primary" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 border border-primary/15 overflow-hidden">
+                <img src={zentradeLogo} alt="ZenTrade" className="h-6 w-6 object-contain" />
               </div>
               <span className="font-heading text-[13px] font-bold text-foreground">ZenTrade</span>
             </div>

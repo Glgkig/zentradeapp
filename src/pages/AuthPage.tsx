@@ -85,8 +85,8 @@ const AuthPage = () => {
       <nav className="fixed top-0 right-0 left-0 z-40 border-b border-border/30 bg-background/60 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-8">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 border border-primary/20">
-              <Shield className="h-4 w-4 text-primary" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 border border-primary/20 overflow-hidden">
+              <img src={zentradeLogo} alt="ZenTrade" className="h-6 w-6 object-contain" />
             </div>
             <span className="font-heading text-lg font-bold text-foreground">ZenTrade</span>
           </div>
