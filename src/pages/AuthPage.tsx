@@ -9,6 +9,7 @@ import {
   XCircle, ChevronRight, Sparkles, MapPin, Eye, EyeOff,
   Calculator, PlayCircle, Check, Crown, Loader2,
 } from "lucide-react";
+import zentradeLogo from "@/assets/zentrade-logo.png";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
@@ -84,8 +85,8 @@ const AuthPage = () => {
       <nav className="fixed top-0 right-0 left-0 z-40 border-b border-border/30 bg-background/60 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-8">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 border border-primary/20">
-              <Shield className="h-4 w-4 text-primary" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 border border-primary/20 overflow-hidden">
+              <img src={zentradeLogo} alt="ZenTrade" className="h-6 w-6 object-contain" />
             </div>
             <span className="font-heading text-lg font-bold text-foreground">ZenTrade</span>
           </div>
@@ -503,8 +504,8 @@ const AuthPage = () => {
         <RevealSection>
           <div className="relative mx-auto max-w-2xl text-center">
             <div className="mb-6 flex justify-center">
-              <div className="flex h-16 w-16 md:h-20 md:w-20 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20">
-                <Shield className="h-8 w-8 md:h-10 md:w-10 text-primary" />
+              <div className="flex h-16 w-16 md:h-20 md:w-20 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 overflow-hidden">
+                <img src={zentradeLogo} alt="ZenTrade" className="h-12 w-12 md:h-14 md:w-14 object-contain" />
               </div>
             </div>
             <h2 className="font-heading text-2xl md:text-3xl lg:text-4xl font-bold leading-tight text-foreground">
@@ -534,7 +535,7 @@ const AuthPage = () => {
       <footer className="border-t border-border/30 px-4 py-8 md:px-8 md:py-10">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-4">
           <div className="flex items-center gap-2">
-            <Shield className="h-4 w-4 text-primary" />
+            <img src={zentradeLogo} alt="ZenTrade" className="h-5 w-5 object-contain" />
             <span className="font-heading text-sm font-bold text-foreground">ZenTrade</span>
             <span className="text-xs text-foreground/60">• AI-Powered Trading Coach</span>
           </div>
@@ -671,8 +672,8 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
           {/* Header */}
           <div className="relative text-center mb-6 md:mb-7">
             <div className="flex justify-center mb-3">
-              <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-500/20 shadow-lg shadow-cyan-500/10">
-                <Shield className="h-5 w-5 text-cyan-400" />
+              <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-500/20 shadow-lg shadow-cyan-500/10 overflow-hidden">
+                <img src={zentradeLogo} alt="ZenTrade" className="h-8 w-8 object-contain" />
                 <div className="absolute -inset-1 rounded-2xl bg-cyan-500/10 blur-md -z-10" />
               </div>
             </div>

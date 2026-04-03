@@ -7,6 +7,7 @@ import {
   Eye, EyeOff, Shield, Loader2, Zap, BookOpen, Brain,
   ShieldAlert, ChevronDown, Sparkles,
 } from "lucide-react";
+import zentradeLogo from "@/assets/zentrade-logo.png";
 
 interface FieldErrors {
   name?: string;
@@ -90,8 +91,8 @@ const SignupPage = () => {
       {/* Minimal nav */}
       <nav className="relative z-10 flex items-center justify-between px-5 md:px-10 py-4">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 border border-primary/20">
-            <Shield className="h-4 w-4 text-primary" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 border border-primary/20 overflow-hidden">
+            <img src={zentradeLogo} alt="ZenTrade" className="h-6 w-6 object-contain" />
           </div>
           <span className="font-heading text-lg font-bold text-foreground">ZenTrade</span>
         </div>

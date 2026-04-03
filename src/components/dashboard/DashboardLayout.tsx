@@ -7,6 +7,7 @@ import {
   Crosshair, PieChart, History, CheckCircle2, Flame, Eye, Crown, Star, Sparkles, Newspaper,
   Calculator, Plus, ShieldAlert,
 } from "lucide-react";
+import zentradeLogo from "@/assets/zentrade-logo.png";
 import SettingsPage from "@/pages/SettingsPage";
 import SetupsPage from "@/pages/SetupsPage";
 import StatsPage from "@/pages/StatsPage";
@@ -144,8 +145,8 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
           <div className="flex items-center gap-3">
             <div className="relative">
               <div className="absolute inset-[-3px] rounded-xl bg-primary/8 ai-breathe" />
-              <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 border border-primary/15">
-                <ShieldCheck className="h-5 w-5 text-primary" />
+              <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 border border-primary/15 overflow-hidden">
+                <img src={zentradeLogo} alt="ZenTrade" className="h-7 w-7 object-contain" />
               </div>
             </div>
             <div>
@@ -232,8 +233,8 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             </button>
             {/* Mobile brand */}
             <div className="flex md:hidden items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 border border-primary/15">
-                <ShieldCheck className="h-4 w-4 text-primary" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 border border-primary/15 overflow-hidden">
+                <img src={zentradeLogo} alt="ZenTrade" className="h-6 w-6 object-contain" />
               </div>
               <span className="font-heading text-[13px] font-bold text-foreground">ZenTrade</span>
             </div>
