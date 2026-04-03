@@ -76,6 +76,7 @@ const brokers = [
 const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   const navigate = useNavigate();
   const { profile, user, signOut, refreshProfile } = useAuth();
+  const { isPro, showPaywall } = useSubscription();
   const [activeNav, setActiveNav] = useState("dashboard");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [brokerModal, setBrokerModal] = useState(false);
