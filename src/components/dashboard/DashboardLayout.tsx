@@ -227,7 +227,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               }}
               aria-expanded={mobileNavOpen}
               aria-label={mobileNavOpen ? "סגור תפריט ניווט" : "פתח תפריט ניווט"}
-              className="md:hidden haptic-press flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.04] text-muted-foreground/60 hover:text-primary hover:border-primary/15 transition-all duration-200 active:scale-95"
+              className="md:hidden haptic-press flex h-10 w-10 items-center justify-center rounded-xl border border-border/50 bg-secondary/50 text-muted-foreground hover:text-primary hover:border-primary/15 transition-all duration-200 active:scale-95"
             >
               {mobileNavOpen ? <X className="h-4.5 w-4.5" /> : <Menu className="h-4.5 w-4.5" />}
             </button>
