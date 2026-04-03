@@ -346,7 +346,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                       active ? "bg-primary/10 text-primary border border-primary/15" : "text-muted-foreground/60 hover:bg-secondary/50 hover:text-foreground border border-transparent"
                     }`}
                   >
-                    <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${active ? "bg-primary/15" : "bg-white/[0.04]"}`}>
+                    <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${active ? "bg-primary/15" : "bg-secondary/50"}`}>
                       <item.icon className={`h-4 w-4 ${active ? "text-primary" : "text-muted-foreground/30"}`} />
                     </div>
                     {item.label}
