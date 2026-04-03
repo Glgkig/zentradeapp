@@ -43,6 +43,20 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Resolve plan name to Polar product ID from secrets
+    const productIdMap: Record<string, string> = {
+      pro: Deno.env.get("POLAR_product_PRO") || "",
+      promax: Deno.env.get("POLAR_product_MAX") || "",
+    };
+
+    const resolvedProductId = productIdMap[productPriceId] || productPriceId;
+    if (!resolvedProductId) {
+      return new Response(JSON.stringify({ error: "Invalid plan" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const polarToken = Deno.env.get("POLAR_ACCESS_TOKEN");
     if (!polarToken) {
       return new Response(JSON.stringify({ error: "Polar not configured" }), {
