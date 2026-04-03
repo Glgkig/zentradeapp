@@ -69,7 +69,7 @@ const promaxPlan = {
 const PricingPage = () => {
   const navigate = useNavigate();
   const { isPro } = useSubscription();
-  const [isYearly, setIsYearly] = useState(false);
+  
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden" dir="rtl">
