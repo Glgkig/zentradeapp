@@ -504,8 +504,8 @@ const AuthPage = () => {
         <RevealSection>
           <div className="relative mx-auto max-w-2xl text-center">
             <div className="mb-6 flex justify-center">
-              <div className="flex h-16 w-16 md:h-20 md:w-20 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20">
-                <Shield className="h-8 w-8 md:h-10 md:w-10 text-primary" />
+              <div className="flex h-16 w-16 md:h-20 md:w-20 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 overflow-hidden">
+                <img src={zentradeLogo} alt="ZenTrade" className="h-12 w-12 md:h-14 md:w-14 object-contain" />
               </div>
             </div>
             <h2 className="font-heading text-2xl md:text-3xl lg:text-4xl font-bold leading-tight text-foreground">
