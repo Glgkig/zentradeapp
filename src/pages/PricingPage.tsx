@@ -2,10 +2,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
-  Crown, Zap, Check, X, BookOpen, Brain, ShieldAlert, BarChart3,
+  Crown, Zap, Check, X,
   ArrowRight, Sparkles, Star, ChevronLeft, Gem, Loader2,
 } from "lucide-react";
 
@@ -34,6 +33,7 @@ const proPlan = {
   nameEn: "PRO",
   price: "99",
   icon: Crown,
+  checkoutUrl: "https://buy.polar.sh/polar_cl_C8RPN9FyyA6Ifof8Uav33GXwhG9rl1XOZOSYK233F52",
   features: [
     "עסקאות ללא הגבלה",
     "יומן מסחר מתקדם",
@@ -53,6 +53,7 @@ const promaxPlan = {
   nameEn: "PROMAX",
   price: "199",
   icon: Gem,
+  checkoutUrl: "https://buy.polar.sh/polar_cl_C8RPN9FyyA6Ifof8Uav33GXwhG9rl1XOZOSYK233F52",
   features: [
     "הכול ב-Pro +",
     "API גישה מלאה",
@@ -65,42 +66,27 @@ const promaxPlan = {
   missing: [],
 };
 
-// Product price IDs from Polar - these map to actual Polar product prices
-const PRODUCT_IDS = {
-  pro: "POLAR_product_PRO",
-  promax: "POLAR_product_MAX",
-};
-
 const PricingPage = () => {
   const navigate = useNavigate();
   const { isPro } = useSubscription();
   const { user } = useAuth();
-  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
-  const handleCheckout = async (plan: string) => {
+  const buildCheckoutUrl = (baseUrl: string) => {
+    if (!user) return "/login";
+    const params = new URLSearchParams();
+    // Pass user ID and email as metadata so webhook can identify the user
+    params.set("metadata[supabase_user_id]", user.id);
+    if (user.email) params.set("customer_email", user.email);
+    params.set("success_url", `${window.location.origin}/success`);
+    return `${baseUrl}?${params.toString()}`;
+  };
+
+  const handleCheckout = (baseUrl: string) => {
     if (!user) {
       navigate("/login");
       return;
     }
-
-    setLoadingPlan(plan);
-    try {
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { productPriceId: plan },
-      });
-
-      if (error) throw error;
-      if (data?.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error("No checkout URL returned");
-      }
-    } catch (err: any) {
-      console.error("Checkout error:", err);
-      toast.error("שגיאה ביצירת תשלום. נסה שוב.");
-    } finally {
-      setLoadingPlan(null);
-    }
+    window.location.href = buildCheckoutUrl(baseUrl);
   };
 
   return (
@@ -231,19 +217,12 @@ const PricingPage = () => {
               </button>
             ) : (
               <button
-                onClick={() => handleCheckout("pro")}
-                disabled={loadingPlan === "pro"}
-                className="relative flex items-center justify-center gap-2.5 w-full rounded-2xl bg-primary text-primary-foreground py-3.5 text-sm font-bold shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:brightness-110 transition-all duration-200 active:scale-[0.98] disabled:opacity-60"
+                onClick={() => handleCheckout(proPlan.checkoutUrl)}
+                className="relative flex items-center justify-center gap-2.5 w-full rounded-2xl bg-primary text-primary-foreground py-3.5 text-sm font-bold shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:brightness-110 transition-all duration-200 active:scale-[0.98]"
               >
-                {loadingPlan === "pro" ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <>
-                    <Crown className="h-4 w-4" />
-                    שדרג ל-Pro
-                    <ArrowRight className="h-4 w-4 rotate-180" />
-                  </>
-                )}
+                <Crown className="h-4 w-4" />
+                שדרג ל-Pro
+                <ArrowRight className="h-4 w-4 rotate-180" />
               </button>
             )}
           </div>
@@ -281,19 +260,12 @@ const PricingPage = () => {
             </div>
 
             <button
-              onClick={() => handleCheckout("promax")}
-              disabled={loadingPlan === "promax"}
-              className="relative flex items-center justify-center gap-2.5 w-full rounded-2xl bg-accent/15 border border-accent/20 text-accent py-3.5 text-sm font-bold hover:bg-accent/25 transition-all duration-200 active:scale-[0.98] disabled:opacity-60"
+              onClick={() => handleCheckout(promaxPlan.checkoutUrl)}
+              className="relative flex items-center justify-center gap-2.5 w-full rounded-2xl bg-accent/15 border border-accent/20 text-accent py-3.5 text-sm font-bold hover:bg-accent/25 transition-all duration-200 active:scale-[0.98]"
             >
-              {loadingPlan === "promax" ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <>
-                  <Gem className="h-4 w-4" />
-                  הצטרף ל-ProMax
-                  <ArrowRight className="h-4 w-4 rotate-180" />
-                </>
-              )}
+              <Gem className="h-4 w-4" />
+              הצטרף ל-ProMax
+              <ArrowRight className="h-4 w-4 rotate-180" />
             </button>
           </div>
         </div>
