@@ -104,26 +104,6 @@ const PricingPage = () => {
           </p>
         </div>
 
-        {/* Toggle */}
-        <div className="flex items-center justify-center gap-3 mb-10">
-          <span className={`text-sm font-medium transition-colors ${!isYearly ? "text-foreground" : "text-muted-foreground/40"}`}>
-            חודשי
-          </span>
-          <button
-            onClick={() => setIsYearly(!isYearly)}
-            className={`relative h-7 w-12 rounded-full transition-colors duration-200 ${isYearly ? "bg-primary" : "bg-muted/30 border border-white/[0.08]"}`}
-          >
-            <span className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow-sm transition-all duration-200 ${isYearly ? "right-0.5" : "right-[22px]"}`} />
-          </button>
-          <span className={`text-sm font-medium transition-colors ${isYearly ? "text-foreground" : "text-muted-foreground/40"}`}>
-            שנתי
-          </span>
-          {isYearly && (
-            <span className="rounded-full bg-profit/15 border border-profit/20 px-3 py-1 text-xs font-bold text-profit font-mono animate-in fade-in zoom-in-95 duration-200">
-              10% הנחה
-            </span>
-          )}
-        </div>
 
         {/* Cards */}
         <div className="grid md:grid-cols-3 gap-5 max-w-5xl mx-auto">
