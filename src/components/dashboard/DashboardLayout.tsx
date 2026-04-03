@@ -361,7 +361,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                   mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
                 }`}
               >
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04]">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary/50">
                   <Plug className="h-4 w-4 text-muted-foreground/30" />
                 </div>
                 חבר ברוקר
