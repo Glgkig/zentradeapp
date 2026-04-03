@@ -262,9 +262,9 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             {!isPro && (
               <button
                 onClick={() => navigate("/pricing")}
-                className="flex haptic-press items-center gap-1.5 rounded-xl border border-accent/20 bg-accent/[0.06] px-2 sm:px-3 py-1.5 text-2xs font-bold text-accent transition-all hover:bg-accent/15 hover:border-accent/30"
+                className="flex haptic-press items-center gap-1 rounded-lg border border-accent/20 bg-accent/[0.06] px-2 py-1 text-[10px] font-bold text-accent transition-all hover:bg-accent/15 hover:border-accent/30"
               >
-                <Crown className="h-3 w-3" />
+                <Crown className="h-2.5 w-2.5" />
                 <span className="hidden sm:inline">שדרג PRO</span>
               </button>
             )}
