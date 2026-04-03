@@ -168,35 +168,48 @@
 
 /* ===== Light Mode Global Depth ===== */
 .light {
-  /* Cards, containers, popovers get visible borders + shadows */
-  & [class*="bg-white/[0.0"],
-  & [class*="bg-white/[0.1"] {
-    background-color: hsl(0 0% 100% / 0.85) !important;
-  }
-  & [class*="border-white/[0.0"],
-  & [class*="border-white/[0.1"] {
+  /* Sidebar */
+  & aside {
+    background-color: hsl(0 0% 100%) !important;
     border-color: hsl(214 20% 84%) !important;
+    box-shadow: 2px 0 8px hsl(0 0% 0% / 0.04);
   }
-}
-
-/* Light mode select options */
-.light select option {
-  background-color: hsl(0, 0%, 100%);
-  color: hsl(222, 47%, 11%);
-}
-
-/* Light mode settings input */
-.light .settings-input {
-  border-color: hsl(214 20% 84%);
-  background: hsl(0 0% 100%);
-}
-.light .settings-input:focus {
-  border-color: hsl(var(--primary) / 0.4);
-  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.1);
-  background: hsl(0 0% 100%);
-}
-.light .settings-input::placeholder {
-  color: hsl(var(--foreground) / 0.35);
+  /* Header */
+  & .glass-header {
+    background-color: hsl(0 0% 100% / 0.95) !important;
+    border-bottom-color: hsl(214 20% 84%) !important;
+    box-shadow: 0 1px 3px hsl(0 0% 0% / 0.06);
+    backdrop-filter: blur(12px);
+  }
+  /* Ambient bg - hide in light mode */
+  & .ambient-bg {
+    display: none;
+  }
+  /* Gold glow - subtle in light */
+  & .gold-glow {
+    box-shadow: 0 0 12px hsl(43 72% 52% / 0.1);
+  }
+  & .cyan-glow {
+    box-shadow: 0 0 12px hsl(160 80% 38% / 0.1);
+  }
+  /* select options */
+  & select option {
+    background-color: hsl(0, 0%, 100%);
+    color: hsl(222, 47%, 11%);
+  }
+  /* settings input */
+  & .settings-input {
+    border-color: hsl(214 20% 84%);
+    background: hsl(0 0% 100%);
+  }
+  & .settings-input:focus {
+    border-color: hsl(var(--primary) / 0.4);
+    box-shadow: 0 0 0 2px hsl(var(--primary) / 0.1);
+    background: hsl(0 0% 100%);
+  }
+  & .settings-input::placeholder {
+    color: hsl(var(--foreground) / 0.35);
+  }
 }
 
 /* ===== AI Breathing Animation ===== */
