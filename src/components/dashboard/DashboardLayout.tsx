@@ -186,12 +186,12 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
           ))}
 
           {/* Broker Connect */}
-          <div className="pt-2 border-t border-white/[0.04]">
+          <div className="pt-2 border-t border-border/30">
             <button
               onClick={() => setBrokerModal(true)}
-              className="haptic-press group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[12px] font-medium text-muted-foreground/60 hover:bg-white/[0.04] hover:text-primary transition-all"
+              className="haptic-press group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[12px] font-medium text-muted-foreground/60 hover:bg-secondary/50 hover:text-primary transition-all"
             >
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/[0.04] group-hover:bg-primary/10">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-secondary/50 group-hover:bg-primary/10">
                 <Plug className="h-3.5 w-3.5 text-muted-foreground/40 group-hover:text-primary" />
               </div>
               <span className="flex-1 text-right">חבר ברוקר</span>
