@@ -197,7 +197,7 @@ const EconomicNewsPage = () => {
     });
   };
 
-  const dayButtons = Array.from({ length: 7 }, (_, i) => addDays(new Date(), i - 3));
+  const dayButtons = Array.from({ length: 7 }, (_, i) => addDays(selectedDate, i - 3));
 
   // Count events per day for indicators
   const eventCountForDay = (date: Date) =>
