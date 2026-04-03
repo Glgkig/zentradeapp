@@ -357,7 +357,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               <button
                 onClick={() => { setMobileNavOpen(false); setBrokerModal(true); }}
                 style={{ transitionDelay: mobileNavOpen ? `${allNavItems.length * 35}ms` : "0ms" }}
-                className={`haptic-press flex w-full items-center gap-3 rounded-xl px-3 py-3 text-[13px] font-medium text-muted-foreground/60 min-h-[48px] hover:bg-white/[0.04] transition-all duration-300 ${
+                className={`haptic-press flex w-full items-center gap-3 rounded-xl px-3 py-3 text-[13px] font-medium text-muted-foreground/60 min-h-[48px] hover:bg-secondary/50 transition-all duration-300 ${
                   mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
                 }`}
               >
