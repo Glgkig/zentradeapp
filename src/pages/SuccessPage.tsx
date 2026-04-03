@@ -1,23 +1,62 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSubscription } from "@/contexts/SubscriptionContext";
-import { Crown, Check, Sparkles, ArrowRight, PartyPopper } from "lucide-react";
+import { Crown, Check, Sparkles, ArrowRight, Loader2 } from "lucide-react";
 
 const SuccessPage = () => {
   const navigate = useNavigate();
-  const { setPro } = useSubscription();
+  const [searchParams] = useSearchParams();
+  const { refreshSubscription, isPro } = useSubscription();
   const [step, setStep] = useState(0);
+  const [verified, setVerified] = useState(false);
 
   useEffect(() => {
-    // Activate pro
-    setPro(true);
+    // Poll subscription status until isPro is true (webhook may take a moment)
+    let attempts = 0;
+    const maxAttempts = 15;
 
-    // Staggered animation
+    const poll = async () => {
+      await refreshSubscription();
+      attempts++;
+    };
+
+    poll(); // Initial check
+    const interval = setInterval(() => {
+      if (attempts >= maxAttempts) {
+        clearInterval(interval);
+        setVerified(true); // Show content anyway
+        return;
+      }
+      poll();
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [refreshSubscription]);
+
+  useEffect(() => {
+    if (isPro) {
+      setVerified(true);
+    }
+  }, [isPro]);
+
+  useEffect(() => {
+    if (!verified) return;
     const t1 = setTimeout(() => setStep(1), 300);
     const t2 = setTimeout(() => setStep(2), 800);
     const t3 = setTimeout(() => setStep(3), 1300);
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-  }, [setPro]);
+  }, [verified]);
+
+  if (!verified) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center" dir="rtl">
+        <div className="text-center">
+          <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">מאמת את התשלום שלך...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden" dir="rtl">

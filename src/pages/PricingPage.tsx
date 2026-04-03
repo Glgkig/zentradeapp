@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSubscription, POLAR_URL } from "@/contexts/SubscriptionContext";
+import { useSubscription } from "@/contexts/SubscriptionContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import {
   Crown, Zap, Check, X, BookOpen, Brain, ShieldAlert, BarChart3,
-  ArrowRight, Sparkles, Star, ChevronLeft, Gem,
+  ArrowRight, Sparkles, Star, ChevronLeft, Gem, Loader2,
 } from "lucide-react";
 
 const freePlan = {
@@ -30,8 +33,6 @@ const proPlan = {
   name: "ZenTrade Pro",
   nameEn: "PRO",
   price: "99",
-  yearlyPrice: "89",
-  yearlyTotal: "1,069",
   icon: Crown,
   features: [
     "עסקאות ללא הגבלה",
@@ -51,8 +52,6 @@ const promaxPlan = {
   name: "ZenTrade ProMax",
   nameEn: "PROMAX",
   price: "199",
-  yearlyPrice: "179",
-  yearlyTotal: "2,149",
   icon: Gem,
   features: [
     "הכול ב-Pro +",
@@ -66,10 +65,43 @@ const promaxPlan = {
   missing: [],
 };
 
+// Product price IDs from Polar - these map to actual Polar product prices
+const PRODUCT_IDS = {
+  pro: "POLAR_product_PRO",
+  promax: "POLAR_product_MAX",
+};
+
 const PricingPage = () => {
   const navigate = useNavigate();
   const { isPro } = useSubscription();
-  
+  const { user } = useAuth();
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+  const handleCheckout = async (plan: string) => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    setLoadingPlan(plan);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: { productPriceId: plan },
+      });
+
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("No checkout URL returned");
+      }
+    } catch (err: any) {
+      console.error("Checkout error:", err);
+      toast.error("שגיאה ביצירת תשלום. נסה שוב.");
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden" dir="rtl">
@@ -103,7 +135,6 @@ const PricingPage = () => {
             שדרג את המסחר שלך עם הכלים המתקדמים ביותר בשוק
           </p>
         </div>
-
 
         {/* Cards */}
         <div className="grid md:grid-cols-3 gap-5 max-w-5xl mx-auto">
@@ -155,9 +186,7 @@ const PricingPage = () => {
 
           {/* Pro Card */}
           <div className="relative rounded-3xl border border-primary/25 bg-card/50 backdrop-blur-xl p-7 flex flex-col shadow-lg shadow-primary/[0.05]">
-            {/* Glow */}
             <div className="absolute -inset-px rounded-3xl bg-gradient-to-b from-primary/15 via-transparent to-transparent pointer-events-none" />
-            {/* Badge */}
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
               <div className="flex items-center gap-1.5 rounded-full bg-primary px-4 py-1 shadow-lg shadow-primary/30">
                 <Star className="h-3 w-3 text-primary-foreground fill-primary-foreground" />
@@ -177,9 +206,7 @@ const PricingPage = () => {
 
             <div className="relative mb-6">
               <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-foreground">
-                  ₪{proPlan.price}
-                </span>
+                <span className="text-4xl font-bold text-foreground">₪{proPlan.price}</span>
                 <span className="text-sm text-muted-foreground/30">/חודש</span>
               </div>
             </div>
@@ -203,16 +230,21 @@ const PricingPage = () => {
                 ✓ תוכנית נוכחית
               </button>
             ) : (
-              <a
-                href={POLAR_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="relative flex items-center justify-center gap-2.5 w-full rounded-2xl bg-primary text-primary-foreground py-3.5 text-sm font-bold shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:brightness-110 transition-all duration-200 active:scale-[0.98]"
+              <button
+                onClick={() => handleCheckout("pro")}
+                disabled={loadingPlan === "pro"}
+                className="relative flex items-center justify-center gap-2.5 w-full rounded-2xl bg-primary text-primary-foreground py-3.5 text-sm font-bold shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:brightness-110 transition-all duration-200 active:scale-[0.98] disabled:opacity-60"
               >
-                <Crown className="h-4 w-4" />
-                שדרג ל-Pro
-                <ArrowRight className="h-4 w-4 rotate-180" />
-              </a>
+                {loadingPlan === "pro" ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <Crown className="h-4 w-4" />
+                    שדרג ל-Pro
+                    <ArrowRight className="h-4 w-4 rotate-180" />
+                  </>
+                )}
+              </button>
             )}
           </div>
 
@@ -232,9 +264,7 @@ const PricingPage = () => {
 
             <div className="relative mb-6">
               <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-foreground">
-                  ₪{promaxPlan.price}
-                </span>
+                <span className="text-4xl font-bold text-foreground">₪{promaxPlan.price}</span>
                 <span className="text-sm text-muted-foreground/30">/חודש</span>
               </div>
             </div>
@@ -250,16 +280,21 @@ const PricingPage = () => {
               ))}
             </div>
 
-            <a
-              href={POLAR_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="relative flex items-center justify-center gap-2.5 w-full rounded-2xl bg-accent/15 border border-accent/20 text-accent py-3.5 text-sm font-bold hover:bg-accent/25 transition-all duration-200 active:scale-[0.98]"
+            <button
+              onClick={() => handleCheckout("promax")}
+              disabled={loadingPlan === "promax"}
+              className="relative flex items-center justify-center gap-2.5 w-full rounded-2xl bg-accent/15 border border-accent/20 text-accent py-3.5 text-sm font-bold hover:bg-accent/25 transition-all duration-200 active:scale-[0.98] disabled:opacity-60"
             >
-              <Gem className="h-4 w-4" />
-              הצטרף ל-ProMax
-              <ArrowRight className="h-4 w-4 rotate-180" />
-            </a>
+              {loadingPlan === "promax" ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  <Gem className="h-4 w-4" />
+                  הצטרף ל-ProMax
+                  <ArrowRight className="h-4 w-4 rotate-180" />
+                </>
+              )}
+            </button>
           </div>
         </div>
 
