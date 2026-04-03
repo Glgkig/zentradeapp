@@ -141,7 +141,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
       {/* ===== Desktop Sidebar ===== */}
       <aside className={`hidden md:flex h-full w-[240px] flex-col bg-card/95 backdrop-blur-xl border-l border-border/50 shrink-0 relative z-10 ${zenMode ? "zen-hidden" : "zen-visible"}`}>
         {/* Brand */}
-        <div className="flex items-center px-5 py-4 border-b border-white/[0.06]">
+        <div className="flex items-center px-5 py-4 border-b border-border/50">
           <div className="flex items-center gap-3">
             <div className="relative">
               <div className="absolute inset-[-3px] rounded-xl bg-primary/8 ai-breathe" />
