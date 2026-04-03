@@ -520,7 +520,8 @@ const UserMenuContent = ({ userName, userEmail, avatarUrl, onClose, onSettings, 
       </button>
     </div>
   </>
-);
+  );
+};
 
 /* ===== Broker Modal ===== */
 const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?: boolean }) => {
