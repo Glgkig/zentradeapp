@@ -469,7 +469,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             onClose={() => setUserMenu(false)}
             onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
             onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
-            onUpgrade={() => { setUserMenu(false); setUpgradeModal(true); }}
+            onUpgrade={() => { setUserMenu(false); navigate("/pricing"); }}
           />
           <div className="px-4 pb-8 pt-2">
             <button onClick={() => setUserMenu(false)} className="w-full rounded-xl bg-white/[0.04] border border-white/[0.06] py-3 text-[12px] font-medium text-muted-foreground/50">סגור</button>
