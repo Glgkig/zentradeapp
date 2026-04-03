@@ -633,19 +633,19 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
 /* ===== Upgrade Modal ===== */
 const plans = [
   {
-    id: "basic", name: "בסיסי", nameEn: "STARTER", price: "40", yearlyTotal: "432", icon: Zap,
+    id: "basic", name: "בסיסי", nameEn: "STARTER", price: "40", yearlyPrice: "36", yearlyTotal: "432", icon: Zap,
     features: ["3 סטאפים", "יומן בסיסי", "סטטיסטיקות שבועיות", "התראות מייל"],
     missing: ["מנטור AI", "בקטסטינג"],
     cta: "התחלה חינם ל-14 ימים", popular: false,
   },
   {
-    id: "pro", name: "Pro", nameEn: "PRO", price: "99", yearlyTotal: "1,069", icon: Star,
+    id: "pro", name: "Pro", nameEn: "PRO", price: "99", yearlyPrice: "89", yearlyTotal: "1,069", icon: Star,
     features: ["סטאפים ∞", "מנטור AI מתקדם", "Real-Time סטטיסטיקות", "בקטסטינג מלא", "Push + מייל", "ייצוא PDF"],
     missing: [],
     cta: "שדרג ל-Pro", popular: true,
   },
   {
-    id: "vip", name: "VIP", nameEn: "VIP", price: "149", yearlyTotal: "1,609", icon: Crown,
+    id: "vip", name: "VIP", nameEn: "VIP", price: "149", yearlyPrice: "134", yearlyTotal: "1,609", icon: Crown,
     features: ["הכול ב-Pro +", "API גישה מלאה", "מנטור 1:1", "חוקי ברזל מותאמים", "VIP טלגרם", "תמיכה 24/7", "גישה מוקדמת"],
     missing: [],
     cta: "הצטרף ל-VIP", popular: false,
@@ -713,17 +713,17 @@ const UpgradeModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?
                 </div>
               </div>
               <div className="mb-4">
-                {isYearly ? (
-                  <>
-                    <span className="text-2xl font-bold text-foreground font-mono">₪{plan.yearlyTotal}</span>
-                    <span className="text-2xs text-muted-foreground/40">/שנה</span>
-                    <span className="mr-2 text-2xs text-muted-foreground/30 line-through font-mono">₪{originalYearly.toLocaleString()}</span>
-                  </>
-                ) : (
-                  <>
-                    <span className="text-2xl font-bold text-foreground font-mono">₪{plan.price}</span>
-                    <span className="text-2xs text-muted-foreground/40">/חודש</span>
-                  </>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-2xl font-bold text-foreground font-mono">
+                    ₪{isYearly ? plan.yearlyPrice : plan.price}
+                  </span>
+                  <span className="text-2xs text-muted-foreground/40">/חודש</span>
+                </div>
+                {isYearly && (
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-2xs text-muted-foreground/30 line-through font-mono">₪{originalYearly.toLocaleString()}</span>
+                    <span className="text-2xs text-primary font-bold font-mono">₪{plan.yearlyTotal}/שנה</span>
+                  </div>
                 )}
               </div>
               <div className="space-y-1.5 mb-4 flex-1">
