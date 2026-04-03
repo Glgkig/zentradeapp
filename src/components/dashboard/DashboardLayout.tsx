@@ -307,7 +307,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                 <>
                   <div className="fixed inset-0 z-[60] bg-transparent" onClick={() => setUserMenu(false)} />
                   {/* Desktop dropdown */}
-                  <div className="hidden md:block absolute left-0 top-full mt-2 w-56 z-[70] rounded-2xl border border-white/[0.08] bg-[#111116] shadow-2xl shadow-black/40 animate-in fade-in slide-in-from-top-1 duration-150 overflow-hidden">
+                  <div className="hidden md:block absolute left-0 top-full mt-2 w-56 z-[70] rounded-2xl border border-border bg-card shadow-2xl shadow-black/20 animate-in fade-in slide-in-from-top-1 duration-150 overflow-hidden">
                     <UserMenuContent
                       userName={userName}
                       userEmail={userEmail}
