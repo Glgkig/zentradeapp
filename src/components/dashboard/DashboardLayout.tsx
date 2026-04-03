@@ -284,9 +284,9 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             {/* Theme */}
             <button
               onClick={() => setDark(!dark)}
-              className="haptic-press flex h-9 w-9 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.04] text-muted-foreground/40 hover:text-primary hover:border-primary/15 transition-all"
+              className="haptic-press flex h-9 w-9 items-center justify-center rounded-xl border border-border/50 bg-secondary/50 text-muted-foreground hover:text-primary hover:border-primary/20 transition-all duration-300"
             >
-              {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {dark ? <Sun className="h-4 w-4 transition-transform duration-300 rotate-0" /> : <Moon className="h-4 w-4 transition-transform duration-300 rotate-0" />}
             </button>
 
             {/* User */}
