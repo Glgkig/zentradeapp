@@ -69,7 +69,7 @@ const promaxPlan = {
 const PricingPage = () => {
   const navigate = useNavigate();
   const { isPro } = useSubscription();
-  const [isYearly, setIsYearly] = useState(false);
+  
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden" dir="rtl">
@@ -104,26 +104,6 @@ const PricingPage = () => {
           </p>
         </div>
 
-        {/* Toggle */}
-        <div className="flex items-center justify-center gap-3 mb-10">
-          <span className={`text-sm font-medium transition-colors ${!isYearly ? "text-foreground" : "text-muted-foreground/40"}`}>
-            חודשי
-          </span>
-          <button
-            onClick={() => setIsYearly(!isYearly)}
-            className={`relative h-7 w-12 rounded-full transition-colors duration-200 ${isYearly ? "bg-primary" : "bg-muted/30 border border-white/[0.08]"}`}
-          >
-            <span className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow-sm transition-all duration-200 ${isYearly ? "right-0.5" : "right-[22px]"}`} />
-          </button>
-          <span className={`text-sm font-medium transition-colors ${isYearly ? "text-foreground" : "text-muted-foreground/40"}`}>
-            שנתי
-          </span>
-          {isYearly && (
-            <span className="rounded-full bg-profit/15 border border-profit/20 px-3 py-1 text-xs font-bold text-profit font-mono animate-in fade-in zoom-in-95 duration-200">
-              10% הנחה
-            </span>
-          )}
-        </div>
 
         {/* Cards */}
         <div className="grid md:grid-cols-3 gap-5 max-w-5xl mx-auto">
@@ -198,16 +178,10 @@ const PricingPage = () => {
             <div className="relative mb-6">
               <div className="flex items-baseline gap-1">
                 <span className="text-4xl font-bold text-foreground">
-                  ₪{isYearly ? proPlan.yearlyPrice : proPlan.price}
+                  ₪{proPlan.price}
                 </span>
                 <span className="text-sm text-muted-foreground/30">/חודש</span>
               </div>
-              {isYearly && (
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs text-muted-foreground/30 line-through font-mono">₪{parseInt(proPlan.price) * 12}</span>
-                  <span className="text-xs text-primary font-bold font-mono">₪{proPlan.yearlyTotal}/שנה</span>
-                </div>
-              )}
             </div>
 
             <div className="relative space-y-3 flex-1 mb-6">
@@ -259,16 +233,10 @@ const PricingPage = () => {
             <div className="relative mb-6">
               <div className="flex items-baseline gap-1">
                 <span className="text-4xl font-bold text-foreground">
-                  ₪{isYearly ? promaxPlan.yearlyPrice : promaxPlan.price}
+                  ₪{promaxPlan.price}
                 </span>
                 <span className="text-sm text-muted-foreground/30">/חודש</span>
               </div>
-              {isYearly && (
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs text-muted-foreground/30 line-through font-mono">₪{parseInt(promaxPlan.price) * 12}</span>
-                  <span className="text-xs text-accent font-bold font-mono">₪{promaxPlan.yearlyTotal}/שנה</span>
-                </div>
-              )}
             </div>
 
             <div className="relative space-y-3 flex-1 mb-6">
