@@ -535,7 +535,7 @@ const AuthPage = () => {
       <footer className="border-t border-border/30 px-4 py-8 md:px-8 md:py-10">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-4">
           <div className="flex items-center gap-2">
-            <Shield className="h-4 w-4 text-primary" />
+            <img src={zentradeLogo} alt="ZenTrade" className="h-5 w-5 object-contain" />
             <span className="font-heading text-sm font-bold text-foreground">ZenTrade</span>
             <span className="text-xs text-foreground/60">• AI-Powered Trading Coach</span>
           </div>
