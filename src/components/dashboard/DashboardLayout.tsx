@@ -171,7 +171,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                       className={`haptic-press group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[12px] font-medium transition-all duration-200 ${
                         active
                           ? "bg-primary/10 text-primary border border-primary/15"
-                          : "text-muted-foreground/60 hover:bg-white/[0.04] hover:text-foreground border border-transparent"
+                          : "text-muted-foreground/60 hover:bg-secondary/50 hover:text-foreground border border-transparent"
                       }`}
                     >
                       <div className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${active ? "bg-primary/15" : "bg-white/[0.04] group-hover:bg-white/[0.06]"}`}>
