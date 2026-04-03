@@ -713,17 +713,17 @@ const UpgradeModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?
                 </div>
               </div>
               <div className="mb-4">
-                {isYearly ? (
-                  <>
-                    <span className="text-2xl font-bold text-foreground font-mono">₪{plan.yearlyTotal}</span>
-                    <span className="text-2xs text-muted-foreground/40">/שנה</span>
-                    <span className="mr-2 text-2xs text-muted-foreground/30 line-through font-mono">₪{originalYearly.toLocaleString()}</span>
-                  </>
-                ) : (
-                  <>
-                    <span className="text-2xl font-bold text-foreground font-mono">₪{plan.price}</span>
-                    <span className="text-2xs text-muted-foreground/40">/חודש</span>
-                  </>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-2xl font-bold text-foreground font-mono">
+                    ₪{isYearly ? plan.yearlyPrice : plan.price}
+                  </span>
+                  <span className="text-2xs text-muted-foreground/40">/חודש</span>
+                </div>
+                {isYearly && (
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-2xs text-muted-foreground/30 line-through font-mono">₪{originalYearly.toLocaleString()}</span>
+                    <span className="text-2xs text-primary font-bold font-mono">₪{plan.yearlyTotal}/שנה</span>
+                  </div>
                 )}
               </div>
               <div className="space-y-1.5 mb-4 flex-1">
