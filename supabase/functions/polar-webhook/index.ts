@@ -1,9 +1,10 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { Webhook } from "https://esm.sh/standardwebhooks@1.0.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+    "authorization, x-client-info, apikey, content-type, webhook-id, webhook-timestamp, webhook-signature",
 };
 
 Deno.serve(async (req) => {
@@ -12,7 +13,27 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const payload = await req.json();
+    const body = await req.text();
+
+    // Verify webhook signature
+    const webhookSecret = Deno.env.get("POLAR_WEBHOOK_SECRET");
+    if (webhookSecret) {
+      const base64Secret = btoa(webhookSecret);
+      const wh = new Webhook(base64Secret);
+      const headers: Record<string, string> = {};
+      req.headers.forEach((v, k) => { headers[k] = v; });
+      try {
+        wh.verify(body, headers);
+      } catch (err) {
+        console.error("Webhook signature verification failed:", err);
+        return new Response(JSON.stringify({ error: "Invalid signature" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
+    const payload = JSON.parse(body);
     const eventType: string = payload.type;
     const data = payload.data;
 
@@ -41,7 +62,7 @@ Deno.serve(async (req) => {
       eventType === "subscription.active" ||
       eventType === "subscription.updated"
     ) {
-      const status = data?.status; // active, past_due, canceled, etc.
+      const status = data?.status;
       const isActive = status === "active";
 
       const { error } = await supabase
