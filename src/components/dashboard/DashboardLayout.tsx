@@ -145,8 +145,8 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
           <div className="flex items-center gap-3">
             <div className="relative">
               <div className="absolute inset-[-3px] rounded-xl bg-primary/8 ai-breathe" />
-              <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 border border-primary/15">
-                <ShieldCheck className="h-5 w-5 text-primary" />
+              <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 border border-primary/15 overflow-hidden">
+                <img src={zentradeLogo} alt="ZenTrade" className="h-7 w-7 object-contain" />
               </div>
             </div>
             <div>
