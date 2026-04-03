@@ -7,6 +7,7 @@ import {
   Crosshair, PieChart, History, CheckCircle2, Flame, Eye, Crown, Star, Sparkles, Newspaper,
   Calculator, Plus, ShieldAlert,
 } from "lucide-react";
+import zentradeLogo from "@/assets/zentrade-logo.png";
 import SettingsPage from "@/pages/SettingsPage";
 import SetupsPage from "@/pages/SetupsPage";
 import StatsPage from "@/pages/StatsPage";

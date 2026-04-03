@@ -7,6 +7,7 @@ import {
   Eye, EyeOff, Shield, Loader2, Zap, BookOpen, Brain,
   ShieldAlert, ChevronDown, Sparkles,
 } from "lucide-react";
+import zentradeLogo from "@/assets/zentrade-logo.png";
 
 interface FieldErrors {
   name?: string;

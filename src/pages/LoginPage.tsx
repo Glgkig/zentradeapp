@@ -6,6 +6,7 @@ import {
   Eye, EyeOff, Shield, Loader2, Zap, BookOpen, Brain,
   ShieldAlert, ChevronDown, Sparkles, TrendingUp,
 } from "lucide-react";
+import zentradeLogo from "@/assets/zentrade-logo.png";
 
 const MAX_ATTEMPTS = 5;
 const LOCKOUT_MS = 15 * 60 * 1000;

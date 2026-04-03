@@ -9,6 +9,7 @@ import {
   XCircle, ChevronRight, Sparkles, MapPin, Eye, EyeOff,
   Calculator, PlayCircle, Check, Crown, Loader2,
 } from "lucide-react";
+import zentradeLogo from "@/assets/zentrade-logo.png";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
