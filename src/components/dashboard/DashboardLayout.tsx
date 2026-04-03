@@ -501,7 +501,9 @@ const UserMenuContent = ({ userName, userEmail, avatarUrl, onClose, onSettings, 
     <div className="px-4 py-2 border-b border-white/[0.04]">
       <div className="flex items-center justify-between">
         <span className="text-2xs text-muted-foreground/40">תוכנית</span>
-        <span className="rounded-lg bg-accent/10 border border-accent/15 px-2 py-0.5 text-2xs font-bold text-accent font-mono">PRO</span>
+        <span className={`rounded-lg px-2 py-0.5 text-2xs font-bold font-mono ${isPro ? "bg-accent/10 border border-accent/15 text-accent" : "bg-muted/20 border border-white/[0.06] text-muted-foreground/50"}`}>
+          {isPro ? "PRO" : "LITE"}
+        </span>
       </div>
     </div>
     <div className="py-1">
