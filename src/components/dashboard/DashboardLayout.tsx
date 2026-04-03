@@ -514,72 +514,100 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
   const disconnected = brokers.filter(b => !b.connected);
 
   return (
-    <div className={mobile ? "" : "w-full max-w-md rounded-2xl border border-white/[0.08] bg-card shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200 overflow-hidden"}>
-      <div className="px-5 pt-5 pb-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/[0.08] border border-primary/10">
-              <Plug className="h-5 w-5 text-primary" />
+    <div className={mobile ? "" : "w-full max-w-lg rounded-3xl border border-border/50 bg-card shadow-2xl shadow-black/30 animate-in fade-in slide-in-from-bottom-2 duration-200 overflow-hidden"}>
+      {/* Header */}
+      <div className="relative px-6 pt-6 pb-5 overflow-hidden">
+        {/* Ambient glow */}
+        <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-[200px] h-[200px] bg-primary/[0.06] rounded-full blur-[80px] pointer-events-none" />
+
+        <div className="relative flex items-center justify-between">
+          <div className="flex items-center gap-3.5">
+            <div className="relative">
+              <div className="absolute -inset-1 rounded-2xl bg-primary/10 blur-md" />
+              <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 border border-primary/15">
+                <Plug className="h-5 w-5 text-primary" />
+              </div>
             </div>
             <div>
-              <h2 className="text-sm font-bold text-foreground">חיבורי ברוקר</h2>
-              <p className="text-2xs text-muted-foreground/40">ניהול פלטפורמות מסחר</p>
+              <h2 className="text-base font-bold text-foreground">חיבורי ברוקר</h2>
+              <p className="text-[11px] text-muted-foreground/50 mt-0.5">סנכרון אוטומטי של עסקאות ונתונים</p>
             </div>
           </div>
-          <button onClick={onClose} className="haptic-press flex h-8 w-8 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.04] text-muted-foreground/40 hover:text-foreground transition-all">
+          <button onClick={onClose} className="haptic-press flex h-9 w-9 items-center justify-center rounded-xl border border-border/50 bg-secondary/50 text-muted-foreground hover:text-foreground transition-all">
             <X className="h-4 w-4" />
           </button>
         </div>
       </div>
 
+      {/* Connected */}
       {connected.length > 0 && (
-        <div className="px-5 pb-3">
-          <p className="text-2xs font-semibold text-muted-foreground/30 uppercase tracking-wider mb-2 font-mono">CONNECTED</p>
-          <div className="space-y-1.5">
+        <div className="px-6 pb-4">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="h-1.5 w-1.5 rounded-full bg-profit animate-pulse" />
+            <p className="text-[10px] font-bold text-profit/80 uppercase tracking-[0.15em] font-mono">CONNECTED</p>
+            <div className="flex-1 h-px bg-profit/10" />
+          </div>
+          <div className="space-y-2">
             {connected.map((b) => (
-              <div key={b.name} className="flex items-center justify-between rounded-xl glass-card px-4 py-3">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg overflow-hidden">
-                    <img src={b.logo} alt={b.name} className="h-8 w-8 object-cover rounded-lg" />
+              <div key={b.name} className="group flex items-center justify-between rounded-2xl border border-profit/15 bg-profit/[0.04] px-4 py-3.5 transition-all hover:bg-profit/[0.06]">
+                <div className="flex items-center gap-3.5">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden border border-border/30 bg-card shadow-sm">
+                    <img src={b.logo} alt={b.name} className="h-10 w-10 object-cover rounded-xl" />
                   </div>
                   <div>
-                    <p className="text-[12px] font-semibold text-foreground">{b.name}</p>
-                    <div className="flex items-center gap-1 mt-0.5">
-                      <span className="h-1.5 w-1.5 rounded-full bg-profit" />
-                      <span className="text-2xs text-profit font-mono">{b.account}</span>
+                    <p className="text-[13px] font-semibold text-foreground">{b.name}</p>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className="text-[10px] text-profit font-mono font-medium">{b.account}</span>
+                      <span className="text-[9px] text-muted-foreground/30">•</span>
+                      <span className="text-[10px] text-muted-foreground/40">Live</span>
                     </div>
                   </div>
                 </div>
-                <CheckCircle2 className="h-4 w-4 text-profit" />
+                <div className="flex items-center gap-2">
+                  <span className="rounded-lg bg-profit/10 px-2 py-1 text-[9px] font-bold text-profit font-mono uppercase">Active</span>
+                  <CheckCircle2 className="h-4.5 w-4.5 text-profit" />
+                </div>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      <div className="px-5 pb-4">
-        <p className="text-2xs font-semibold text-muted-foreground/30 uppercase tracking-wider mb-2 font-mono">AVAILABLE</p>
-        <div className={`space-y-1 ${mobile ? "max-h-[35vh]" : "max-h-[30vh]"} overflow-y-auto scrollbar-none`}>
+      {/* Available */}
+      <div className="px-6 pb-4">
+        <div className="flex items-center gap-2 mb-3">
+          <p className="text-[10px] font-bold text-muted-foreground/30 uppercase tracking-[0.15em] font-mono">AVAILABLE</p>
+          <div className="flex-1 h-px bg-border/30" />
+          <span className="text-[10px] text-muted-foreground/20 font-mono">{disconnected.length}</span>
+        </div>
+        <div className={`space-y-1.5 ${mobile ? "max-h-[35vh]" : "max-h-[32vh]"} overflow-y-auto scrollbar-none`}>
           {disconnected.map((b) => (
-            <div key={b.name} className="flex items-center justify-between rounded-xl bg-white/[0.02] border border-white/[0.05] px-4 py-3 hover:bg-white/[0.04] group transition-all">
-              <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg overflow-hidden">
-                  <img src={b.logo} alt={b.name} className="h-8 w-8 object-cover rounded-lg" />
+            <div key={b.name} className="group flex items-center justify-between rounded-xl border border-border/30 bg-secondary/20 px-4 py-3 hover:bg-secondary/40 hover:border-border/50 transition-all duration-200">
+              <div className="flex items-center gap-3.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg overflow-hidden border border-border/20 bg-card shadow-sm">
+                  <img src={b.logo} alt={b.name} className="h-9 w-9 object-cover rounded-lg" />
                 </div>
-                <p className="text-[12px] font-medium text-muted-foreground/60 group-hover:text-foreground">{b.name}</p>
+                <p className="text-[12px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">{b.name}</p>
               </div>
-              <button className="haptic-press rounded-xl bg-primary/[0.06] border border-primary/15 px-3 py-1.5 text-2xs font-semibold text-primary/60 hover:bg-primary/12 hover:text-primary transition-all">חבר</button>
+              <button className="haptic-press rounded-xl bg-primary/10 border border-primary/15 px-4 py-2 text-[11px] font-bold text-primary hover:bg-primary/20 hover:border-primary/25 transition-all">
+                חבר
+              </button>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="border-t border-white/[0.04] px-5 py-3 flex items-center justify-between bg-white/[0.01]">
-        <div className="flex items-center gap-1.5">
-          <ShieldCheck className="h-3 w-3 text-muted-foreground/20" />
-          <p className="text-2xs text-muted-foreground/20 font-mono">AES-256</p>
+      {/* Footer */}
+      <div className="border-t border-border/30 px-6 py-3.5 flex items-center justify-between bg-secondary/10">
+        <div className="flex items-center gap-2">
+          <div className="flex h-5 w-5 items-center justify-center rounded bg-primary/10">
+            <ShieldCheck className="h-3 w-3 text-primary/50" />
+          </div>
+          <p className="text-[10px] text-muted-foreground/30 font-mono">End-to-end AES-256 encryption</p>
         </div>
-        <button onClick={onClose} className="haptic-press rounded-xl bg-white/[0.04] border border-white/[0.06] px-4 py-2 text-[11px] font-medium text-muted-foreground/50 hover:text-foreground transition-all">סגור</button>
+        <button onClick={onClose} className="haptic-press rounded-xl border border-border/50 bg-secondary/50 px-4 py-2 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-all">
+          סגור
+        </button>
       </div>
     </div>
   );
