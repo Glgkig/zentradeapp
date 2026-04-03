@@ -253,10 +253,10 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             {/* Upgrade CTA */}
             <button
               onClick={() => setUpgradeModal(true)}
-              className="hidden sm:flex haptic-press items-center gap-1.5 rounded-xl border border-accent/20 bg-accent/[0.06] px-3 py-1.5 text-2xs font-bold text-accent transition-all hover:bg-accent/15 hover:border-accent/30"
+              className="flex haptic-press items-center gap-1.5 rounded-xl border border-accent/20 bg-accent/[0.06] px-2 sm:px-3 py-1.5 text-2xs font-bold text-accent transition-all hover:bg-accent/15 hover:border-accent/30"
             >
               <Crown className="h-3 w-3" />
-              <span>שדרג PRO</span>
+              <span className="hidden sm:inline">שדרג PRO</span>
             </button>
 
             {/* New Trade CTA */}
@@ -315,6 +315,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                       onClose={() => setUserMenu(false)}
                       onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
                       onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
+                      onUpgrade={() => { setUserMenu(false); setUpgradeModal(true); }}
                     />
                   </div>
                 </>
@@ -458,6 +459,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             onClose={() => setUserMenu(false)}
             onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
             onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
+            onUpgrade={() => { setUserMenu(false); setUpgradeModal(true); }}
           />
           <div className="px-4 pb-8 pt-2">
             <button onClick={() => setUserMenu(false)} className="w-full rounded-xl bg-white/[0.04] border border-white/[0.06] py-3 text-[12px] font-medium text-muted-foreground/50">סגור</button>
@@ -473,7 +475,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
 };
 
 /* ===== User Menu ===== */
-const UserMenuContent = ({ userName, userEmail, avatarUrl, onClose, onSettings, onLogout }: { userName: string; userEmail: string; avatarUrl?: string | null; onClose: () => void; onSettings: () => void; onLogout: () => void }) => (
+const UserMenuContent = ({ userName, userEmail, avatarUrl, onClose, onSettings, onLogout, onUpgrade }: { userName: string; userEmail: string; avatarUrl?: string | null; onClose: () => void; onSettings: () => void; onLogout: () => void; onUpgrade: () => void }) => (
   <>
     <div className="px-4 py-3 border-b border-white/[0.06]">
       <div className="flex items-center gap-2.5">
@@ -491,7 +493,7 @@ const UserMenuContent = ({ userName, userEmail, avatarUrl, onClose, onSettings, 
       </div>
     </div>
     <div className="py-1">
-      <button onClick={onClose} className="w-full flex items-center gap-3 px-4 py-2.5 text-right hover:bg-primary/[0.04] transition-colors min-h-[44px]">
+      <button onClick={onUpgrade} className="w-full flex items-center gap-3 px-4 py-2.5 text-right hover:bg-primary/[0.04] transition-colors min-h-[44px]">
         <Zap className="h-4 w-4 text-accent/50" />
         <p className="text-[12px] font-medium text-foreground/70">שדרג חשבון</p>
       </button>
