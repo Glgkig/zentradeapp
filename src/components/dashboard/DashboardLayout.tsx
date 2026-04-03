@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription, POLAR_URL } from "@/contexts/SubscriptionContext";
 import { useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, BookOpen, Bot, ShieldCheck,
@@ -76,6 +77,7 @@ const brokers = [
 const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   const navigate = useNavigate();
   const { profile, user, signOut, refreshProfile } = useAuth();
+  const { isPro, showPaywall } = useSubscription();
   const [activeNav, setActiveNav] = useState("dashboard");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [brokerModal, setBrokerModal] = useState(false);
@@ -121,9 +123,15 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
     if (activeNav === "stats") return <StatsPage />;
     if (activeNav === "journal") return <JournalPage />;
     if (activeNav === "settings") return <SettingsPage />;
-    if (activeNav === "mentor") return <MentorPage />;
+    if (activeNav === "mentor") {
+      if (!isPro) { showPaywall("מנטור AI"); setActiveNav("dashboard"); return <HomeDashboard userName={userName} onOpenTrade={() => setTradeDrawerOpen(true)} />; }
+      return <MentorPage />;
+    }
     if (activeNav === "backtesting") return <BacktestingPage />;
-    if (activeNav === "protection") return <ProtectionPage />;
+    if (activeNav === "protection") {
+      if (!isPro) { showPaywall("הגנת הון — Kill Switch"); setActiveNav("dashboard"); return <HomeDashboard userName={userName} onOpenTrade={() => setTradeDrawerOpen(true)} />; }
+      return <ProtectionPage />;
+    }
     if (activeNav === "tax") return <TaxCalculatorPage />;
     if (activeNav === "news") return <EconomicNewsPage />;
     if (activeNav === "tradingview") return (
@@ -251,13 +259,15 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             </div>
 
             {/* Upgrade CTA */}
-            <button
-              onClick={() => setUpgradeModal(true)}
-              className="flex haptic-press items-center gap-1.5 rounded-xl border border-accent/20 bg-accent/[0.06] px-2 sm:px-3 py-1.5 text-2xs font-bold text-accent transition-all hover:bg-accent/15 hover:border-accent/30"
-            >
-              <Crown className="h-3 w-3" />
-              <span className="hidden sm:inline">שדרג PRO</span>
-            </button>
+            {!isPro && (
+              <button
+                onClick={() => navigate("/pricing")}
+                className="flex haptic-press items-center gap-1.5 rounded-xl border border-accent/20 bg-accent/[0.06] px-2 sm:px-3 py-1.5 text-2xs font-bold text-accent transition-all hover:bg-accent/15 hover:border-accent/30"
+              >
+                <Crown className="h-3 w-3" />
+                <span className="hidden sm:inline">שדרג PRO</span>
+              </button>
+            )}
 
             {/* New Trade CTA */}
             <button
@@ -298,7 +308,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                 <UserAvatar avatarUrl={profile?.avatar_url} userName={userName} size="sm" />
                 <div className="hidden md:block text-right">
                   <p className="text-[11px] font-semibold text-foreground leading-none">{userName}</p>
-                  <p className="text-2xs text-accent font-mono font-bold">PRO</p>
+                  {isPro && <p className="text-2xs text-accent font-mono font-bold">PRO</p>}
                 </div>
                 <ChevronDown className={`h-3 w-3 text-muted-foreground/30 hidden md:block transition-transform ${userMenu ? "rotate-180" : ""}`} />
               </button>
@@ -315,7 +325,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                       onClose={() => setUserMenu(false)}
                       onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
                       onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
-                      onUpgrade={() => { setUserMenu(false); setUpgradeModal(true); }}
+                      onUpgrade={() => { setUserMenu(false); navigate("/pricing"); }}
                     />
                   </div>
                 </>
@@ -369,7 +379,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                 <span className="mr-auto rounded-lg bg-primary/10 border border-primary/15 px-1.5 py-0.5 text-2xs font-bold text-primary font-mono">2</span>
               </button>
               <button
-                onClick={() => { setMobileNavOpen(false); setUpgradeModal(true); }}
+                onClick={() => { setMobileNavOpen(false); navigate("/pricing"); }}
                 style={{ transitionDelay: mobileNavOpen ? `${(allNavItems.length + 1) * 35}ms` : "0ms" }}
                 className={`haptic-press flex w-full items-center gap-3 rounded-xl px-3 py-3 text-[13px] font-bold text-accent min-h-[48px] bg-accent/[0.06] border border-accent/15 hover:bg-accent/10 transition-all duration-300 gold-glow ${
                   mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
@@ -459,7 +469,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             onClose={() => setUserMenu(false)}
             onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
             onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
-            onUpgrade={() => { setUserMenu(false); setUpgradeModal(true); }}
+            onUpgrade={() => { setUserMenu(false); navigate("/pricing"); }}
           />
           <div className="px-4 pb-8 pt-2">
             <button onClick={() => setUserMenu(false)} className="w-full rounded-xl bg-white/[0.04] border border-white/[0.06] py-3 text-[12px] font-medium text-muted-foreground/50">סגור</button>
@@ -475,7 +485,9 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
 };
 
 /* ===== User Menu ===== */
-const UserMenuContent = ({ userName, userEmail, avatarUrl, onClose, onSettings, onLogout, onUpgrade }: { userName: string; userEmail: string; avatarUrl?: string | null; onClose: () => void; onSettings: () => void; onLogout: () => void; onUpgrade: () => void }) => (
+const UserMenuContent = ({ userName, userEmail, avatarUrl, onClose, onSettings, onLogout, onUpgrade }: { userName: string; userEmail: string; avatarUrl?: string | null; onClose: () => void; onSettings: () => void; onLogout: () => void; onUpgrade: () => void }) => {
+  const { isPro } = useSubscription();
+  return (
   <>
     <div className="px-4 py-3 border-b border-white/[0.06]">
       <div className="flex items-center gap-2.5">
@@ -489,7 +501,9 @@ const UserMenuContent = ({ userName, userEmail, avatarUrl, onClose, onSettings, 
     <div className="px-4 py-2 border-b border-white/[0.04]">
       <div className="flex items-center justify-between">
         <span className="text-2xs text-muted-foreground/40">תוכנית</span>
-        <span className="rounded-lg bg-accent/10 border border-accent/15 px-2 py-0.5 text-2xs font-bold text-accent font-mono">PRO</span>
+        <span className={`rounded-lg px-2 py-0.5 text-2xs font-bold font-mono ${isPro ? "bg-accent/10 border border-accent/15 text-accent" : "bg-muted/20 border border-white/[0.06] text-muted-foreground/50"}`}>
+          {isPro ? "PRO" : "LITE"}
+        </span>
       </div>
     </div>
     <div className="py-1">
@@ -508,7 +522,8 @@ const UserMenuContent = ({ userName, userEmail, avatarUrl, onClose, onSettings, 
       </button>
     </div>
   </>
-);
+  );
+};
 
 /* ===== Broker Modal ===== */
 const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?: boolean }) => {
