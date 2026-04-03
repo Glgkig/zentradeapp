@@ -55,23 +55,23 @@
   }
 
   .light {
-    --background: 0 0% 97%;
-    --foreground: 240 10% 8%;
+    --background: 220 14% 96%;
+    --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 8%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 8%;
+    --popover-foreground: 222 47% 11%;
 
     --primary: 160 80% 38%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 12% 93%;
-    --secondary-foreground: 240 10% 8%;
+    --secondary: 220 14% 92%;
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 220 10% 90%;
-    --muted-foreground: 220 8% 42%;
+    --muted: 220 12% 92%;
+    --muted-foreground: 215 16% 47%;
 
     --accent: 43 72% 45%;
     --accent-foreground: 0 0% 100%;
@@ -82,17 +82,17 @@
     --profit: 160 60% 38%;
     --loss: 0 70% 55%;
 
-    --border: 220 12% 82%;
-    --input: 220 10% 85%;
+    --border: 214 20% 84%;
+    --input: 214 20% 88%;
     --ring: 160 80% 38%;
 
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 240 10% 8%;
+    --sidebar-foreground: 222 47% 11%;
     --sidebar-primary: 160 80% 38%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 12% 93%;
-    --sidebar-accent-foreground: 240 10% 8%;
-    --sidebar-border: 220 12% 82%;
+    --sidebar-accent: 220 14% 95%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214 20% 84%;
     --sidebar-ring: 160 80% 38%;
   }
 }
@@ -112,20 +112,35 @@
   .glass-card {
     @apply bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-2xl;
   }
+  .light .glass-card {
+    @apply bg-white/80 border-slate-200 shadow-sm;
+  }
   .glass-card-hover {
     @apply glass-card transition-all duration-300 hover:bg-white/[0.06] hover:border-white/[0.12] hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)];
+  }
+  .light .glass-card-hover {
+    @apply bg-white/80 border-slate-200 shadow-sm hover:bg-white hover:border-slate-300 hover:shadow-md;
   }
   .glass-header {
     @apply bg-white/[0.03] backdrop-blur-xl border-b border-white/[0.06];
   }
+  .light .glass-header {
+    @apply bg-white/90 border-b-slate-200;
+  }
   .interactive-card {
     @apply transition-all duration-200 hover:border-primary/20 hover:bg-white/[0.06];
+  }
+  .light .interactive-card {
+    @apply hover:bg-slate-50 hover:border-slate-300;
   }
   .interactive-btn {
     @apply transition-all duration-150 active:scale-[0.97];
   }
   .interactive-row {
     @apply transition-all duration-150 hover:bg-muted/10;
+  }
+  .light .interactive-row {
+    @apply hover:bg-slate-50;
   }
   .scrollbar-none {
     -ms-overflow-style: none;
@@ -150,6 +165,87 @@
     box-shadow: 0 0 20px hsl(160 100% 42% / 0.15), 0 0 60px hsl(160 100% 42% / 0.05);
   }
 }
+
+/* ===== Light Mode Global Depth ===== */
+.light {
+  /* Sidebar */
+  & aside {
+    background-color: hsl(0 0% 100%) !important;
+    border-color: hsl(214 20% 84%) !important;
+    box-shadow: 2px 0 8px hsl(0 0% 0% / 0.04);
+  }
+  /* Header */
+  & .glass-header {
+    background-color: hsl(0 0% 100% / 0.95) !important;
+    border-bottom-color: hsl(214 20% 84%) !important;
+    box-shadow: 0 1px 3px hsl(0 0% 0% / 0.06);
+    backdrop-filter: blur(12px);
+  }
+  /* Ambient bg - hide in light mode */
+  & .ambient-bg {
+    display: none;
+  }
+  /* Gold glow - subtle in light */
+  & .gold-glow {
+    box-shadow: 0 0 12px hsl(43 72% 52% / 0.1);
+  }
+  & .cyan-glow {
+    box-shadow: 0 0 12px hsl(160 80% 38% / 0.1);
+  }
+  /* select options */
+  & select option {
+    background-color: hsl(0, 0%, 100%);
+    color: hsl(222, 47%, 11%);
+  }
+  /* settings input */
+  & .settings-input {
+    border-color: hsl(214 20% 84%);
+    background: hsl(0 0% 100%);
+  }
+  & .settings-input:focus {
+    border-color: hsl(var(--primary) / 0.4);
+    box-shadow: 0 0 0 2px hsl(var(--primary) / 0.1);
+    background: hsl(0 0% 100%);
+  }
+  & .settings-input::placeholder {
+    color: hsl(var(--foreground) / 0.35);
+  }
+}
+
+/* 
+  Light mode: override all white-alpha backgrounds/borders 
+  used for dark-mode glass effects throughout the app.
+  We use JS in the layout to add .light-depth to containers.
+*/
+.light button,
+.light div,
+.light aside,
+.light header,
+.light nav,
+.light main,
+.light section,
+.light footer {
+  --tw-bg-opacity: 1;
+}
+
+/* In light mode, ensure borders are visible */
+.light [style*="border"] {
+  border-color: hsl(214 20% 84%);
+}
+
+/* Light mode: all rounded containers with backdrop get card treatment */
+.light .rounded-2xl,
+.light .rounded-xl {
+  box-shadow: 0 1px 3px hsl(0 0% 0% / 0.04), 0 1px 2px hsl(0 0% 0% / 0.03);
+}
+
+/* Light mode: user menu dropdown */
+.light [class*="bg-\\[#111"] {
+  background-color: hsl(0 0% 100%) !important;
+  border-color: hsl(214 20% 84%) !important;
+  box-shadow: 0 4px 16px hsl(0 0% 0% / 0.1) !important;
+}
+
 
 /* ===== AI Breathing Animation ===== */
 @keyframes ai-breathe {
@@ -275,6 +371,10 @@
 select option {
   background-color: hsl(240, 5%, 8%);
   color: hsl(220, 15%, 90%);
+}
+.light select option {
+  background-color: hsl(0, 0%, 100%);
+  color: hsl(222, 47%, 11%);
 }
 
 @keyframes spin-orbit {

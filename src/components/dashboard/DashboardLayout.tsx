@@ -139,9 +139,9 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
       <div className="ambient-bg" />
 
       {/* ===== Desktop Sidebar ===== */}
-      <aside className={`hidden md:flex h-full w-[240px] flex-col bg-white/[0.02] backdrop-blur-xl border-l border-white/[0.06] shrink-0 relative z-10 ${zenMode ? "zen-hidden" : "zen-visible"}`}>
+      <aside className={`hidden md:flex h-full w-[240px] flex-col bg-card/95 backdrop-blur-xl border-l border-border/50 shrink-0 relative z-10 ${zenMode ? "zen-hidden" : "zen-visible"}`}>
         {/* Brand */}
-        <div className="flex items-center px-5 py-4 border-b border-white/[0.06]">
+        <div className="flex items-center px-5 py-4 border-b border-border/50">
           <div className="flex items-center gap-3">
             <div className="relative">
               <div className="absolute inset-[-3px] rounded-xl bg-primary/8 ai-breathe" />
@@ -171,10 +171,10 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                       className={`haptic-press group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[12px] font-medium transition-all duration-200 ${
                         active
                           ? "bg-primary/10 text-primary border border-primary/15"
-                          : "text-muted-foreground/60 hover:bg-white/[0.04] hover:text-foreground border border-transparent"
+                          : "text-muted-foreground/60 hover:bg-secondary/50 hover:text-foreground border border-transparent"
                       }`}
                     >
-                      <div className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${active ? "bg-primary/15" : "bg-white/[0.04] group-hover:bg-white/[0.06]"}`}>
+                      <div className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${active ? "bg-primary/15" : "bg-secondary/50 group-hover:bg-secondary"}`}>
                         <item.icon className={`h-3.5 w-3.5 ${active ? "text-primary" : "text-muted-foreground/40 group-hover:text-foreground/60"}`} />
                       </div>
                       <span className="flex-1 text-right">{item.label}</span>
@@ -186,12 +186,12 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
           ))}
 
           {/* Broker Connect */}
-          <div className="pt-2 border-t border-white/[0.04]">
+          <div className="pt-2 border-t border-border/30">
             <button
               onClick={() => setBrokerModal(true)}
-              className="haptic-press group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[12px] font-medium text-muted-foreground/60 hover:bg-white/[0.04] hover:text-primary transition-all"
+              className="haptic-press group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[12px] font-medium text-muted-foreground/60 hover:bg-secondary/50 hover:text-primary transition-all"
             >
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/[0.04] group-hover:bg-primary/10">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-secondary/50 group-hover:bg-primary/10">
                 <Plug className="h-3.5 w-3.5 text-muted-foreground/40 group-hover:text-primary" />
               </div>
               <span className="flex-1 text-right">חבר ברוקר</span>
@@ -227,7 +227,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               }}
               aria-expanded={mobileNavOpen}
               aria-label={mobileNavOpen ? "סגור תפריט ניווט" : "פתח תפריט ניווט"}
-              className="md:hidden haptic-press flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.04] text-muted-foreground/60 hover:text-primary hover:border-primary/15 transition-all duration-200 active:scale-95"
+              className="md:hidden haptic-press flex h-10 w-10 items-center justify-center rounded-xl border border-border/50 bg-secondary/50 text-muted-foreground hover:text-primary hover:border-primary/15 transition-all duration-200 active:scale-95"
             >
               {mobileNavOpen ? <X className="h-4.5 w-4.5" /> : <Menu className="h-4.5 w-4.5" />}
             </button>
@@ -274,7 +274,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               className={`haptic-press flex h-9 w-9 items-center justify-center rounded-xl border transition-all ${
                 zenMode
                   ? "border-primary/30 bg-primary/10 text-primary"
-                  : "border-white/[0.08] bg-white/[0.04] text-muted-foreground/40 hover:text-primary hover:border-primary/15"
+                  : "border-border/50 bg-secondary/50 text-muted-foreground hover:text-primary hover:border-primary/15"
               }`}
               title={zenMode ? "צא ממצב פוקוס" : "מצב פוקוס"}
             >
@@ -284,16 +284,16 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             {/* Theme */}
             <button
               onClick={() => setDark(!dark)}
-              className="haptic-press flex h-9 w-9 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.04] text-muted-foreground/40 hover:text-primary hover:border-primary/15 transition-all"
+              className="haptic-press flex h-9 w-9 items-center justify-center rounded-xl border border-border/50 bg-secondary/50 text-muted-foreground hover:text-primary hover:border-primary/20 transition-all duration-300"
             >
-              {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {dark ? <Sun className="h-4 w-4 transition-transform duration-300 rotate-0" /> : <Moon className="h-4 w-4 transition-transform duration-300 rotate-0" />}
             </button>
 
             {/* User */}
             <div className="relative">
               <button
                 onClick={() => setUserMenu(!userMenu)}
-                className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-2 py-1.5 hover:bg-white/[0.06] transition-all"
+                className="flex items-center gap-2 rounded-xl border border-border/50 bg-secondary/30 px-2 py-1.5 hover:bg-secondary/60 transition-all"
               >
                 <UserAvatar avatarUrl={profile?.avatar_url} userName={userName} size="sm" />
                 <div className="hidden md:block text-right">
@@ -307,7 +307,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                 <>
                   <div className="fixed inset-0 z-[60] bg-transparent" onClick={() => setUserMenu(false)} />
                   {/* Desktop dropdown */}
-                  <div className="hidden md:block absolute left-0 top-full mt-2 w-56 z-[70] rounded-2xl border border-white/[0.08] bg-[#111116] shadow-2xl shadow-black/40 animate-in fade-in slide-in-from-top-1 duration-150 overflow-hidden">
+                  <div className="hidden md:block absolute left-0 top-full mt-2 w-56 z-[70] rounded-2xl border border-border bg-card shadow-2xl shadow-black/20 animate-in fade-in slide-in-from-top-1 duration-150 overflow-hidden">
                     <UserMenuContent
                       userName={userName}
                       userEmail={userEmail}
@@ -325,7 +325,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
 
         {/* Mobile Nav Dropdown */}
         <div
-          className={`md:hidden relative z-40 origin-top overflow-hidden border-b border-white/[0.06] bg-white/[0.02] backdrop-blur-xl shadow-lg transition-all duration-300 ease-out ${
+          className={`md:hidden relative z-40 origin-top overflow-hidden border-b border-border/50 bg-card/95 backdrop-blur-xl shadow-lg transition-all duration-300 ease-out ${
             mobileNavOpen
               ? "max-h-[620px] translate-y-0 opacity-100"
               : "pointer-events-none max-h-0 -translate-y-2 opacity-0 border-b-0"
@@ -343,25 +343,25 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                     className={`haptic-press flex w-full items-center gap-3 rounded-xl px-3 py-3 text-[13px] font-medium min-h-[48px] transition-all duration-300 ${
                       mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
                     } ${
-                      active ? "bg-primary/10 text-primary border border-primary/15" : "text-muted-foreground/60 hover:bg-white/[0.04] hover:text-foreground border border-transparent"
+                      active ? "bg-primary/10 text-primary border border-primary/15" : "text-muted-foreground/60 hover:bg-secondary/50 hover:text-foreground border border-transparent"
                     }`}
                   >
-                    <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${active ? "bg-primary/15" : "bg-white/[0.04]"}`}>
+                    <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${active ? "bg-primary/15" : "bg-secondary/50"}`}>
                       <item.icon className={`h-4 w-4 ${active ? "text-primary" : "text-muted-foreground/30"}`} />
                     </div>
                     {item.label}
                   </button>
                 );
               })}
-              <div className="my-2 h-px bg-white/[0.04]" />
+              <div className="my-2 h-px bg-border/30" />
               <button
                 onClick={() => { setMobileNavOpen(false); setBrokerModal(true); }}
                 style={{ transitionDelay: mobileNavOpen ? `${allNavItems.length * 35}ms` : "0ms" }}
-                className={`haptic-press flex w-full items-center gap-3 rounded-xl px-3 py-3 text-[13px] font-medium text-muted-foreground/60 min-h-[48px] hover:bg-white/[0.04] transition-all duration-300 ${
+                className={`haptic-press flex w-full items-center gap-3 rounded-xl px-3 py-3 text-[13px] font-medium text-muted-foreground/60 min-h-[48px] hover:bg-secondary/50 transition-all duration-300 ${
                   mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
                 }`}
               >
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04]">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary/50">
                   <Plug className="h-4 w-4 text-muted-foreground/30" />
                 </div>
                 חבר ברוקר
