@@ -75,7 +75,7 @@ Deno.serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        product_price_id: productPriceId,
+        product_price_id: resolvedProductId,
         success_url: `${origin}/success?checkout_id={CHECKOUT_ID}`,
         customer_email: user.email,
         metadata: {
