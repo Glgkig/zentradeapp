@@ -302,7 +302,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                 <UserAvatar avatarUrl={profile?.avatar_url} userName={userName} size="sm" />
                 <div className="hidden md:block text-right">
                   <p className="text-[11px] font-semibold text-foreground leading-none">{userName}</p>
-                  <p className="text-2xs text-accent font-mono font-bold">PRO</p>
+                  {isPro && <p className="text-2xs text-accent font-mono font-bold">PRO</p>}
                 </div>
                 <ChevronDown className={`h-3 w-3 text-muted-foreground/30 hidden md:block transition-transform ${userMenu ? "rotate-180" : ""}`} />
               </button>
