@@ -123,9 +123,15 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
     if (activeNav === "stats") return <StatsPage />;
     if (activeNav === "journal") return <JournalPage />;
     if (activeNav === "settings") return <SettingsPage />;
-    if (activeNav === "mentor") return <MentorPage />;
+    if (activeNav === "mentor") {
+      if (!isPro) { showPaywall("מנטור AI"); setActiveNav("dashboard"); return <HomeDashboard userName={userName} onOpenTrade={() => setTradeDrawerOpen(true)} />; }
+      return <MentorPage />;
+    }
     if (activeNav === "backtesting") return <BacktestingPage />;
-    if (activeNav === "protection") return <ProtectionPage />;
+    if (activeNav === "protection") {
+      if (!isPro) { showPaywall("הגנת הון — Kill Switch"); setActiveNav("dashboard"); return <HomeDashboard userName={userName} onOpenTrade={() => setTradeDrawerOpen(true)} />; }
+      return <ProtectionPage />;
+    }
     if (activeNav === "tax") return <TaxCalculatorPage />;
     if (activeNav === "news") return <EconomicNewsPage />;
     if (activeNav === "tradingview") return (
