@@ -86,7 +86,7 @@ const PricingPage = () => {
     setLoadingPlan(plan);
     try {
       const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { productPriceId: plan },
+        body: { plan },
       });
 
       if (error) throw error;
