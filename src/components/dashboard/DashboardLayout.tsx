@@ -343,7 +343,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                     className={`haptic-press flex w-full items-center gap-3 rounded-xl px-3 py-3 text-[13px] font-medium min-h-[48px] transition-all duration-300 ${
                       mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
                     } ${
-                      active ? "bg-primary/10 text-primary border border-primary/15" : "text-muted-foreground/60 hover:bg-white/[0.04] hover:text-foreground border border-transparent"
+                      active ? "bg-primary/10 text-primary border border-primary/15" : "text-muted-foreground/60 hover:bg-secondary/50 hover:text-foreground border border-transparent"
                     }`}
                   >
                     <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${active ? "bg-primary/15" : "bg-white/[0.04]"}`}>
