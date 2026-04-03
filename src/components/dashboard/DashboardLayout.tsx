@@ -174,7 +174,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                           : "text-muted-foreground/60 hover:bg-secondary/50 hover:text-foreground border border-transparent"
                       }`}
                     >
-                      <div className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${active ? "bg-primary/15" : "bg-white/[0.04] group-hover:bg-white/[0.06]"}`}>
+                      <div className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${active ? "bg-primary/15" : "bg-secondary/50 group-hover:bg-secondary"}`}>
                         <item.icon className={`h-3.5 w-3.5 ${active ? "text-primary" : "text-muted-foreground/40 group-hover:text-foreground/60"}`} />
                       </div>
                       <span className="flex-1 text-right">{item.label}</span>
