@@ -16,7 +16,7 @@ export const useSubscription = () => {
   return ctx;
 };
 
-const POLAR_CHECKOUT_URL = "https://buy.polar.sh/XXXXX";
+const POLAR_CHECKOUT_URL = "https://buy.polar.sh/polar_cl_C8RPN9FyyA6Ifof8Uav33GXwhG9rl1XOZOSYK233F52";
 
 export const POLAR_URL = POLAR_CHECKOUT_URL;
 
