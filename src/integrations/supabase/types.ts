@@ -329,8 +329,11 @@ export type Database = {
           full_name: string | null
           goals: string | null
           id: string
+          is_pro: boolean | null
           onboarding_completed: boolean | null
+          polar_customer_id: string | null
           primary_instruments: string[] | null
+          subscription_status: string | null
           timezone: string | null
           trading_style: string | null
           updated_at: string | null
@@ -343,8 +346,11 @@ export type Database = {
           full_name?: string | null
           goals?: string | null
           id: string
+          is_pro?: boolean | null
           onboarding_completed?: boolean | null
+          polar_customer_id?: string | null
           primary_instruments?: string[] | null
+          subscription_status?: string | null
           timezone?: string | null
           trading_style?: string | null
           updated_at?: string | null
@@ -357,8 +363,11 @@ export type Database = {
           full_name?: string | null
           goals?: string | null
           id?: string
+          is_pro?: boolean | null
           onboarding_completed?: boolean | null
+          polar_customer_id?: string | null
           primary_instruments?: string[] | null
+          subscription_status?: string | null
           timezone?: string | null
           trading_style?: string | null
           updated_at?: string | null
