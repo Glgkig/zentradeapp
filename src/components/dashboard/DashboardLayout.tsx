@@ -473,7 +473,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
 };
 
 /* ===== User Menu ===== */
-const UserMenuContent = ({ userName, userEmail, avatarUrl, onClose, onSettings, onLogout }: { userName: string; userEmail: string; avatarUrl?: string | null; onClose: () => void; onSettings: () => void; onLogout: () => void }) => (
+const UserMenuContent = ({ userName, userEmail, avatarUrl, onClose, onSettings, onLogout, onUpgrade }: { userName: string; userEmail: string; avatarUrl?: string | null; onClose: () => void; onSettings: () => void; onLogout: () => void; onUpgrade: () => void }) => (
   <>
     <div className="px-4 py-3 border-b border-white/[0.06]">
       <div className="flex items-center gap-2.5">
