@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSubscription, POLAR_URL } from "@/contexts/SubscriptionContext";
 import {
   Crown, Zap, Check, X, BookOpen, Brain, ShieldAlert, BarChart3,
-  ArrowRight, Sparkles, Star, ChevronLeft,
+  ArrowRight, Sparkles, Star, ChevronLeft, Gem,
 } from "lucide-react";
 
 const freePlan = {
