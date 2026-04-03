@@ -293,7 +293,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             <div className="relative">
               <button
                 onClick={() => setUserMenu(!userMenu)}
-                className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-2 py-1.5 hover:bg-white/[0.06] transition-all"
+                className="flex items-center gap-2 rounded-xl border border-border/50 bg-secondary/30 px-2 py-1.5 hover:bg-secondary/60 transition-all"
               >
                 <UserAvatar avatarUrl={profile?.avatar_url} userName={userName} size="sm" />
                 <div className="hidden md:block text-right">
