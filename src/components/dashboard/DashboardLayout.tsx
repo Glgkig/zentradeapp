@@ -315,6 +315,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                       onClose={() => setUserMenu(false)}
                       onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
                       onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
+                      onUpgrade={() => { setUserMenu(false); setUpgradeModal(true); }}
                     />
                   </div>
                 </>
