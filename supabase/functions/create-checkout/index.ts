@@ -35,22 +35,8 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { productPriceId } = await req.json();
-    if (!productPriceId) {
-      return new Response(JSON.stringify({ error: "Missing productPriceId" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // Resolve plan name to Polar product ID from secrets
-    const productIdMap: Record<string, string> = {
-      pro: Deno.env.get("POLAR_product_PRO") || "",
-      promax: Deno.env.get("POLAR_product_MAX") || "",
-    };
-
-    const resolvedProductId = productIdMap[productPriceId] || productPriceId;
-    if (!resolvedProductId) {
+    const { plan } = await req.json();
+    if (!plan || !["pro", "promax"].includes(plan)) {
       return new Response(JSON.stringify({ error: "Invalid plan" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -65,9 +51,24 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Determine success URL base from request origin or fallback
+    // Get product ID from secrets
+    const productId = plan === "pro" 
+      ? Deno.env.get("POLAR_product_PRO") 
+      : Deno.env.get("POLAR_product_MAX");
+
+    if (!productId) {
+      console.error(`Missing secret for plan: ${plan}`);
+      return new Response(JSON.stringify({ error: "Product not configured" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    console.log(`Creating checkout for plan: ${plan}, product: ${productId}, user: ${user.id}`);
+
     const origin = req.headers.get("origin") || "https://zentradeapp.lovable.app";
 
+    // Use the Polar checkout API - products array format
     const checkoutRes = await fetch("https://api.polar.sh/v1/checkouts/", {
       method: "POST",
       headers: {
@@ -75,7 +76,7 @@ Deno.serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        product_price_id: resolvedProductId,
+        products: [productId],
         success_url: `${origin}/success?checkout_id={CHECKOUT_ID}`,
         customer_email: user.email,
         metadata: {
@@ -84,16 +85,18 @@ Deno.serve(async (req) => {
       }),
     });
 
+    const responseText = await checkoutRes.text();
+    console.log(`Polar response status: ${checkoutRes.status}`);
+    console.log(`Polar response: ${responseText}`);
+
     if (!checkoutRes.ok) {
-      const errText = await checkoutRes.text();
-      console.error("Polar checkout error:", errText);
-      return new Response(JSON.stringify({ error: "Failed to create checkout", details: errText }), {
+      return new Response(JSON.stringify({ error: "Failed to create checkout", details: responseText }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const checkout = await checkoutRes.json();
+    const checkout = JSON.parse(responseText);
 
     return new Response(JSON.stringify({ url: checkout.url }), {
       status: 200,
