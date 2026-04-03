@@ -325,7 +325,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
 
         {/* Mobile Nav Dropdown */}
         <div
-          className={`md:hidden relative z-40 origin-top overflow-hidden border-b border-white/[0.06] bg-white/[0.02] backdrop-blur-xl shadow-lg transition-all duration-300 ease-out ${
+          className={`md:hidden relative z-40 origin-top overflow-hidden border-b border-border/50 bg-card/95 backdrop-blur-xl shadow-lg transition-all duration-300 ease-out ${
             mobileNavOpen
               ? "max-h-[620px] translate-y-0 opacity-100"
               : "pointer-events-none max-h-0 -translate-y-2 opacity-0 border-b-0"
