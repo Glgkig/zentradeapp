@@ -672,8 +672,8 @@ const AuthModal = ({ onClose, initialMode }: { onClose: () => void; initialMode:
           {/* Header */}
           <div className="relative text-center mb-6 md:mb-7">
             <div className="flex justify-center mb-3">
-              <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-500/20 shadow-lg shadow-cyan-500/10">
-                <Shield className="h-5 w-5 text-cyan-400" />
+              <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-500/20 shadow-lg shadow-cyan-500/10 overflow-hidden">
+                <img src={zentradeLogo} alt="ZenTrade" className="h-8 w-8 object-contain" />
                 <div className="absolute -inset-1 rounded-2xl bg-cyan-500/10 blur-md -z-10" />
               </div>
             </div>
