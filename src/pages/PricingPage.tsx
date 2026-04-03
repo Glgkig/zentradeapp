@@ -233,16 +233,10 @@ const PricingPage = () => {
             <div className="relative mb-6">
               <div className="flex items-baseline gap-1">
                 <span className="text-4xl font-bold text-foreground">
-                  ₪{isYearly ? promaxPlan.yearlyPrice : promaxPlan.price}
+                  ₪{promaxPlan.price}
                 </span>
                 <span className="text-sm text-muted-foreground/30">/חודש</span>
               </div>
-              {isYearly && (
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs text-muted-foreground/30 line-through font-mono">₪{parseInt(promaxPlan.price) * 12}</span>
-                  <span className="text-xs text-accent font-bold font-mono">₪{promaxPlan.yearlyTotal}/שנה</span>
-                </div>
-              )}
             </div>
 
             <div className="relative space-y-3 flex-1 mb-6">
