@@ -253,13 +253,15 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             </div>
 
             {/* Upgrade CTA */}
-            <button
-              onClick={() => setUpgradeModal(true)}
-              className="flex haptic-press items-center gap-1.5 rounded-xl border border-accent/20 bg-accent/[0.06] px-2 sm:px-3 py-1.5 text-2xs font-bold text-accent transition-all hover:bg-accent/15 hover:border-accent/30"
-            >
-              <Crown className="h-3 w-3" />
-              <span className="hidden sm:inline">שדרג PRO</span>
-            </button>
+            {!isPro && (
+              <button
+                onClick={() => navigate("/pricing")}
+                className="flex haptic-press items-center gap-1.5 rounded-xl border border-accent/20 bg-accent/[0.06] px-2 sm:px-3 py-1.5 text-2xs font-bold text-accent transition-all hover:bg-accent/15 hover:border-accent/30"
+              >
+                <Crown className="h-3 w-3" />
+                <span className="hidden sm:inline">שדרג PRO</span>
+              </button>
+            )}
 
             {/* New Trade CTA */}
             <button
