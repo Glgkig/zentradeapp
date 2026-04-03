@@ -262,9 +262,9 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             {!isPro && (
               <button
                 onClick={() => navigate("/pricing")}
-                className="flex haptic-press items-center gap-1.5 rounded-xl border border-accent/20 bg-accent/[0.06] px-2 sm:px-3 py-1.5 text-2xs font-bold text-accent transition-all hover:bg-accent/15 hover:border-accent/30"
+                className="flex haptic-press items-center gap-1 rounded-lg border border-accent/20 bg-accent/[0.06] px-2 py-1 text-[10px] font-bold text-accent transition-all hover:bg-accent/15 hover:border-accent/30"
               >
-                <Crown className="h-3 w-3" />
+                <Crown className="h-2.5 w-2.5" />
                 <span className="hidden sm:inline">שדרג PRO</span>
               </button>
             )}
@@ -633,31 +633,22 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
 /* ===== Upgrade Modal ===== */
 const plans = [
   {
-    id: "basic", name: "בסיסי", nameEn: "STARTER", price: "40", yearlyPrice: "36", yearlyTotal: "432", icon: Zap,
-    features: ["3 סטאפים", "יומן בסיסי", "סטטיסטיקות שבועיות", "התראות מייל"],
-    missing: ["מנטור AI", "בקטסטינג"],
-    cta: "התחלה חינם ל-14 ימים", popular: false,
-  },
-  {
-    id: "pro", name: "Pro", nameEn: "PRO", price: "99", yearlyPrice: "89", yearlyTotal: "1,069", icon: Star,
+    id: "pro", name: "Pro", nameEn: "PRO", price: "99", icon: Star,
     features: ["סטאפים ∞", "מנטור AI מתקדם", "Real-Time סטטיסטיקות", "בקטסטינג מלא", "Push + מייל", "ייצוא PDF"],
     missing: [],
     cta: "שדרג ל-Pro", popular: true,
   },
   {
-    id: "vip", name: "VIP", nameEn: "VIP", price: "149", yearlyPrice: "134", yearlyTotal: "1,609", icon: Crown,
+    id: "promax", name: "ProMax", nameEn: "PROMAX", price: "199", icon: Crown,
     features: ["הכול ב-Pro +", "API גישה מלאה", "מנטור 1:1", "חוקי ברזל מותאמים", "VIP טלגרם", "תמיכה 24/7", "גישה מוקדמת"],
     missing: [],
-    cta: "הצטרף ל-VIP", popular: false,
+    cta: "הצטרף ל-ProMax", popular: false,
   },
 ];
 
 const UpgradeModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?: boolean }) => {
-  const [isYearly, setIsYearly] = useState(false);
-
   return (
-    <div className={mobile ? "px-4 pb-6" : "w-full max-w-2xl rounded-2xl border border-primary/15 bg-[#0A0A0F] shadow-2xl shadow-primary/5 animate-in fade-in slide-in-from-bottom-2 duration-200 overflow-hidden p-6"}>
-      {/* Ambient glow */}
+    <div className={mobile ? "px-4 pb-6" : "w-full max-w-lg rounded-2xl border border-primary/15 bg-[#0A0A0F] shadow-2xl shadow-primary/5 animate-in fade-in slide-in-from-bottom-2 duration-200 overflow-hidden p-6"}>
       <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[300px] h-[200px] bg-primary/[0.06] rounded-full blur-[100px] pointer-events-none" />
 
       <div className="flex items-center justify-between mb-5">
@@ -670,86 +661,59 @@ const UpgradeModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?
         </button>
       </div>
 
-      <div className="flex items-center justify-center gap-3 mb-6">
-        <span className={`text-xs font-medium transition-colors ${!isYearly ? "text-foreground" : "text-muted-foreground/40"}`}>חודשי</span>
-        <button
-          onClick={() => setIsYearly(!isYearly)}
-          className={`relative h-6 w-11 rounded-full transition-colors duration-200 ${isYearly ? "bg-primary" : "bg-muted/30 border border-primary/15"}`}
-        >
-          <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-all duration-200 ${isYearly ? "right-0.5" : "right-[22px]"}`} />
-        </button>
-        <span className={`text-xs font-medium transition-colors ${isYearly ? "text-foreground" : "text-muted-foreground/40"}`}>שנתי</span>
-        {isYearly && (
-          <span className="rounded-full bg-primary/15 border border-primary/20 px-2.5 py-0.5 text-2xs font-bold text-primary font-mono animate-in fade-in zoom-in-95 duration-200">
-            10% הנחה
-          </span>
-        )}
-      </div>
-
-      <div className={`grid ${mobile ? "grid-cols-1 gap-3" : "grid-cols-3 gap-3"}`}>
-        {plans.map((plan) => {
-          const originalYearly = Number(plan.price) * 12;
-          return (
-            <div
-              key={plan.id}
-              className={`relative rounded-2xl border p-4 flex flex-col transition-all ${
-                plan.popular
-                  ? "border-primary/25 bg-primary/[0.04] cyan-glow"
-                  : "border-primary/10 bg-primary/[0.02] hover:border-primary/20"
-              }`}
-            >
-              {plan.popular && (
-                <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 z-10">
-                  <span className="rounded-full bg-primary px-3 py-0.5 text-[10px] font-bold text-primary-foreground shadow-lg shadow-primary/30">מומלץ</span>
-                </div>
-              )}
-              <div className="flex items-center gap-2.5 mb-3">
-                <div className={`flex h-9 w-9 items-center justify-center rounded-xl ${plan.popular ? "bg-primary/15 border border-primary/20" : "bg-primary/[0.06] border border-primary/10"}`}>
-                  <plan.icon className={`h-4.5 w-4.5 ${plan.popular ? "text-primary" : "text-muted-foreground/50"}`} />
-                </div>
-                <div>
-                  <span className="text-[13px] font-bold text-foreground block">{plan.name}</span>
-                  <span className="text-[9px] text-muted-foreground/30 font-mono">{plan.nameEn}</span>
-                </div>
+      <div className={`grid ${mobile ? "grid-cols-1 gap-3" : "grid-cols-2 gap-3"}`}>
+        {plans.map((plan) => (
+          <div
+            key={plan.id}
+            className={`relative rounded-2xl border p-4 flex flex-col transition-all ${
+              plan.popular
+                ? "border-primary/25 bg-primary/[0.04] cyan-glow"
+                : "border-primary/10 bg-primary/[0.02] hover:border-primary/20"
+            }`}
+          >
+            {plan.popular && (
+              <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 z-10">
+                <span className="rounded-full bg-primary px-3 py-0.5 text-[10px] font-bold text-primary-foreground shadow-lg shadow-primary/30">מומלץ</span>
               </div>
-              <div className="mb-4">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-bold text-foreground font-mono">
-                    ₪{isYearly ? plan.yearlyPrice : plan.price}
-                  </span>
-                  <span className="text-2xs text-muted-foreground/40">/חודש</span>
-                </div>
-                {isYearly && (
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-2xs text-muted-foreground/30 line-through font-mono">₪{originalYearly.toLocaleString()}</span>
-                    <span className="text-2xs text-primary font-bold font-mono">₪{plan.yearlyTotal}/שנה</span>
-                  </div>
-                )}
+            )}
+            <div className="flex items-center gap-2.5 mb-3">
+              <div className={`flex h-9 w-9 items-center justify-center rounded-xl ${plan.popular ? "bg-primary/15 border border-primary/20" : "bg-primary/[0.06] border border-primary/10"}`}>
+                <plan.icon className={`h-4.5 w-4.5 ${plan.popular ? "text-primary" : "text-muted-foreground/50"}`} />
               </div>
-              <div className="space-y-1.5 mb-4 flex-1">
-                {plan.features.map((f) => (
-                  <div key={f} className="flex items-center gap-2 text-2xs text-muted-foreground/60">
-                    <CheckCircle2 className="h-3 w-3 text-primary shrink-0" />
-                    {f}
-                  </div>
-                ))}
-                {plan.missing?.map((f) => (
-                  <div key={f} className="flex items-center gap-2 text-2xs text-muted-foreground/20 line-through">
-                    <X className="h-3 w-3 text-muted-foreground/10 shrink-0" />
-                    {f}
-                  </div>
-                ))}
+              <div>
+                <span className="text-[13px] font-bold text-foreground block">{plan.name}</span>
+                <span className="text-[9px] text-muted-foreground/30 font-mono">{plan.nameEn}</span>
               </div>
-              <button className={`haptic-press w-full rounded-xl py-2.5 text-[12px] font-bold transition-all min-h-[44px] ${
-                plan.popular
-                  ? "bg-primary text-primary-foreground hover:bg-primary/90 cyan-glow"
-                  : "bg-primary/10 border border-primary/15 text-primary hover:bg-primary/20"
-              }`}>
-                {plan.cta}
-              </button>
             </div>
-          );
-        })}
+            <div className="mb-4">
+              <div className="flex items-baseline gap-1">
+                <span className="text-2xl font-bold text-foreground font-mono">₪{plan.price}</span>
+                <span className="text-2xs text-muted-foreground/40">/חודש</span>
+              </div>
+            </div>
+            <div className="space-y-1.5 mb-4 flex-1">
+              {plan.features.map((f) => (
+                <div key={f} className="flex items-center gap-2 text-2xs text-muted-foreground/60">
+                  <CheckCircle2 className="h-3 w-3 text-primary shrink-0" />
+                  {f}
+                </div>
+              ))}
+              {plan.missing?.map((f) => (
+                <div key={f} className="flex items-center gap-2 text-2xs text-muted-foreground/20 line-through">
+                  <X className="h-3 w-3 text-muted-foreground/10 shrink-0" />
+                  {f}
+                </div>
+              ))}
+            </div>
+            <button className={`haptic-press w-full rounded-xl py-2.5 text-[12px] font-bold transition-all min-h-[44px] ${
+              plan.popular
+                ? "bg-primary text-primary-foreground hover:bg-primary/90 cyan-glow"
+                : "bg-primary/10 border border-primary/15 text-primary hover:bg-primary/20"
+            }`}>
+              {plan.cta}
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );
