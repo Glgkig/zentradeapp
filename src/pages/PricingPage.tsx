@@ -47,6 +47,25 @@ const proPlan = {
   missing: [],
 };
 
+const promaxPlan = {
+  name: "ZenTrade ProMax",
+  nameEn: "PROMAX",
+  price: "199",
+  yearlyPrice: "179",
+  yearlyTotal: "2,149",
+  icon: Gem,
+  features: [
+    "הכול ב-Pro +",
+    "API גישה מלאה",
+    "מנטור 1:1 אישי",
+    "חוקי ברזל מותאמים",
+    "VIP טלגרם",
+    "תמיכה 24/7",
+    "גישה מוקדמת לפיצ׳רים",
+  ],
+  missing: [],
+};
+
 const PricingPage = () => {
   const navigate = useNavigate();
   const { isPro } = useSubscription();
