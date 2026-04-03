@@ -112,20 +112,35 @@
   .glass-card {
     @apply bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-2xl;
   }
+  .light .glass-card {
+    @apply bg-white/80 border-slate-200 shadow-sm;
+  }
   .glass-card-hover {
     @apply glass-card transition-all duration-300 hover:bg-white/[0.06] hover:border-white/[0.12] hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)];
+  }
+  .light .glass-card-hover {
+    @apply bg-white/80 border-slate-200 shadow-sm hover:bg-white hover:border-slate-300 hover:shadow-md;
   }
   .glass-header {
     @apply bg-white/[0.03] backdrop-blur-xl border-b border-white/[0.06];
   }
+  .light .glass-header {
+    @apply bg-white/90 border-b-slate-200;
+  }
   .interactive-card {
     @apply transition-all duration-200 hover:border-primary/20 hover:bg-white/[0.06];
+  }
+  .light .interactive-card {
+    @apply hover:bg-slate-50 hover:border-slate-300;
   }
   .interactive-btn {
     @apply transition-all duration-150 active:scale-[0.97];
   }
   .interactive-row {
     @apply transition-all duration-150 hover:bg-muted/10;
+  }
+  .light .interactive-row {
+    @apply hover:bg-slate-50;
   }
   .scrollbar-none {
     -ms-overflow-style: none;
@@ -149,6 +164,39 @@
   .cyan-glow {
     box-shadow: 0 0 20px hsl(160 100% 42% / 0.15), 0 0 60px hsl(160 100% 42% / 0.05);
   }
+}
+
+/* ===== Light Mode Global Depth ===== */
+.light {
+  /* Cards, containers, popovers get visible borders + shadows */
+  & [class*="bg-white/[0.0"],
+  & [class*="bg-white/[0.1"] {
+    background-color: hsl(0 0% 100% / 0.85) !important;
+  }
+  & [class*="border-white/[0.0"],
+  & [class*="border-white/[0.1"] {
+    border-color: hsl(214 20% 84%) !important;
+  }
+}
+
+/* Light mode select options */
+.light select option {
+  background-color: hsl(0, 0%, 100%);
+  color: hsl(222, 47%, 11%);
+}
+
+/* Light mode settings input */
+.light .settings-input {
+  border-color: hsl(214 20% 84%);
+  background: hsl(0 0% 100%);
+}
+.light .settings-input:focus {
+  border-color: hsl(var(--primary) / 0.4);
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.1);
+  background: hsl(0 0% 100%);
+}
+.light .settings-input::placeholder {
+  color: hsl(var(--foreground) / 0.35);
 }
 
 /* ===== AI Breathing Animation ===== */
