@@ -2,6 +2,7 @@ import { useState } from "react";
 import AvatarPicker, { UserAvatar } from "@/components/AvatarPicker";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import {
   Shield, User, Globe, Lock, Bell, ChevronDown, ChevronRight,
   AlertTriangle, Volume2, Mail, Smartphone, Sparkles, Save, Camera,
