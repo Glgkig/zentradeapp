@@ -139,7 +139,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
       <div className="ambient-bg" />
 
       {/* ===== Desktop Sidebar ===== */}
-      <aside className={`hidden md:flex h-full w-[240px] flex-col bg-white/[0.02] backdrop-blur-xl border-l border-white/[0.06] shrink-0 relative z-10 ${zenMode ? "zen-hidden" : "zen-visible"}`}>
+      <aside className={`hidden md:flex h-full w-[240px] flex-col bg-card/95 backdrop-blur-xl border-l border-border/50 shrink-0 relative z-10 ${zenMode ? "zen-hidden" : "zen-visible"}`}>
         {/* Brand */}
         <div className="flex items-center px-5 py-4 border-b border-white/[0.06]">
           <div className="flex items-center gap-3">
