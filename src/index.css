@@ -212,6 +212,41 @@
   }
 }
 
+/* 
+  Light mode: override all white-alpha backgrounds/borders 
+  used for dark-mode glass effects throughout the app.
+  We use JS in the layout to add .light-depth to containers.
+*/
+.light button,
+.light div,
+.light aside,
+.light header,
+.light nav,
+.light main,
+.light section,
+.light footer {
+  --tw-bg-opacity: 1;
+}
+
+/* In light mode, ensure borders are visible */
+.light [style*="border"] {
+  border-color: hsl(214 20% 84%);
+}
+
+/* Light mode: all rounded containers with backdrop get card treatment */
+.light .rounded-2xl,
+.light .rounded-xl {
+  box-shadow: 0 1px 3px hsl(0 0% 0% / 0.04), 0 1px 2px hsl(0 0% 0% / 0.03);
+}
+
+/* Light mode: user menu dropdown */
+.light [class*="bg-\\[#111"] {
+  background-color: hsl(0 0% 100%) !important;
+  border-color: hsl(214 20% 84%) !important;
+  box-shadow: 0 4px 16px hsl(0 0% 0% / 0.1) !important;
+}
+
+
 /* ===== AI Breathing Animation ===== */
 @keyframes ai-breathe {
   0%, 100% {
