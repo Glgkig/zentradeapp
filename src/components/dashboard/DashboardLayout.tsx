@@ -274,7 +274,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               className={`haptic-press flex h-9 w-9 items-center justify-center rounded-xl border transition-all ${
                 zenMode
                   ? "border-primary/30 bg-primary/10 text-primary"
-                  : "border-white/[0.08] bg-white/[0.04] text-muted-foreground/40 hover:text-primary hover:border-primary/15"
+                  : "border-border/50 bg-secondary/50 text-muted-foreground hover:text-primary hover:border-primary/15"
               }`}
               title={zenMode ? "צא ממצב פוקוס" : "מצב פוקוס"}
             >
