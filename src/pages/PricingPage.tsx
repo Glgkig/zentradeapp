@@ -53,7 +53,7 @@ const promaxPlan = {
   nameEn: "PROMAX",
   price: "199",
   icon: Gem,
-  checkoutUrl: "https://buy.polar.sh/7e43dfa5-65e7-4cfc-8745-d98c763868c0",
+  checkoutUrl: "https://buy.polar.sh/polar_cl_rpnrx1LvsNvatMh0ZAwvl36XMpwSoPnZZaZnD1RxaAe",
   features: [
     "הכול ב-Pro +",
     "API גישה מלאה",
