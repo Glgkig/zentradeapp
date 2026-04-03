@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSubscription, POLAR_URL } from "@/contexts/SubscriptionContext";
 import {
   Crown, Zap, Check, X, BookOpen, Brain, ShieldAlert, BarChart3,
-  ArrowRight, Sparkles, Star, ChevronLeft,
+  ArrowRight, Sparkles, Star, ChevronLeft, Gem,
 } from "lucide-react";
 
 const freePlan = {
@@ -43,6 +43,25 @@ const proPlan = {
     "בקטסטינג מלא",
     "ייצוא PDF מקצועי",
     "תמיכה בעדיפות",
+  ],
+  missing: [],
+};
+
+const promaxPlan = {
+  name: "ZenTrade ProMax",
+  nameEn: "PROMAX",
+  price: "199",
+  yearlyPrice: "179",
+  yearlyTotal: "2,149",
+  icon: Gem,
+  features: [
+    "הכול ב-Pro +",
+    "API גישה מלאה",
+    "מנטור 1:1 אישי",
+    "חוקי ברזל מותאמים",
+    "VIP טלגרם",
+    "תמיכה 24/7",
+    "גישה מוקדמת לפיצ׳רים",
   ],
   missing: [],
 };
@@ -107,11 +126,11 @@ const PricingPage = () => {
         </div>
 
         {/* Cards */}
-        <div className="grid md:grid-cols-2 gap-5 max-w-3xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-5 max-w-5xl mx-auto">
           {/* Free Card */}
-          <div className="rounded-3xl border border-white/[0.06] bg-card/50 backdrop-blur-xl p-7 flex flex-col">
+          <div className="rounded-3xl border border-border/50 bg-card/50 backdrop-blur-xl p-7 flex flex-col">
             <div className="flex items-center gap-3 mb-5">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-muted/20 border border-white/[0.06]">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-muted/20 border border-border/50">
                 <Zap className="h-5 w-5 text-muted-foreground/50" />
               </div>
               <div>
@@ -148,31 +167,31 @@ const PricingPage = () => {
 
             <button
               disabled
-              className="w-full rounded-2xl border border-white/[0.06] bg-white/[0.03] py-3.5 text-sm font-semibold text-muted-foreground/40 cursor-not-allowed"
+              className="w-full rounded-2xl border border-border/50 bg-secondary/30 py-3.5 text-sm font-semibold text-muted-foreground/40 cursor-not-allowed"
             >
               {isPro ? "תוכנית קודמת" : "תוכנית נוכחית"}
             </button>
           </div>
 
           {/* Pro Card */}
-          <div className="relative rounded-3xl border border-accent/25 bg-card/50 backdrop-blur-xl p-7 flex flex-col shadow-lg shadow-accent/[0.05]">
+          <div className="relative rounded-3xl border border-primary/25 bg-card/50 backdrop-blur-xl p-7 flex flex-col shadow-lg shadow-primary/[0.05]">
             {/* Glow */}
-            <div className="absolute -inset-px rounded-3xl bg-gradient-to-b from-accent/15 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute -inset-px rounded-3xl bg-gradient-to-b from-primary/15 via-transparent to-transparent pointer-events-none" />
             {/* Badge */}
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-              <div className="flex items-center gap-1.5 rounded-full bg-accent px-4 py-1 shadow-lg shadow-accent/30">
-                <Star className="h-3 w-3 text-black fill-black" />
-                <span className="text-[11px] font-bold text-black">הכי פופולרי</span>
+              <div className="flex items-center gap-1.5 rounded-full bg-primary px-4 py-1 shadow-lg shadow-primary/30">
+                <Star className="h-3 w-3 text-primary-foreground fill-primary-foreground" />
+                <span className="text-[11px] font-bold text-primary-foreground">הכי פופולרי</span>
               </div>
             </div>
 
             <div className="relative flex items-center gap-3 mb-5">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent/15 border border-accent/20">
-                <Crown className="h-5 w-5 text-accent" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/15 border border-primary/20">
+                <Crown className="h-5 w-5 text-primary" />
               </div>
               <div>
                 <p className="text-base font-bold text-foreground">{proPlan.name}</p>
-                <p className="text-[10px] text-accent font-mono font-bold">{proPlan.nameEn}</p>
+                <p className="text-[10px] text-primary font-mono font-bold">{proPlan.nameEn}</p>
               </div>
             </div>
 
@@ -186,7 +205,7 @@ const PricingPage = () => {
               {isYearly && (
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-xs text-muted-foreground/30 line-through font-mono">₪{parseInt(proPlan.price) * 12}</span>
-                  <span className="text-xs text-accent font-bold font-mono">₪{proPlan.yearlyTotal}/שנה</span>
+                  <span className="text-xs text-primary font-bold font-mono">₪{proPlan.yearlyTotal}/שנה</span>
                 </div>
               )}
             </div>
@@ -194,8 +213,8 @@ const PricingPage = () => {
             <div className="relative space-y-3 flex-1 mb-6">
               {proPlan.features.map((f) => (
                 <div key={f} className="flex items-center gap-3">
-                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-accent/15">
-                    <Check className="h-3 w-3 text-accent" />
+                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/15">
+                    <Check className="h-3 w-3 text-primary" />
                   </div>
                   <span className="text-[13px] text-foreground/80 font-medium">{f}</span>
                 </div>
@@ -205,7 +224,7 @@ const PricingPage = () => {
             {isPro ? (
               <button
                 disabled
-                className="relative w-full rounded-2xl bg-accent/10 border border-accent/20 py-3.5 text-sm font-bold text-accent cursor-not-allowed"
+                className="relative w-full rounded-2xl bg-primary/10 border border-primary/20 py-3.5 text-sm font-bold text-primary cursor-not-allowed"
               >
                 ✓ תוכנית נוכחית
               </button>
@@ -214,13 +233,65 @@ const PricingPage = () => {
                 href={POLAR_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="relative flex items-center justify-center gap-2.5 w-full rounded-2xl bg-gradient-to-l from-accent via-yellow-500 to-accent py-3.5 text-sm font-bold text-black shadow-lg shadow-accent/20 hover:shadow-accent/30 hover:brightness-110 transition-all duration-200 active:scale-[0.98]"
+                className="relative flex items-center justify-center gap-2.5 w-full rounded-2xl bg-primary text-primary-foreground py-3.5 text-sm font-bold shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:brightness-110 transition-all duration-200 active:scale-[0.98]"
               >
                 <Crown className="h-4 w-4" />
                 שדרג ל-Pro
                 <ArrowRight className="h-4 w-4 rotate-180" />
               </a>
             )}
+          </div>
+
+          {/* ProMax Card */}
+          <div className="relative rounded-3xl border border-accent/20 bg-card/50 backdrop-blur-xl p-7 flex flex-col">
+            <div className="absolute -inset-px rounded-3xl bg-gradient-to-b from-accent/10 via-transparent to-transparent pointer-events-none" />
+
+            <div className="relative flex items-center gap-3 mb-5">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent/15 border border-accent/20">
+                <Gem className="h-5 w-5 text-accent" />
+              </div>
+              <div>
+                <p className="text-base font-bold text-foreground">{promaxPlan.name}</p>
+                <p className="text-[10px] text-accent font-mono font-bold">{promaxPlan.nameEn}</p>
+              </div>
+            </div>
+
+            <div className="relative mb-6">
+              <div className="flex items-baseline gap-1">
+                <span className="text-4xl font-bold text-foreground">
+                  ₪{isYearly ? promaxPlan.yearlyPrice : promaxPlan.price}
+                </span>
+                <span className="text-sm text-muted-foreground/30">/חודש</span>
+              </div>
+              {isYearly && (
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-xs text-muted-foreground/30 line-through font-mono">₪{parseInt(promaxPlan.price) * 12}</span>
+                  <span className="text-xs text-accent font-bold font-mono">₪{promaxPlan.yearlyTotal}/שנה</span>
+                </div>
+              )}
+            </div>
+
+            <div className="relative space-y-3 flex-1 mb-6">
+              {promaxPlan.features.map((f) => (
+                <div key={f} className="flex items-center gap-3">
+                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-accent/15">
+                    <Check className="h-3 w-3 text-accent" />
+                  </div>
+                  <span className="text-[13px] text-foreground/80 font-medium">{f}</span>
+                </div>
+              ))}
+            </div>
+
+            <a
+              href={POLAR_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative flex items-center justify-center gap-2.5 w-full rounded-2xl bg-accent/15 border border-accent/20 text-accent py-3.5 text-sm font-bold hover:bg-accent/25 transition-all duration-200 active:scale-[0.98]"
+            >
+              <Gem className="h-4 w-4" />
+              הצטרף ל-ProMax
+              <ArrowRight className="h-4 w-4 rotate-180" />
+            </a>
           </div>
         </div>
 
