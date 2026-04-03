@@ -29,9 +29,9 @@ const freePlan = {
 const proPlan = {
   name: "ZenTrade Pro",
   nameEn: "PRO",
-  price: "80",
-  yearlyPrice: "72",
-  yearlyTotal: "864",
+  price: "99",
+  yearlyPrice: "89",
+  yearlyTotal: "1,069",
   icon: Crown,
   features: [
     "עסקאות ללא הגבלה",
