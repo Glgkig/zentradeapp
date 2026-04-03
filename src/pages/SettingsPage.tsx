@@ -501,6 +501,7 @@ const AppearanceTab = () => {
 /* ===== Security Tab ===== */
 const SecurityTab = () => {
   const { signOut } = useAuth();
+  const { isPro, subscriptionStatus, openCustomerPortal } = useSubscription();
 
   return (
     <div className="space-y-4 animate-in fade-in slide-in-from-left-2 duration-300">
@@ -512,12 +513,31 @@ const SecurityTab = () => {
             <CreditCard className="h-5 w-5 text-accent" />
           </div>
           <div className="flex-1">
-            <p className="text-[13px] font-bold text-foreground">ZenTrade Pro</p>
-            <p className="text-[9px] text-foreground/30 mt-0.5">כל הפיצ׳רים פתוחים • ללא הגבלת AI</p>
+            <p className="text-[13px] font-bold text-foreground">
+              {isPro ? "ZenTrade Pro" : "ZenTrade Lite"}
+            </p>
+            <p className="text-[9px] text-foreground/30 mt-0.5">
+              {isPro ? "כל הפיצ׳רים פתוחים • ללא הגבלת AI" : "תוכנית בסיסית • שדרג לפרו"}
+            </p>
           </div>
-          <button className="haptic-press rounded-lg bg-accent/10 border border-accent/15 px-3 py-1.5 text-[9px] font-bold text-accent hover:bg-accent/20 transition-all">
-            שדרוג
-          </button>
+          <div className="flex items-center gap-2">
+            {isPro && (
+              <button
+                onClick={openCustomerPortal}
+                className="haptic-press rounded-lg bg-primary/10 border border-primary/15 px-3 py-1.5 text-[9px] font-bold text-primary hover:bg-primary/20 transition-all"
+              >
+                נהל מנוי
+              </button>
+            )}
+            {!isPro && (
+              <button
+                onClick={() => window.location.href = "/pricing"}
+                className="haptic-press rounded-lg bg-accent/10 border border-accent/15 px-3 py-1.5 text-[9px] font-bold text-accent hover:bg-accent/20 transition-all"
+              >
+                שדרוג
+              </button>
+            )}
+          </div>
         </div>
       </GlassCard>
 
