@@ -353,7 +353,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                   </button>
                 );
               })}
-              <div className="my-2 h-px bg-white/[0.04]" />
+              <div className="my-2 h-px bg-border/30" />
               <button
                 onClick={() => { setMobileNavOpen(false); setBrokerModal(true); }}
                 style={{ transitionDelay: mobileNavOpen ? `${allNavItems.length * 35}ms` : "0ms" }}
