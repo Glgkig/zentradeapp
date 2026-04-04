@@ -1,7 +1,8 @@
 import { corsHeaders } from "npm:@supabase/supabase-js/cors";
 
-// Forex Factory free JSON feed — best source for economic calendar events
-const FF_URL = "https://nfs.faireconomy.media/ff_calendar_thisweek.json";
+// Forex Factory feeds — current week + next week
+const FF_THIS_WEEK = "https://nfs.faireconomy.media/ff_calendar_thisweek.json";
+const FF_NEXT_WEEK = "https://nfs.faireconomy.media/ff_calendar_nextweek.json";
 
 const countryFlags: Record<string, string> = {
   USD: "🇺🇸", EUR: "🇪🇺", GBP: "🇬🇧", JPY: "🇯🇵", CAD: "🇨🇦",
@@ -77,6 +78,7 @@ const hebrewTitles: Record<string, string> = {
   "PCE Price Index y/y": "מדד PCE (שנתי)",
   "Michigan Consumer Sentiment": "סנטימנט צרכנים מישיגן",
   "JOLTS Job Openings": "משרות פתוחות JOLTS",
+  "Average Hourly Earnings m/m": "שכר ממוצע לשעה (חודשי)",
 };
 
 const categoryMap: Record<string, string> = {
@@ -91,39 +93,46 @@ const impactMap: Record<string, string> = {
   Holiday: "low",
 };
 
+function mapEvents(rawEvents: any[]) {
+  return rawEvents
+    .filter((e: any) => e.impact === "High" || e.impact === "Medium")
+    .map((e: any) => ({
+      title: e.title,
+      titleHe: hebrewTitles[e.title] || e.title,
+      country: e.country,
+      flag: countryFlags[e.country] || "🌍",
+      region: categoryMap[e.country] || e.country,
+      date: e.date,
+      impact: impactMap[e.impact] || "low",
+      forecast: e.forecast || null,
+      previous: e.previous || null,
+      actual: e.actual || null,
+    }));
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    const res = await fetch(FF_URL, { signal: AbortSignal.timeout(8000) });
-    if (!res.ok) throw new Error(`FF API returned ${res.status}`);
+    // Fetch both weeks in parallel
+    const [thisWeekRes, nextWeekRes] = await Promise.all([
+      fetch(FF_THIS_WEEK, { signal: AbortSignal.timeout(8000) }),
+      fetch(FF_NEXT_WEEK, { signal: AbortSignal.timeout(8000) }).catch(() => null),
+    ]);
 
-    const rawEvents = await res.json();
+    if (!thisWeekRes.ok) throw new Error(`FF API returned ${thisWeekRes.status}`);
 
-    // Include High AND Medium impact events for a richer calendar
-    const events = rawEvents
-      .filter((e: any) => e.impact === "High" || e.impact === "Medium")
-      .map((e: any) => {
-        const heTitle = hebrewTitles[e.title] || e.title;
-        const flag = countryFlags[e.country] || "🌍";
-        const region = categoryMap[e.country] || e.country;
+    const thisWeekRaw = await thisWeekRes.json();
+    let allRaw = [...thisWeekRaw];
 
-        return {
-          title: e.title,
-          titleHe: heTitle,
-          country: e.country,
-          flag,
-          region,
-          date: e.date,
-          impact: impactMap[e.impact] || "low",
-          forecast: e.forecast || null,
-          previous: e.previous || null,
-          actual: e.actual || null,
-        };
-      })
-      // Sort by date/time
+    if (nextWeekRes?.ok) {
+      const nextWeekRaw = await nextWeekRes.json();
+      allRaw = [...allRaw, ...nextWeekRaw];
+    }
+
+    const events = mapEvents(allRaw)
       .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     return new Response(JSON.stringify({ events, source: "live" }), {
