@@ -21,6 +21,7 @@ import ProtectionPage from "@/pages/ProtectionPage";
 import TaxCalculatorPage from "@/pages/TaxCalculatorPage";
 import EconomicNewsPage from "@/pages/EconomicNewsPage";
 import ForensicTradeDrawer from "@/components/dashboard/ForensicTradeDrawer";
+import LiveTicker from "@/components/dashboard/LiveTicker";
 import AvatarPicker, { UserAvatar } from "@/components/AvatarPicker";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 
