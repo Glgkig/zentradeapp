@@ -405,6 +405,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
           </div>
         </div>
 
+        <LiveTicker />
         <main className="relative flex-1 overflow-y-auto bg-background p-3 md:p-6">
           {renderContent()}
           {zenMode && (
