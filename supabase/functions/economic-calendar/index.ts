@@ -1,21 +1,13 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { corsHeaders } from "npm:@supabase/supabase-js/cors";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
-
-// Forex Factory free JSON feed
+// Forex Factory free JSON feed — best source for economic calendar events
 const FF_URL = "https://nfs.faireconomy.media/ff_calendar_thisweek.json";
 
-// Country name → flag emoji map
 const countryFlags: Record<string, string> = {
   USD: "🇺🇸", EUR: "🇪🇺", GBP: "🇬🇧", JPY: "🇯🇵", CAD: "🇨🇦",
   AUD: "🇦🇺", NZD: "🇳🇿", CHF: "🇨🇭", CNY: "🇨🇳",
 };
 
-// Hebrew translation for common event titles
 const hebrewTitles: Record<string, string> = {
   "Non-Farm Employment Change": "שינוי תעסוקה שלא בחקלאות (NFP)",
   "Unemployment Rate": "שיעור אבטלה",
@@ -74,6 +66,17 @@ const hebrewTitles: Record<string, string> = {
   "German Prelim CPI m/m": "מדד CPI גרמניה מקדים",
   "French Prelim CPI m/m": "מדד CPI צרפת מקדים",
   "Spanish Flash CPI y/y": "מדד CPI ספרד ראשוני",
+  "President Trump Speaks": "נאום נשיא ארה״ב",
+  "Fed Chair Powell Speaks": "נאום יו״ר הפד פאוול",
+  "Treasury Currency Report": "דו״ח מטבע משרד האוצר",
+  "Consumer Credit m/m": "אשראי צרכני (חודשי)",
+  "Final GDP q/q": "תמ״ג סופי (רבעוני)",
+  "Personal Spending m/m": "הוצאות אישיות (חודשי)",
+  "Personal Income m/m": "הכנסה אישית (חודשי)",
+  "Core PCE Price Index m/m": "מדד PCE ליבה (חודשי)",
+  "PCE Price Index y/y": "מדד PCE (שנתי)",
+  "Michigan Consumer Sentiment": "סנטימנט צרכנים מישיגן",
+  "JOLTS Job Openings": "משרות פתוחות JOLTS",
 };
 
 const categoryMap: Record<string, string> = {
@@ -81,20 +84,27 @@ const categoryMap: Record<string, string> = {
   CAD: "קנדה", AUD: "אוסטרליה", NZD: "ניו זילנד", CHF: "שוויץ", CNY: "סין",
 };
 
-serve(async (req) => {
+const impactMap: Record<string, string> = {
+  High: "high",
+  Medium: "medium",
+  Low: "low",
+  Holiday: "low",
+};
+
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    const res = await fetch(FF_URL);
+    const res = await fetch(FF_URL, { signal: AbortSignal.timeout(8000) });
     if (!res.ok) throw new Error(`FF API returned ${res.status}`);
 
     const rawEvents = await res.json();
 
-    // Filter: only "High" impact, exclude Israeli events (ILS not in FF anyway)
-    const highImpact = rawEvents
-      .filter((e: any) => e.impact === "High")
+    // Include High AND Medium impact events for a richer calendar
+    const events = rawEvents
+      .filter((e: any) => e.impact === "High" || e.impact === "Medium")
       .map((e: any) => {
         const heTitle = hebrewTitles[e.title] || e.title;
         const flag = countryFlags[e.country] || "🌍";
@@ -106,22 +116,24 @@ serve(async (req) => {
           country: e.country,
           flag,
           region,
-          date: e.date,       // ISO date string
-          impact: "high",
+          date: e.date,
+          impact: impactMap[e.impact] || "low",
           forecast: e.forecast || null,
           previous: e.previous || null,
           actual: e.actual || null,
         };
-      });
+      })
+      // Sort by date/time
+      .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-    return new Response(JSON.stringify({ events: highImpact }), {
+    return new Response(JSON.stringify({ events, source: "live" }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (e) {
+  } catch (e: any) {
     console.error("economic-calendar error:", e);
     return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify({ error: e.message || "Unknown error", source: "error" }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }
 });
