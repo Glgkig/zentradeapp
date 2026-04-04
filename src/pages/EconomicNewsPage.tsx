@@ -408,8 +408,16 @@ const EconomicNewsPage = () => {
                               </div>
                               <span className="text-2xs text-muted-foreground/20">·</span>
                               <div className="flex items-center gap-1">
-                                <div className="h-2 w-2 rounded-full bg-destructive" />
-                                <span className="text-2xs font-medium text-destructive">השפעה גבוהה</span>
+                                <div className={cn(
+                                  "h-2 w-2 rounded-full",
+                                  event.impact === "high" ? "bg-destructive" : event.impact === "medium" ? "bg-orange-400" : "bg-muted-foreground/30"
+                                )} />
+                                <span className={cn(
+                                  "text-2xs font-medium",
+                                  event.impact === "high" ? "text-destructive" : event.impact === "medium" ? "text-orange-400" : "text-muted-foreground/50"
+                                )}>
+                                  {event.impact === "high" ? "השפעה גבוהה" : event.impact === "medium" ? "השפעה בינונית" : "השפעה נמוכה"}
+                                </span>
                               </div>
                               <span className="text-2xs text-muted-foreground/20">·</span>
                               <span className="text-2xs text-muted-foreground/50">{event.region}</span>
