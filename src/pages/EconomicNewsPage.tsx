@@ -120,6 +120,18 @@ const formatIsraelTime = (dateStr: string): string => {
   }
 };
 
+/* ── Fallback mock data ── */
+const today = new Date();
+const todayStr = today.toISOString().split("T")[0];
+const FALLBACK_EVENTS: EconomicEvent[] = [
+  { title: "CPI m/m", titleHe: "מדד מחירים לצרכן (חודשי)", country: "USD", flag: "🇺🇸", region: "ארה״ב", date: `${todayStr}T10:30:00Z`, impact: "high", forecast: "0.3%", previous: "0.4%", actual: null },
+  { title: "Unemployment Claims", titleHe: "תביעות אבטלה שבועיות", country: "USD", flag: "🇺🇸", region: "ארה״ב", date: `${todayStr}T12:30:00Z`, impact: "high", forecast: "212K", previous: "210K", actual: null },
+  { title: "Main Refinancing Rate", titleHe: "ריבית ECB", country: "EUR", flag: "🇪🇺", region: "אירופה", date: `${todayStr}T11:45:00Z`, impact: "high", forecast: "4.50%", previous: "4.50%", actual: null },
+  { title: "GDP q/q", titleHe: "תוצר מקומי גולמי (רבעוני)", country: "GBP", flag: "🇬🇧", region: "בריטניה", date: `${todayStr}T06:00:00Z`, impact: "medium", forecast: "0.2%", previous: "0.1%", actual: null },
+  { title: "Retail Sales m/m", titleHe: "מכירות קמעונאיות (חודשי)", country: "USD", flag: "🇺🇸", region: "ארה״ב", date: `${todayStr}T12:30:00Z`, impact: "medium", forecast: "0.5%", previous: "0.6%", actual: null },
+  { title: "BOJ Policy Rate", titleHe: "ריבית בנק יפן", country: "JPY", flag: "🇯🇵", region: "יפן", date: `${todayStr}T03:00:00Z`, impact: "high", forecast: "0.25%", previous: "0.25%", actual: null },
+];
+
 /* ── Page ── */
 const EconomicNewsPage = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
