@@ -3,7 +3,7 @@ import { format, addDays, subDays, isToday, parseISO, isSameDay } from "date-fns
 import { he } from "date-fns/locale";
 import {
   Newspaper, TrendingUp, Calendar as CalendarIcon, ChevronRight, ChevronLeft,
-  BookOpen, Clock, Globe, Flame, Star, Loader2, RefreshCw, CalendarPlus,
+  BookOpen, Clock, Globe, Flame, Star, Loader2, RefreshCw, CalendarPlus, AlertTriangle,
 } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -132,16 +132,101 @@ const FALLBACK_EVENTS: EconomicEvent[] = [
   { title: "BOJ Policy Rate", titleHe: "ריבית בנק יפן", country: "JPY", flag: "🇯🇵", region: "יפן", date: `${todayStr}T03:00:00Z`, impact: "high", forecast: "0.25%", previous: "0.25%", actual: null },
 ];
 
+/* ── Event Card Component ── */
+const EventCard = ({ event, onAddToCalendar, onAddToJournal }: { event: EconomicEvent; onAddToCalendar: (e: EconomicEvent) => void; onAddToJournal: (e: EconomicEvent) => void }) => {
+  const timeStr = formatIsraelTime(event.date);
+  const isPast = new Date(event.date) < new Date();
+
+  return (
+    <div
+      className={cn(
+        "group rounded-xl border p-3.5 transition-all",
+        event.impact === "high"
+          ? "border-destructive/20 hover:bg-destructive/[0.04] hover:border-destructive/30"
+          : event.impact === "medium"
+            ? "border-orange-400/20 hover:bg-orange-400/[0.04] hover:border-orange-400/30"
+            : "border-border/20 hover:bg-card/50 hover:border-border/30",
+        isPast && "opacity-50"
+      )}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="text-base">{event.flag}</span>
+            <span className="text-xs font-semibold text-foreground truncate">{event.titleHe}</span>
+            {/* Impact Badge */}
+            <span className={cn(
+              "shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold border",
+              event.impact === "high"
+                ? "bg-destructive/10 text-destructive border-destructive/30 shadow-[0_0_8px_hsl(var(--destructive)/0.3)]"
+                : event.impact === "medium"
+                  ? "bg-orange-400/10 text-orange-400 border-orange-400/30"
+                  : "bg-muted/50 text-muted-foreground border-border/30"
+            )}>
+              {event.impact === "high" ? "🔴 HIGH" : event.impact === "medium" ? "🟠 MED" : "⚪ LOW"}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1">
+              <Clock className="h-2.5 w-2.5 text-muted-foreground/40" />
+              <span className="text-2xs text-foreground/70 font-mono font-bold">{timeStr}</span>
+            </div>
+            <span className="text-2xs text-muted-foreground/20">·</span>
+            <span className="text-2xs text-muted-foreground/50">{event.region}</span>
+          </div>
+          <div className="flex items-center gap-3 mt-2">
+            {event.forecast && (
+              <div className="flex items-center gap-1">
+                <span className="text-2xs text-muted-foreground/40">צפי:</span>
+                <span className="text-2xs font-mono font-semibold text-foreground/70">{event.forecast}</span>
+              </div>
+            )}
+            {event.previous && (
+              <div className="flex items-center gap-1">
+                <span className="text-2xs text-muted-foreground/40">קודם:</span>
+                <span className="text-2xs font-mono font-semibold text-muted-foreground/60">{event.previous}</span>
+              </div>
+            )}
+            {event.actual && (
+              <div className="flex items-center gap-1">
+                <span className="text-2xs text-muted-foreground/40">בפועל:</span>
+                <span className="text-2xs font-mono font-bold text-foreground">{event.actual}</span>
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="flex flex-col gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-all">
+          <button
+            onClick={() => onAddToCalendar(event)}
+            className="haptic-press flex items-center gap-1 rounded-lg border border-accent/20 bg-accent/5 px-2 py-1 text-accent hover:bg-accent/15 transition-all"
+            title="הוסף ל-Google Calendar"
+          >
+            <CalendarPlus className="h-3 w-3" />
+            <span className="text-2xs font-medium hidden sm:inline">יומן</span>
+          </button>
+          <button
+            onClick={() => onAddToJournal(event)}
+            className="haptic-press flex items-center gap-1 rounded-lg border border-primary/15 bg-primary/5 px-2 py-1 text-primary hover:bg-primary/15 transition-all"
+            title="הוסף ליומן מסחר"
+          >
+            <BookOpen className="h-3 w-3" />
+            <span className="text-2xs font-medium hidden sm:inline">ליומן</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 /* ── Page ── */
 const EconomicNewsPage = () => {
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [allEvents, setAllEvents] = useState<EconomicEvent[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [syncing, setSyncing] = useState(false);
 
   const fetchEvents = async () => {
     setLoading(true);
-    setError(null);
+    setSyncing(false);
     try {
       const { data, error: fnError } = await supabase.functions.invoke("economic-calendar");
       if (fnError) throw fnError;
@@ -150,11 +235,11 @@ const EconomicNewsPage = () => {
       if (events.length > 0) {
         setAllEvents(events);
       } else {
-        // Use fallback if API returns empty
         setAllEvents(FALLBACK_EVENTS);
       }
     } catch (e: any) {
       console.error("Failed to fetch events, using fallback:", e);
+      setSyncing(true);
       setAllEvents(FALLBACK_EVENTS);
     } finally {
       setLoading(false);
@@ -165,27 +250,25 @@ const EconomicNewsPage = () => {
     fetchEvents();
   }, []);
 
-  // Filter events for selected date — only show upcoming (not past) unless viewing past dates
+  // Split events: today vs upcoming
   const now = new Date();
-  const eventsForDate = allEvents.filter((ev) => {
-    try {
-      const eventDate = parseISO(ev.date);
-      return isSameDay(eventDate, selectedDate);
-    } catch {
-      return false;
-    }
-  }).filter((ev) => {
-    // If viewing today, hide events that already happened
-    if (isSameDay(selectedDate, now)) {
-      return new Date(ev.date) >= now;
-    }
-    return true;
-  });
+  const todayEvents = allEvents
+    .filter((ev) => {
+      try {
+        return isSameDay(parseISO(ev.date), now);
+      } catch { return false; }
+    })
+    .filter((ev) => new Date(ev.date) >= now) // only upcoming today
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-  // Sort by time
-  const sortedEvents = [...eventsForDate].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
+  const upcomingEvents = allEvents
+    .filter((ev) => {
+      try {
+        const d = parseISO(ev.date);
+        return d > now && !isSameDay(d, now);
+      } catch { return false; }
+    })
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   const handleAddToJournal = (event: EconomicEvent) => {
     toast.success("נוסף ליומן המסחר", {
@@ -195,11 +278,8 @@ const EconomicNewsPage = () => {
 
   const handleAddToGoogleCalendar = (event: EconomicEvent) => {
     const eventDate = new Date(event.date);
-    const endDate = new Date(eventDate.getTime() + 30 * 60 * 1000); // 30 min duration
-
-    const formatGCal = (d: Date) =>
-      d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
-
+    const endDate = new Date(eventDate.getTime() + 30 * 60 * 1000);
+    const formatGCal = (d: Date) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
     const title = `🔴 ${event.titleHe} (${event.region})`;
     const details = [
       `דוח כלכלי בעל השפעה גבוהה`,
@@ -214,20 +294,17 @@ const EconomicNewsPage = () => {
     url.searchParams.set("dates", `${formatGCal(eventDate)}/${formatGCal(endDate)}`);
     url.searchParams.set("details", details);
     url.searchParams.set("ctz", "Asia/Jerusalem");
-
     window.open(url.toString(), "_blank");
-    toast.success("נפתח Google Calendar", {
-      description: `"${event.titleHe}" — הוסף התראה בלוח השנה שלך`,
-    });
+    toast.success("נפתח Google Calendar");
   };
 
-  const dayButtons = Array.from({ length: 14 }, (_, i) => addDays(selectedDate, i - 3));
-
-  // Count events per day for indicators
-  const eventCountForDay = (date: Date) =>
-    allEvents.filter((ev) => {
-      try { return isSameDay(parseISO(ev.date), date); } catch { return false; }
-    }).length;
+  // Group upcoming events by day
+  const upcomingByDay: Record<string, EconomicEvent[]> = {};
+  upcomingEvents.forEach((ev) => {
+    const dayKey = ev.date.split("T")[0];
+    if (!upcomingByDay[dayKey]) upcomingByDay[dayKey] = [];
+    upcomingByDay[dayKey].push(ev);
+  });
 
   const tabs = [
     { id: "reports" as const, label: "דוחות אדומים 🔴", icon: Flame, color: "destructive" },
@@ -239,7 +316,6 @@ const EconomicNewsPage = () => {
 
   return (
     <div className="h-full flex flex-col gap-3 p-2 md:p-4 overflow-hidden">
-
       {/* ── Header ── */}
       <div className="flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
@@ -299,205 +375,110 @@ const EconomicNewsPage = () => {
         })}
       </div>
 
-      {/* ── Tab: Reports ── */}
+      {/* ── Syncing Banner ── */}
+      {syncing && activeTab === "reports" && (
+        <div className="shrink-0 flex items-center gap-2 rounded-lg border border-orange-400/20 bg-orange-400/5 px-3 py-2">
+          <Loader2 className="h-3.5 w-3.5 text-orange-400 animate-spin" />
+          <span className="text-xs text-orange-400">מסנכרן נתוני לוח כלכלי... מציג נתונים לדוגמה</span>
+        </div>
+      )}
+
+      {/* ── Tab: Reports (Today's Alerts + Upcoming) ── */}
       {activeTab === "reports" && (
-        <div className="flex-1 flex flex-col gap-3 min-h-0 overflow-hidden">
-          {/* Day Selector */}
-          <div className="shrink-0 flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
-            <button
-              onClick={() => setSelectedDate(subDays(selectedDate, 1))}
-              className="haptic-press flex h-8 w-8 items-center justify-center rounded-lg border border-border/50 bg-card/50 text-muted-foreground hover:text-foreground hover:border-primary/20 transition-all shrink-0"
-            >
-              <ChevronRight className="h-3.5 w-3.5" />
-            </button>
-
-            {dayButtons.map((date, i) => {
-              const active = format(date, "yyyy-MM-dd") === format(selectedDate, "yyyy-MM-dd");
-              const today = isToday(date);
-              const count = eventCountForDay(date);
-              return (
-                <button
-                  key={i}
-                  onClick={() => setSelectedDate(date)}
-                  className={cn(
-                    "haptic-press flex flex-col items-center rounded-xl px-3 py-1.5 min-w-[52px] transition-all border shrink-0 relative",
-                    active
-                      ? "bg-destructive/10 border-destructive/20 text-destructive"
-                      : "border-transparent hover:bg-card/80 text-muted-foreground/60 hover:text-foreground"
-                  )}
-                >
-                  <span className="text-2xs font-medium">{format(date, "EEE", { locale: he })}</span>
-                  <span className={cn("text-sm font-bold", active && "text-destructive")}>{format(date, "d")}</span>
-                  {today && <div className="h-1 w-1 rounded-full bg-primary mt-0.5" />}
-                  {count > 0 && (
-                    <span className={cn(
-                      "absolute -top-1 -left-1 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold",
-                      active ? "bg-destructive text-destructive-foreground" : "bg-destructive/80 text-destructive-foreground"
-                    )}>
-                      {count}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-
-            <button
-              onClick={() => setSelectedDate(addDays(selectedDate, 1))}
-              className="haptic-press flex h-8 w-8 items-center justify-center rounded-lg border border-border/50 bg-card/50 text-muted-foreground hover:text-foreground hover:border-primary/20 transition-all shrink-0"
-            >
-              <ChevronLeft className="h-3.5 w-3.5" />
-            </button>
-
-            <Popover>
-              <PopoverTrigger asChild>
-                <button className="haptic-press flex h-8 items-center gap-1.5 rounded-lg border border-border/50 bg-card/50 px-2.5 text-muted-foreground hover:text-primary hover:border-primary/20 transition-all shrink-0">
-                  <CalendarIcon className="h-3.5 w-3.5" />
-                  <span className="text-2xs font-medium">{format(selectedDate, "d MMMM yyyy", { locale: he })}</span>
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={(d) => d && setSelectedDate(d)}
-                  initialFocus
-                  className={cn("p-3 pointer-events-auto")}
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          {/* Events List — Full Width */}
-          <div className="flex-1 rounded-2xl border border-destructive/15 bg-destructive/[0.02] backdrop-blur-sm overflow-hidden flex flex-col min-h-0">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-destructive/10 shrink-0">
-              <div className="flex items-center gap-2">
-                <Flame className="h-3.5 w-3.5 text-destructive" />
-                <span className="text-xs font-semibold text-foreground">דוחות אדומים 🔴</span>
-              </div>
-              <span className="text-2xs text-muted-foreground/40 font-mono">
-                {format(selectedDate, "dd/MM/yyyy")} · שעון ישראל 🇮🇱
-              </span>
+        <div className="flex-1 flex flex-col gap-3 min-h-0 overflow-y-auto scrollbar-none">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center flex-1 text-center p-4">
+              <Loader2 className="h-8 w-8 text-destructive/40 animate-spin mb-2" />
+              <p className="text-xs text-muted-foreground/40">טוען דוחות...</p>
             </div>
+          ) : (
+            <>
+              {/* ── Today's Alerts Section ── */}
+              <div className="rounded-2xl border border-destructive/20 bg-destructive/[0.02] backdrop-blur-sm overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-destructive/10">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="h-3.5 w-3.5 text-destructive" />
+                    <span className="text-xs font-bold text-destructive">התראות היום 🔴</span>
+                    <span className="text-2xs text-muted-foreground/40">
+                      {format(now, "dd/MM/yyyy")}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    {todayEvents.length > 0 && (
+                      <span className="flex h-5 items-center rounded-full bg-destructive/10 border border-destructive/20 px-2 text-[10px] font-bold text-destructive">
+                        {todayEvents.length} דוחות
+                      </span>
+                    )}
+                    <span className="text-2xs text-muted-foreground/30 font-mono">שעון ישראל 🇮🇱</span>
+                  </div>
+                </div>
 
-            <div className="flex-1 overflow-y-auto scrollbar-none p-3 space-y-2">
-              {loading ? (
-                <div className="flex flex-col items-center justify-center h-full text-center p-4">
-                  <Loader2 className="h-8 w-8 text-destructive/40 animate-spin mb-2" />
-                  <p className="text-xs text-muted-foreground/40">טוען דוחות...</p>
+                <div className="p-3 space-y-2">
+                  {todayEvents.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center text-center py-6">
+                      <Globe className="h-7 w-7 text-muted-foreground/15 mb-2" />
+                      <p className="text-xs text-muted-foreground/40">
+                        {now.getDay() === 0 || now.getDay() === 6
+                          ? "סופ״ש — השווקים סגורים"
+                          : "אין דוחות נוספים היום"}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
+                      {todayEvents.map((event, i) => (
+                        <EventCard key={`today-${i}`} event={event} onAddToCalendar={handleAddToGoogleCalendar} onAddToJournal={handleAddToJournal} />
+                      ))}
+                    </div>
+                  )}
                 </div>
-              ) : error ? (
-                <div className="flex flex-col items-center justify-center h-full text-center p-4">
-                  <Globe className="h-8 w-8 text-muted-foreground/20 mb-2" />
-                  <p className="text-xs text-destructive/60">{error}</p>
-                  <button onClick={fetchEvents} className="mt-2 text-2xs text-primary hover:underline">נסה שוב</button>
+              </div>
+
+              {/* ── Upcoming Events Section ── */}
+              <div className="rounded-2xl border border-border/20 bg-card/20 backdrop-blur-sm overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-border/10">
+                  <div className="flex items-center gap-2">
+                    <CalendarIcon className="h-3.5 w-3.5 text-primary" />
+                    <span className="text-xs font-bold text-foreground">דוחות קרובים</span>
+                  </div>
+                  <span className="text-2xs text-muted-foreground/30 font-mono">
+                    {upcomingEvents.length} אירועים
+                  </span>
                 </div>
-              ) : sortedEvents.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-center p-4">
-                  <Globe className="h-8 w-8 text-muted-foreground/20 mb-2" />
-                  <p className="text-xs text-muted-foreground/40">אין דוחות אדומים ביום זה</p>
-                  <p className="text-2xs text-muted-foreground/25 mt-1">
-                    {selectedDate.getDay() === 0 || selectedDate.getDay() === 6
-                      ? "סופ״ש — השווקים סגורים"
-                      : "יום שקט — אין אירועים בעלי השפעה גבוהה"}
-                  </p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
-                  {sortedEvents.map((event, i) => {
-                    const timeStr = formatIsraelTime(event.date);
-                    const isPast = new Date(event.date) < new Date();
-                    return (
-                      <div
-                        key={i}
-                        className={cn(
-                          "group rounded-xl border border-destructive/15 p-3.5 transition-all hover:bg-destructive/[0.04] hover:border-destructive/25",
-                          isPast && "opacity-60"
-                        )}
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1.5">
-                              <span className="text-base">{event.flag}</span>
-                              <span className="text-xs font-semibold text-foreground truncate">{event.titleHe}</span>
-                            </div>
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <div className="flex items-center gap-1">
-                                <Clock className="h-2.5 w-2.5 text-muted-foreground/40" />
-                                <span className="text-2xs text-foreground/70 font-mono font-bold">{timeStr}</span>
-                              </div>
-                              <span className="text-2xs text-muted-foreground/20">·</span>
-                              <div className="flex items-center gap-1">
-                                <div className={cn(
-                                  "h-2 w-2 rounded-full",
-                                  event.impact === "high" ? "bg-destructive" : event.impact === "medium" ? "bg-orange-400" : "bg-muted-foreground/30"
-                                )} />
-                                <span className={cn(
-                                  "text-2xs font-medium",
-                                  event.impact === "high" ? "text-destructive" : event.impact === "medium" ? "text-orange-400" : "text-muted-foreground/50"
-                                )}>
-                                  {event.impact === "high" ? "השפעה גבוהה" : event.impact === "medium" ? "השפעה בינונית" : "השפעה נמוכה"}
-                                </span>
-                              </div>
-                              <span className="text-2xs text-muted-foreground/20">·</span>
-                              <span className="text-2xs text-muted-foreground/50">{event.region}</span>
-                            </div>
-                            <div className="flex items-center gap-3 mt-2">
-                              {event.forecast && (
-                                <div className="flex items-center gap-1">
-                                  <span className="text-2xs text-muted-foreground/40">צפי:</span>
-                                  <span className="text-2xs font-mono font-semibold text-foreground/70">{event.forecast}</span>
-                                </div>
-                              )}
-                              {event.previous && (
-                                <div className="flex items-center gap-1">
-                                  <span className="text-2xs text-muted-foreground/40">קודם:</span>
-                                  <span className="text-2xs font-mono font-semibold text-muted-foreground/60">{event.previous}</span>
-                                </div>
-                              )}
-                              {event.actual && (
-                                <div className="flex items-center gap-1">
-                                  <span className="text-2xs text-muted-foreground/40">בפועל:</span>
-                                  <span className="text-2xs font-mono font-bold text-foreground">{event.actual}</span>
-                                </div>
-                              )}
-                            </div>
+
+                <div className="p-3 space-y-4">
+                  {Object.keys(upcomingByDay).length === 0 ? (
+                    <div className="flex flex-col items-center justify-center text-center py-6">
+                      <CalendarIcon className="h-7 w-7 text-muted-foreground/15 mb-2" />
+                      <p className="text-xs text-muted-foreground/40">אין דוחות קרובים</p>
+                    </div>
+                  ) : (
+                    Object.entries(upcomingByDay).map(([dayKey, dayEvents]) => {
+                      const dayDate = parseISO(dayKey);
+                      return (
+                        <div key={dayKey}>
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="h-px flex-1 bg-border/15" />
+                            <span className="text-2xs font-semibold text-muted-foreground/50 shrink-0">
+                              {format(dayDate, "EEEE, d בMMMM", { locale: he })}
+                            </span>
+                            <span className="shrink-0 flex h-4 items-center rounded-full bg-primary/10 border border-primary/15 px-1.5 text-[9px] font-bold text-primary">
+                              {dayEvents.length}
+                            </span>
+                            <div className="h-px flex-1 bg-border/15" />
                           </div>
-                          <div className="flex flex-col gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-all">
-                            <button
-                              onClick={() => handleAddToGoogleCalendar(event)}
-                              className="haptic-press flex items-center gap-1 rounded-lg border border-accent/20 bg-accent/5 px-2 py-1 text-accent hover:bg-accent/15 transition-all"
-                              title="הוסף ל-Google Calendar"
-                            >
-                              <CalendarPlus className="h-3 w-3" />
-                              <span className="text-2xs font-medium hidden sm:inline">יומן Google</span>
-                            </button>
-                            <button
-                              onClick={() => handleAddToJournal(event)}
-                              className="haptic-press flex items-center gap-1 rounded-lg border border-primary/15 bg-primary/5 px-2 py-1 text-primary hover:bg-primary/15 transition-all"
-                              title="הוסף ליומן מסחר"
-                            >
-                              <BookOpen className="h-3 w-3" />
-                              <span className="text-2xs font-medium hidden sm:inline">ליומן</span>
-                            </button>
+                          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
+                            {dayEvents.map((event, i) => (
+                              <EventCard key={`${dayKey}-${i}`} event={event} onAddToCalendar={handleAddToGoogleCalendar} onAddToJournal={handleAddToJournal} />
+                            ))}
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })
+                  )}
                 </div>
-              )}
-            </div>
-
-            {sortedEvents.length > 0 && (
-              <div className="px-4 py-2.5 border-t border-destructive/10 shrink-0 flex items-center justify-between">
-                <div className="flex items-center gap-1">
-                  <Flame className="h-3 w-3 text-destructive" />
-                  <span className="text-2xs text-destructive/70 font-semibold">{sortedEvents.length} דוחות אדומים</span>
-                </div>
-                <span className="text-2xs text-muted-foreground/30 font-mono">שעון ישראל 🇮🇱</span>
               </div>
-            )}
-          </div>
+            </>
+          )}
         </div>
       )}
 
