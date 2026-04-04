@@ -149,7 +149,7 @@ const HomeDashboard = ({ userName, onOpenTrade }: { userName: string; onOpenTrad
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h1 className="font-heading text-xl md:text-2xl font-bold text-foreground tracking-tight">
-            שלום, {userName}. <span className="text-primary">השוק פתוח.</span>
+            שלום, {userName}. <span className={marketStatus.open ? "text-primary" : "text-destructive"}>{marketStatus.label}</span>
           </h1>
           {userProfile.weakness && (
             <p className="text-xs text-accent/70 mt-1 font-medium">
