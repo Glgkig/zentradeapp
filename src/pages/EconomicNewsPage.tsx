@@ -165,7 +165,8 @@ const EconomicNewsPage = () => {
     fetchEvents();
   }, []);
 
-  // Filter events for selected date
+  // Filter events for selected date — only show upcoming (not past) unless viewing past dates
+  const now = new Date();
   const eventsForDate = allEvents.filter((ev) => {
     try {
       const eventDate = parseISO(ev.date);
@@ -173,6 +174,12 @@ const EconomicNewsPage = () => {
     } catch {
       return false;
     }
+  }).filter((ev) => {
+    // If viewing today, hide events that already happened
+    if (isSameDay(selectedDate, now)) {
+      return new Date(ev.date) >= now;
+    }
+    return true;
   });
 
   // Sort by time
