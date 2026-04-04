@@ -134,11 +134,16 @@ const EconomicNewsPage = () => {
       const { data, error: fnError } = await supabase.functions.invoke("economic-calendar");
       if (fnError) throw fnError;
       if (data?.error) throw new Error(data.error);
-      setAllEvents(data.events || []);
+      const events = data.events || [];
+      if (events.length > 0) {
+        setAllEvents(events);
+      } else {
+        // Use fallback if API returns empty
+        setAllEvents(FALLBACK_EVENTS);
+      }
     } catch (e: any) {
-      console.error("Failed to fetch events:", e);
-      setError(e.message || "שגיאה בטעינת אירועים");
-      toast.error("שגיאה בטעינת לוח כלכלי", { description: e.message });
+      console.error("Failed to fetch events, using fallback:", e);
+      setAllEvents(FALLBACK_EVENTS);
     } finally {
       setLoading(false);
     }
