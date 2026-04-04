@@ -44,8 +44,83 @@ const recentTrades = [
 ];
 
 
+/* ── Market Hours Logic (Israel Time) ── */
+function getMarketStatus(): { open: boolean; label: string } {
+  const now = new Date();
+  // Get current time in Israel
+  const israelStr = now.toLocaleString("en-US", { timeZone: "Asia/Jerusalem" });
+  const israel = new Date(israelStr);
+  const day = israel.getDay(); // 0=Sun, 6=Sat
+  const hours = israel.getHours();
+  const minutes = israel.getMinutes();
+  const timeNum = hours * 60 + minutes; // minutes since midnight
+
+  // Forex market: Sunday ~23:00 Israel → Friday ~23:00 Israel (winter) / 00:00 Sat (summer)
+  // US Stocks: Mon-Fri 16:30-23:00 Israel (summer) / 17:30-00:00 (winter)
+  // Crypto: 24/7
+
+  // Determine DST: Israel DST is last Friday of March → last Sunday of October
+  const year = israel.getFullYear();
+  const isIsraelDST = (() => {
+    // Rough Israel DST: late March to late October
+    const month = israel.getMonth(); // 0-based
+    if (month > 2 && month < 9) return true; // Apr-Sep always DST
+    if (month === 2) return israel.getDate() >= 25; // approximate
+    if (month === 9) return israel.getDate() <= 27; // approximate
+    return false;
+  })();
+
+  // US DST: second Sunday of March → first Sunday of November
+  const isUsDST = (() => {
+    const month = israel.getMonth();
+    if (month > 2 && month < 10) return true;
+    if (month === 2) return israel.getDate() >= 10;
+    if (month === 10) return israel.getDate() <= 3;
+    return false;
+  })();
+
+  // Forex hours (approximate): Open Sunday 23:00 (winter) / 00:00 Mon (summer) → Friday 23:00/00:00 Sat
+  const forexCloseHour = isUsDST ? 0 : 0; // Friday night / Saturday early AM
+  const isSaturday = day === 6;
+  const isFriday = day === 5;
+  const isSunday = day === 0;
+
+  // Weekend: Friday after ~23:00 Israel until Sunday ~23:00 Israel
+  const forexOpen = (() => {
+    if (isSaturday) return false;
+    if (isFriday && timeNum >= 23 * 60) return false; // after 23:00 Friday
+    if (isSunday && timeNum < 23 * 60) return false; // before 23:00 Sunday
+    return true;
+  })();
+
+  // US stock market hours in Israel time
+  const usOpenMin = isUsDST ? 16 * 60 + 30 : 17 * 60 + 30; // 16:30 or 17:30
+  const usCloseMin = isUsDST ? 23 * 60 : 24 * 60; // 23:00 or 00:00
+  const isWeekday = day >= 1 && day <= 5;
+  const usOpen = isWeekday && timeNum >= usOpenMin && timeNum < usCloseMin;
+
+  if (!forexOpen) {
+    return { open: false, label: "השוק סגור — סוף שבוע" };
+  }
+  if (usOpen) {
+    return { open: true, label: "השוק פתוח — וול סטריט פעיל" };
+  }
+  // Forex is open but US stocks closed
+  if (isWeekday) {
+    if (timeNum < usOpenMin) {
+      const hLeft = Math.floor((usOpenMin - timeNum) / 60);
+      const mLeft = (usOpenMin - timeNum) % 60;
+      return { open: true, label: `פורקס פתוח — וול סטריט נפתח בעוד ${hLeft > 0 ? hLeft + " שעות " : ""}${mLeft} דקות` };
+    }
+    return { open: true, label: "פורקס פתוח" };
+  }
+
+  return { open: true, label: "פורקס פתוח" };
+}
+
 /* ── Component ── */
 const HomeDashboard = ({ userName, onOpenTrade }: { userName: string; onOpenTrade?: () => void }) => {
+  const marketStatus = getMarketStatus();
   const { userProfile } = useUserProfile();
   const [aiBriefing, setAiBriefing] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
@@ -74,7 +149,7 @@ const HomeDashboard = ({ userName, onOpenTrade }: { userName: string; onOpenTrad
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h1 className="font-heading text-xl md:text-2xl font-bold text-foreground tracking-tight">
-            שלום, {userName}. <span className="text-primary">השוק פתוח.</span>
+            שלום, {userName}. <span className={marketStatus.open ? "text-primary" : "text-destructive"}>{marketStatus.label}</span>
           </h1>
           {userProfile.weakness && (
             <p className="text-xs text-accent/70 mt-1 font-medium">
