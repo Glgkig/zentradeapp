@@ -312,7 +312,7 @@ const EconomicNewsPage = () => {
   const [activeTab, setActiveTab] = useState<TabId>("reports");
 
   return (
-    <div className="h-full flex flex-col gap-3 p-2 md:p-4 overflow-hidden">
+    <div className="h-full flex flex-col gap-3 p-2 md:p-4 overflow-y-auto scrollbar-none">
       {/* ── Header ── */}
       <div className="flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
