@@ -23,7 +23,7 @@ import EconomicNewsPage from "@/pages/EconomicNewsPage";
 import ForensicTradeDrawer from "@/components/dashboard/ForensicTradeDrawer";
 import LiveTicker from "@/components/dashboard/LiveTicker";
 import AvatarPicker, { UserAvatar } from "@/components/AvatarPicker";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 
 import logoBinanceFull from "@/assets/logos/binance-full.png";
 import logoTradeLockerFull from "@/assets/logos/tradelocker-full.png";
@@ -315,10 +315,9 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               </button>
 
               {userMenu && (
-                <>
-                  <div className="fixed inset-0 z-[60] bg-black/40 md:bg-transparent" onClick={() => setUserMenu(false)} />
-                  {/* Desktop dropdown */}
-                  <div className="hidden md:block absolute left-0 top-full mt-2 w-56 z-[70] rounded-2xl border border-border bg-card shadow-2xl shadow-black/20 animate-in fade-in slide-in-from-top-1 duration-150 overflow-hidden">
+                <div className="hidden md:block">
+                  <div className="fixed inset-0 z-[60] bg-transparent" onClick={() => setUserMenu(false)} />
+                  <div className="absolute left-0 top-full mt-2 w-56 z-[70] rounded-2xl border border-border bg-card shadow-2xl shadow-black/20 animate-in fade-in slide-in-from-top-1 duration-150 overflow-hidden">
                     <UserMenuContent
                       userName={userName}
                       userEmail={userEmail}
@@ -329,20 +328,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                       onUpgrade={() => { setUserMenu(false); navigate("/pricing"); }}
                     />
                   </div>
-                  {/* Mobile bottom sheet */}
-                  <div className="md:hidden fixed bottom-0 left-0 right-0 z-[70] rounded-t-2xl border-t border-border bg-card shadow-2xl shadow-black/30 animate-in slide-in-from-bottom duration-200 overflow-hidden">
-                    <div className="mx-auto mt-2 mb-1 h-1 w-10 rounded-full bg-muted-foreground/20" />
-                    <UserMenuContent
-                      userName={userName}
-                      userEmail={userEmail}
-                      avatarUrl={profile?.avatar_url}
-                      onClose={() => setUserMenu(false)}
-                      onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
-                      onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
-                      onUpgrade={() => { setUserMenu(false); navigate("/pricing"); }}
-                    />
-                  </div>
-                </>
+                </div>
               )}
             </div>
           </div>
@@ -476,6 +462,8 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
           side="bottom"
           className="md:hidden z-[80] rounded-t-3xl border-white/[0.08] bg-[#111116] p-0 max-h-[85vh] overflow-y-auto"
         >
+          <SheetTitle className="sr-only">תפריט משתמש</SheetTitle>
+          <SheetDescription className="sr-only">גישה מהירה להגדרות, שדרוג החשבון והתנתקות.</SheetDescription>
           <div className="flex justify-center pt-3 pb-1"><div className="w-10 h-1 rounded-full bg-muted-foreground/15" /></div>
           <UserMenuContent
             userName={userName}
