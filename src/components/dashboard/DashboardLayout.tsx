@@ -667,10 +667,69 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
         platform: form.platform as "mt4" | "mt5",
         name: `ZenTrade-${form.login}`,
       });
-      toast.success("החשבון חובר בהצלחה! 🎉");
-      setConnectedAccounts(prev => [...prev, { id: account._id || account.id, name: account.name, login: form.login, server: form.serverName, platform: form.platform }]);
+      const accountId = account._id || account.id;
+      toast.success("החשבון חובר בהצלחה! 🎉 מסנכרן עסקאות...");
+      setConnectedAccounts(prev => [...prev, { id: accountId, name: account.name, login: form.login, server: form.serverName, platform: form.platform }]);
       setView("list");
       setForm({ platform: "mt5", serverName: "", login: "", password: "" });
+
+      // Sync trades from MetaApi into the trades table
+      if (user?.id) {
+        try {
+          const deals = await metaApi.getHistory(accountId);
+          // Filter only DEAL_TYPE_BUY / DEAL_TYPE_SELL closing deals with profit info
+          const closingDeals = deals.filter((d: any) =>
+            (d.type === "DEAL_TYPE_BUY" || d.type === "DEAL_TYPE_SELL") && d.entryType === "DEAL_ENTRY_OUT"
+          );
+
+          if (closingDeals.length > 0) {
+            const rows = closingDeals.map((d: any) => ({
+              user_id: user.id,
+              symbol: d.symbol || "UNKNOWN",
+              direction: d.type === "DEAL_TYPE_BUY" ? "long" : "short",
+              entry_price: d.price || 0,
+              entry_time: d.time || new Date().toISOString(),
+              exit_price: d.price || 0,
+              exit_time: d.time || new Date().toISOString(),
+              lot_size: d.volume || 0,
+              pnl: d.profit ?? 0,
+              status: "closed",
+              notes: `Synced from ${form.platform.toUpperCase()} via MetaApi`,
+              tags: ["metaapi-sync"],
+            }));
+            const { error: insertErr } = await supabase.from("trades").insert(rows);
+            if (insertErr) console.error("Trade sync error:", insertErr);
+            else toast.success(`${rows.length} עסקאות סונכרנו בהצלחה!`);
+          } else {
+            // Try simpler format — some accounts return deals as flat array
+            const allDeals = deals.filter((d: any) => d.profit !== undefined && d.symbol);
+            if (allDeals.length > 0) {
+              const rows = allDeals.map((d: any) => ({
+                user_id: user.id,
+                symbol: d.symbol,
+                direction: d.type?.includes("BUY") ? "long" : "short",
+                entry_price: d.price || 0,
+                entry_time: d.time || new Date().toISOString(),
+                exit_price: d.price || 0,
+                exit_time: d.time || new Date().toISOString(),
+                lot_size: d.volume || 0,
+                pnl: d.profit ?? 0,
+                status: "closed",
+                notes: `Synced from ${form.platform.toUpperCase()} via MetaApi`,
+                tags: ["metaapi-sync"],
+              }));
+              const { error: insertErr } = await supabase.from("trades").insert(rows);
+              if (insertErr) console.error("Trade sync error:", insertErr);
+              else toast.success(`${rows.length} עסקאות סונכרנו בהצלחה!`);
+            }
+          }
+          // Refresh dashboard data
+          queryClient.invalidateQueries({ queryKey: ["trades"] });
+        } catch (syncErr: any) {
+          console.error("Trade sync failed:", syncErr);
+          toast.info("החשבון חובר. סנכרון העסקאות ייתכן וייקח כמה דקות.");
+        }
+      }
     } catch (err: any) {
       toast.error(err?.message || "חיבור נכשל. בדוק את הפרטים ונסה שוב.");
     } finally {
