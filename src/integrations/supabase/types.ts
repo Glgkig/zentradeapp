@@ -227,6 +227,42 @@ export type Database = {
           },
         ]
       }
+      broker_accounts: {
+        Row: {
+          account_name: string | null
+          created_at: string
+          id: string
+          last_synced_at: string | null
+          login: string
+          metaapi_account_id: string
+          platform: string
+          server_name: string
+          user_id: string
+        }
+        Insert: {
+          account_name?: string | null
+          created_at?: string
+          id?: string
+          last_synced_at?: string | null
+          login: string
+          metaapi_account_id: string
+          platform?: string
+          server_name: string
+          user_id: string
+        }
+        Update: {
+          account_name?: string | null
+          created_at?: string
+          id?: string
+          last_synced_at?: string | null
+          login?: string
+          metaapi_account_id?: string
+          platform?: string
+          server_name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       economic_events: {
         Row: {
           actual_value: string | null
