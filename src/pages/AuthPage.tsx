@@ -27,11 +27,7 @@ import logoTopstep from "@/assets/logos/topstepx-full.png";
 import logoForex from "@/assets/logos/forex-full.png";
 import logoNinjaTrader from "@/assets/logos/ninjatrader-full.png";
 
-// Showcase screenshots
-import showcaseStats from "@/assets/showcase/dashboard-stats.jpg";
-import showcaseEconomic from "@/assets/showcase/dashboard-economic.jpg";
-import showcaseTax from "@/assets/showcase/dashboard-tax.jpg";
-import showcaseRisk from "@/assets/showcase/dashboard-risk.jpg";
+
 
 /* ===== Scroll Animation Hook ===== */
 const useScrollReveal = () => {
@@ -189,10 +185,32 @@ const AuthPage = () => {
               <div className="relative" style={{ perspective: "1200px" }}>
                 <div className="absolute -inset-6 bg-gradient-to-br from-primary/15 via-transparent to-accent/10 rounded-3xl blur-2xl" />
                 <div
-                  className="relative rounded-2xl border border-primary/30 overflow-hidden shadow-2xl shadow-primary/20"
+                  className="relative rounded-2xl border border-primary/30 overflow-hidden shadow-2xl shadow-primary/20 bg-card/50 backdrop-blur-sm p-8 md:p-12"
                   style={{ transform: "rotateY(-6deg) rotateX(2deg)" }}
                 >
-                  <img src={showcaseStats} alt="ZenTrade Dashboard" className="w-full h-auto" />
+                  <div className="space-y-4 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <span className="font-heading text-lg md:text-xl font-bold text-primary">ZenTrade Dashboard</span>
+                      <img src={zentradeLogo} alt="ZenTrade" className="h-8 w-8 rounded-lg" />
+                    </div>
+                    <div className="grid grid-cols-3 gap-3">
+                      {[
+                        { label: "Win Rate", value: "67.4%", color: "text-emerald-400" },
+                        { label: "Profit Factor", value: "2.31", color: "text-primary" },
+                        { label: "Expectancy", value: "+$142", color: "text-emerald-400" },
+                      ].map((stat) => (
+                        <div key={stat.label} className="rounded-xl border border-border/30 bg-background/40 p-3 text-center">
+                          <p className={`text-lg md:text-xl font-bold ${stat.color}`}>{stat.value}</p>
+                          <p className="text-[10px] text-foreground/50 mt-1">{stat.label}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="h-24 rounded-lg border border-border/20 bg-background/30 flex items-end justify-between px-3 pb-2 gap-1">
+                      {[40, 55, 35, 70, 60, 80, 65, 90, 75, 85, 95, 88].map((h, i) => (
+                        <div key={i} className={`w-full rounded-t ${h > 60 ? "bg-primary/60" : "bg-destructive/40"}`} style={{ height: `${h}%` }} />
+                      ))}
+                    </div>
+                  </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent pointer-events-none" />
                 </div>
               </div>
@@ -330,33 +348,47 @@ const AuthPage = () => {
               ))}
             </div>
 
-            {/* Floating screenshot stack */}
+            {/* Feature detail cards */}
             <RevealSection delay={200} className="lg:col-span-3">
-              <div className="relative h-[400px] md:h-[500px]" style={{ perspective: "1200px" }}>
+              <div className="relative min-h-[400px] md:min-h-[500px]">
                 {showcaseItems.map((item, i) => (
                   <div
                     key={item.title}
-                    className={`absolute inset-0 rounded-2xl border overflow-hidden shadow-2xl transition-all duration-700 ease-out ${
+                    className={`absolute inset-0 rounded-2xl border overflow-hidden transition-all duration-500 ease-out ${
                       activeShowcase === i
-                        ? "opacity-100 z-30 border-primary/40 shadow-primary/20 scale-100"
-                        : i < activeShowcase
-                        ? "opacity-30 z-10 border-border/20 scale-[0.92] translate-y-4"
-                        : "opacity-30 z-10 border-border/20 scale-[0.92] -translate-y-4"
+                        ? "opacity-100 z-30 border-primary/40 shadow-2xl shadow-primary/10 scale-100"
+                        : "opacity-0 z-10 scale-95 pointer-events-none"
                     }`}
-                    style={{
-                      transform: activeShowcase === i
-                        ? "rotateY(-4deg) rotateX(1deg) scale(1)"
-                        : `rotateY(-8deg) rotateX(3deg) scale(0.92) translateY(${(i - activeShowcase) * 20}px)`,
-                    }}
                   >
-                    <img src={item.image} alt={item.title} className="w-full h-full object-cover object-top" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent pointer-events-none" />
-                    {activeShowcase === i && (
-                      <div className="absolute bottom-4 right-4 left-4 rounded-xl bg-background/80 backdrop-blur-xl border border-primary/20 p-3 md:p-4">
-                        <p className="text-xs md:text-sm font-semibold text-primary">{item.title}</p>
-                        <p className="text-[10px] md:text-xs text-foreground/60 mt-1">{item.callout}</p>
+                    <div className={`h-full bg-gradient-to-br ${item.accent} bg-card/50 backdrop-blur-sm p-6 md:p-8 flex flex-col`}>
+                      {/* Header */}
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/20 text-primary border border-primary/30">
+                          {item.icon}
+                        </div>
+                        <div>
+                          <h3 className="font-heading text-lg md:text-xl font-bold text-foreground">{item.title}</h3>
+                          <p className="text-xs text-foreground/50 mt-0.5">{item.callout}</p>
+                        </div>
                       </div>
-                    )}
+
+                      {/* Feature list */}
+                      <div className="space-y-3 flex-1">
+                        {item.features.map((feature, fi) => (
+                          <div
+                            key={fi}
+                            className="flex items-start gap-3 rounded-lg border border-border/30 bg-background/40 backdrop-blur-sm p-3 transition-all hover:border-primary/30 hover:bg-background/60"
+                          >
+                            <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/20 text-primary">
+                              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              </svg>
+                            </div>
+                            <span className="text-xs md:text-sm text-foreground/80 leading-relaxed">{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -796,28 +828,60 @@ const showcaseItems = [
     desc: "תיעוד מקיף ל-SMC, ICT, Price Action, Order Flow, קווי מגמה, ותמיכה.",
     callout: "כל אסטרטגיה. כל סטאפ. הכל מתועד ומנותח.",
     icon: <BookOpen className="h-5 w-5" />,
-    image: showcaseStats,
+    features: [
+      "תיעוד אוטומטי של סטאפים: BOS, CHoCH, FVG, Order Blocks",
+      "זיהוי Liquidity Sweeps ו-Inducement Zones",
+      "מעקב אחרי Entry Models: Optimal Trade Entry, Breaker Blocks",
+      "תמיכה ב-Multi-Timeframe Analysis — מ-Monthly ועד 1M",
+      "תיוג חכם: Session (London/NY), Kill Zones, News Events",
+      "השוואת ביצועים בין אסטרטגיות שונות לאורך זמן",
+    ],
+    accent: "from-cyan-500/20 to-blue-600/20",
   },
   {
     title: "ניהול סיכונים חכם",
     desc: "ה-Kill-Switch שלכם מופעל. הגנה אוטומטית מפני Revenge Trading.",
     callout: "Kill-Switch פעיל — הגנת חשבון אוטומטית 24/7.",
     icon: <Shield className="h-5 w-5" />,
-    image: showcaseRisk,
+    features: [
+      "Kill-Switch אוטומטי — נעילת מסחר אחרי הפסד יומי מוגדר",
+      "התראות Tilt Detection בזמן אמת על סחר רגשי",
+      "מעקב Max Drawdown יומי / שבועי / חודשי",
+      "הגבלת כמות עסקאות יומית (Over-Trading Protection)",
+      "דוח סיכונים אישי: Risk/Reward Ratio, Win Rate, Expectancy",
+      "FOMO Guard — חסימה אוטומטית בזמני חדשות High-Impact",
+    ],
+    accent: "from-rose-500/20 to-red-600/20",
   },
   {
     title: "דוחות ביצועים מתקדמים",
     desc: "כל הדאטה שלכם, מכל הברוקרים, במקום אחד.",
     callout: "ניתוח Win Rate, Profit Factor, Drawdown ועוד.",
     icon: <BarChart3 className="h-5 w-5" />,
-    image: showcaseEconomic,
+    features: [
+      "Heatmap — ביצועים לפי יום ושעה (מתי אתם הכי רווחיים?)",
+      "Profit Factor, Expectancy, Sharpe Ratio — הכל אוטומטי",
+      "השוואת Long vs Short — ביצועים לפי כיוון עסקה",
+      "ניתוח Win Rate לפי סטאפ, Session, ו-Timeframe",
+      "גרפי Equity Curve עם Drawdown Overlay",
+      "דוחות שבועיים/חודשיים מוכנים לייצוא PDF",
+    ],
+    accent: "from-emerald-500/20 to-green-600/20",
   },
   {
     title: "מחשבון מס ישראלי",
     desc: "חישוב 25% מס רווחי הון — אוטומטי, מדויק, עם דוח PDF.",
     callout: "חסכו שעות של חישובים — הכל אוטומטי.",
     icon: <Calculator className="h-5 w-5" />,
-    image: showcaseTax,
+    features: [
+      "חישוב 25% מס רווחי הון — לפי חוק ישראלי",
+      "קיזוז הפסדים אוטומטי מול רווחים (Netting)",
+      "הפחתת עמלות ברוקר מהרווח החייב במס",
+      "ייצוא דוח PDF מקצועי — מוכן לרואה חשבון",
+      "תמיכה במט\"ח, מניות, קריפטו ו-CFDs",
+      "חישוב שיעור מס אפקטיבי בזמן אמת",
+    ],
+    accent: "from-yellow-500/20 to-amber-600/20",
   },
 ];
 
