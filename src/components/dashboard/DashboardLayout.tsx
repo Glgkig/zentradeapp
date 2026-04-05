@@ -5,7 +5,7 @@ import { useSubscription, POLAR_URL } from "@/contexts/SubscriptionContext";
 import { useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, BookOpen, Bot, ShieldCheck, ChevronLeft,
-  LogOut, ChevronDown, Plug, Menu, X, Settings, Sun, Moon, Zap,
+  LogOut, ChevronDown, Plug, Menu, X, Settings, Sun, Moon, Zap, EyeOff,
   Crosshair, PieChart, History, CheckCircle2, Flame, Eye, Crown, Star, Sparkles, Newspaper,
   Calculator, Plus, ShieldAlert, TrendingUp, Brain, Clock, CandlestickChart, BarChart3, CalendarClock, LineChart, Shield,
 } from "lucide-react";
@@ -598,6 +598,7 @@ const UserMenuContent = ({ userName, userEmail, avatarUrl, onClose, onSettings, 
 const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?: boolean }) => {
   const [view, setView] = useState<"list" | "connect">("list");
   const [connecting, setConnecting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [connectedAccounts, setConnectedAccounts] = useState<Array<{ id: string; name: string; login: string; server: string; platform: string }>>([]);
   const [form, setForm] = useState({ platform: "mt5", serverName: "", login: "", password: "" });
   const [serverSuggestionsOpen, setServerSuggestionsOpen] = useState(false);
@@ -771,14 +772,23 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
           {/* Password */}
           <div>
             <label className="block text-[11px] font-semibold text-foreground/60 mb-1.5">סיסמה</label>
-            <input
-              type="password"
-              value={form.password}
-              onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-              placeholder="סיסמת החשבון שלך"
-              dir="ltr"
-              className="w-full rounded-xl border border-border/30 bg-secondary/20 px-4 py-2.5 text-[12px] text-foreground font-mono placeholder:text-muted-foreground/20 focus:border-primary/30 focus:bg-primary/[0.02] focus:outline-none transition-all"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={form.password}
+                onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+                placeholder="סיסמת החשבון שלך"
+                dir="ltr"
+                className="w-full rounded-xl border border-border/30 bg-secondary/20 px-4 py-2.5 pr-10 text-[12px] text-foreground font-mono placeholder:text-muted-foreground/20 focus:border-primary/30 focus:bg-primary/[0.02] focus:outline-none transition-all"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(v => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/40 hover:text-foreground transition-colors"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
 
           {/* Connect Button */}
