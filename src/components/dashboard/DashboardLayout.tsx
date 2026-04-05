@@ -338,91 +338,103 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
         <div
           className={`md:hidden relative z-40 origin-top overflow-hidden border-b border-border/50 bg-card/95 backdrop-blur-xl shadow-lg transition-all duration-300 ease-out ${
             mobileNavOpen
-              ? "max-h-[620px] translate-y-0 opacity-100"
+              ? "max-h-[85vh] translate-y-0 opacity-100"
               : "pointer-events-none max-h-0 -translate-y-2 opacity-0 border-b-0"
           }`}
         >
-          <div className={`px-3 py-4 transition-transform duration-300 ease-out ${mobileNavOpen ? "translate-y-0" : "-translate-y-2"}`}>
-            <div className="space-y-1">
-              {allNavItems.map((item, i) => {
-                const active = activeNav === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => handleNav(item.id)}
-                    style={{ transitionDelay: mobileNavOpen ? `${i * 35}ms` : "0ms" }}
-                    className={`haptic-press flex w-full items-center gap-3 rounded-xl px-3 py-3 text-[13px] font-medium min-h-[48px] transition-all duration-300 ${
-                      mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
-                    } ${
-                      active ? "bg-primary/10 text-primary border border-primary/15" : "text-muted-foreground/60 hover:bg-secondary/50 hover:text-foreground border border-transparent"
-                    }`}
-                  >
-                    <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${active ? "bg-primary/15" : "bg-secondary/50"}`}>
-                      <item.icon className={`h-4 w-4 ${active ? "text-primary" : "text-muted-foreground/30"}`} />
-                    </div>
-                    {item.label}
-                  </button>
-                );
-              })}
-              <div className="my-2 h-px bg-border/30" />
-              {/* Mobile-only: Theme + Zen */}
-              <div className="flex gap-2 px-1">
+          <div className={`px-3 py-3 overflow-y-auto max-h-[80vh] scrollbar-none transition-transform duration-300 ease-out ${mobileNavOpen ? "translate-y-0" : "-translate-y-2"}`}>
+            {/* Nav sections with labels */}
+            {navSections.map((section, si) => (
+              <div key={section.label} className={si > 0 ? "mt-3" : ""}>
+                <p className="text-2xs font-semibold text-muted-foreground/30 uppercase tracking-[0.12em] px-3 mb-1.5">{section.label}</p>
+                <div className="space-y-0.5">
+                  {section.items.map((item, i) => {
+                    const active = activeNav === item.id;
+                    const delay = (si * section.items.length + i) * 30;
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => handleNav(item.id)}
+                        style={{ transitionDelay: mobileNavOpen ? `${delay}ms` : "0ms" }}
+                        className={`haptic-press flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium min-h-[44px] transition-all duration-300 ${
+                          mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
+                        } ${
+                          active ? "bg-primary/10 text-primary border border-primary/15" : "text-muted-foreground/60 hover:bg-secondary/50 hover:text-foreground border border-transparent"
+                        }`}
+                      >
+                        <div className={`flex h-7 w-7 items-center justify-center rounded-lg ${active ? "bg-primary/15" : "bg-secondary/50"}`}>
+                          <item.icon className={`h-3.5 w-3.5 ${active ? "text-primary" : "text-muted-foreground/30"}`} />
+                        </div>
+                        {item.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+
+            {/* Utilities row */}
+            <div className="mt-3 pt-3 border-t border-border/30">
+              <p className="text-2xs font-semibold text-muted-foreground/30 uppercase tracking-[0.12em] px-3 mb-1.5">מהיר</p>
+              <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => setDark(!dark)}
-                  style={{ transitionDelay: mobileNavOpen ? `${allNavItems.length * 35}ms` : "0ms" }}
-                  className={`haptic-press flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-3 text-[13px] font-medium min-h-[48px] border border-border/30 bg-secondary/30 text-muted-foreground/60 hover:bg-secondary/50 transition-all duration-300 ${
+                  style={{ transitionDelay: mobileNavOpen ? `${allNavItems.length * 30}ms` : "0ms" }}
+                  className={`haptic-press flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[12px] font-medium min-h-[44px] border border-border/30 bg-secondary/30 text-muted-foreground/60 hover:bg-secondary/50 transition-all duration-300 ${
                     mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
                   }`}
                 >
-                  {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-                  {dark ? "מצב בהיר" : "מצב כהה"}
+                  {dark ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+                  {dark ? "בהיר" : "כהה"}
                 </button>
                 <button
                   onClick={() => { setMobileNavOpen(false); setZenMode(!zenMode); }}
-                  style={{ transitionDelay: mobileNavOpen ? `${(allNavItems.length + 0.5) * 35}ms` : "0ms" }}
-                  className={`haptic-press flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-3 text-[13px] font-medium min-h-[48px] border transition-all duration-300 ${
-                    zenMode
-                      ? "border-primary/30 bg-primary/10 text-primary"
-                      : "border-border/30 bg-secondary/30 text-muted-foreground/60 hover:bg-secondary/50"
+                  style={{ transitionDelay: mobileNavOpen ? `${(allNavItems.length + 0.5) * 30}ms` : "0ms" }}
+                  className={`haptic-press flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[12px] font-medium min-h-[44px] border transition-all duration-300 ${
+                    zenMode ? "border-primary/30 bg-primary/10 text-primary" : "border-border/30 bg-secondary/30 text-muted-foreground/60 hover:bg-secondary/50"
                   } ${mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"}`}
                 >
-                  <Eye className="h-4 w-4" />
+                  <Eye className="h-3.5 w-3.5" />
                   פוקוס
                 </button>
               </div>
+            </div>
+
+            {/* Actions */}
+            <div className="mt-2 space-y-1">
               <button
                 onClick={() => { setMobileNavOpen(false); setBrokerModal(true); }}
-                style={{ transitionDelay: mobileNavOpen ? `${allNavItems.length * 35}ms` : "0ms" }}
-                className={`haptic-press flex w-full items-center gap-3 rounded-xl px-3 py-3 text-[13px] font-medium text-muted-foreground/60 min-h-[48px] hover:bg-secondary/50 transition-all duration-300 ${
+                style={{ transitionDelay: mobileNavOpen ? `${(allNavItems.length + 1) * 30}ms` : "0ms" }}
+                className={`haptic-press flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium text-muted-foreground/60 min-h-[44px] hover:bg-secondary/50 transition-all duration-300 ${
                   mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
                 }`}
               >
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary/50">
-                  <Plug className="h-4 w-4 text-muted-foreground/30" />
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-secondary/50">
+                  <Plug className="h-3.5 w-3.5 text-muted-foreground/30" />
                 </div>
                 חבר ברוקר
                 <span className="mr-auto rounded-lg bg-primary/10 border border-primary/15 px-1.5 py-0.5 text-2xs font-bold text-primary font-mono">2</span>
               </button>
               <button
                 onClick={() => { setMobileNavOpen(false); navigate("/pricing"); }}
-                style={{ transitionDelay: mobileNavOpen ? `${(allNavItems.length + 1) * 35}ms` : "0ms" }}
-                className={`haptic-press flex w-full items-center gap-3 rounded-xl px-3 py-3 text-[13px] font-bold text-accent min-h-[48px] bg-accent/[0.06] border border-accent/15 hover:bg-accent/10 transition-all duration-300 gold-glow ${
+                style={{ transitionDelay: mobileNavOpen ? `${(allNavItems.length + 2) * 30}ms` : "0ms" }}
+                className={`haptic-press flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-bold text-accent min-h-[44px] bg-accent/[0.06] border border-accent/15 hover:bg-accent/10 transition-all duration-300 gold-glow ${
                   mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
                 }`}
               >
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/15">
-                  <Crown className="h-4 w-4 text-accent" />
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent/15">
+                  <Crown className="h-3.5 w-3.5 text-accent" />
                 </div>
-                שדרג תוכנית — PRO
+                שדרג PRO
               </button>
               <button
                 onClick={async () => { setMobileNavOpen(false); await signOut(); navigate("/"); }}
-                style={{ transitionDelay: mobileNavOpen ? `${(allNavItems.length + 2) * 35}ms` : "0ms" }}
-                className={`haptic-press flex w-full items-center gap-3 rounded-xl px-3 py-3 text-[13px] font-medium text-destructive/50 min-h-[48px] hover:bg-destructive/[0.05] transition-all duration-300 ${
+                style={{ transitionDelay: mobileNavOpen ? `${(allNavItems.length + 3) * 30}ms` : "0ms" }}
+                className={`haptic-press flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium text-destructive/50 min-h-[44px] hover:bg-destructive/[0.05] transition-all duration-300 ${
                   mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
                 }`}
               >
-                <LogOut className="h-4 w-4" />
+                <LogOut className="h-3.5 w-3.5" />
                 התנתק
               </button>
             </div>
