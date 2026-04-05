@@ -330,33 +330,47 @@ const AuthPage = () => {
               ))}
             </div>
 
-            {/* Floating screenshot stack */}
+            {/* Feature detail cards */}
             <RevealSection delay={200} className="lg:col-span-3">
-              <div className="relative h-[400px] md:h-[500px]" style={{ perspective: "1200px" }}>
+              <div className="relative min-h-[400px] md:min-h-[500px]">
                 {showcaseItems.map((item, i) => (
                   <div
                     key={item.title}
-                    className={`absolute inset-0 rounded-2xl border overflow-hidden shadow-2xl transition-all duration-700 ease-out ${
+                    className={`absolute inset-0 rounded-2xl border overflow-hidden transition-all duration-500 ease-out ${
                       activeShowcase === i
-                        ? "opacity-100 z-30 border-primary/40 shadow-primary/20 scale-100"
-                        : i < activeShowcase
-                        ? "opacity-30 z-10 border-border/20 scale-[0.92] translate-y-4"
-                        : "opacity-30 z-10 border-border/20 scale-[0.92] -translate-y-4"
+                        ? "opacity-100 z-30 border-primary/40 shadow-2xl shadow-primary/10 scale-100"
+                        : "opacity-0 z-10 scale-95 pointer-events-none"
                     }`}
-                    style={{
-                      transform: activeShowcase === i
-                        ? "rotateY(-4deg) rotateX(1deg) scale(1)"
-                        : `rotateY(-8deg) rotateX(3deg) scale(0.92) translateY(${(i - activeShowcase) * 20}px)`,
-                    }}
                   >
-                    <img src={item.image} alt={item.title} className="w-full h-full object-cover object-top" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent pointer-events-none" />
-                    {activeShowcase === i && (
-                      <div className="absolute bottom-4 right-4 left-4 rounded-xl bg-background/80 backdrop-blur-xl border border-primary/20 p-3 md:p-4">
-                        <p className="text-xs md:text-sm font-semibold text-primary">{item.title}</p>
-                        <p className="text-[10px] md:text-xs text-foreground/60 mt-1">{item.callout}</p>
+                    <div className={`h-full bg-gradient-to-br ${item.accent} bg-card/50 backdrop-blur-sm p-6 md:p-8 flex flex-col`}>
+                      {/* Header */}
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/20 text-primary border border-primary/30">
+                          {item.icon}
+                        </div>
+                        <div>
+                          <h3 className="font-heading text-lg md:text-xl font-bold text-foreground">{item.title}</h3>
+                          <p className="text-xs text-foreground/50 mt-0.5">{item.callout}</p>
+                        </div>
                       </div>
-                    )}
+
+                      {/* Feature list */}
+                      <div className="space-y-3 flex-1">
+                        {item.features.map((feature, fi) => (
+                          <div
+                            key={fi}
+                            className="flex items-start gap-3 rounded-lg border border-border/30 bg-background/40 backdrop-blur-sm p-3 transition-all hover:border-primary/30 hover:bg-background/60"
+                          >
+                            <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/20 text-primary">
+                              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              </svg>
+                            </div>
+                            <span className="text-xs md:text-sm text-foreground/80 leading-relaxed">{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
