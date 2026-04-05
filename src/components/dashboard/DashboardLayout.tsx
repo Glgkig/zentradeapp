@@ -253,36 +253,36 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Bodyguard Badge */}
-            <div className="hidden sm:flex items-center gap-1.5 rounded-xl border border-primary/15 bg-primary/[0.06] px-3 py-1.5 cyan-glow">
+            {/* Bodyguard Badge — desktop only */}
+            <div className="hidden md:flex items-center gap-1.5 rounded-xl border border-primary/15 bg-primary/[0.06] px-3 py-1.5 cyan-glow">
               <ShieldAlert className="h-3 w-3 text-primary" />
               <span className="text-2xs font-bold text-primary font-mono">Bodyguard: ACTIVE 🛡️</span>
             </div>
 
-            {/* Upgrade CTA */}
+            {/* Upgrade CTA — desktop only */}
             {!isPro && (
               <button
                 onClick={() => navigate("/pricing")}
-                className="flex haptic-press items-center gap-1 rounded-lg border border-accent/20 bg-accent/[0.06] px-2 py-1 text-[10px] font-bold text-accent transition-all hover:bg-accent/15 hover:border-accent/30"
+                className="hidden md:flex haptic-press items-center gap-1 rounded-lg border border-accent/20 bg-accent/[0.06] px-2 py-1 text-[10px] font-bold text-accent transition-all hover:bg-accent/15 hover:border-accent/30"
               >
                 <Crown className="h-2.5 w-2.5" />
-                <span className="hidden sm:inline">שדרג PRO</span>
+                <span>שדרג PRO</span>
               </button>
             )}
 
             {/* New Trade CTA */}
             <button
               onClick={() => setTradeDrawerOpen(true)}
-              className="haptic-press flex items-center gap-1.5 rounded-xl bg-accent/15 border border-accent/25 px-3 py-1.5 text-2xs font-bold text-accent transition-all hover:bg-accent/25 gold-glow"
+              className="haptic-press flex items-center gap-1.5 rounded-xl bg-accent/15 border border-accent/25 px-2.5 py-1.5 md:px-3 text-2xs font-bold text-accent transition-all hover:bg-accent/25 gold-glow"
             >
               <Plus className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">עסקה חדשה</span>
             </button>
 
-            {/* Zen */}
+            {/* Zen — desktop only (mobile gets floating btn) */}
             <button
               onClick={() => setZenMode(!zenMode)}
-              className={`haptic-press flex h-9 w-9 items-center justify-center rounded-xl border transition-all ${
+              className={`hidden md:flex haptic-press h-9 w-9 items-center justify-center rounded-xl border transition-all ${
                 zenMode
                   ? "border-primary/30 bg-primary/10 text-primary"
                   : "border-border/50 bg-secondary/50 text-muted-foreground hover:text-primary hover:border-primary/15"
@@ -292,10 +292,10 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               <Eye className="h-4 w-4" />
             </button>
 
-            {/* Theme */}
+            {/* Theme — desktop only */}
             <button
               onClick={() => setDark(!dark)}
-              className="haptic-press flex h-9 w-9 items-center justify-center rounded-xl border border-border/50 bg-secondary/50 text-muted-foreground hover:text-primary hover:border-primary/20 transition-all duration-300"
+              className="hidden md:flex haptic-press h-9 w-9 items-center justify-center rounded-xl border border-border/50 bg-secondary/50 text-muted-foreground hover:text-primary hover:border-primary/20 transition-all duration-300"
             >
               {dark ? <Sun className="h-4 w-4 transition-transform duration-300 rotate-0" /> : <Moon className="h-4 w-4 transition-transform duration-300 rotate-0" />}
             </button>
@@ -365,6 +365,31 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                 );
               })}
               <div className="my-2 h-px bg-border/30" />
+              {/* Mobile-only: Theme + Zen */}
+              <div className="flex gap-2 px-1">
+                <button
+                  onClick={() => setDark(!dark)}
+                  style={{ transitionDelay: mobileNavOpen ? `${allNavItems.length * 35}ms` : "0ms" }}
+                  className={`haptic-press flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-3 text-[13px] font-medium min-h-[48px] border border-border/30 bg-secondary/30 text-muted-foreground/60 hover:bg-secondary/50 transition-all duration-300 ${
+                    mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
+                  }`}
+                >
+                  {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                  {dark ? "מצב בהיר" : "מצב כהה"}
+                </button>
+                <button
+                  onClick={() => { setMobileNavOpen(false); setZenMode(!zenMode); }}
+                  style={{ transitionDelay: mobileNavOpen ? `${(allNavItems.length + 0.5) * 35}ms` : "0ms" }}
+                  className={`haptic-press flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-3 text-[13px] font-medium min-h-[48px] border transition-all duration-300 ${
+                    zenMode
+                      ? "border-primary/30 bg-primary/10 text-primary"
+                      : "border-border/30 bg-secondary/30 text-muted-foreground/60 hover:bg-secondary/50"
+                  } ${mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"}`}
+                >
+                  <Eye className="h-4 w-4" />
+                  פוקוס
+                </button>
+              </div>
               <button
                 onClick={() => { setMobileNavOpen(false); setBrokerModal(true); }}
                 style={{ transitionDelay: mobileNavOpen ? `${allNavItems.length * 35}ms` : "0ms" }}
