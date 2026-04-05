@@ -312,7 +312,7 @@ const EconomicNewsPage = () => {
   const [activeTab, setActiveTab] = useState<TabId>("reports");
 
   return (
-    <div className="h-full flex flex-col gap-3 p-2 md:p-4 overflow-y-auto scrollbar-none">
+    <div className="min-h-full flex flex-col gap-3 p-2 md:p-4">
       {/* ── Header ── */}
       <div className="flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
@@ -382,7 +382,7 @@ const EconomicNewsPage = () => {
 
       {/* ── Tab: Reports (Today's Alerts + Upcoming) ── */}
       {activeTab === "reports" && (
-        <div className="flex-1 flex flex-col gap-3 min-h-0 overflow-y-auto scrollbar-none">
+        <div className="flex flex-col gap-3 pb-6">
           {loading ? (
             <div className="flex flex-col items-center justify-center flex-1 text-center p-4">
               <Loader2 className="h-8 w-8 text-destructive/40 animate-spin mb-2" />
