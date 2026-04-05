@@ -6,7 +6,7 @@ import {
   LayoutDashboard, BookOpen, Bot, ShieldCheck,
   LogOut, ChevronDown, Plug, Menu, X, Settings, Sun, Moon, Zap,
   Crosshair, PieChart, History, CheckCircle2, Flame, Eye, Crown, Star, Sparkles, Newspaper,
-  Calculator, Plus, ShieldAlert,
+  Calculator, Plus, ShieldAlert, TrendingUp, Brain, Clock, CandlestickChart, BarChart3, CalendarClock, LineChart, Shield,
 } from "lucide-react";
 import zentradeLogo from "@/assets/zentrade-z-logo.png";
 import SettingsPage from "@/pages/SettingsPage";
@@ -40,21 +40,21 @@ const navSections = [
   {
     label: "ניווט",
     items: [
-      { id: "dashboard", label: "דשבורד", icon: LayoutDashboard },
-      { id: "setups", label: "סטאפים", icon: Crosshair },
+      { id: "dashboard", label: "דשבורד", icon: TrendingUp },
+      { id: "setups", label: "סטאפים", icon: CandlestickChart },
       { id: "journal", label: "יומן פורנזי", icon: BookOpen },
       { id: "tax", label: "מחשבון מס", icon: Calculator },
-      { id: "stats", label: "סטטיסטיקות", icon: PieChart },
-      { id: "news", label: "חדשות כלכליות", icon: Newspaper },
+      { id: "stats", label: "סטטיסטיקות", icon: BarChart3 },
+      { id: "news", label: "חדשות כלכליות", icon: CalendarClock },
     ],
   },
   {
     label: "כלים",
     items: [
-      { id: "tradingview", label: "גרף מסחר", icon: Eye },
-      { id: "mentor", label: "מנטור AI", icon: Bot },
-      { id: "backtesting", label: "סימולטור", icon: History },
-      { id: "protection", label: "הגנה", icon: ShieldCheck },
+      { id: "tradingview", label: "גרף מסחר", icon: LineChart },
+      { id: "mentor", label: "מנטור AI", icon: Brain },
+      { id: "backtesting", label: "סימולטור", icon: Clock },
+      { id: "protection", label: "הגנה", icon: Shield },
       { id: "settings", label: "הגדרות", icon: Settings },
     ],
   },
