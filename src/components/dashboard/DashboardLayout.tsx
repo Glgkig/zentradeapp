@@ -772,14 +772,23 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
           {/* Password */}
           <div>
             <label className="block text-[11px] font-semibold text-foreground/60 mb-1.5">סיסמה</label>
-            <input
-              type="password"
-              value={form.password}
-              onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-              placeholder="סיסמת החשבון שלך"
-              dir="ltr"
-              className="w-full rounded-xl border border-border/30 bg-secondary/20 px-4 py-2.5 text-[12px] text-foreground font-mono placeholder:text-muted-foreground/20 focus:border-primary/30 focus:bg-primary/[0.02] focus:outline-none transition-all"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={form.password}
+                onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+                placeholder="סיסמת החשבון שלך"
+                dir="ltr"
+                className="w-full rounded-xl border border-border/30 bg-secondary/20 px-4 py-2.5 pr-10 text-[12px] text-foreground font-mono placeholder:text-muted-foreground/20 focus:border-primary/30 focus:bg-primary/[0.02] focus:outline-none transition-all"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(v => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/40 hover:text-foreground transition-colors"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
 
           {/* Connect Button */}
