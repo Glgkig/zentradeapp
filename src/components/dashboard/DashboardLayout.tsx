@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription, POLAR_URL } from "@/contexts/SubscriptionContext";
 import { useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard, BookOpen, Bot, ShieldCheck,
+  LayoutDashboard, BookOpen, Bot, ShieldCheck, ChevronLeft,
   LogOut, ChevronDown, Plug, Menu, X, Settings, Sun, Moon, Zap,
   Crosshair, PieChart, History, CheckCircle2, Flame, Eye, Crown, Star, Sparkles, Newspaper,
   Calculator, Plus, ShieldAlert, TrendingUp, Brain, Clock, CandlestickChart, BarChart3, CalendarClock, LineChart, Shield,
