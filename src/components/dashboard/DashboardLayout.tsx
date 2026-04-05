@@ -646,6 +646,115 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  const connected = brokers.filter(b => b.connected);
+  const disconnected = brokers.filter(b => !b.connected);
+
+  const handleConnect = async () => {
+    if (!form.serverName || !form.login || !form.password) {
+      toast.error("נא למלא את כל השדות");
+      return;
+    }
+    setConnecting(true);
+    try {
+      const { metaApi } = await import("@/utils/metaApi");
+      const account = await metaApi.addAccount({
+        login: form.login,
+        password: form.password,
+        serverName: form.serverName,
+        platform: form.platform as "mt4" | "mt5",
+        name: `ZenTrade-${form.login}`,
+      });
+      toast.success("החשבון חובר בהצלחה! 🎉");
+      setConnectedAccounts(prev => [...prev, { id: account._id || account.id, name: account.name, login: form.login, server: form.serverName, platform: form.platform }]);
+      setView("list");
+      setForm({ platform: "mt5", serverName: "", login: "", password: "" });
+    } catch (err: any) {
+      toast.error(err?.message || "חיבור נכשל. בדוק את הפרטים ונסה שוב.");
+    } finally {
+      setConnecting(false);
+    }
+  };
+
+  return (
+    <div className={mobile ? "" : "w-full max-w-lg rounded-3xl border border-border/50 bg-card shadow-2xl shadow-black/30 animate-in fade-in slide-in-from-bottom-2 duration-200 overflow-hidden"}>
+      {/* Header */}
+      <div className="relative px-6 pt-6 pb-5 overflow-hidden">
+        <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-[200px] h-[200px] bg-primary/[0.06] rounded-full blur-[80px] pointer-events-none" />
+        <div className="relative flex items-center justify-between">
+          <div className="flex items-center gap-3.5">
+            <div className="relative">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20">
+                <Plug className="h-5 w-5 text-primary" />
+              </div>
+            </div>
+            <div>
+              <h2 className="text-[15px] font-bold text-foreground">חיבור ברוקר</h2>
+              <p className="text-[10px] text-muted-foreground/40 font-mono mt-0.5">{connectedAccounts.length} חשבונות מחוברים</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-xl bg-muted/30 text-muted-foreground/40 hover:bg-muted/50 hover:text-foreground transition-all">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+
+      {view === "connect" ? (
+        <div className="px-6 pb-6 space-y-4" dir="rtl">
+          <button onClick={() => setView("list")} className="flex items-center gap-1.5 text-[11px] text-muted-foreground/50 hover:text-foreground transition-colors mb-2">
+            <ChevronLeft className="h-3.5 w-3.5 rotate-180" />
+            <span>חזרה לרשימה</span>
+          </button>
+
+          {/* Platform Select */}
+          <div>
+            <label className="block text-[11px] font-semibold text-foreground/60 mb-1.5">פלטפורמה</label>
+            <div className="flex gap-2">
+              {[{ value: "mt4", label: "MT4" }, { value: "mt5", label: "MT5" }, { value: "ctrader", label: "cTrader" }].map(p => (
+                <button key={p.value} onClick={() => setForm(f => ({ ...f, platform: p.value, serverName: "" }))} className={`flex-1 rounded-xl border py-2.5 text-[11px] font-bold transition-all ${form.platform === p.value ? "border-primary/40 bg-primary/10 text-primary" : "border-border/30 bg-secondary/20 text-muted-foreground/40 hover:bg-secondary/30"}`}>
+                  {p.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Server Name with Autocomplete */}
+          <div>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <label className="text-[11px] font-semibold text-foreground/60">שם שרת ברוקר</label>
+              <div className="group relative">
+                <div className="flex h-4 w-4 items-center justify-center rounded-full bg-muted-foreground/10 text-muted-foreground/30 text-[8px] font-bold cursor-help">?</div>
+                <div className="absolute bottom-full right-0 mb-1.5 hidden group-hover:block w-[200px] rounded-lg bg-card border border-border/50 p-2 text-[9px] text-muted-foreground/60 shadow-xl z-10">
+                  ניתן למצוא את שם השרת בפלטפורמת המסחר שלך תחת File → Login או בהגדרות החשבון
+                </div>
+              </div>
+            </div>
+            <div className="relative" ref={serverInputRef}>
+              <input
+                type="text"
+                value={form.serverName}
+                onChange={e => { setForm(f => ({ ...f, serverName: e.target.value })); setServerSuggestionsOpen(true); }}
+                onFocus={() => setServerSuggestionsOpen(true)}
+                placeholder="הקלד לחיפוש... לדוגמה: ICMarkets"
+                dir="ltr"
+                autoComplete="off"
+                className="w-full rounded-xl border border-border/30 bg-secondary/20 px-4 py-2.5 text-[12px] text-foreground font-mono placeholder:text-muted-foreground/20 focus:border-primary/30 focus:bg-primary/[0.02] focus:outline-none transition-all"
+              />
+              {serverSuggestionsOpen && filteredServers.length > 0 && (
+                <div className="absolute z-50 top-full left-0 right-0 mt-1 max-h-[180px] overflow-y-auto rounded-xl border border-border/40 bg-card shadow-xl shadow-black/40 backdrop-blur-xl">
+                  {filteredServers.map(server => (
+                    <button
+                      key={server}
+                      onClick={() => { setForm(f => ({ ...f, serverName: server })); setServerSuggestionsOpen(false); }}
+                      className="w-full text-left px-4 py-2.5 text-[12px] font-mono text-foreground/80 hover:bg-primary/10 hover:text-primary transition-colors border-b border-border/10 last:border-0"
+                    >
+                      {server}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Account Login */}
           <div>
             <label className="block text-[11px] font-semibold text-foreground/60 mb-1.5">מספר חשבון</label>
