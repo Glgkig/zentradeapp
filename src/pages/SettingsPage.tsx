@@ -236,9 +236,9 @@ const ProfileTab = () => {
 
 /* ===== Connectivity Tab ===== */
 const brokers = [
-  { name: "TradingView", color: "#2962FF", connected: true, logo: logoTradingView },
+  { name: "TradingView", color: "#2962FF", connected: false, logo: logoTradingView },
   { name: "TradeLocker", color: "#00E676", connected: false, logo: logoTradeLocker },
-  { name: "MetaTrader 5", color: "#4A90D9", connected: true, logo: logoMt5 },
+  { name: "MetaTrader 5", color: "#4A90D9", connected: false, logo: logoMt5 },
   { name: "Binance", color: "#F0B90B", connected: false, logo: logoBinance },
   { name: "TopstepX", color: "#1DB954", connected: false, logo: logoTopstep },
   { name: "Rithmic", color: "#FF6B35", connected: false, logo: logoRithmic },
