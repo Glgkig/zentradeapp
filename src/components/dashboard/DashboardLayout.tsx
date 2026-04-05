@@ -598,6 +598,7 @@ const UserMenuContent = ({ userName, userEmail, avatarUrl, onClose, onSettings, 
 const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?: boolean }) => {
   const [view, setView] = useState<"list" | "connect">("list");
   const [connecting, setConnecting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [connectedAccounts, setConnectedAccounts] = useState<Array<{ id: string; name: string; login: string; server: string; platform: string }>>([]);
   const [form, setForm] = useState({ platform: "mt5", serverName: "", login: "", password: "" });
   const [serverSuggestionsOpen, setServerSuggestionsOpen] = useState(false);
