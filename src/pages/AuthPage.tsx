@@ -185,32 +185,10 @@ const AuthPage = () => {
               <div className="relative" style={{ perspective: "1200px" }}>
                 <div className="absolute -inset-6 bg-gradient-to-br from-primary/15 via-transparent to-accent/10 rounded-3xl blur-2xl" />
                 <div
-                  className="relative rounded-2xl border border-primary/30 overflow-hidden shadow-2xl shadow-primary/20 bg-card/50 backdrop-blur-sm p-8 md:p-12"
+                  className="relative rounded-2xl border border-primary/30 overflow-hidden shadow-2xl shadow-primary/20"
                   style={{ transform: "rotateY(-6deg) rotateX(2deg)" }}
                 >
-                  <div className="space-y-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <span className="font-heading text-lg md:text-xl font-bold text-primary">ZenTrade Dashboard</span>
-                      <img src={zentradeLogo} alt="ZenTrade" className="h-8 w-8 rounded-lg" />
-                    </div>
-                    <div className="grid grid-cols-3 gap-3">
-                      {[
-                        { label: "Win Rate", value: "67.4%", color: "text-emerald-400" },
-                        { label: "Profit Factor", value: "2.31", color: "text-primary" },
-                        { label: "Expectancy", value: "+$142", color: "text-emerald-400" },
-                      ].map((stat) => (
-                        <div key={stat.label} className="rounded-xl border border-border/30 bg-background/40 p-3 text-center">
-                          <p className={`text-lg md:text-xl font-bold ${stat.color}`}>{stat.value}</p>
-                          <p className="text-[10px] text-foreground/50 mt-1">{stat.label}</p>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="h-24 rounded-lg border border-border/20 bg-background/30 flex items-end justify-between px-3 pb-2 gap-1">
-                      {[40, 55, 35, 70, 60, 80, 65, 90, 75, 85, 95, 88].map((h, i) => (
-                        <div key={i} className={`w-full rounded-t ${h > 60 ? "bg-primary/60" : "bg-destructive/40"}`} style={{ height: `${h}%` }} />
-                      ))}
-                    </div>
-                  </div>
+                  <img src={heroScreenshot} alt="ZenTrade Dashboard" className="w-full h-auto" />
                   <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent pointer-events-none" />
                 </div>
               </div>
