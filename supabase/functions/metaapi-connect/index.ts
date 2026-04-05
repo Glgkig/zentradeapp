@@ -7,7 +7,26 @@ const corsHeaders = {
 
 const METAAPI_TOKEN = Deno.env.get("METAAPI_TOKEN")!;
 const METAAPI_BASE = "https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai";
-const METAAPI_CLIENT_BASE = "https://mt-client-api-v1.new-york.agiliumtrade.ai";
+
+/** Resolve the correct regional client API base URL for an account */
+async function getClientApiBase(accountId: string): Promise<string> {
+  // Fetch account details from provisioning API to get the region
+  const resp = await fetch(`${METAAPI_BASE}/users/current/accounts/${accountId}`, {
+    headers: { "auth-token": METAAPI_TOKEN },
+  });
+  if (resp.ok) {
+    const account = await resp.json();
+    // MetaApi returns a region field like "new-york", "london", "singapore", etc.
+    const region = account.region || account.accountReplicas?.[0]?.region;
+    if (region) {
+      return `https://mt-client-api-v1.${region}.agiliumtrade.ai`;
+    }
+  } else {
+    await resp.text(); // consume body
+  }
+  // Fallback to new-york if region can't be determined
+  return "https://mt-client-api-v1.new-york.agiliumtrade.ai";
+}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -80,7 +99,7 @@ Deno.serve(async (req) => {
           password,
           name: name || `ZenTrade-${login}`,
           server: serverName,
-          platform: platform, // "mt4" or "mt5"
+          platform: platform,
           type: "cloud",
           magic: 0,
         }),
@@ -112,22 +131,25 @@ Deno.serve(async (req) => {
         method: "POST",
         headers: { "auth-token": METAAPI_TOKEN },
       });
-      // 204 = already deployed, 200 = deploying — both are fine
       if (!deployResp.ok && deployResp.status !== 204) {
         const txt = await deployResp.text();
         console.error("Deploy error:", txt);
       } else {
-        await deployResp.text(); // consume body
+        await deployResp.text();
       }
 
-      // Wait a bit for deployment
-      await new Promise((r) => setTimeout(r, 2000));
+      // Wait for deployment
+      await new Promise((r) => setTimeout(r, 3000));
+
+      // Resolve correct regional URL
+      const clientBase = await getClientApiBase(accountId);
+      console.log("Using client API base:", clientBase);
 
       const start = startTime || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
       const end = endTime || new Date().toISOString();
 
       const historyResp = await fetch(
-        `${METAAPI_CLIENT_BASE}/users/current/accounts/${accountId}/history-deals/time/${start}/${end}`,
+        `${clientBase}/users/current/accounts/${accountId}/history-deals/time/${start}/${end}`,
         { headers: { "auth-token": METAAPI_TOKEN } }
       );
       const historyData = await historyResp.json();
@@ -151,8 +173,12 @@ Deno.serve(async (req) => {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
+
+      // Resolve correct regional URL
+      const clientBase = await getClientApiBase(accountId);
+
       const resp = await fetch(
-        `${METAAPI_CLIENT_BASE}/users/current/accounts/${accountId}/account-information`,
+        `${clientBase}/users/current/accounts/${accountId}/account-information`,
         { headers: { "auth-token": METAAPI_TOKEN } }
       );
       const data = await resp.json();
