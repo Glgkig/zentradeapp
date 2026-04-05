@@ -596,6 +596,8 @@ const UserMenuContent = ({ userName, userEmail, avatarUrl, onClose, onSettings, 
 
 /* ===== Broker Modal ===== */
 const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?: boolean }) => {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [view, setView] = useState<"list" | "connect">("list");
   const [connecting, setConnecting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
