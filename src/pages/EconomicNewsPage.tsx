@@ -487,7 +487,7 @@ const EconomicNewsPage = () => {
 
       {/* ── Tab: Live News ── */}
       {activeTab === "news" && (
-        <div className="rounded-2xl border border-border/30 bg-card/30 backdrop-blur-sm overflow-hidden flex flex-col min-h-[70vh]">
+        <div className="rounded-2xl border border-border/30 bg-card/30 backdrop-blur-sm overflow-hidden flex flex-col" style={{ height: "calc(100vh - 180px)" }}>
           <div className="flex items-center justify-between px-4 py-3 border-b border-border/20 shrink-0">
             <div className="flex items-center gap-2">
               <TrendingUp className="h-3.5 w-3.5 text-primary" />
@@ -506,7 +506,7 @@ const EconomicNewsPage = () => {
 
       {/* ── Tab: Economic Calendar ── */}
       {activeTab === "calendar" && (
-        <div className="rounded-2xl border border-border/30 bg-card/30 backdrop-blur-sm overflow-hidden flex flex-col min-h-[70vh]">
+        <div className="rounded-2xl border border-border/30 bg-card/30 backdrop-blur-sm overflow-hidden flex flex-col" style={{ height: "calc(100vh - 180px)" }}>
           <div className="flex items-center justify-between px-4 py-3 border-b border-border/20 shrink-0">
             <div className="flex items-center gap-2">
               <Star className="h-3.5 w-3.5 text-accent" />
