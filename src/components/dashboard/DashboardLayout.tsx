@@ -365,6 +365,31 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                 );
               })}
               <div className="my-2 h-px bg-border/30" />
+              {/* Mobile-only: Theme + Zen */}
+              <div className="flex gap-2 px-1">
+                <button
+                  onClick={() => setDark(!dark)}
+                  style={{ transitionDelay: mobileNavOpen ? `${allNavItems.length * 35}ms` : "0ms" }}
+                  className={`haptic-press flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-3 text-[13px] font-medium min-h-[48px] border border-border/30 bg-secondary/30 text-muted-foreground/60 hover:bg-secondary/50 transition-all duration-300 ${
+                    mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
+                  }`}
+                >
+                  {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                  {dark ? "מצב בהיר" : "מצב כהה"}
+                </button>
+                <button
+                  onClick={() => { setMobileNavOpen(false); setZenMode(!zenMode); }}
+                  style={{ transitionDelay: mobileNavOpen ? `${(allNavItems.length + 0.5) * 35}ms` : "0ms" }}
+                  className={`haptic-press flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-3 text-[13px] font-medium min-h-[48px] border transition-all duration-300 ${
+                    zenMode
+                      ? "border-primary/30 bg-primary/10 text-primary"
+                      : "border-border/30 bg-secondary/30 text-muted-foreground/60 hover:bg-secondary/50"
+                  } ${mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"}`}
+                >
+                  <Eye className="h-4 w-4" />
+                  פוקוס
+                </button>
+              </div>
               <button
                 onClick={() => { setMobileNavOpen(false); setBrokerModal(true); }}
                 style={{ transitionDelay: mobileNavOpen ? `${allNavItems.length * 35}ms` : "0ms" }}
