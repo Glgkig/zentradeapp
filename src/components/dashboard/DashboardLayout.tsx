@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription, POLAR_URL } from "@/contexts/SubscriptionContext";
 import { useNavigate } from "react-router-dom";
@@ -595,16 +596,45 @@ const UserMenuContent = ({ userName, userEmail, avatarUrl, onClose, onSettings, 
 
 /* ===== Broker Modal ===== */
 const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?: boolean }) => {
+  const [view, setView] = useState<"list" | "connect">("list");
+  const [connecting, setConnecting] = useState(false);
+  const [connectedAccounts, setConnectedAccounts] = useState<Array<{ id: string; name: string; login: string; server: string; platform: string }>>([]);
+  const [form, setForm] = useState({ platform: "mt5", serverName: "", login: "", password: "" });
+
   const connected = brokers.filter(b => b.connected);
   const disconnected = brokers.filter(b => !b.connected);
+
+  const handleConnect = async () => {
+    if (!form.serverName || !form.login || !form.password) {
+      toast.error("נא למלא את כל השדות");
+      return;
+    }
+    setConnecting(true);
+    try {
+      const { metaApi } = await import("@/utils/metaApi");
+      const account = await metaApi.addAccount({
+        login: form.login,
+        password: form.password,
+        serverName: form.serverName,
+        platform: form.platform as "mt4" | "mt5",
+        name: `ZenTrade-${form.login}`,
+      });
+      toast.success("החשבון חובר בהצלחה! 🎉");
+      setConnectedAccounts(prev => [...prev, { id: account._id || account.id, name: account.name, login: form.login, server: form.serverName, platform: form.platform }]);
+      setView("list");
+      setForm({ platform: "mt5", serverName: "", login: "", password: "" });
+    } catch (err: any) {
+      toast.error(err?.message || "חיבור נכשל. בדוק את הפרטים ונסה שוב.");
+    } finally {
+      setConnecting(false);
+    }
+  };
 
   return (
     <div className={mobile ? "" : "w-full max-w-lg rounded-3xl border border-border/50 bg-card shadow-2xl shadow-black/30 animate-in fade-in slide-in-from-bottom-2 duration-200 overflow-hidden"}>
       {/* Header */}
       <div className="relative px-6 pt-6 pb-5 overflow-hidden">
-        {/* Ambient glow */}
         <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-[200px] h-[200px] bg-primary/[0.06] rounded-full blur-[80px] pointer-events-none" />
-
         <div className="relative flex items-center justify-between">
           <div className="flex items-center gap-3.5">
             <div className="relative">
@@ -614,86 +644,237 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
               </div>
             </div>
             <div>
-              <h2 className="text-base font-bold text-foreground">חיבורי ברוקר</h2>
-              <p className="text-[11px] text-muted-foreground/50 mt-0.5">סנכרון אוטומטי של עסקאות ונתונים</p>
+              <h2 className="text-base font-bold text-foreground">{view === "connect" ? "חבר חשבון מסחר" : "חיבורי ברוקר"}</h2>
+              <p className="text-[11px] text-muted-foreground/50 mt-0.5">
+                {view === "connect" ? "הזן את פרטי חשבון MT4/MT5 שלך" : "סנכרון אוטומטי של עסקאות ונתונים"}
+              </p>
             </div>
           </div>
-          <button onClick={onClose} className="haptic-press flex h-9 w-9 items-center justify-center rounded-xl border border-border/50 bg-secondary/50 text-muted-foreground hover:text-foreground transition-all">
-            <X className="h-4 w-4" />
+          <button onClick={view === "connect" ? () => setView("list") : onClose} className="haptic-press flex h-9 w-9 items-center justify-center rounded-xl border border-border/50 bg-secondary/50 text-muted-foreground hover:text-foreground transition-all">
+            {view === "connect" ? <ChevronDown className="h-4 w-4 rotate-90" /> : <X className="h-4 w-4" />}
           </button>
         </div>
       </div>
 
-      {/* Connected */}
-      {connected.length > 0 && (
-        <div className="px-6 pb-4">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="h-1.5 w-1.5 rounded-full bg-profit animate-pulse" />
-            <p className="text-[10px] font-bold text-profit/80 uppercase tracking-[0.15em] font-mono">CONNECTED</p>
-            <div className="flex-1 h-px bg-profit/10" />
+      {view === "connect" ? (
+        /* ===== Connection Form ===== */
+        <div className="px-6 pb-6 space-y-4">
+          {/* Platform Select */}
+          <div>
+            <label className="block text-[11px] font-semibold text-foreground/60 mb-1.5">פלטפורמה</label>
+            <div className="flex gap-2">
+              {[
+                { value: "mt4", label: "MT4" },
+                { value: "mt5", label: "MT5" },
+                { value: "ctrader", label: "cTrader" },
+              ].map(p => (
+                <button
+                  key={p.value}
+                  onClick={() => setForm(f => ({ ...f, platform: p.value }))}
+                  className={`haptic-press flex-1 rounded-xl border py-2.5 text-[12px] font-bold transition-all ${
+                    form.platform === p.value
+                      ? "bg-primary/10 border-primary/25 text-primary cyan-glow"
+                      : "bg-secondary/20 border-border/30 text-muted-foreground/50 hover:border-border/50"
+                  }`}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="space-y-2">
-            {connected.map((b) => (
-              <div key={b.name} className="group flex items-center justify-between rounded-2xl border border-profit/15 bg-profit/[0.04] px-4 py-3.5 transition-all hover:bg-profit/[0.06]">
-                <div className="flex items-center gap-3.5">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden border border-border/30 bg-card shadow-sm">
-                    <img src={b.logo} alt={b.name} className="h-10 w-10 object-cover rounded-xl" />
-                  </div>
-                  <div>
-                    <p className="text-[13px] font-semibold text-foreground">{b.name}</p>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <span className="text-[10px] text-profit font-mono font-medium">{b.account}</span>
-                      <span className="text-[9px] text-muted-foreground/30">•</span>
-                      <span className="text-[10px] text-muted-foreground/40">Live</span>
+
+          {/* Server Name */}
+          <div>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <label className="text-[11px] font-semibold text-foreground/60">שם שרת ברוקר</label>
+              <div className="group relative">
+                <div className="flex h-4 w-4 items-center justify-center rounded-full bg-muted-foreground/10 text-muted-foreground/30 text-[8px] font-bold cursor-help">?</div>
+                <div className="absolute bottom-full right-0 mb-1.5 hidden group-hover:block w-[200px] rounded-lg bg-card border border-border/50 p-2 text-[9px] text-muted-foreground/60 shadow-xl z-10">
+                  ניתן למצוא את שם השרת בפלטפורמת המסחר שלך תחת File → Login או בהגדרות החשבון
+                </div>
+              </div>
+            </div>
+            <input
+              type="text"
+              value={form.serverName}
+              onChange={e => setForm(f => ({ ...f, serverName: e.target.value }))}
+              placeholder="לדוגמה: ICMarkets-Live01"
+              dir="ltr"
+              className="w-full rounded-xl border border-border/30 bg-secondary/20 px-4 py-2.5 text-[12px] text-foreground font-mono placeholder:text-muted-foreground/20 focus:border-primary/30 focus:bg-primary/[0.02] focus:outline-none transition-all"
+            />
+          </div>
+
+          {/* Account Login */}
+          <div>
+            <label className="block text-[11px] font-semibold text-foreground/60 mb-1.5">מספר חשבון</label>
+            <input
+              type="text"
+              value={form.login}
+              onChange={e => setForm(f => ({ ...f, login: e.target.value }))}
+              placeholder="לדוגמה: 12345678"
+              dir="ltr"
+              className="w-full rounded-xl border border-border/30 bg-secondary/20 px-4 py-2.5 text-[12px] text-foreground font-mono placeholder:text-muted-foreground/20 focus:border-primary/30 focus:bg-primary/[0.02] focus:outline-none transition-all"
+            />
+          </div>
+
+          {/* Password */}
+          <div>
+            <label className="block text-[11px] font-semibold text-foreground/60 mb-1.5">סיסמה</label>
+            <input
+              type="password"
+              value={form.password}
+              onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+              placeholder="סיסמת החשבון שלך"
+              dir="ltr"
+              className="w-full rounded-xl border border-border/30 bg-secondary/20 px-4 py-2.5 text-[12px] text-foreground font-mono placeholder:text-muted-foreground/20 focus:border-primary/30 focus:bg-primary/[0.02] focus:outline-none transition-all"
+            />
+          </div>
+
+          {/* Connect Button */}
+          <button
+            onClick={handleConnect}
+            disabled={connecting}
+            className="haptic-press w-full rounded-xl bg-primary text-primary-foreground py-3 text-[13px] font-bold transition-all hover:bg-primary/90 cyan-glow disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px] flex items-center justify-center gap-2"
+          >
+            {connecting ? (
+              <>
+                <div className="h-4 w-4 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin" />
+                <span>מתחבר לברוקר... יוצר חיבור מאובטח</span>
+              </>
+            ) : (
+              <>
+                <Plug className="h-4 w-4" />
+                <span>חבר חשבון</span>
+              </>
+            )}
+          </button>
+
+          {/* Security note */}
+          <div className="flex items-center gap-2 justify-center pt-1">
+            <ShieldCheck className="h-3 w-3 text-primary/40" />
+            <p className="text-[9px] text-muted-foreground/25 font-mono">AES-256 encrypted · read-only access</p>
+          </div>
+        </div>
+      ) : (
+        /* ===== Broker List View ===== */
+        <>
+          {/* MetaApi Connected Accounts */}
+          {connectedAccounts.length > 0 && (
+            <div className="px-6 pb-4">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="h-1.5 w-1.5 rounded-full bg-profit animate-pulse" />
+                <p className="text-[10px] font-bold text-profit/80 uppercase tracking-[0.15em] font-mono">LIVE CONNECTED</p>
+                <div className="flex-1 h-px bg-profit/10" />
+              </div>
+              <div className="space-y-2">
+                {connectedAccounts.map((a) => (
+                  <div key={a.id} className="group flex items-center justify-between rounded-2xl border border-profit/15 bg-profit/[0.04] px-4 py-3.5 transition-all hover:bg-profit/[0.06]">
+                    <div className="flex items-center gap-3.5">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-profit/20 bg-profit/10 text-profit font-mono font-bold text-[11px]">
+                        {a.platform.toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="text-[13px] font-semibold text-foreground">{a.server}</p>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <span className="text-[10px] text-profit font-mono font-medium">{a.login}</span>
+                          <span className="text-[9px] text-muted-foreground/30">•</span>
+                          <span className="text-[10px] text-muted-foreground/40">Live</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="rounded-lg bg-profit/10 px-2 py-1 text-[9px] font-bold text-profit font-mono uppercase">Active</span>
+                      <CheckCircle2 className="h-4.5 w-4.5 text-profit" />
                     </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="rounded-lg bg-profit/10 px-2 py-1 text-[9px] font-bold text-profit font-mono uppercase">Active</span>
-                  <CheckCircle2 className="h-4.5 w-4.5 text-profit" />
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Available */}
-      <div className="px-6 pb-4">
-        <div className="flex items-center gap-2 mb-3">
-          <p className="text-[10px] font-bold text-muted-foreground/30 uppercase tracking-[0.15em] font-mono">AVAILABLE</p>
-          <div className="flex-1 h-px bg-border/30" />
-          <span className="text-[10px] text-muted-foreground/20 font-mono">{disconnected.length}</span>
-        </div>
-        <div className={`space-y-1.5 ${mobile ? "max-h-[35vh]" : "max-h-[32vh]"} overflow-y-auto scrollbar-none`}>
-          {disconnected.map((b) => (
-            <div key={b.name} className="group flex items-center justify-between rounded-xl border border-border/30 bg-secondary/20 px-4 py-3 hover:bg-secondary/40 hover:border-border/50 transition-all duration-200">
-              <div className="flex items-center gap-3.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg overflow-hidden border border-border/20 bg-card shadow-sm">
-                  <img src={b.logo} alt={b.name} className="h-9 w-9 object-cover rounded-lg" />
-                </div>
-                <p className="text-[12px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">{b.name}</p>
-              </div>
-              <button className="haptic-press rounded-xl bg-primary/10 border border-primary/15 px-4 py-2 text-[11px] font-bold text-primary hover:bg-primary/20 hover:border-primary/25 transition-all">
-                חבר
-              </button>
             </div>
-          ))}
-        </div>
-      </div>
+          )}
 
-      {/* Footer */}
-      <div className="border-t border-border/30 px-6 py-3.5 flex items-center justify-between bg-secondary/10">
-        <div className="flex items-center gap-2">
-          <div className="flex h-5 w-5 items-center justify-center rounded bg-primary/10">
-            <ShieldCheck className="h-3 w-3 text-primary/50" />
+          {/* Demo Connected */}
+          {connected.length > 0 && (
+            <div className="px-6 pb-4">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="h-1.5 w-1.5 rounded-full bg-profit animate-pulse" />
+                <p className="text-[10px] font-bold text-profit/80 uppercase tracking-[0.15em] font-mono">CONNECTED</p>
+                <div className="flex-1 h-px bg-profit/10" />
+              </div>
+              <div className="space-y-2">
+                {connected.map((b) => (
+                  <div key={b.name} className="group flex items-center justify-between rounded-2xl border border-profit/15 bg-profit/[0.04] px-4 py-3.5 transition-all hover:bg-profit/[0.06]">
+                    <div className="flex items-center gap-3.5">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden border border-border/30 bg-card shadow-sm">
+                        <img src={b.logo} alt={b.name} className="h-10 w-10 object-cover rounded-xl" />
+                      </div>
+                      <div>
+                        <p className="text-[13px] font-semibold text-foreground">{b.name}</p>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <span className="text-[10px] text-profit font-mono font-medium">{b.account}</span>
+                          <span className="text-[9px] text-muted-foreground/30">•</span>
+                          <span className="text-[10px] text-muted-foreground/40">Live</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="rounded-lg bg-profit/10 px-2 py-1 text-[9px] font-bold text-profit font-mono uppercase">Active</span>
+                      <CheckCircle2 className="h-4.5 w-4.5 text-profit" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Add Account CTA */}
+          <div className="px-6 pb-4">
+            <button
+              onClick={() => setView("connect")}
+              className="haptic-press w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary/20 bg-primary/[0.03] py-4 text-[12px] font-bold text-primary hover:bg-primary/[0.06] hover:border-primary/30 transition-all"
+            >
+              <Plus className="h-4 w-4" />
+              חבר חשבון MT4 / MT5
+            </button>
           </div>
-          <p className="text-[10px] text-muted-foreground/30 font-mono">End-to-end AES-256 encryption</p>
-        </div>
-        <button onClick={onClose} className="haptic-press rounded-xl border border-border/50 bg-secondary/50 px-4 py-2 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-all">
-          סגור
-        </button>
-      </div>
+
+          {/* Available */}
+          <div className="px-6 pb-4">
+            <div className="flex items-center gap-2 mb-3">
+              <p className="text-[10px] font-bold text-muted-foreground/30 uppercase tracking-[0.15em] font-mono">AVAILABLE</p>
+              <div className="flex-1 h-px bg-border/30" />
+              <span className="text-[10px] text-muted-foreground/20 font-mono">{disconnected.length}</span>
+            </div>
+            <div className={`space-y-1.5 ${mobile ? "max-h-[25vh]" : "max-h-[24vh]"} overflow-y-auto scrollbar-none`}>
+              {disconnected.map((b) => (
+                <div key={b.name} className="group flex items-center justify-between rounded-xl border border-border/30 bg-secondary/20 px-4 py-3 hover:bg-secondary/40 hover:border-border/50 transition-all duration-200">
+                  <div className="flex items-center gap-3.5">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-lg overflow-hidden border border-border/20 bg-card shadow-sm">
+                      <img src={b.logo} alt={b.name} className="h-9 w-9 object-cover rounded-lg" />
+                    </div>
+                    <p className="text-[12px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">{b.name}</p>
+                  </div>
+                  <button className="haptic-press rounded-xl bg-primary/10 border border-primary/15 px-4 py-2 text-[11px] font-bold text-primary hover:bg-primary/20 hover:border-primary/25 transition-all">
+                    חבר
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="border-t border-border/30 px-6 py-3.5 flex items-center justify-between bg-secondary/10">
+            <div className="flex items-center gap-2">
+              <div className="flex h-5 w-5 items-center justify-center rounded bg-primary/10">
+                <ShieldCheck className="h-3 w-3 text-primary/50" />
+              </div>
+              <p className="text-[10px] text-muted-foreground/30 font-mono">End-to-end AES-256 encryption</p>
+            </div>
+            <button onClick={onClose} className="haptic-press rounded-xl border border-border/50 bg-secondary/50 px-4 py-2 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-all">
+              סגור
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };
