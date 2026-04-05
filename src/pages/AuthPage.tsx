@@ -182,15 +182,8 @@ const AuthPage = () => {
 
             {/* Left — Hero Screenshot (Perspective angled) */}
             <RevealSection delay={200} className="hidden lg:block">
-              <div className="relative" style={{ perspective: "1200px" }}>
-                <div className="absolute -inset-6 bg-gradient-to-br from-primary/15 via-transparent to-accent/10 rounded-3xl blur-2xl" />
-                <div
-                  className="relative rounded-2xl border border-primary/30 overflow-hidden shadow-2xl shadow-primary/20"
-                  style={{ transform: "rotateY(-6deg) rotateX(2deg)" }}
-                >
-                  <img src={heroScreenshot} alt="ZenTrade Dashboard" className="w-full h-auto" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent pointer-events-none" />
-                </div>
+              <div className="relative">
+                <img src={heroScreenshot} alt="ZenTrade Dashboard" className="w-full h-auto rounded-2xl" />
               </div>
             </RevealSection>
           </div>
