@@ -6,8 +6,8 @@ const corsHeaders = {
 };
 
 const METAAPI_TOKEN = Deno.env.get("METAAPI_TOKEN")!;
-const METAAPI_BASE = "https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai";
-const METAAPI_CLIENT_BASE = "https://mt-client-api-v1.agiliumtrade.agiliumtrade.ai";
+const METAAPI_BASE = "https://mt-provisioning-api-v1.agiliumtrade.ai";
+const METAAPI_CLIENT_BASE = "https://mt-client-api-v1.agiliumtrade.ai";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
