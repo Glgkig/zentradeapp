@@ -64,9 +64,9 @@ const allNavItems = navSections.flatMap((s) => s.items);
 
 const brokers = [
   { name: "TradingView", initials: "TV", connected: false, account: null, logo: logoTradingViewFull },
-  { name: "TradeLocker", initials: "TL", connected: true, account: "TL-7842", logo: logoTradeLockerFull },
+  { name: "TradeLocker", initials: "TL", connected: false, account: null, logo: logoTradeLockerFull },
   { name: "MetaTrader 5", initials: "M5", connected: false, account: null, logo: logoMT5Full },
-  { name: "Binance", initials: "BN", connected: true, account: "BN-3291", logo: logoBinanceFull },
+  { name: "Binance", initials: "BN", connected: false, account: null, logo: logoBinanceFull },
   { name: "TopstepX", initials: "TX", connected: false, account: null, logo: logoTopstepXFull },
   { name: "Rithmic", initials: "RI", connected: false, account: null, logo: logoRithmicFull },
   { name: "NinjaTrader", initials: "NT", connected: false, account: null, logo: logoNinjaTraderFull },
@@ -148,7 +148,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   const userEmail = user?.email || "";
 
   const renderContent = () => {
-    if (activeNav === "dashboard") return <HomeDashboard userName={userName} onOpenTrade={() => setTradeDrawerOpen(true)} />;
+    if (activeNav === "dashboard") return <HomeDashboard userName={userName} onOpenTrade={() => setTradeDrawerOpen(true)} onConnectBroker={() => setBrokerModal(true)} />;
     if (activeNav === "setups") return <SetupsPage />;
     if (activeNav === "stats") return <StatsPage />;
     if (activeNav === "journal") return <JournalPage />;
@@ -233,7 +233,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                 <Plug className="h-3.5 w-3.5 text-muted-foreground/40 group-hover:text-primary" />
               </div>
               <span className="flex-1 text-right">חבר ברוקר</span>
-              <span className="rounded-lg bg-primary/10 border border-primary/15 px-1.5 py-0.5 text-2xs font-bold text-primary font-mono">2</span>
+              <span className="rounded-lg bg-primary/10 border border-primary/15 px-1.5 py-0.5 text-2xs font-bold text-primary font-mono">0</span>
             </button>
           </div>
         </nav>
@@ -458,7 +458,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                   <Plug className="h-3.5 w-3.5 text-muted-foreground/30" />
                 </div>
                 חבר ברוקר
-                <span className="mr-auto rounded-lg bg-primary/10 border border-primary/15 px-1.5 py-0.5 text-2xs font-bold text-primary font-mono">2</span>
+                <span className="mr-auto rounded-lg bg-primary/10 border border-primary/15 px-1.5 py-0.5 text-2xs font-bold text-primary font-mono">0</span>
               </button>
               <button
                 onClick={() => { setMobileNavOpen(false); navigate("/pricing"); }}
