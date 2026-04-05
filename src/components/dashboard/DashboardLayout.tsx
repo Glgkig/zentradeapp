@@ -458,7 +458,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                   <Plug className="h-3.5 w-3.5 text-muted-foreground/30" />
                 </div>
                 חבר ברוקר
-                <span className="mr-auto rounded-lg bg-primary/10 border border-primary/15 px-1.5 py-0.5 text-2xs font-bold text-primary font-mono">2</span>
+                <span className="mr-auto rounded-lg bg-primary/10 border border-primary/15 px-1.5 py-0.5 text-2xs font-bold text-primary font-mono">0</span>
               </button>
               <button
                 onClick={() => { setMobileNavOpen(false); navigate("/pricing"); }}
