@@ -357,11 +357,12 @@
 
 @keyframes ticker-scroll {
   0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  100% { transform: translateX(-33.333%); }
 }
 
 .animate-ticker {
-  animation: ticker-scroll 30s linear infinite;
+  animation: ticker-scroll 25s linear infinite;
+  will-change: transform;
 }
 .animate-ticker:hover {
   animation-play-state: paused;
