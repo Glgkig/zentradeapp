@@ -600,109 +600,51 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
   const [connecting, setConnecting] = useState(false);
   const [connectedAccounts, setConnectedAccounts] = useState<Array<{ id: string; name: string; login: string; server: string; platform: string }>>([]);
   const [form, setForm] = useState({ platform: "mt5", serverName: "", login: "", password: "" });
+  const [serverSuggestionsOpen, setServerSuggestionsOpen] = useState(false);
+  const serverInputRef = React.useRef<HTMLDivElement>(null);
 
-  const connected = brokers.filter(b => b.connected);
-  const disconnected = brokers.filter(b => !b.connected);
-
-  const handleConnect = async () => {
-    if (!form.serverName || !form.login || !form.password) {
-      toast.error("נא למלא את כל השדות");
-      return;
-    }
-    setConnecting(true);
-    try {
-      const { metaApi } = await import("@/utils/metaApi");
-      const account = await metaApi.addAccount({
-        login: form.login,
-        password: form.password,
-        serverName: form.serverName,
-        platform: form.platform as "mt4" | "mt5",
-        name: `ZenTrade-${form.login}`,
-      });
-      toast.success("החשבון חובר בהצלחה! 🎉");
-      setConnectedAccounts(prev => [...prev, { id: account._id || account.id, name: account.name, login: form.login, server: form.serverName, platform: form.platform }]);
-      setView("list");
-      setForm({ platform: "mt5", serverName: "", login: "", password: "" });
-    } catch (err: any) {
-      toast.error(err?.message || "חיבור נכשל. בדוק את הפרטים ונסה שוב.");
-    } finally {
-      setConnecting(false);
-    }
+  const POPULAR_SERVERS: Record<string, string[]> = {
+    mt4: [
+      "ICMarkets-Live01", "ICMarkets-Live02", "ICMarkets-Live04", "ICMarkets-Demo01",
+      "Pepperstone-Live", "Pepperstone-Demo", "Pepperstone-Edge-Live",
+      "XMGlobal-Real 1", "XMGlobal-Real 3", "XMGlobal-Demo 3",
+      "FBS-Real-3", "FBS-Demo",
+      "Exness-Real9", "Exness-Trial7",
+      "FTMO-Server", "FTMO-Demo",
+      "FundedNext-Live", "FundedNext-Demo",
+      "MetaQuotes-Demo",
+    ],
+    mt5: [
+      "ICMarketsSC-Live01", "ICMarketsSC-Live04", "ICMarketsSC-Demo01",
+      "Pepperstone-MT5-Live", "Pepperstone-MT5-Demo",
+      "XMGlobal-MT5 2", "XMGlobal-MT5 3",
+      "Exness-MT5Real9", "Exness-MT5Trial7",
+      "FTMO-Server3", "FTMO-Demo2",
+      "FundedNext-MT5-Live", "FundedNext-MT5-Demo",
+      "Admirals-MT5-Live", "Admirals-MT5-Demo",
+      "MetaQuotes-Demo",
+    ],
+    ctrader: [
+      "ICMarkets-cTrader-Live", "ICMarkets-cTrader-Demo",
+      "Pepperstone-cTrader", "Pepperstone-cTrader-Demo",
+      "FXPIG-cTrader-Live", "Spotware-Demo",
+    ],
   };
 
-  return (
-    <div className={mobile ? "" : "w-full max-w-lg rounded-3xl border border-border/50 bg-card shadow-2xl shadow-black/30 animate-in fade-in slide-in-from-bottom-2 duration-200 overflow-hidden"}>
-      {/* Header */}
-      <div className="relative px-6 pt-6 pb-5 overflow-hidden">
-        <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-[200px] h-[200px] bg-primary/[0.06] rounded-full blur-[80px] pointer-events-none" />
-        <div className="relative flex items-center justify-between">
-          <div className="flex items-center gap-3.5">
-            <div className="relative">
-              <div className="absolute -inset-1 rounded-2xl bg-primary/10 blur-md" />
-              <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 border border-primary/15">
-                <Plug className="h-5 w-5 text-primary" />
-              </div>
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-foreground">{view === "connect" ? "חבר חשבון מסחר" : "חיבורי ברוקר"}</h2>
-              <p className="text-[11px] text-muted-foreground/50 mt-0.5">
-                {view === "connect" ? "הזן את פרטי חשבון MT4/MT5 שלך" : "סנכרון אוטומטי של עסקאות ונתונים"}
-              </p>
-            </div>
-          </div>
-          <button onClick={view === "connect" ? () => setView("list") : onClose} className="haptic-press flex h-9 w-9 items-center justify-center rounded-xl border border-border/50 bg-secondary/50 text-muted-foreground hover:text-foreground transition-all">
-            {view === "connect" ? <ChevronDown className="h-4 w-4 rotate-90" /> : <X className="h-4 w-4" />}
-          </button>
-        </div>
-      </div>
+  const filteredServers = (POPULAR_SERVERS[form.platform] || []).filter(s =>
+    s.toLowerCase().includes(form.serverName.toLowerCase())
+  );
 
-      {view === "connect" ? (
-        /* ===== Connection Form ===== */
-        <div className="px-6 pb-6 space-y-4">
-          {/* Platform Select */}
-          <div>
-            <label className="block text-[11px] font-semibold text-foreground/60 mb-1.5">פלטפורמה</label>
-            <div className="flex gap-2">
-              {[
-                { value: "mt4", label: "MT4" },
-                { value: "mt5", label: "MT5" },
-                { value: "ctrader", label: "cTrader" },
-              ].map(p => (
-                <button
-                  key={p.value}
-                  onClick={() => setForm(f => ({ ...f, platform: p.value }))}
-                  className={`haptic-press flex-1 rounded-xl border py-2.5 text-[12px] font-bold transition-all ${
-                    form.platform === p.value
-                      ? "bg-primary/10 border-primary/25 text-primary cyan-glow"
-                      : "bg-secondary/20 border-border/30 text-muted-foreground/50 hover:border-border/50"
-                  }`}
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Server Name */}
-          <div>
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <label className="text-[11px] font-semibold text-foreground/60">שם שרת ברוקר</label>
-              <div className="group relative">
-                <div className="flex h-4 w-4 items-center justify-center rounded-full bg-muted-foreground/10 text-muted-foreground/30 text-[8px] font-bold cursor-help">?</div>
-                <div className="absolute bottom-full right-0 mb-1.5 hidden group-hover:block w-[200px] rounded-lg bg-card border border-border/50 p-2 text-[9px] text-muted-foreground/60 shadow-xl z-10">
-                  ניתן למצוא את שם השרת בפלטפורמת המסחר שלך תחת File → Login או בהגדרות החשבון
-                </div>
-              </div>
-            </div>
-            <input
-              type="text"
-              value={form.serverName}
-              onChange={e => setForm(f => ({ ...f, serverName: e.target.value }))}
-              placeholder="לדוגמה: ICMarkets-Live01"
-              dir="ltr"
-              className="w-full rounded-xl border border-border/30 bg-secondary/20 px-4 py-2.5 text-[12px] text-foreground font-mono placeholder:text-muted-foreground/20 focus:border-primary/30 focus:bg-primary/[0.02] focus:outline-none transition-all"
-            />
-          </div>
+  // Close suggestions on outside click
+  React.useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (serverInputRef.current && !serverInputRef.current.contains(e.target as Node)) {
+        setServerSuggestionsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
           {/* Account Login */}
           <div>
