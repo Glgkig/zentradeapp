@@ -315,10 +315,9 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
               </button>
 
               {userMenu && (
-                <>
-                  <div className="fixed inset-0 z-[60] bg-black/40 md:bg-transparent" onClick={() => setUserMenu(false)} />
-                  {/* Desktop dropdown */}
-                  <div className="hidden md:block absolute left-0 top-full mt-2 w-56 z-[70] rounded-2xl border border-border bg-card shadow-2xl shadow-black/20 animate-in fade-in slide-in-from-top-1 duration-150 overflow-hidden">
+                <div className="hidden md:block">
+                  <div className="fixed inset-0 z-[60] bg-transparent" onClick={() => setUserMenu(false)} />
+                  <div className="absolute left-0 top-full mt-2 w-56 z-[70] rounded-2xl border border-border bg-card shadow-2xl shadow-black/20 animate-in fade-in slide-in-from-top-1 duration-150 overflow-hidden">
                     <UserMenuContent
                       userName={userName}
                       userEmail={userEmail}
@@ -329,20 +328,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                       onUpgrade={() => { setUserMenu(false); navigate("/pricing"); }}
                     />
                   </div>
-                  {/* Mobile bottom sheet */}
-                  <div className="md:hidden fixed bottom-0 left-0 right-0 z-[70] rounded-t-2xl border-t border-border bg-card shadow-2xl shadow-black/30 animate-in slide-in-from-bottom duration-200 overflow-hidden">
-                    <div className="mx-auto mt-2 mb-1 h-1 w-10 rounded-full bg-muted-foreground/20" />
-                    <UserMenuContent
-                      userName={userName}
-                      userEmail={userEmail}
-                      avatarUrl={profile?.avatar_url}
-                      onClose={() => setUserMenu(false)}
-                      onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
-                      onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
-                      onUpgrade={() => { setUserMenu(false); navigate("/pricing"); }}
-                    />
-                  </div>
-                </>
+                </div>
               )}
             </div>
           </div>
