@@ -10,7 +10,7 @@ import {
   Calculator, Check, Crown, Loader2, Target, Crosshair,
   BarChart3, Flame, Swords, LineChart,
 } from "lucide-react";
-import zentradeLogo from "@/assets/zentrade-logo.png";
+import zentradeLogo from "@/assets/logo.jpg";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
