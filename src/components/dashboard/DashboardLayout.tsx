@@ -755,6 +755,58 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
             </div>
           </div>
 
+          {/* Account Login */}
+          <div>
+            <label className="block text-[11px] font-semibold text-foreground/60 mb-1.5">מספר חשבון</label>
+            <input
+              type="text"
+              value={form.login}
+              onChange={e => setForm(f => ({ ...f, login: e.target.value }))}
+              placeholder="לדוגמה: 12345678"
+              dir="ltr"
+              className="w-full rounded-xl border border-border/30 bg-secondary/20 px-4 py-2.5 text-[12px] text-foreground font-mono placeholder:text-muted-foreground/20 focus:border-primary/30 focus:bg-primary/[0.02] focus:outline-none transition-all"
+            />
+          </div>
+
+          {/* Password */}
+          <div>
+            <label className="block text-[11px] font-semibold text-foreground/60 mb-1.5">סיסמה</label>
+            <input
+              type="password"
+              value={form.password}
+              onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+              placeholder="סיסמת החשבון שלך"
+              dir="ltr"
+              className="w-full rounded-xl border border-border/30 bg-secondary/20 px-4 py-2.5 text-[12px] text-foreground font-mono placeholder:text-muted-foreground/20 focus:border-primary/30 focus:bg-primary/[0.02] focus:outline-none transition-all"
+            />
+          </div>
+
+          {/* Connect Button */}
+          <button
+            onClick={handleConnect}
+            disabled={connecting}
+            className="haptic-press w-full rounded-xl bg-primary text-primary-foreground py-3 text-[13px] font-bold transition-all hover:bg-primary/90 cyan-glow disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px] flex items-center justify-center gap-2"
+          >
+            {connecting ? (
+              <>
+                <div className="h-4 w-4 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin" />
+                <span>מתחבר לברוקר... יוצר חיבור מאובטח</span>
+              </>
+            ) : (
+              <>
+                <Plug className="h-4 w-4" />
+                <span>חבר חשבון</span>
+              </>
+            )}
+          </button>
+
+          {/* Security note */}
+          <div className="flex items-center gap-2 justify-center pt-1">
+            <ShieldCheck className="h-3 w-3 text-primary/40" />
+            <p className="text-[9px] text-muted-foreground/25 font-mono">AES-256 encrypted · read-only access</p>
+          </div>
+        </div>
+      ) : (
         /* ===== Broker List View ===== */
         <>
           {/* MetaApi Connected Accounts */}
