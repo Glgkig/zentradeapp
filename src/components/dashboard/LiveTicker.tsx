@@ -26,8 +26,8 @@ const TickerItemDisplay = ({ item }: { item: TickerItem }) => {
 const LiveTicker = () => {
   const { data, isLive } = useMarketData();
 
-  // Duplicate items for seamless scroll
-  const items = [...data, ...data];
+  // Triple items for seamless infinite scroll — no gaps
+  const items = [...data, ...data, ...data];
 
   return (
     <div className="relative w-full overflow-hidden border-b border-border/30 bg-card/60 backdrop-blur-md">
