@@ -12,18 +12,18 @@ import { useUserProfile } from "@/contexts/UserProfileContext";
 
 /* ── Monthly P&L data ── */
 const monthlyData = [
-  { month: "ינו׳", pnl: 1200 },
-  { month: "פבר׳", pnl: 3800 },
-  { month: "מרץ", pnl: -650 },
-  { month: "אפר׳", pnl: 4250 },
-  { month: "מאי", pnl: 2100 },
-  { month: "יוני", pnl: -300 },
-  { month: "יולי", pnl: 1850 },
-  { month: "אוג׳", pnl: 3200 },
-  { month: "ספט׳", pnl: 950 },
-  { month: "אוק׳", pnl: 2700 },
-  { month: "נוב׳", pnl: -420 },
   { month: "דצמ׳", pnl: 1600 },
+  { month: "נוב׳", pnl: -420 },
+  { month: "אוק׳", pnl: 2700 },
+  { month: "ספט׳", pnl: 950 },
+  { month: "אוג׳", pnl: 3200 },
+  { month: "יולי", pnl: 1850 },
+  { month: "יוני", pnl: -300 },
+  { month: "מאי", pnl: 2100 },
+  { month: "אפר׳", pnl: 4250 },
+  { month: "מרץ", pnl: -650 },
+  { month: "פבר׳", pnl: 3800 },
+  { month: "ינו׳", pnl: 1200 },
 ];
 
 /* ── Setup performance data ── */
@@ -294,7 +294,8 @@ const HomeDashboard = ({ userName, onOpenTrade }: { userName: string; onOpenTrad
                   dataKey="month"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 11, fill: "hsl(220, 10%, 50%)" }}
+                  tick={{ fontSize: 10, fill: "hsl(220, 10%, 50%)" }}
+                  interval={0}
                 />
                 <YAxis hide />
                 <Tooltip
