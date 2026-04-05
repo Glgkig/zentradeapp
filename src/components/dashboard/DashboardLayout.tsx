@@ -462,6 +462,8 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
           side="bottom"
           className="md:hidden z-[80] rounded-t-3xl border-white/[0.08] bg-[#111116] p-0 max-h-[85vh] overflow-y-auto"
         >
+          <SheetTitle className="sr-only">תפריט משתמש</SheetTitle>
+          <SheetDescription className="sr-only">גישה מהירה להגדרות, שדרוג החשבון והתנתקות.</SheetDescription>
           <div className="flex justify-center pt-3 pb-1"><div className="w-10 h-1 rounded-full bg-muted-foreground/15" /></div>
           <UserMenuContent
             userName={userName}
