@@ -250,25 +250,30 @@ const EconomicNewsPage = () => {
     fetchEvents();
   }, []);
 
-  // Split events: today vs upcoming
   const now = new Date();
-  const todayEvents = allEvents
-    .filter((ev) => {
-      try {
-        return isSameDay(parseISO(ev.date), now);
-      } catch { return false; }
-    })
-    .filter((ev) => new Date(ev.date) >= now) // only upcoming today
+  const [selectedDate, setSelectedDate] = useState<Date>(now);
+
+  // Build 21-day range (-3 … +17)
+  const dateRange = Array.from({ length: 21 }, (_, i) => addDays(now, i - 3));
+
+  // Events for selected date
+  const selectedEvents = allEvents
+    .filter((ev) => { try { return isSameDay(parseISO(ev.date), selectedDate); } catch { return false; } })
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-  const upcomingEvents = allEvents
-    .filter((ev) => {
-      try {
-        const d = parseISO(ev.date);
-        return d > now && !isSameDay(d, now);
-      } catch { return false; }
-    })
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  // Count events per day for dots
+  const eventsPerDay = (d: Date) => allEvents.filter((ev) => { try { return isSameDay(parseISO(ev.date), d); } catch { return false; } });
+  const highImpactOnDay = (d: Date) => eventsPerDay(d).some((ev) => ev.impact === "high");
+
+  const dateBarRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to today on mount
+  useEffect(() => {
+    if (dateBarRef.current) {
+      const todayEl = dateBarRef.current.querySelector("[data-today='true']");
+      if (todayEl) todayEl.scrollIntoView({ inline: "center", behavior: "instant" as ScrollBehavior });
+    }
+  }, [allEvents]);
 
   const handleAddToJournal = (event: EconomicEvent) => {
     toast.success("נוסף ליומן המסחר", {
@@ -297,14 +302,6 @@ const EconomicNewsPage = () => {
     window.open(url.toString(), "_blank");
     toast.success("נפתח Google Calendar");
   };
-
-  // Group upcoming events by day
-  const upcomingByDay: Record<string, EconomicEvent[]> = {};
-  upcomingEvents.forEach((ev) => {
-    const dayKey = ev.date.split("T")[0];
-    if (!upcomingByDay[dayKey]) upcomingByDay[dayKey] = [];
-    upcomingByDay[dayKey].push(ev);
-  });
 
   const tabs = [
     { id: "reports" as const, label: "דוחות אדומים 🔴", icon: Flame, color: "destructive" },
@@ -393,87 +390,93 @@ const EconomicNewsPage = () => {
             </div>
           ) : (
             <>
-              {/* ── Today's Alerts Section ── */}
-              <div className="rounded-2xl border border-destructive/20 bg-destructive/[0.02] backdrop-blur-sm overflow-hidden">
-                <div className="flex items-center justify-between px-4 py-3 border-b border-destructive/10">
+              {/* ── Scrollable Date Bar ── */}
+              <div className="shrink-0 rounded-2xl border border-border/20 bg-card/30 backdrop-blur-sm overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-2 border-b border-border/10">
                   <div className="flex items-center gap-2">
-                    <AlertTriangle className="h-3.5 w-3.5 text-destructive" />
-                    <span className="text-xs font-bold text-destructive">התראות היום 🔴</span>
-                    <span className="text-2xs text-muted-foreground/40">
-                      {format(now, "dd/MM/yyyy")}
+                    <CalendarIcon className="h-3.5 w-3.5 text-primary" />
+                    <span className="text-xs font-bold text-foreground">בחר תאריך</span>
+                  </div>
+                  <span className="text-2xs text-muted-foreground/40 font-mono">שעון ישראל 🇮🇱</span>
+                </div>
+                <div ref={dateBarRef} className="flex gap-1 px-2 py-2.5 overflow-x-auto scrollbar-none snap-x snap-mandatory">
+                  {dateRange.map((d) => {
+                    const active = isSameDay(d, selectedDate);
+                    const today = isToday(d);
+                    const evCount = eventsPerDay(d).length;
+                    const hasHigh = highImpactOnDay(d);
+                    const isWeekend = d.getDay() === 0 || d.getDay() === 6;
+                    return (
+                      <button
+                        key={d.toISOString()}
+                        data-today={today || undefined}
+                        onClick={() => setSelectedDate(d)}
+                        className={cn(
+                          "haptic-press snap-center flex flex-col items-center shrink-0 w-[52px] rounded-xl py-2 gap-0.5 border transition-all",
+                          active
+                            ? "border-primary/30 bg-primary/10 text-primary"
+                            : today
+                              ? "border-accent/20 bg-accent/[0.04] text-foreground"
+                              : isWeekend
+                                ? "border-transparent bg-muted/10 text-muted-foreground/40"
+                                : "border-transparent text-muted-foreground/60 hover:bg-secondary/50"
+                        )}
+                      >
+                        <span className="text-[9px] font-medium leading-none">
+                          {format(d, "EEE", { locale: he })}
+                        </span>
+                        <span className={cn("text-base font-bold leading-none", active && "text-primary")}>
+                          {format(d, "d")}
+                        </span>
+                        <span className="text-[8px] leading-none text-muted-foreground/40">
+                          {format(d, "MMM", { locale: he })}
+                        </span>
+                        {/* Event indicator dots */}
+                        <div className="flex items-center gap-0.5 h-2 mt-0.5">
+                          {evCount > 0 && (
+                            <div className={cn(
+                              "h-1.5 w-1.5 rounded-full",
+                              hasHigh ? "bg-destructive" : "bg-primary/60"
+                            )} />
+                          )}
+                          {evCount > 2 && <div className="h-1 w-1 rounded-full bg-muted-foreground/30" />}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* ── Events for selected date ── */}
+              <div className="rounded-2xl border border-border/20 bg-card/20 backdrop-blur-sm overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-border/10">
+                  <div className="flex items-center gap-2">
+                    {isToday(selectedDate) && <AlertTriangle className="h-3.5 w-3.5 text-destructive" />}
+                    {!isToday(selectedDate) && <CalendarIcon className="h-3.5 w-3.5 text-primary" />}
+                    <span className={cn("text-xs font-bold", isToday(selectedDate) ? "text-destructive" : "text-foreground")}>
+                      {isToday(selectedDate) ? "התראות היום 🔴" : format(selectedDate, "EEEE, d בMMMM yyyy", { locale: he })}
                     </span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    {todayEvents.length > 0 && (
-                      <span className="flex h-5 items-center rounded-full bg-destructive/10 border border-destructive/20 px-2 text-[10px] font-bold text-destructive">
-                        {todayEvents.length} דוחות
-                      </span>
-                    )}
-                    <span className="text-2xs text-muted-foreground/30 font-mono">שעון ישראל 🇮🇱</span>
-                  </div>
+                  <span className="text-2xs text-muted-foreground/30 font-mono">
+                    {selectedEvents.length > 0 ? `${selectedEvents.length} דוחות` : ""}
+                  </span>
                 </div>
-
                 <div className="p-3 space-y-2">
-                  {todayEvents.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center text-center py-6">
+                  {selectedEvents.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center text-center py-8">
                       <Globe className="h-7 w-7 text-muted-foreground/15 mb-2" />
                       <p className="text-xs text-muted-foreground/40">
-                        {now.getDay() === 0 || now.getDay() === 6
+                        {selectedDate.getDay() === 0 || selectedDate.getDay() === 6
                           ? "סופ״ש — השווקים סגורים"
-                          : "אין דוחות נוספים היום"}
+                          : "אין דוחות ביום זה"}
                       </p>
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
-                      {todayEvents.map((event, i) => (
-                        <EventCard key={`today-${i}`} event={event} onAddToCalendar={handleAddToGoogleCalendar} onAddToJournal={handleAddToJournal} />
+                      {selectedEvents.map((event, i) => (
+                        <EventCard key={`sel-${i}`} event={event} onAddToCalendar={handleAddToGoogleCalendar} onAddToJournal={handleAddToJournal} />
                       ))}
                     </div>
-                  )}
-                </div>
-              </div>
-
-              {/* ── Upcoming Events Section ── */}
-              <div className="rounded-2xl border border-border/20 bg-card/20 backdrop-blur-sm overflow-hidden">
-                <div className="flex items-center justify-between px-4 py-3 border-b border-border/10">
-                  <div className="flex items-center gap-2">
-                    <CalendarIcon className="h-3.5 w-3.5 text-primary" />
-                    <span className="text-xs font-bold text-foreground">דוחות קרובים</span>
-                  </div>
-                  <span className="text-2xs text-muted-foreground/30 font-mono">
-                    {upcomingEvents.length} אירועים
-                  </span>
-                </div>
-
-                <div className="p-3 space-y-4">
-                  {Object.keys(upcomingByDay).length === 0 ? (
-                    <div className="flex flex-col items-center justify-center text-center py-6">
-                      <CalendarIcon className="h-7 w-7 text-muted-foreground/15 mb-2" />
-                      <p className="text-xs text-muted-foreground/40">אין דוחות קרובים</p>
-                    </div>
-                  ) : (
-                    Object.entries(upcomingByDay).map(([dayKey, dayEvents]) => {
-                      const dayDate = parseISO(dayKey);
-                      return (
-                        <div key={dayKey}>
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="h-px flex-1 bg-border/15" />
-                            <span className="text-2xs font-semibold text-muted-foreground/50 shrink-0">
-                              {format(dayDate, "EEEE, d בMMMM", { locale: he })}
-                            </span>
-                            <span className="shrink-0 flex h-4 items-center rounded-full bg-primary/10 border border-primary/15 px-1.5 text-[9px] font-bold text-primary">
-                              {dayEvents.length}
-                            </span>
-                            <div className="h-px flex-1 bg-border/15" />
-                          </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
-                            {dayEvents.map((event, i) => (
-                              <EventCard key={`${dayKey}-${i}`} event={event} onAddToCalendar={handleAddToGoogleCalendar} onAddToJournal={handleAddToJournal} />
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    })
                   )}
                 </div>
               </div>
