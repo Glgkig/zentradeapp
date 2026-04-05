@@ -26,7 +26,7 @@ import logoIbkr from "@/assets/logos/ibkr-full.png";
 import logoTopstep from "@/assets/logos/topstepx-full.png";
 import logoForex from "@/assets/logos/forex-full.png";
 import logoNinjaTrader from "@/assets/logos/ninjatrader-full.png";
-import heroScreenshot from "@/assets/showcase/dashboard-hero-enhanced.jpg";
+import heroScreenshot from "@/assets/showcase/dashboard-hero-clean.jpg";
 
 
 /* ===== Scroll Animation Hook ===== */
