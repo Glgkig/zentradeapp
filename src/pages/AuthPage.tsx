@@ -27,11 +27,7 @@ import logoTopstep from "@/assets/logos/topstepx-full.png";
 import logoForex from "@/assets/logos/forex-full.png";
 import logoNinjaTrader from "@/assets/logos/ninjatrader-full.png";
 
-// Showcase screenshots
-import showcaseStats from "@/assets/showcase/dashboard-stats.jpg";
-import showcaseEconomic from "@/assets/showcase/dashboard-economic.jpg";
-import showcaseTax from "@/assets/showcase/dashboard-tax.jpg";
-import showcaseRisk from "@/assets/showcase/dashboard-risk.jpg";
+
 
 /* ===== Scroll Animation Hook ===== */
 const useScrollReveal = () => {
