@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription, POLAR_URL } from "@/contexts/SubscriptionContext";
 import { useNavigate } from "react-router-dom";
@@ -23,7 +23,6 @@ import EconomicNewsPage from "@/pages/EconomicNewsPage";
 import ForensicTradeDrawer from "@/components/dashboard/ForensicTradeDrawer";
 import LiveTicker from "@/components/dashboard/LiveTicker";
 import AvatarPicker, { UserAvatar } from "@/components/AvatarPicker";
-import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 
 import logoBinanceFull from "@/assets/logos/binance-full.png";
 import logoTradeLockerFull from "@/assets/logos/tradelocker-full.png";
@@ -87,6 +86,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [upgradeModal, setUpgradeModal] = useState(false);
   const [tradeDrawerOpen, setTradeDrawerOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement | null>(null);
   const [dark, setDark] = useState(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("zentrade-theme") !== "light";
@@ -105,6 +105,33 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
     localStorage.setItem("zentrade-theme", dark ? "dark" : "light");
   }, [dark]);
 
+  useEffect(() => {
+    if (!userMenu) return;
+
+    const handlePointerDown = (event: MouseEvent | TouchEvent) => {
+      const target = event.target as Node | null;
+      if (target && !userMenuRef.current?.contains(target)) {
+        setUserMenu(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setUserMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("touchstart", handlePointerDown);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("touchstart", handlePointerDown);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [userMenu]);
+
   const completeOnboarding = async () => {
     setShowOnboarding(false);
     await refreshProfile();
@@ -113,6 +140,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   const handleNav = (id: string) => {
     setActiveNav(id);
     setMobileNavOpen(false);
+    setUserMenu(false);
   };
 
   const userName = profile?.full_name || "סוחר";
@@ -301,9 +329,14 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
             </button>
 
             {/* User */}
-            <div className="relative">
+            <div ref={userMenuRef} className="relative">
               <button
-                onClick={() => setUserMenu(!userMenu)}
+                onClick={() => {
+                  setMobileNavOpen(false);
+                  setUserMenu((prev) => !prev);
+                }}
+                aria-expanded={userMenu}
+                aria-haspopup="menu"
                 className="flex items-center gap-2 rounded-xl border border-border/50 bg-secondary/30 px-2 py-1.5 hover:bg-secondary/60 transition-all"
               >
                 <UserAvatar avatarUrl={profile?.avatar_url} userName={userName} size="sm" />
@@ -314,6 +347,33 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                 <ChevronDown className={`h-3 w-3 text-muted-foreground/30 hidden md:block transition-transform ${userMenu ? "rotate-180" : ""}`} />
               </button>
 
+              {userMenu && (
+                <div
+                  className="absolute left-0 top-[calc(100%+0.6rem)] z-[90] w-[calc(100vw-1.5rem)] max-w-[22rem] overflow-hidden rounded-[1.5rem] border border-border/60 bg-card/95 shadow-2xl backdrop-blur-2xl animate-in fade-in-0 zoom-in-95 slide-in-from-top-2"
+                  role="menu"
+                >
+                  <div className="flex justify-center pt-3 pb-1">
+                    <div className="h-1 w-10 rounded-full bg-muted/80" />
+                  </div>
+                  <UserMenuContent
+                    userName={userName}
+                    userEmail={userEmail}
+                    avatarUrl={profile?.avatar_url}
+                    onClose={() => setUserMenu(false)}
+                    onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
+                    onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
+                    onUpgrade={() => { setUserMenu(false); navigate("/pricing"); }}
+                  />
+                  <div className="px-4 pb-4 pt-2">
+                    <button
+                      onClick={() => setUserMenu(false)}
+                      className="w-full rounded-2xl border border-border/60 bg-secondary/40 py-3 text-[12px] font-medium text-muted-foreground transition-colors hover:bg-secondary/70"
+                    >
+                      סגור
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </header>
@@ -478,29 +538,6 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
         </>
       )}
 
-      <Sheet open={userMenu} onOpenChange={setUserMenu}>
-        <SheetContent
-          side="bottom"
-          className="z-[80] rounded-t-3xl border-white/[0.08] bg-[#111116] p-0 max-h-[85vh] overflow-y-auto"
-        >
-          <SheetTitle className="sr-only">תפריט משתמש</SheetTitle>
-          <SheetDescription className="sr-only">גישה מהירה להגדרות, שדרוג החשבון והתנתקות.</SheetDescription>
-          <div className="flex justify-center pt-3 pb-1"><div className="w-10 h-1 rounded-full bg-muted-foreground/15" /></div>
-          <UserMenuContent
-            userName={userName}
-            userEmail={userEmail}
-            avatarUrl={profile?.avatar_url}
-            onClose={() => setUserMenu(false)}
-            onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
-            onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
-            onUpgrade={() => { setUserMenu(false); navigate("/pricing"); }}
-          />
-          <div className="px-4 pb-8 pt-2">
-            <button onClick={() => setUserMenu(false)} className="w-full rounded-xl bg-white/[0.04] border border-white/[0.06] py-3 text-[12px] font-medium text-muted-foreground/50">סגור</button>
-          </div>
-        </SheetContent>
-      </Sheet>
-
       {showOnboarding && (
         <OnboardingModal userName={userName} onComplete={completeOnboarding} />
       )}
@@ -513,36 +550,43 @@ const UserMenuContent = ({ userName, userEmail, avatarUrl, onClose, onSettings, 
   const { isPro } = useSubscription();
   return (
   <>
-    <div className="px-4 py-3 border-b border-white/[0.06]">
+    <div className="border-b border-border/60 px-4 py-3">
       <div className="flex items-center gap-2.5">
         <UserAvatar avatarUrl={avatarUrl} userName={userName} size="md" />
-        <div>
+        <div className="min-w-0 flex-1">
           <p className="text-[12px] font-bold text-foreground">{userName}</p>
-          <p className="text-2xs text-muted-foreground/40 font-mono">{userEmail}</p>
+          <p className="truncate text-2xs font-mono text-muted-foreground">{userEmail}</p>
         </div>
+        <button
+          onClick={onClose}
+          className="flex h-9 w-9 items-center justify-center rounded-xl border border-border/60 bg-secondary/40 text-muted-foreground transition-colors hover:bg-secondary/70 hover:text-foreground"
+          aria-label="סגור תפריט משתמש"
+        >
+          <X className="h-4 w-4" />
+        </button>
       </div>
     </div>
-    <div className="px-4 py-2 border-b border-white/[0.04]">
+    <div className="border-b border-border/50 px-4 py-2">
       <div className="flex items-center justify-between">
-        <span className="text-2xs text-muted-foreground/40">תוכנית</span>
-        <span className={`rounded-lg px-2 py-0.5 text-2xs font-bold font-mono ${isPro ? "bg-accent/10 border border-accent/15 text-accent" : "bg-muted/20 border border-white/[0.06] text-muted-foreground/50"}`}>
+        <span className="text-2xs text-muted-foreground">תוכנית</span>
+        <span className={`rounded-lg border px-2 py-0.5 text-2xs font-bold font-mono ${isPro ? "border-accent/20 bg-accent/10 text-accent" : "border-border/60 bg-secondary/40 text-muted-foreground"}`}>
           {isPro ? "PRO" : "LITE"}
         </span>
       </div>
     </div>
-    <div className="py-1">
-      <button onClick={onUpgrade} className="w-full flex items-center gap-3 px-4 py-2.5 text-right hover:bg-primary/[0.04] transition-colors min-h-[44px]">
-        <Zap className="h-4 w-4 text-accent/50" />
-        <p className="text-[12px] font-medium text-foreground/70">שדרג חשבון</p>
+    <div className="py-1.5">
+      <button onClick={onUpgrade} className="flex min-h-[48px] w-full items-center gap-3 px-4 py-2.5 text-right transition-colors hover:bg-secondary/60">
+        <Zap className="h-4 w-4 text-accent" />
+        <p className="text-[12px] font-medium text-foreground">שדרג חשבון</p>
       </button>
-      <button onClick={onSettings} className="w-full flex items-center gap-3 px-4 py-2.5 text-right hover:bg-white/[0.04] transition-colors min-h-[44px]">
-        <Settings className="h-4 w-4 text-muted-foreground/40" />
-        <p className="text-[12px] font-medium text-foreground/70">הגדרות</p>
+      <button onClick={onSettings} className="flex min-h-[48px] w-full items-center gap-3 px-4 py-2.5 text-right transition-colors hover:bg-secondary/60">
+        <Settings className="h-4 w-4 text-muted-foreground" />
+        <p className="text-[12px] font-medium text-foreground">הגדרות</p>
       </button>
-      <div className="mx-4 my-1 border-t border-white/[0.04]" />
-      <button onClick={onLogout} className="w-full flex items-center gap-3 px-4 py-2.5 text-right hover:bg-destructive/[0.04] transition-colors min-h-[44px]">
-        <LogOut className="h-4 w-4 text-destructive/50" />
-        <p className="text-[12px] font-medium text-destructive/60">התנתק</p>
+      <div className="mx-4 my-1 border-t border-border/50" />
+      <button onClick={onLogout} className="flex min-h-[48px] w-full items-center gap-3 px-4 py-2.5 text-right transition-colors hover:bg-destructive/10">
+        <LogOut className="h-4 w-4 text-destructive" />
+        <p className="text-[12px] font-medium text-destructive">התנתק</p>
       </button>
     </div>
   </>
