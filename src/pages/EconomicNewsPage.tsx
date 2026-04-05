@@ -250,8 +250,8 @@ const EconomicNewsPage = () => {
     fetchEvents();
   }, []);
 
-  const now = new Date();
-  const [selectedDate, setSelectedDate] = useState<Date>(now);
+  const [now] = useState(() => new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(() => new Date());
 
   // Build 37-day range (-7 … +30) — covers a full month ahead
   const dateRange = Array.from({ length: 37 }, (_, i) => addDays(now, i - 7));
@@ -279,7 +279,8 @@ const EconomicNewsPage = () => {
       const todayEl = dateBarRef.current.querySelector("[data-today='true']");
       if (todayEl) todayEl.scrollIntoView({ inline: "center", behavior: "instant" as ScrollBehavior });
     }
-  }, [allEvents]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleAddToJournal = (event: EconomicEvent) => {
     toast.success("נוסף ליומן המסחר", {
