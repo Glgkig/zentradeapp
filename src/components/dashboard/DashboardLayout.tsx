@@ -6,7 +6,7 @@ import {
   LayoutDashboard, BookOpen, Bot, ShieldCheck,
   LogOut, ChevronDown, Plug, Menu, X, Settings, Sun, Moon, Zap,
   Crosshair, PieChart, History, CheckCircle2, Flame, Eye, Crown, Star, Sparkles, Newspaper,
-  Calculator, Plus, ShieldAlert,
+  Calculator, Plus, ShieldAlert, TrendingUp, Brain, Clock, CandlestickChart, BarChart3, CalendarClock, LineChart, Shield,
 } from "lucide-react";
 import zentradeLogo from "@/assets/zentrade-z-logo.png";
 import SettingsPage from "@/pages/SettingsPage";
