@@ -148,7 +148,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   const userEmail = user?.email || "";
 
   const renderContent = () => {
-    if (activeNav === "dashboard") return <HomeDashboard userName={userName} onOpenTrade={() => setTradeDrawerOpen(true)} />;
+    if (activeNav === "dashboard") return <HomeDashboard userName={userName} onOpenTrade={() => setTradeDrawerOpen(true)} onConnectBroker={() => setBrokerModal(true)} />;
     if (activeNav === "setups") return <SetupsPage />;
     if (activeNav === "stats") return <StatsPage />;
     if (activeNav === "journal") return <JournalPage />;
