@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription, POLAR_URL } from "@/contexts/SubscriptionContext";
 import { useNavigate } from "react-router-dom";
