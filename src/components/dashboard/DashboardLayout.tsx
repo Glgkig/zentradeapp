@@ -314,22 +314,6 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                 <ChevronDown className={`h-3 w-3 text-muted-foreground/30 hidden md:block transition-transform ${userMenu ? "rotate-180" : ""}`} />
               </button>
 
-              {userMenu && (
-                <div className="hidden md:block">
-                  <div className="fixed inset-0 z-[60] bg-transparent" onClick={() => setUserMenu(false)} />
-                  <div className="absolute left-0 top-full mt-2 w-56 z-[70] rounded-2xl border border-border bg-card shadow-2xl shadow-black/20 animate-in fade-in slide-in-from-top-1 duration-150 overflow-hidden">
-                    <UserMenuContent
-                      userName={userName}
-                      userEmail={userEmail}
-                      avatarUrl={profile?.avatar_url}
-                      onClose={() => setUserMenu(false)}
-                      onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
-                      onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
-                      onUpgrade={() => { setUserMenu(false); navigate("/pricing"); }}
-                    />
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </header>
