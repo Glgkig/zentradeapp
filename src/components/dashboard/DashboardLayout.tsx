@@ -23,7 +23,7 @@ import EconomicNewsPage from "@/pages/EconomicNewsPage";
 import ForensicTradeDrawer from "@/components/dashboard/ForensicTradeDrawer";
 import LiveTicker from "@/components/dashboard/LiveTicker";
 import AvatarPicker, { UserAvatar } from "@/components/AvatarPicker";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 
 import logoBinanceFull from "@/assets/logos/binance-full.png";
 import logoTradeLockerFull from "@/assets/logos/tradelocker-full.png";
