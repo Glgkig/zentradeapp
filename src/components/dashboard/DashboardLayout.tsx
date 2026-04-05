@@ -233,7 +233,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                 <Plug className="h-3.5 w-3.5 text-muted-foreground/40 group-hover:text-primary" />
               </div>
               <span className="flex-1 text-right">חבר ברוקר</span>
-              <span className="rounded-lg bg-primary/10 border border-primary/15 px-1.5 py-0.5 text-2xs font-bold text-primary font-mono">2</span>
+              <span className="rounded-lg bg-primary/10 border border-primary/15 px-1.5 py-0.5 text-2xs font-bold text-primary font-mono">0</span>
             </button>
           </div>
         </nav>
