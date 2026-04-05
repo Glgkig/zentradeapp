@@ -253,8 +253,14 @@ const EconomicNewsPage = () => {
   const now = new Date();
   const [selectedDate, setSelectedDate] = useState<Date>(now);
 
-  // Build 21-day range (-3 … +17)
-  const dateRange = Array.from({ length: 21 }, (_, i) => addDays(now, i - 3));
+  // Build 37-day range (-7 … +30) — covers a full month ahead
+  const dateRange = Array.from({ length: 37 }, (_, i) => addDays(now, i - 7));
+
+  const scrollDateBar = (dir: "left" | "right") => {
+    if (!dateBarRef.current) return;
+    const amount = dir === "left" ? -260 : 260;
+    dateBarRef.current.scrollBy({ left: amount, behavior: "smooth" });
+  };
 
   // Events for selected date
   const selectedEvents = allEvents
@@ -399,7 +405,22 @@ const EconomicNewsPage = () => {
                   </div>
                   <span className="text-2xs text-muted-foreground/40 font-mono">שעון ישראל 🇮🇱</span>
                 </div>
-                <div ref={dateBarRef} className="flex gap-1 px-2 py-2.5 overflow-x-auto scrollbar-none snap-x snap-mandatory">
+                <div className="relative flex items-center">
+                  <button
+                    onClick={() => scrollDateBar("right")}
+                    className="haptic-press absolute right-0 z-10 flex h-full w-8 items-center justify-center bg-gradient-to-l from-card/90 to-transparent text-muted-foreground hover:text-primary transition-colors"
+                    aria-label="הבא"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => scrollDateBar("left")}
+                    className="haptic-press absolute left-0 z-10 flex h-full w-8 items-center justify-center bg-gradient-to-r from-card/90 to-transparent text-muted-foreground hover:text-primary transition-colors"
+                    aria-label="הקודם"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </button>
+                  <div ref={dateBarRef} className="flex gap-1 px-8 py-2.5 overflow-x-auto scrollbar-none snap-x snap-mandatory">
                   {dateRange.map((d) => {
                     const active = isSameDay(d, selectedDate);
                     const today = isToday(d);
@@ -444,6 +465,7 @@ const EconomicNewsPage = () => {
                       </button>
                     );
                   })}
+                  </div>
                 </div>
               </div>
 
