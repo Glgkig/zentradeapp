@@ -662,7 +662,7 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
       .then(({ data }) => {
         if (data && Array.isArray(data)) {
           setConnectedAccounts(data.map((a: any) => ({
-            id: a.metaapi_account_id,
+            id: a.metaapi_account_id || a.id,
             name: a.account_name || `ZenTrade-${a.login}`,
             login: a.login,
             server: a.server_name,
