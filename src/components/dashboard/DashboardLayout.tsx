@@ -602,7 +602,7 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
   const queryClient = useQueryClient();
   const [view, setView] = useState<"list" | "connect">("list");
   const [connecting, setConnecting] = useState(false);
-  const [syncing, setSyncing] = useState(false);
+  
   const [showPassword, setShowPassword] = useState(false);
   const [connectedAccounts, setConnectedAccounts] = useState<Array<{ id: string; name: string; login: string; server: string; platform: string }>>([]);
   const [form, setForm] = useState({ platform: "mt5", serverName: "", login: "", password: "" });
@@ -662,7 +662,7 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
       .then(({ data }) => {
         if (data && Array.isArray(data)) {
           setConnectedAccounts(data.map((a: any) => ({
-            id: a.metaapi_account_id,
+            id: a.metaapi_account_id || a.id,
             name: a.account_name || `ZenTrade-${a.login}`,
             login: a.login,
             server: a.server_name,
@@ -675,99 +675,6 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
   const connected = brokers.filter(b => b.connected);
   const disconnected = brokers.filter(b => !b.connected);
 
-  const saveBrokerAccount = async (account: { id: string; login: string; server: string; platform: string; name: string }) => {
-    if (!user?.id) return;
-    await supabase.from("broker_accounts" as any).upsert({
-      user_id: user.id,
-      metaapi_account_id: account.id,
-      login: account.login,
-      server_name: account.server,
-      platform: account.platform,
-      account_name: account.name,
-      last_synced_at: new Date().toISOString(),
-    } as any, { onConflict: "user_id,metaapi_account_id" });
-  };
-
-  const syncTradesForAccount = async (accountId: string, platform: string) => {
-    if (!user?.id) return;
-    try {
-      const { metaApi } = await import("@/utils/metaApi");
-      const deals = await metaApi.getHistory(accountId);
-      const closingDeals = (deals || []).filter((d: any) =>
-        d.symbol && d.profit !== undefined
-      );
-      if (closingDeals.length > 0) {
-        const rows = closingDeals.map((d: any) => ({
-          user_id: user.id,
-          symbol: d.symbol || "UNKNOWN",
-          direction: d.type?.includes("BUY") ? "long" : "short",
-          entry_price: d.price || 0,
-          entry_time: d.time || new Date().toISOString(),
-          exit_price: d.price || 0,
-          exit_time: d.time || new Date().toISOString(),
-          lot_size: d.volume || 0,
-          pnl: d.profit ?? 0,
-          status: "closed",
-          notes: `Synced from ${platform.toUpperCase()} via MetaApi`,
-          tags: ["metaapi-sync"],
-        }));
-        const { error: insertErr } = await supabase.from("trades").insert(rows);
-        if (insertErr) console.error("Trade sync error:", insertErr);
-        else toast.success(`${rows.length} עסקאות סונכרנו בהצלחה!`);
-      }
-      queryClient.invalidateQueries({ queryKey: ["trades"] });
-    } catch (syncErr: any) {
-      console.error("Trade sync failed:", syncErr);
-      toast.info("סנכרון העסקאות ייתכן וייקח כמה דקות.");
-    }
-  };
-
-  const handleSyncExisting = async () => {
-    if (!user?.id) return;
-    setSyncing(true);
-    try {
-      const { metaApi } = await import("@/utils/metaApi");
-      const accounts = await metaApi.listAccounts();
-      const deployedAccounts = accounts.filter((a: any) => a.state === "DEPLOYED" || a.state === "DEPLOYING");
-      
-      if (deployedAccounts.length === 0) {
-        toast.info("לא נמצאו חשבונות פעילים ב-MetaApi");
-        return;
-      }
-
-      const newAccounts: typeof connectedAccounts = [];
-      for (const a of deployedAccounts) {
-        const acc = {
-          id: a._id,
-          name: a.name || `ZenTrade-${a.login}`,
-          login: a.login,
-          server: a.server,
-          platform: a.platform,
-        };
-        await saveBrokerAccount(acc);
-        newAccounts.push(acc);
-      }
-
-      setConnectedAccounts(newAccounts);
-      toast.success(`${newAccounts.length} חשבונות סונכרנו בהצלחה!`);
-
-      // Find account 105447684 and sync its trades
-      const targetAccount = deployedAccounts.find((a: any) => a.login === "105447684");
-      if (targetAccount) {
-        toast.info("מסנכרן עסקאות עבור חשבון 105447684...");
-        await syncTradesForAccount(targetAccount._id, targetAccount.platform);
-      } else if (deployedAccounts.length > 0) {
-        // Sync first account's trades
-        toast.info(`מסנכרן עסקאות עבור חשבון ${deployedAccounts[0].login}...`);
-        await syncTradesForAccount(deployedAccounts[0]._id, deployedAccounts[0].platform);
-      }
-    } catch (err: any) {
-      toast.error(err?.message || "שגיאה בסנכרון חשבונות");
-    } finally {
-      setSyncing(false);
-    }
-  };
-
   const handleConnect = async () => {
     if (!form.serverName || !form.login || !form.password) {
       toast.error("נא למלא את כל השדות");
@@ -775,25 +682,8 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
     }
     setConnecting(true);
     try {
-      const { metaApi } = await import("@/utils/metaApi");
-      const account = await metaApi.addAccount({
-        login: form.login,
-        password: form.password,
-        serverName: form.serverName,
-        platform: form.platform as "mt4" | "mt5",
-        name: `ZenTrade-${form.login}`,
-      });
-      const accountId = account._id || account.id;
-      const acc = { id: accountId, name: account.name || `ZenTrade-${form.login}`, login: form.login, server: form.serverName, platform: form.platform };
-      
-      await saveBrokerAccount(acc);
-      toast.success("החשבון חובר בהצלחה! 🎉 מסנכרן עסקאות...");
-      setConnectedAccounts(prev => [...prev, acc]);
-      setView("list");
-      setForm({ platform: "mt5", serverName: "", login: "", password: "" });
-
-      // Sync trades
-      await syncTradesForAccount(accountId, form.platform);
+      // TODO: Implement new broker connection (Social Trader Tools)
+      toast.info("חיבור ברוקר יהיה זמין בקרוב עם Social Trader Tools");
     } catch (err: any) {
       toast.error(err?.message || "חיבור נכשל. בדוק את הפרטים ונסה שוב.");
     } finally {
@@ -944,7 +834,7 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
       ) : (
         /* ===== Broker List View ===== */
         <>
-          {/* MetaApi Connected Accounts */}
+          {/* Connected Accounts */}
           {connectedAccounts.length > 0 && (
             <div className="px-6 pb-4">
               <div className="flex items-center gap-2 mb-3">
@@ -1012,28 +902,6 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
             </div>
           )}
 
-          {/* Sync Existing Accounts */}
-          {connectedAccounts.length === 0 && (
-            <div className="px-6 pb-3">
-              <button
-                onClick={handleSyncExisting}
-                disabled={syncing}
-                className="haptic-press w-full flex items-center justify-center gap-2 rounded-2xl bg-primary text-primary-foreground py-3.5 text-[12px] font-bold transition-all hover:bg-primary/90 cyan-glow disabled:opacity-50 min-h-[48px]"
-              >
-                {syncing ? (
-                  <>
-                    <div className="h-4 w-4 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin" />
-                    <span>מסנכרן חשבונות קיימים...</span>
-                  </>
-                ) : (
-                  <>
-                    <Zap className="h-4 w-4" />
-                    <span>סנכרן חשבונות קיימים מ-MetaApi</span>
-                  </>
-                )}
-              </button>
-            </div>
-          )}
 
           {/* Add Account CTA */}
           <div className="px-6 pb-4">
