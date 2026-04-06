@@ -1012,28 +1012,6 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
             </div>
           )}
 
-          {/* Sync Existing Accounts */}
-          {connectedAccounts.length === 0 && (
-            <div className="px-6 pb-3">
-              <button
-                onClick={handleSyncExisting}
-                disabled={syncing}
-                className="haptic-press w-full flex items-center justify-center gap-2 rounded-2xl bg-primary text-primary-foreground py-3.5 text-[12px] font-bold transition-all hover:bg-primary/90 cyan-glow disabled:opacity-50 min-h-[48px]"
-              >
-                {syncing ? (
-                  <>
-                    <div className="h-4 w-4 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin" />
-                    <span>מסנכרן חשבונות קיימים...</span>
-                  </>
-                ) : (
-                  <>
-                    <Zap className="h-4 w-4" />
-                    <span>סנכרן חשבונות קיימים מ-MetaApi</span>
-                  </>
-                )}
-              </button>
-            </div>
-          )}
 
           {/* Add Account CTA */}
           <div className="px-6 pb-4">
