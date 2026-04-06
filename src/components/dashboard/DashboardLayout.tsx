@@ -834,7 +834,7 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
       ) : (
         /* ===== Broker List View ===== */
         <>
-          {/* MetaApi Connected Accounts */}
+          {/* Connected Accounts */}
           {connectedAccounts.length > 0 && (
             <div className="px-6 pb-4">
               <div className="flex items-center gap-2 mb-3">
