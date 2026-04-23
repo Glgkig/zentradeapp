@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -56,6 +56,8 @@ const SignupLobby = ({ onContinue }: { onContinue: () => void }) => {
   const [vis, setVis] = useState(false);
   const [tick, setTick] = useState(0);
   const [liveProfit, setLiveProfit] = useState(4_827_340);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const pageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { const t = setTimeout(() => setVis(true), 80); return () => clearTimeout(t); }, []);
   useEffect(() => { const t = setInterval(() => setTick(v => (v + 1) % 3), 3500); return () => clearInterval(t); }, []);
@@ -64,6 +66,18 @@ const SignupLobby = ({ onContinue }: { onContinue: () => void }) => {
       setLiveProfit(v => v + Math.floor(Math.random() * 750 + 50));
     }, 1200);
     return () => clearInterval(t);
+  }, []);
+
+  useEffect(() => {
+    const el = pageRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = el;
+      const max = scrollHeight - clientHeight;
+      setScrollProgress(max > 0 ? (scrollTop / max) * 100 : 0);
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
   }, []);
 
   const fly = (i: number, axis: "Y" | "X" = "Y") => ({
@@ -107,7 +121,22 @@ const SignupLobby = ({ onContinue }: { onContinue: () => void }) => {
         }
       `}</style>
 
-      <div className="min-h-screen bg-[#04040d] flex flex-col overflow-x-hidden relative" dir="rtl">
+      {/* Scroll progress bar */}
+      <div className="fixed top-0 left-0 right-0 h-[3px] z-[9999] pointer-events-none">
+        <div className="absolute inset-0 bg-white/[0.04]" />
+        <div className="absolute top-0 left-0 h-full transition-all duration-75"
+          style={{
+            width: `${scrollProgress}%`,
+            background: "linear-gradient(90deg, #7c3aed 0%, #4f46e5 35%, #0891b2 70%, #22d3ee 100%)",
+            boxShadow: scrollProgress > 1 ? "0 0 10px rgba(34,211,238,0.7), 0 0 20px rgba(124,58,237,0.5)" : "none",
+          }} />
+        {scrollProgress > 1 && scrollProgress < 99 && (
+          <div className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full -translate-x-1/2"
+            style={{ left: `${scrollProgress}%`, background: "#22d3ee", boxShadow: "0 0 8px #22d3ee, 0 0 16px rgba(34,211,238,0.8)" }} />
+        )}
+      </div>
+
+      <div ref={pageRef} className="min-h-screen bg-[#04040d] flex flex-col overflow-x-hidden overflow-y-auto relative" dir="rtl">
 
         {/* ── Deep background ── */}
         <div className="pointer-events-none fixed inset-0">
