@@ -55,10 +55,16 @@ const Counter = ({ target, suffix = "" }: { target: number; suffix?: string }) =
 const SignupLobby = ({ onContinue }: { onContinue: () => void }) => {
   const [vis, setVis] = useState(false);
   const [tick, setTick] = useState(0);
+  const [liveProfit, setLiveProfit] = useState(4_827_340);
 
   useEffect(() => { const t = setTimeout(() => setVis(true), 80); return () => clearTimeout(t); }, []);
-  // social proof ticker
   useEffect(() => { const t = setInterval(() => setTick(v => (v + 1) % 3), 3500); return () => clearInterval(t); }, []);
+  useEffect(() => {
+    const t = setInterval(() => {
+      setLiveProfit(v => v + Math.floor(Math.random() * 750 + 50));
+    }, 1200);
+    return () => clearInterval(t);
+  }, []);
 
   const fly = (i: number, axis: "Y" | "X" = "Y") => ({
     opacity: vis ? 1 : 0,
@@ -133,6 +139,21 @@ const SignupLobby = ({ onContinue }: { onContinue: () => void }) => {
                 animationDelay: `${(i % 9) * 0.35}s`,
               }} />
           ))}
+        </div>
+
+        {/* ── Live money ticker ── */}
+        <div className="relative z-20 flex items-center justify-center gap-3 py-2 border-b border-white/[0.04]"
+          style={{ background: "rgba(74,222,128,0.05)" }}>
+          <div className="relative">
+            <div className="w-1.5 h-1.5 rounded-full bg-green-400" style={{ boxShadow: "0 0 6px #4ade80" }} />
+            <div className="absolute inset-0 w-1.5 h-1.5 rounded-full bg-green-400 animate-ping opacity-50" />
+          </div>
+          <span className="text-[12px] font-mono font-bold text-white/50">
+            💰 רווח מתועד היום ב-ZenTrade:{" "}
+            <span className="text-green-400" style={{ textShadow: "0 0 10px rgba(74,222,128,0.6)" }}>
+              ${liveProfit.toLocaleString()}
+            </span>
+          </span>
         </div>
 
         {/* ── Navbar ── */}
