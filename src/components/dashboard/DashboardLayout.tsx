@@ -94,6 +94,8 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   const { isDemoMode } = useDemo();
   const isPro = isDemoMode ? true : isProReal;
   const [showFirstLogin, setShowFirstLogin] = useState(true);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const mainRef = useRef<HTMLElement>(null);
   const [activeNav, setActiveNav] = useState("dashboard");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [brokerModal, setBrokerModal] = useState(false);
@@ -136,6 +138,18 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   useEffect(() => {
     localStorage.setItem("zentrade-sidebar", sidebarCollapsed ? "collapsed" : "expanded");
   }, [sidebarCollapsed]);
+
+  useEffect(() => {
+    const el = mainRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = el;
+      const max = scrollHeight - clientHeight;
+      setScrollProgress(max > 0 ? (scrollTop / max) * 100 : 0);
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     if (!userMenu) return;
@@ -366,6 +380,15 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
           {/* Blue bottom line */}
           <div className="absolute bottom-0 left-0 right-0 h-[1px]"
             style={{ background: "linear-gradient(to right, transparent, rgba(59,130,246,0.25), transparent)" }} />
+          {/* Scroll progress bar */}
+          <div className="absolute bottom-0 left-0 h-[2px] transition-all duration-75 rounded-full"
+            style={{
+              width: `${scrollProgress}%`,
+              background: "linear-gradient(90deg, #7c3aed, #4f46e5, #0891b2, #22d3ee)",
+              boxShadow: scrollProgress > 0 ? "0 0 8px rgba(34,211,238,0.6), 0 0 16px rgba(124,58,237,0.4)" : "none",
+              opacity: scrollProgress > 0 ? 1 : 0,
+            }}
+          />
 
           <div className="flex items-center gap-3">
             {/* Mobile brand */}
@@ -589,7 +612,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
         </div>
 
         <LiveTicker />
-        <main className="relative flex-1 overflow-y-auto p-3 pb-4 md:p-6 flex flex-col min-h-0 bg-background">
+        <main ref={mainRef} className="relative flex-1 overflow-y-auto p-3 pb-4 md:p-6 flex flex-col min-h-0 bg-background">
           {/* Subtle terminal grid on main bg */}
           <div className="pointer-events-none fixed inset-0 terminal-grid opacity-30" style={{ zIndex: 0 }} />
           <React.Suspense fallback={
