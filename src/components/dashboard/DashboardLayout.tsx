@@ -373,6 +373,32 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
         </div>
       </aside>
 
+      {/* ===== Scroll Progress Bar ===== */}
+      <div className="fixed top-0 left-0 right-0 h-[3px] z-[9999] pointer-events-none">
+        {/* Track */}
+        <div className="absolute inset-0 bg-white/[0.04]" />
+        {/* Fill */}
+        <div
+          className="absolute top-0 left-0 h-full transition-all duration-75"
+          style={{
+            width: `${scrollProgress}%`,
+            background: "linear-gradient(90deg, #7c3aed 0%, #4f46e5 35%, #0891b2 70%, #22d3ee 100%)",
+            boxShadow: scrollProgress > 1 ? "0 0 10px rgba(34,211,238,0.7), 0 0 20px rgba(124,58,237,0.5)" : "none",
+          }}
+        />
+        {/* Glow dot at tip */}
+        {scrollProgress > 1 && scrollProgress < 99 && (
+          <div
+            className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full -translate-x-1/2"
+            style={{
+              left: `${scrollProgress}%`,
+              background: "#22d3ee",
+              boxShadow: "0 0 8px #22d3ee, 0 0 16px rgba(34,211,238,0.8)",
+            }}
+          />
+        )}
+      </div>
+
       {/* ===== Main Area ===== */}
       <div className="flex flex-1 flex-col overflow-hidden relative z-10">
         {/* Top Header */}
@@ -380,15 +406,6 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
           {/* Blue bottom line */}
           <div className="absolute bottom-0 left-0 right-0 h-[1px]"
             style={{ background: "linear-gradient(to right, transparent, rgba(59,130,246,0.25), transparent)" }} />
-          {/* Scroll progress bar */}
-          <div className="absolute bottom-0 left-0 h-[2px] transition-all duration-75 rounded-full"
-            style={{
-              width: `${scrollProgress}%`,
-              background: "linear-gradient(90deg, #7c3aed, #4f46e5, #0891b2, #22d3ee)",
-              boxShadow: scrollProgress > 0 ? "0 0 8px rgba(34,211,238,0.6), 0 0 16px rgba(124,58,237,0.4)" : "none",
-              opacity: scrollProgress > 0 ? 1 : 0,
-            }}
-          />
 
           <div className="flex items-center gap-3">
             {/* Mobile brand */}
