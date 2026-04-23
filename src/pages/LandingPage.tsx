@@ -599,176 +599,335 @@ const SectionDivider = ({ color = "rgba(59,130,246,0.12)" }: { color?: string })
 );
 
 /* ═══════════════════════════════════════════════════════════
-   THE RHYTHM SECTION — "שירים מגניבים"
+   TRADER VITAL SIGNS — Cinematic EKG Monitor
 ═══════════════════════════════════════════════════════════ */
-const EMOTION_BEATS = [
-  { label: "שיעמום", x: 0, y: 50, color: "rgba(148,163,184,0.5)" },
-  { label: "FOMO", x: 14, y: 12, color: "rgba(251,191,36,0.9)" },
-  { label: "כניסה", x: 22, y: 38, color: "rgba(96,165,250,0.9)" },
-  { label: "WIN", x: 35, y: 8, color: "rgba(74,222,128,0.9)" },
-  { label: "ביטחון יתר", x: 45, y: 30, color: "rgba(251,191,36,0.7)" },
-  { label: "TILT", x: 55, y: 75, color: "rgba(239,68,68,0.9)" },
-  { label: "נקמה", x: 65, y: 88, color: "rgba(239,68,68,1)" },
-  { label: "BLOWUP", x: 76, y: 95, color: "rgba(239,68,68,1)" },
-  { label: "אשמה", x: 88, y: 62, color: "rgba(139,92,246,0.8)" },
-  { label: "החלטה", x: 100, y: 40, color: "rgba(96,165,250,0.8)" },
+
+// The full emotional journey path — complex multi-peak waveform
+const EKG_PATH = "M 0,80 L 40,80 L 55,80 L 60,72 L 65,80 L 80,80 L 90,80 L 100,20 L 108,95 L 116,10 L 124,80 L 135,80 L 150,80 L 160,55 L 170,80 L 185,80 L 200,80 L 215,80 L 220,68 L 228,80 L 235,80 L 250,80 L 260,80 L 270,5 L 278,100 L 286,2 L 294,80 L 310,80 L 320,80 L 340,80 L 355,45 L 365,80 L 380,80 L 400,80 L 410,80 L 415,70 L 422,80 L 430,80 L 450,80 L 460,30 L 470,90 L 478,18 L 486,80 L 500,80 L 520,80 L 530,80 L 545,80 L 555,100 L 565,108 L 578,115 L 592,105 L 608,80 L 625,80 L 645,80 L 660,108 L 672,118 L 688,112 L 700,80 L 720,80 L 740,80 L 755,68 L 762,80 L 772,80 L 790,80 L 800,80 L 810,20 L 818,95 L 826,12 L 834,80 L 850,80 L 870,80 L 880,65 L 888,80 L 900,80";
+
+const EMOTION_MARKERS = [
+  { x: 40,  label: "שיעמום",      color: "#94a3b8", sub: "BOREDOM" },
+  { x: 116, label: "FOMO",        color: "#fbbf24", sub: "FEAR OF MISSING OUT" },
+  { x: 270, label: "WIN",         color: "#4ade80", sub: "EUPHORIA" },
+  { x: 365, label: "ביטחון יתר", color: "#f59e0b", sub: "OVERCONFIDENCE" },
+  { x: 478, label: "TILT",        color: "#ef4444", sub: "EMOTIONAL TRADE" },
+  { x: 592, label: "נקמה",        color: "#dc2626", sub: "REVENGE TRADING" },
+  { x: 700, label: "BLOWUP",      color: "#7f1d1d", sub: "ACCOUNT DAMAGE" },
+  { x: 826, label: "החלטה",       color: "#818cf8", sub: "RESET" },
 ];
 
-const RhythmSection = () => {
-  const pathRef = useRef<SVGPathElement>(null);
-  const triggered = useRef(false);
+const VITALS = [
+  { label: "HEART RATE",   value: "94 BPM",  sub: "EMOTIONAL FREQUENCY", color: "#ef4444", trend: "↑" },
+  { label: "P&L PRESSURE", value: "-$1,240", sub: "REVENGE CYCLE ACTIVE", color: "#f87171", trend: "↓" },
+  { label: "RISK LEVEL",   value: "CRITICAL", sub: "POSITION SIZE 4X",   color: "#fbbf24", trend: "⚠" },
+  { label: "PSYCH SCORE",  value: "23 / 100", sub: "TILT DETECTED",      color: "#a78bfa", trend: "↓" },
+];
+
+const TraderVitalSigns = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const scanRef = useRef<HTMLDivElement>(null);
+  const [activeMarker, setActiveMarker] = useState<number>(-1);
+  const [scanX, setScanX] = useState(0);
+  const [started, setStarted] = useState(false);
+  const animRef = useRef<number>(0);
+  const startTimeRef = useRef<number>(0);
+  const DURATION = 6000;
 
   useEffect(() => {
-    const observer = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting && !triggered.current) {
-        triggered.current = true;
-        if (pathRef.current) {
-          pathRef.current.style.animation = "ekg-draw 2.4s cubic-bezier(0.4,0,0.2,1) forwards";
-        }
-      }
-    }, { threshold: 0.3 });
-    if (containerRef.current) observer.observe(containerRef.current);
-    return () => observer.disconnect();
-  }, []);
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting && !started) setStarted(true);
+    }, { threshold: 0.25 });
+    if (containerRef.current) obs.observe(containerRef.current);
+    return () => obs.disconnect();
+  }, [started]);
 
-  const pts = EMOTION_BEATS.map(b => `${(b.x / 100) * 900},${(b.y / 100) * 100}`).join(" L ");
-  const pathD = `M ${pts}`;
+  useEffect(() => {
+    if (!started) return;
+    const animate = (now: number) => {
+      if (!startTimeRef.current) startTimeRef.current = now;
+      const elapsed = (now - startTimeRef.current) % DURATION;
+      const pct = elapsed / DURATION;
+      setScanX(pct * 100);
+      // Activate nearest marker
+      const px = pct * 900;
+      const nearest = EMOTION_MARKERS.reduce((best, m, i) => {
+        const d = Math.abs(m.x - px);
+        return d < best.d ? { d, i } : best;
+      }, { d: Infinity, i: -1 });
+      if (nearest.d < 30) setActiveMarker(nearest.i);
+      else setActiveMarker(-1);
+      animRef.current = requestAnimationFrame(animate);
+    };
+    animRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animRef.current);
+  }, [started]);
+
+  const pathLen = 1800;
 
   return (
-    <section ref={containerRef} className="py-28 px-6 relative overflow-hidden">
-      {/* Background glow */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] rounded-full"
-          style={{ background: "radial-gradient(ellipse, rgba(59,130,246,0.06) 0%, transparent 70%)" }} />
+    <section className="py-24 px-4 relative overflow-hidden" ref={containerRef}>
+      <style>{`
+        @keyframes ekgScan {
+          0%   { stroke-dashoffset: ${pathLen}; }
+          100% { stroke-dashoffset: 0; }
+        }
+        @keyframes vitalPulse {
+          0%,100% { opacity: 1; }
+          50%      { opacity: 0.4; }
+        }
+        @keyframes scanGlow {
+          0%,100% { box-shadow: 0 0 8px rgba(34,211,238,0.8); }
+          50%      { box-shadow: 0 0 20px rgba(34,211,238,1), 0 0 40px rgba(34,211,238,0.5); }
+        }
+        @keyframes markerAppear {
+          from { opacity: 0; transform: scale(0.5); }
+          to   { opacity: 1; transform: scale(1); }
+        }
+        @keyframes flatline {
+          0%,100% { opacity: 0.3; }
+          50%      { opacity: 0.8; }
+        }
+        @keyframes barDance {
+          0%,100% { transform: scaleY(0.3); }
+          50%      { transform: scaleY(1); }
+        }
+      `}</style>
+
+      {/* Deep bg */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 80% 60% at 50% 50%, rgba(239,68,68,0.04) 0%, rgba(124,58,237,0.03) 50%, transparent 80%)" }} />
       </div>
 
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16" data-reveal>
-          <span className="inline-flex items-center gap-2 text-[9px] font-bold text-blue-400/50 font-mono tracking-widest uppercase mb-4">
-            <span className="h-1 w-8 rounded-full bg-blue-500/30" />
-            THE RHYTHM OF TRADING
-            <span className="h-1 w-8 rounded-full bg-blue-500/30" />
-          </span>
-          <h2 className="text-4xl md:text-5xl font-black text-white mt-3 mb-5 leading-tight">
-            כל סוחר מתנגן
-            <br />
+
+        {/* ── Header ── */}
+        <div className="text-center mb-12" data-reveal>
+          <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-5"
+            style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)" }}>
+            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" style={{ boxShadow: "0 0 8px #ef4444" }} />
+            <span className="text-[10px] font-mono font-bold text-red-400 tracking-widest uppercase">TRADER VITAL SIGNS · LIVE MONITORING</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-black text-white leading-tight mb-4">
+            כל סוחר מתנגן<br />
             <span style={{
-              background: "linear-gradient(to left, #60a5fa, #818cf8, #a78bfa)",
+              background: "linear-gradient(135deg, #fbbf24 0%, #ef4444 40%, #a78bfa 80%, #818cf8 100%)",
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
             }}>אותה מנגינה</span>
           </h2>
-          <p className="text-[15px] max-w-lg mx-auto leading-relaxed" style={{ color: "rgba(255,255,255,0.48)" }}>
-            FOMO, ביטחון יתר, נקמה, BLOWUP — זה לא חולשה. זה הפיזיולוגיה של כל סוחר ללא יומן.
-            ZenTrade שובר את הלולאה.
+          <p className="text-[15px] max-w-xl mx-auto leading-relaxed text-white/40">
+            FOMO, ביטחון יתר, נקמה, BLOWUP — זה לא חולשה.<br />
+            זה הפיזיולוגיה של כל סוחר ללא יומן. <span className="text-white/60 font-semibold">ZenTrade שובר את הלולאה.</span>
           </p>
         </div>
 
-        {/* The EKG Chart */}
-        <div className="relative mb-8" data-reveal>
-          <div className="rounded-3xl border border-white/[0.06] overflow-hidden"
-            style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(40px)", boxShadow: "0 0 60px rgba(59,130,246,0.06)" }}>
-            {/* Header bar */}
-            <div className="flex items-center gap-2 px-5 py-3 border-b border-white/[0.04]"
-              style={{ background: "rgba(59,130,246,0.04)" }}>
+        {/* ── Main Monitor ── */}
+        <div className="rounded-3xl overflow-hidden mb-6" data-reveal
+          style={{
+            background: "linear-gradient(145deg, #020208, #050510)",
+            border: "1px solid rgba(239,68,68,0.15)",
+            boxShadow: "0 0 80px rgba(239,68,68,0.06), 0 0 160px rgba(124,58,237,0.04), inset 0 1px 0 rgba(255,255,255,0.04)",
+          }}>
+
+          {/* Monitor chrome */}
+          <div className="flex items-center justify-between px-5 py-3 border-b"
+            style={{ background: "rgba(239,68,68,0.04)", borderColor: "rgba(239,68,68,0.1)" }}>
+            <div className="flex items-center gap-3">
               <div className="flex gap-1.5">
-                <div className="h-2.5 w-2.5 rounded-full bg-red-500/50" />
-                <div className="h-2.5 w-2.5 rounded-full bg-amber-400/50" />
-                <div className="h-2.5 w-2.5 rounded-full bg-green-500/50" />
+                <div className="h-2.5 w-2.5 rounded-full bg-red-500/70" />
+                <div className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
+                <div className="h-2.5 w-2.5 rounded-full bg-green-500/70" />
               </div>
-              <span className="flex-1 text-center text-[9px] font-mono text-white/20 uppercase tracking-widest">
-                TRADER EMOTION EKG · ניתוח רגשי
-              </span>
-              <span className="text-[9px] font-mono text-red-400/60 flex items-center gap-1">
-                <span className="h-1.5 w-1.5 rounded-full bg-red-400 animate-pulse" /> LIVE
+              <span className="text-[9px] font-mono text-white/20 uppercase tracking-widest">TRADER EMOTION EKG · ניתוח רגשי</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="text-[9px] font-mono text-white/15">PATIENT: ANONYMOUS TRADER</span>
+              <span className="flex items-center gap-1.5 text-[9px] font-mono text-red-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-400" style={{ animation: "vitalPulse 1s ease-in-out infinite" }} />
+                LIVE
               </span>
             </div>
+          </div>
 
-            <div className="p-6">
-              <svg viewBox="0 0 900 120" className="w-full" style={{ height: 120 }}>
-                <defs>
-                  <linearGradient id="ekg-grad" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="rgba(96,165,250,0.4)" />
-                    <stop offset="40%" stopColor="rgba(74,222,128,0.6)" />
-                    <stop offset="65%" stopColor="rgba(239,68,68,0.8)" />
-                    <stop offset="100%" stopColor="rgba(139,92,246,0.6)" />
-                  </linearGradient>
-                  <filter id="glow">
-                    <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
-                    <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                  </filter>
-                </defs>
-                {/* Grid lines */}
-                {[25, 50, 75].map(y => (
-                  <line key={y} x1="0" y1={y} x2="900" y2={y} stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
-                ))}
-                {/* The path */}
-                <path ref={pathRef} d={pathD}
-                  stroke="url(#ekg-grad)" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"
-                  filter="url(#glow)"
-                  style={{
-                    strokeDasharray: 900,
-                    strokeDashoffset: 900,
-                  }} />
-                {/* Emotion labels */}
-                {EMOTION_BEATS.filter((_, i) => i % 2 === 0).map(b => (
-                  <g key={b.label}>
-                    <circle cx={(b.x/100)*900} cy={(b.y/100)*100} r="4" fill={b.color} opacity="0.8" />
-                    <text x={(b.x/100)*900} y={(b.y/100)*100 - 10}
-                      textAnchor="middle" fontSize="7" fill={b.color} fontFamily="monospace" fontWeight="700">
-                      {b.label}
+          {/* Grid + EKG */}
+          <div className="relative p-4 sm:p-6" style={{ background: "rgba(0,8,0,0.4)" }}>
+            {/* Scanline overlay */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-[0.03]"
+              style={{ backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.5) 2px, rgba(255,255,255,0.5) 3px)", backgroundSize: "100% 3px" }} />
+
+            <svg ref={svgRef} viewBox="0 0 900 130" className="w-full" style={{ height: "clamp(120px, 18vw, 180px)" }}>
+              <defs>
+                <linearGradient id="ekgGrad" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%"   stopColor="#94a3b8" stopOpacity="0.6" />
+                  <stop offset="25%"  stopColor="#4ade80" stopOpacity="0.9" />
+                  <stop offset="50%"  stopColor="#fbbf24" stopOpacity="1" />
+                  <stop offset="70%"  stopColor="#ef4444" stopOpacity="1" />
+                  <stop offset="85%"  stopColor="#dc2626" stopOpacity="1" />
+                  <stop offset="100%" stopColor="#818cf8" stopOpacity="0.8" />
+                </linearGradient>
+                <filter id="ekgGlow" x="-5%" y="-50%" width="110%" height="200%">
+                  <feGaussianBlur stdDeviation="2" result="blur" />
+                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+                <filter id="markerGlow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+                <clipPath id="scanClip">
+                  <rect x="0" y="0" width={`${scanX}%`} height="130" />
+                </clipPath>
+              </defs>
+
+              {/* Horizontal grid lines */}
+              {[20, 40, 65, 85, 105].map(y => (
+                <line key={y} x1="0" y1={y} x2="900" y2={y}
+                  stroke="rgba(74,222,128,0.06)" strokeWidth="0.5" strokeDasharray="4 4" />
+              ))}
+              {/* Vertical grid lines */}
+              {Array.from({ length: 18 }).map((_, i) => (
+                <line key={i} x1={i * 50} y1="0" x2={i * 50} y2="130"
+                  stroke="rgba(74,222,128,0.04)" strokeWidth="0.5" />
+              ))}
+
+              {/* Ghost path (dim) */}
+              <path d={EKG_PATH} stroke="rgba(74,222,128,0.08)" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+
+              {/* Animated revealed path */}
+              {started && (
+                <path d={EKG_PATH}
+                  stroke="url(#ekgGrad)" strokeWidth="2.5" fill="none"
+                  strokeLinecap="round" strokeLinejoin="round"
+                  filter="url(#ekgGlow)"
+                  clipPath="url(#scanClip)"
+                />
+              )}
+
+              {/* Scan cursor dot */}
+              {started && scanX > 0 && (
+                <circle cx={`${scanX}%`} cy="80" r="4" fill="#22d3ee"
+                  style={{ filter: "drop-shadow(0 0 6px #22d3ee) drop-shadow(0 0 12px rgba(34,211,238,0.8))" }} />
+              )}
+
+              {/* Emotion marker dots + labels */}
+              {EMOTION_MARKERS.map((m, i) => {
+                const revealed = (scanX / 100) * 900 > m.x;
+                const active = activeMarker === i;
+                return (
+                  <g key={i} style={{ opacity: revealed ? 1 : 0.15, transition: "opacity 0.3s" }}>
+                    <circle cx={m.x} cy="80" r={active ? 6 : 4} fill={m.color}
+                      style={{ filter: active ? `drop-shadow(0 0 8px ${m.color})` : undefined, transition: "r 0.2s" }} />
+                    <text x={m.x} y={m.x > 700 ? 68 : (i % 2 === 0 ? 65 : 100)}
+                      textAnchor="middle" fontSize="7.5" fill={m.color}
+                      fontFamily="monospace" fontWeight="900" letterSpacing="0.5">
+                      {m.label}
                     </text>
                   </g>
+                );
+              })}
+            </svg>
+
+            {/* Active marker overlay */}
+            {activeMarker >= 0 && (
+              <div className="absolute top-3 left-1/2 -translate-x-1/2 rounded-full px-3 py-1 text-[10px] font-mono font-bold pointer-events-none"
+                style={{
+                  background: EMOTION_MARKERS[activeMarker].color + "20",
+                  border: `1px solid ${EMOTION_MARKERS[activeMarker].color}50`,
+                  color: EMOTION_MARKERS[activeMarker].color,
+                  boxShadow: `0 0 16px ${EMOTION_MARKERS[activeMarker].color}30`,
+                }}>
+                ▶ {EMOTION_MARKERS[activeMarker].sub}
+              </div>
+            )}
+          </div>
+
+          {/* Vitals row */}
+          <div className="grid grid-cols-2 md:grid-cols-4 border-t" style={{ borderColor: "rgba(239,68,68,0.08)" }}>
+            {VITALS.map((v, i) => (
+              <div key={i} className="px-4 py-4 border-r last:border-r-0" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
+                <p className="text-[8px] font-mono text-white/20 uppercase tracking-widest mb-1">{v.label}</p>
+                <div className="flex items-end gap-1.5">
+                  <span className="text-[18px] font-black leading-none" style={{ color: v.color, textShadow: `0 0 12px ${v.color}60` }}>
+                    {v.value}
+                  </span>
+                  <span className="text-[12px] font-bold mb-0.5" style={{ color: v.color + "80" }}>{v.trend}</span>
+                </div>
+                <p className="text-[9px] font-mono text-white/20 mt-1">{v.sub}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── THE SOUND OF DATA — Spotify-style waveform ── */}
+        <div className="rounded-3xl overflow-hidden" data-reveal
+          style={{
+            background: "linear-gradient(145deg, #030309, #060614)",
+            border: "1px solid rgba(124,58,237,0.12)",
+            boxShadow: "0 0 60px rgba(124,58,237,0.05)",
+          }}>
+
+          <div className="px-6 py-5 border-b flex items-center justify-between" style={{ borderColor: "rgba(124,58,237,0.08)" }}>
+            <div>
+              <p className="text-[8px] font-mono text-purple-400/40 uppercase tracking-[0.3em] mb-1">THE SOUND OF DATA</p>
+              <h3 className="text-[20px] font-black text-white">קצב הכסף שלך</h3>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex gap-0.5 items-end h-5">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="w-1 rounded-t-sm bg-purple-400"
+                    style={{
+                      height: `${40 + i * 12}%`,
+                      animation: `barDance ${0.5 + i * 0.1}s ease-in-out infinite`,
+                      animationDelay: `${i * 0.07}s`,
+                    }} />
                 ))}
-              </svg>
+              </div>
+              <span className="text-[9px] font-mono text-purple-400/50 uppercase tracking-widest">ANALYZING...</span>
             </div>
           </div>
-        </div>
 
-        {/* THE WAVEFORM — שירים מגניבים */}
-        <div className="rounded-3xl border border-white/[0.05] p-8 relative overflow-hidden" data-reveal
-          style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(30px)" }}>
-          <div className="absolute inset-0 pointer-events-none"
-            style={{ background: "radial-gradient(ellipse at center, rgba(59,130,246,0.05) 0%, transparent 65%)" }} />
-
-          <div className="relative z-10">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <p className="text-[9px] font-mono text-blue-400/40 uppercase tracking-widest mb-1">THE SOUND OF DATA</p>
-                <h3 className="text-xl font-black text-white">קצב הכסף שלך</h3>
-              </div>
-              <div className="flex items-center gap-2 text-[10px] font-mono text-white/20">
-                <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse" />
-                ANALYZING...
-              </div>
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {[
+                { label: "Win Rate Frequency", color: "#818cf8", desc: "תדר הניצחונות שלך" },
+                { label: "P&L Amplitude",      color: "#4ade80", desc: "עוצמת הרווח/הפסד" },
+                { label: "Emotion Signal",     color: "#f59e0b", desc: "אות פסיכולוגי" },
+              ].map(({ label, color, desc }, ci) => (
+                <div key={ci}>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-[9px] font-mono uppercase tracking-wider" style={{ color: color + "70" }}>{label}</p>
+                    <p className="text-[8px] text-white/20">{desc}</p>
+                  </div>
+                  {/* Spotify-style bars */}
+                  <div className="flex items-end gap-[2px]" style={{ height: 64 }}>
+                    {Array.from({ length: 40 }).map((_, i) => {
+                      const h = 15 + Math.abs(Math.sin(i * 0.8 + ci)) * 70 + Math.abs(Math.sin(i * 0.3)) * 15;
+                      const spd = 0.4 + Math.sin(i * 0.5) * 0.2 + 0.2;
+                      return (
+                        <div key={i} className="flex-1 rounded-t-sm"
+                          style={{
+                            background: `linear-gradient(to top, ${color}30, ${color}cc)`,
+                            boxShadow: `0 0 4px ${color}20`,
+                            transformOrigin: "bottom",
+                            animation: `barDance ${spd}s ease-in-out ${(i * 0.04) % 0.6}s infinite`,
+                            minWidth: 2,
+                            height: `${h}%`,
+                          }} />
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="space-y-2">
-                <p className="text-[9px] font-mono text-blue-400/50 uppercase tracking-wider">Win Rate Frequency</p>
-                <WaveformBars count={24} color="#3b82f6" height={56} />
-              </div>
-              <div className="space-y-2">
-                <p className="text-[9px] font-mono text-green-400/50 uppercase tracking-wider">P&L Amplitude</p>
-                <WaveformBars count={24} color="#4ade80" height={56} />
-              </div>
-              <div className="space-y-2">
-                <p className="text-[9px] font-mono text-amber-400/50 uppercase tracking-wider">Emotion Signal</p>
-                <WaveformBars count={24} color="#f59e0b" height={56} />
-              </div>
-            </div>
-
-            <div className="mt-6 pt-5 border-t border-white/[0.04] flex items-center justify-between">
-              <p className="text-[12px] text-white/30 max-w-sm">
-                ZenTrade הופך את הנתונים שלך למנגינה שאפשר לקרוא. כל עסקה מוסיפה נדבך לתמונה האמיתית.
+            <div className="mt-6 pt-5 border-t border-white/[0.04]">
+              <p className="text-[13px] text-white/30 leading-relaxed">
+                ZenTrade הופך את הנתונים שלך למנגינה שאפשר לקרוא.
+                <span className="text-white/50"> כל עסקה מוסיפה נדבך לתמונה האמיתית.</span>
               </p>
-              <Link to="/demo" className="flex items-center gap-2 rounded-xl border border-blue-500/20 bg-blue-500/[0.07] px-4 py-2.5 text-[11px] font-bold text-blue-400 hover:bg-blue-500/15 transition-all">
-                <Play className="h-3.5 w-3.5" />
-                שמע את הנתונים שלך
-              </Link>
             </div>
           </div>
         </div>
+
       </div>
     </section>
   );
@@ -1659,7 +1818,7 @@ const LandingPage = () => {
         <SectionDivider color="rgba(59,130,246,0.15)" />
 
         {/* ── THE RHYTHM (שירים מגניבים) ── */}
-        <RhythmSection />
+        <TraderVitalSigns />
 
         <SectionDivider />
 
