@@ -5,105 +5,258 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   Eye, EyeOff, Shield, Loader2, Zap, Brain, TrendingUp,
-  Sparkles, ChevronLeft, Check,
+  Sparkles, ChevronLeft, Check, BarChart2, Lock, Star,
 } from "lucide-react";
 import ZenTradeLogo from "@/components/ZenTradeLogo";
 
 /* ═══════════════════════════════════════════════════════
    SIGNUP LOBBY
 ═══════════════════════════════════════════════════════ */
-const SIGNUP_PERKS = [
-  { icon: Brain,      color: "#60a5fa", label: "AI Mentor",         detail: "ניתוח פסיכולוגי + דפוסי מסחר" },
-  { icon: TrendingUp, color: "#4ade80", label: "יומן חכם",          detail: "תיעוד עסקאות + תובנות אוטומטיות" },
-  { icon: Shield,     color: "#f59e0b", label: "Kill Switch",       detail: "הגנה על ההון — עוצר אוטומטי" },
-  { icon: Zap,        color: "#a78bfa", label: "7 ימי ניסיון חינם", detail: "ללא כרטיס אשראי, בטל מתי שרוצה" },
+
+const PERKS = [
+  {
+    icon: Brain,
+    color: "#818cf8",
+    bg: "rgba(99,102,241,0.08)",
+    border: "rgba(99,102,241,0.2)",
+    label: "AI מנטור אישי",
+    detail: "מנתח את דפוסי המסחר שלך ומזהה חולשות פסיכולוגיות בזמן אמת",
+    tag: "GPT-4o",
+  },
+  {
+    icon: TrendingUp,
+    color: "#4ade80",
+    bg: "rgba(74,222,128,0.07)",
+    border: "rgba(74,222,128,0.18)",
+    label: "יומן מסחר חכם",
+    detail: "תיעוד אוטומטי של כל עסקה עם סטטיסטיקות מעמיקות ותובנות",
+    tag: "אוטומטי",
+  },
+  {
+    icon: BarChart2,
+    color: "#f59e0b",
+    bg: "rgba(245,158,11,0.07)",
+    border: "rgba(245,158,11,0.18)",
+    label: "סטטיסטיקות מתקדמות",
+    detail: "Win Rate, Profit Factor, Drawdown, ניתוח לפי שעות וימים",
+    tag: "Pro",
+  },
+  {
+    icon: Shield,
+    color: "#f87171",
+    bg: "rgba(248,113,113,0.07)",
+    border: "rgba(248,113,113,0.18)",
+    label: "Kill Switch",
+    detail: "עוצר אוטומטי שמגן על ההון שלך כשמגיעים לסף הפסד יומי",
+    tag: "הגנה",
+  },
+  {
+    icon: Lock,
+    color: "#22d3ee",
+    bg: "rgba(34,211,238,0.07)",
+    border: "rgba(34,211,238,0.18)",
+    label: "אבטחה מלאה",
+    detail: "הצפנת SSL, אחסון מאובטח, ללא שיתוף נתונים עם צד שלישי",
+    tag: "SSL",
+  },
+];
+
+const STATS = [
+  { value: "2,400+", label: "סוחרים פעילים" },
+  { value: "94%",    label: "שיפור בביצועים" },
+  { value: "7 ימים", label: "ניסיון חינם" },
+];
+
+const TESTIMONIALS = [
+  { name: "אורי כ.", text: "אחרי שבוע עם ZenTrade הבנתי שאני מפסיד כל פעם ב-15:30. שיניתי לגמרי.", stars: 5 },
+  { name: "מיכל ג.", text: "ה-AI מנטור שינה לי את המיינדסט. עכשיו אני סוחרת עם ראש יותר קר.", stars: 5 },
+  { name: "דוד ל.", text: "הסטטיסטיקות גרמו לי לראות דברים שלא ידעתי עליהם שנים.", stars: 5 },
 ];
 
 const SignupLobby = ({ onContinue }: { onContinue: () => void }) => {
   const [vis, setVis] = useState(false);
-  useEffect(() => { const t = setTimeout(() => setVis(true), 60); return () => clearTimeout(t); }, []);
+  useEffect(() => { const t = setTimeout(() => setVis(true), 80); return () => clearTimeout(t); }, []);
+
+  const fade = (delay: number) => ({
+    opacity: vis ? 1 : 0,
+    transform: vis ? "translateY(0)" : "translateY(20px)",
+    transition: `opacity 0.65s ${delay}s, transform 0.65s ${delay}s`,
+  });
+
   return (
-    <div className="min-h-screen bg-[#06060f] flex flex-col items-center justify-center px-4 overflow-hidden relative" dir="rtl">
-      {/* Glows */}
+    <div className="min-h-screen bg-[#05050e] flex flex-col overflow-hidden relative" dir="rtl">
+
+      {/* ── Background effects ── */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute top-[-160px] left-[-60px] w-[500px] h-[500px] rounded-full bg-purple-600/[0.07] blur-[140px]" />
-        <div className="absolute bottom-[-120px] right-[-60px] w-[420px] h-[420px] rounded-full bg-blue-500/[0.05] blur-[130px]" />
-        {Array.from({ length: 16 }).map((_, i) => (
-          <div key={i} className="absolute rounded-full bg-blue-400 animate-pulse"
+        <div className="absolute top-[-200px] right-[-100px] w-[600px] h-[600px] rounded-full bg-purple-700/[0.06] blur-[160px]" />
+        <div className="absolute bottom-[-150px] left-[-80px] w-[500px] h-[500px] rounded-full bg-blue-600/[0.05] blur-[140px]" />
+        <div className="absolute top-[40%] left-[50%] -translate-x-1/2 w-[300px] h-[300px] rounded-full bg-cyan-500/[0.04] blur-[100px]" />
+        {/* grid */}
+        <div className="absolute inset-0" style={{
+          backgroundImage: "linear-gradient(rgba(139,92,246,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,0.03) 1px, transparent 1px)",
+          backgroundSize: "60px 60px",
+        }} />
+        {/* particles */}
+        {Array.from({ length: 20 }).map((_, i) => (
+          <div key={i} className="absolute rounded-full animate-pulse"
             style={{
-              left: `${(i * 43 + 9) % 100}%`, top: `${(i * 57 + 13) % 100}%`,
-              width: 1.5 + (i % 3), height: 1.5 + (i % 3),
-              opacity: 0.05 + (i % 5) * 0.035,
-              animationDuration: `${4 + (i % 7)}s`, animationDelay: `${(i % 9) * 0.35}s`,
+              left: `${(i * 37 + 11) % 100}%`,
+              top: `${(i * 53 + 7) % 100}%`,
+              width: 1.5 + (i % 2),
+              height: 1.5 + (i % 2),
+              background: i % 3 === 0 ? "#a78bfa" : i % 3 === 1 ? "#22d3ee" : "#60a5fa",
+              opacity: 0.06 + (i % 4) * 0.025,
+              animationDuration: `${3.5 + (i % 6)}s`,
+              animationDelay: `${(i % 8) * 0.4}s`,
             }} />
         ))}
       </div>
 
-      <div className="relative z-10 w-full max-w-md">
-        {/* Logo */}
-        <div style={{ opacity: vis ? 1 : 0, transform: vis ? "translateY(0)" : "translateY(24px)", transition: "opacity 0.7s, transform 0.7s" }}
-          className="flex flex-col items-center mb-7">
-          <div className="relative mb-4">
-            <div className="absolute inset-0 rounded-2xl bg-blue-500/20 blur-xl scale-150" />
-            <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/10 border border-blue-500/25 overflow-hidden shadow-lg shadow-blue-500/20">
-              <ZenTradeLogo size={52} transparent />
-            </div>
+      {/* ── Nav ── */}
+      <nav className="relative z-10 flex items-center justify-between px-5 py-4 border-b border-white/[0.04]">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-500/10 border border-purple-500/20 overflow-hidden">
+            <ZenTradeLogo size={26} transparent />
           </div>
-          <h1 className="text-2xl font-black text-white">ZenTrade</h1>
-          <div className="flex items-center gap-1.5 mt-2">
-            <Sparkles className="h-3 w-3 text-blue-400" />
-            <span className="text-[11px] text-blue-400 font-mono font-semibold">7 ימי ניסיון חינם</span>
+          <span className="font-black text-[15px] text-white tracking-tight">ZenTrade</span>
+        </div>
+        <Link to="/login" className="text-[12px] font-semibold text-white/40 hover:text-white/70 transition-colors">
+          יש לי חשבון ←
+        </Link>
+      </nav>
+
+      <div className="relative z-10 flex-1 flex flex-col lg:flex-row max-w-6xl mx-auto w-full px-4 py-8 gap-8">
+
+        {/* ── LEFT: Hero ── */}
+        <div className="flex-1 flex flex-col justify-center" style={fade(0)}>
+
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 rounded-full border border-purple-500/25 bg-purple-500/08 px-3 py-1.5 w-fit mb-5"
+            style={{ background: "rgba(139,92,246,0.08)" }}>
+            <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" style={{ boxShadow: "0 0 6px #4ade80" }} />
+            <span className="text-[11px] font-mono font-bold text-purple-300 tracking-wide">LIVE · 2,400+ סוחרים פעילים</span>
           </div>
-        </div>
 
-        {/* Headline */}
-        <div style={{ opacity: vis ? 1 : 0, transform: vis ? "translateY(0)" : "translateY(18px)", transition: "opacity 0.7s 0.1s, transform 0.7s 0.1s" }}
-          className="text-center mb-6">
-          <h2 className="text-[22px] font-extrabold text-white leading-tight">
-            תתחיל לסחור{" "}
-            <span className="bg-gradient-to-l from-cyan-400 to-blue-500 bg-clip-text text-transparent">חכם יותר</span>
-          </h2>
-          <p className="text-[12px] text-white/35 mt-1">הצטרף ל-2,400+ סוחרים שכבר משתמשים ב-ZenTrade</p>
-        </div>
+          <h1 className="text-[32px] sm:text-[42px] font-black text-white leading-[1.15] mb-4">
+            הקוקפיט של<br />
+            <span style={{
+              background: "linear-gradient(135deg, #a78bfa 0%, #818cf8 40%, #22d3ee 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}>הסוחר המודרני</span>
+          </h1>
 
-        {/* Perks */}
-        <div className="space-y-2.5 mb-7">
-          {SIGNUP_PERKS.map(({ icon: Icon, color, label, detail }, i) => (
-            <div key={i}
-              style={{
-                opacity: vis ? 1 : 0,
-                transform: vis ? "translateX(0)" : "translateX(16px)",
-                transition: `opacity 0.55s ${0.15 + i * 0.08}s, transform 0.55s ${0.15 + i * 0.08}s`,
-                borderColor: color + "22",
-                background: color + "0a",
-              }}
-              className="flex items-center gap-3 rounded-2xl border px-4 py-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl shrink-0" style={{ background: color + "15", border: `1px solid ${color}28` }}>
-                <Icon className="h-4 w-4" style={{ color }} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[12px] font-bold text-white">{label}</p>
-                <p className="text-[10px] text-white/35 leading-none mt-0.5">{detail}</p>
-              </div>
-              <Check className="h-4 w-4 shrink-0" style={{ color: color + "99" }} />
-            </div>
-          ))}
-        </div>
-
-        {/* CTA */}
-        <div style={{ opacity: vis ? 1 : 0, transform: vis ? "translateY(0)" : "translateY(12px)", transition: "opacity 0.6s 0.55s, transform 0.6s 0.55s" }}>
-          <button
-            onClick={onContinue}
-            className="group w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-blue-600 to-cyan-500 py-4 text-sm font-black text-white shadow-xl shadow-blue-500/25 hover:shadow-blue-500/40 hover:brightness-110 transition-all active:scale-[0.98]"
-          >
-            <Sparkles className="h-4 w-4 group-hover:rotate-12 transition-transform" />
-            צור חשבון חינמי
-            <ChevronLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
-          </button>
-          <p className="text-center text-[11px] text-white/20 mt-4">
-            כבר יש לך חשבון?{" "}
-            <Link to="/login" className="text-blue-400 hover:underline font-semibold">התחבר</Link>
+          <p className="text-[14px] text-white/40 leading-relaxed mb-7 max-w-md">
+            יומן מסחר חכם, AI מנטור אישי, סטטיסטיקות מעמיקות וכלי הגנה על ההון —
+            הכל במקום אחד, בעברית, מותאם לסוחר הישראלי.
           </p>
+
+          {/* Stats row */}
+          <div className="flex items-center gap-6 mb-8" style={fade(0.1)}>
+            {STATS.map((s, i) => (
+              <div key={i} className="flex flex-col">
+                <span className="text-[20px] font-black text-white">{s.value}</span>
+                <span className="text-[10px] text-white/30 font-mono">{s.label}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Testimonials */}
+          <div className="space-y-2.5" style={fade(0.2)}>
+            {TESTIMONIALS.map((t, i) => (
+              <div key={i} className="flex items-start gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">
+                <div className="flex h-8 w-8 rounded-full items-center justify-center shrink-0 font-black text-[11px] text-white"
+                  style={{ background: `hsl(${i * 60 + 200},60%,25%)`, border: `1px solid hsl(${i * 60 + 200},60%,35%)` }}>
+                  {t.name[0]}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className="text-[11px] font-bold text-white/70">{t.name}</span>
+                    <div className="flex gap-0.5">
+                      {Array.from({ length: t.stars }).map((_, j) => (
+                        <Star key={j} className="h-2.5 w-2.5 fill-amber-400 text-amber-400" />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-white/35 leading-relaxed">"{t.text}"</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── RIGHT: Features + CTA ── */}
+        <div className="lg:w-[400px] flex flex-col gap-4" style={fade(0.05)}>
+
+          {/* Features card */}
+          <div className="rounded-3xl border border-white/[0.07] bg-[#0d0d1a]/80 backdrop-blur-2xl p-5 shadow-2xl shadow-black/50">
+            <p className="text-[11px] font-mono font-bold text-white/25 uppercase tracking-widest mb-4">מה תקבל</p>
+            <div className="space-y-2">
+              {PERKS.map(({ icon: Icon, color, bg, border, label, detail, tag }, i) => (
+                <div key={i}
+                  style={{
+                    background: bg,
+                    borderColor: border,
+                    opacity: vis ? 1 : 0,
+                    transform: vis ? "translateX(0)" : "translateX(12px)",
+                    transition: `opacity 0.5s ${0.1 + i * 0.07}s, transform 0.5s ${0.1 + i * 0.07}s`,
+                  }}
+                  className="flex items-center gap-3 rounded-2xl border px-3.5 py-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl shrink-0"
+                    style={{ background: color + "18", border: `1px solid ${color}30` }}>
+                    <Icon className="h-4 w-4" style={{ color }} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-[12px] font-bold text-white">{label}</p>
+                      <span className="text-[9px] font-mono font-bold rounded-full px-1.5 py-0.5"
+                        style={{ background: color + "18", color, border: `1px solid ${color}30` }}>{tag}</span>
+                    </div>
+                    <p className="text-[10px] text-white/30 leading-relaxed mt-0.5">{detail}</p>
+                  </div>
+                  <Check className="h-3.5 w-3.5 shrink-0" style={{ color: color + "aa" }} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* CTA card */}
+          <div className="rounded-3xl border border-purple-500/20 bg-gradient-to-b from-purple-500/[0.06] to-blue-500/[0.04] backdrop-blur-xl p-5 shadow-xl shadow-purple-500/10"
+            style={fade(0.3)}>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/15 border border-purple-500/25 overflow-hidden">
+                <ZenTradeLogo size={34} transparent />
+              </div>
+              <div>
+                <p className="text-[14px] font-black text-white">ZenTrade</p>
+                <p className="text-[10px] text-white/30">7 ימי ניסיון · ללא כרטיס אשראי</p>
+              </div>
+            </div>
+
+            <div className="h-px bg-gradient-to-l from-transparent via-purple-500/20 to-transparent mb-4" />
+
+            <button
+              onClick={onContinue}
+              className="group w-full flex items-center justify-center gap-2 rounded-2xl py-4 text-[14px] font-black text-white transition-all active:scale-[0.98] hover:brightness-110 mb-3"
+              style={{
+                background: "linear-gradient(135deg, #7c3aed 0%, #4f46e5 50%, #0891b2 100%)",
+                boxShadow: "0 0 30px rgba(124,58,237,0.35), 0 4px 20px rgba(0,0,0,0.4)",
+              }}
+            >
+              <Sparkles className="h-4 w-4 group-hover:rotate-12 transition-transform" />
+              צור חשבון חינמי
+              <ChevronLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
+            </button>
+
+            <div className="flex items-center justify-center gap-4">
+              {[{ icon: Shield, t: "מאובטח SSL" }, { icon: Zap, t: "בטל בכל עת" }, { icon: Lock, t: "פרטיות מלאה" }].map(({ icon: Icon, t }) => (
+                <div key={t} className="flex items-center gap-1 text-white/20">
+                  <Icon className="h-2.5 w-2.5" />
+                  <span className="text-[9px] font-mono">{t}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
