@@ -418,6 +418,21 @@ const HomeDashboard = ({ userName, onOpenTrade, onConnectBroker }: { userName: s
 
   const recentTrades = trades.slice(0, 5);
 
+  /* ── Trading streak (consecutive days with trades) ── */
+  const tradingStreak = (() => {
+    if (closedTrades.length === 0) return 0;
+    const days = [...new Set(closedTrades.map(t => t.entry_time.split("T")[0]))].sort().reverse();
+    let count = 1;
+    for (let i = 1; i < days.length; i++) {
+      const prev = new Date(days[i - 1]);
+      const curr = new Date(days[i]);
+      const diff = Math.round((prev.getTime() - curr.getTime()) / (1000 * 60 * 60 * 24));
+      if (diff <= 1) count++;
+      else break;
+    }
+    return count;
+  })();
+
   /* ── Animated counters ── */
   const animatedPnl = useCountUp(stats.totalPnl);
   const animatedWr = useCountUp(stats.winRate);
@@ -505,6 +520,16 @@ const HomeDashboard = ({ userName, onOpenTrade, onConnectBroker }: { userName: s
 
           {/* Action buttons */}
           <div className="flex items-center gap-2 shrink-0">
+            {tradingStreak >= 2 && (
+              <div className="hidden sm:flex items-center gap-1.5 rounded-xl px-3 py-1.5"
+                style={{ background: "rgba(251,146,60,0.1)", border: "1px solid rgba(251,146,60,0.2)" }}>
+                <span className="text-base leading-none">🔥</span>
+                <div>
+                  <p className="text-[11px] font-black text-orange-400 leading-none">{tradingStreak} ימים</p>
+                  <p className="text-[7px] font-mono text-orange-400/40 uppercase">streak</p>
+                </div>
+              </div>
+            )}
             {hasTrades && !aiBriefing && (
               <button onClick={handleAiAnalyst} disabled={aiLoading}
                 className="haptic-press flex items-center gap-2 rounded-xl px-4 py-2.5 text-[12px] font-black transition-all"
@@ -625,90 +650,129 @@ const HomeDashboard = ({ userName, onOpenTrade, onConnectBroker }: { userName: s
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
 
             {/* Total P&L */}
-            <div className="group relative rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 obsidian-card"
-              style={{ boxShadow: stats.totalPnl >= 0 ? "0 4px 24px rgba(59,130,246,0.08)" : "0 4px 24px rgba(239,68,68,0.08)" }}>
-              <div className="h-[1px] w-full"
-                style={{ background: stats.totalPnl >= 0 ? "linear-gradient(to right, transparent, rgba(59,130,246,0.5), transparent)" : "linear-gradient(to right, transparent, rgba(239,68,68,0.5), transparent)" }} />
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-[9px] text-foreground/30 font-mono uppercase tracking-widest">P&L כולל</span>
-                  <TrendingUp className="h-3.5 w-3.5" style={{ color: stats.totalPnl >= 0 ? "#60a5fa" : "#f87171" }} />
+            {(() => {
+              const pos = stats.totalPnl >= 0;
+              const c = pos ? { main: "#60a5fa", glow: "rgba(59,130,246,0.18)", bg: "rgba(59,130,246,0.05)", border: "rgba(59,130,246,0.18)", top: "rgba(59,130,246,0.5)" }
+                             : { main: "#f87171", glow: "rgba(239,68,68,0.18)", bg: "rgba(239,68,68,0.05)", border: "rgba(239,68,68,0.18)", top: "rgba(239,68,68,0.5)" };
+              return (
+                <div className="group relative rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] cursor-default"
+                  style={{ background: c.bg, border: `1px solid ${c.border}`, boxShadow: `0 4px 32px ${c.glow}` }}>
+                  <div className="h-[1.5px] w-full" style={{ background: `linear-gradient(to right, transparent, ${c.top}, transparent)` }} />
+                  <div className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[9px] font-black font-mono uppercase tracking-widest" style={{ color: c.main + "80" }}>P&L כולל</span>
+                      <div className="flex h-7 w-7 items-center justify-center rounded-lg" style={{ background: c.main + "15", border: `1px solid ${c.main}25` }}>
+                        <TrendingUp className="h-3.5 w-3.5" style={{ color: c.main }} />
+                      </div>
+                    </div>
+                    <p className="text-[26px] font-black font-mono tracking-tight leading-none mb-1"
+                      style={{ color: c.main, textShadow: `0 0 28px ${c.glow}` }}>
+                      {animatedPnl >= 0 ? "+" : ""}${Math.abs(animatedPnl).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                    </p>
+                    <p className="text-[9px] font-mono mb-3" style={{ color: c.main + "50" }}>{stats.totalTrades} עסקאות</p>
+                    <div className="-mx-4 -mb-4">
+                      <Sparkline data={equitySparkline} color={c.main} gradientId="sg-pnl" />
+                    </div>
+                  </div>
                 </div>
-                <p className="text-[22px] font-black font-mono tracking-tight leading-none mb-1"
-                  style={{
-                    color: stats.totalPnl >= 0 ? "#60a5fa" : "#f87171",
-                    textShadow: stats.totalPnl >= 0 ? "0 0 20px rgba(59,130,246,0.5)" : "0 0 20px rgba(239,68,68,0.5)",
-                  }}>
-                  {animatedPnl >= 0 ? "+" : ""}${Math.abs(animatedPnl).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </p>
-                <p className="text-[9px] text-foreground/25 font-mono mb-2">{stats.totalTrades} עסקאות</p>
-                <div className="-mx-4 -mb-4 equity-glow">
-                  <Sparkline data={equitySparkline} color={stats.totalPnl >= 0 ? SPARKLINE_COLORS.primary : SPARKLINE_COLORS.loss} gradientId="sg-pnl" />
-                </div>
-              </div>
-            </div>
+              );
+            })()}
 
             {/* Win Rate */}
-            <div className="group relative rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 obsidian-card"
-              style={{ boxShadow: "0 4px 24px rgba(59,130,246,0.06)" }}>
-              <div className="h-[1px] w-full"
-                style={{ background: "linear-gradient(to right, transparent, rgba(59,130,246,0.4), transparent)" }} />
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-[9px] text-foreground/30 font-mono uppercase tracking-widest">Win Rate</span>
-                  <Target className="h-3.5 w-3.5" style={{ color: "#60a5fa" }} />
+            {(() => {
+              const wr = stats.winRate;
+              const c = wr >= 55 ? { main: "#4ade80", glow: "rgba(74,222,128,0.15)", bg: "rgba(74,222,128,0.04)", border: "rgba(74,222,128,0.16)", top: "rgba(74,222,128,0.45)" }
+                       : wr >= 45 ? { main: "#fbbf24", glow: "rgba(251,191,36,0.15)", bg: "rgba(251,191,36,0.04)", border: "rgba(251,191,36,0.16)", top: "rgba(251,191,36,0.45)" }
+                                  : { main: "#f87171", glow: "rgba(248,113,113,0.15)", bg: "rgba(248,113,113,0.04)", border: "rgba(248,113,113,0.16)", top: "rgba(248,113,113,0.45)" };
+              return (
+                <div className="group relative rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] cursor-default"
+                  style={{ background: c.bg, border: `1px solid ${c.border}`, boxShadow: `0 4px 32px ${c.glow}` }}>
+                  <div className="h-[1.5px] w-full" style={{ background: `linear-gradient(to right, transparent, ${c.top}, transparent)` }} />
+                  <div className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[9px] font-black font-mono uppercase tracking-widest" style={{ color: c.main + "80" }}>Win Rate</span>
+                      <div className="flex h-7 w-7 items-center justify-center rounded-lg" style={{ background: c.main + "15", border: `1px solid ${c.main}25` }}>
+                        <Target className="h-3.5 w-3.5" style={{ color: c.main }} />
+                      </div>
+                    </div>
+                    <p className="text-[26px] font-black font-mono tracking-tight leading-none mb-1"
+                      style={{ color: c.main, textShadow: `0 0 28px ${c.glow}` }}>
+                      {animatedWr.toFixed(0)}%
+                    </p>
+                    <div className="h-1 rounded-full mb-3 overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+                      <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${Math.min(animatedWr, 100)}%`, background: c.main, boxShadow: `0 0 8px ${c.main}` }} />
+                    </div>
+                    <div className="-mx-4 -mb-4">
+                      <Sparkline data={winRateSparkline} color={c.main} gradientId="sg-wr" />
+                    </div>
+                  </div>
                 </div>
-                <p className="text-[22px] font-black font-mono tracking-tight leading-none mb-1"
-                  style={{ color: "#60a5fa", textShadow: "0 0 20px rgba(59,130,246,0.5)" }}>
-                  {animatedWr.toFixed(0)}%
-                </p>
-                <p className="text-[9px] text-foreground/25 font-mono mb-2">{stats.totalTrades} עסקאות</p>
-                <div className="-mx-4 -mb-4 equity-glow">
-                  <Sparkline data={winRateSparkline} color={SPARKLINE_COLORS.primary} gradientId="sg-wr" />
-                </div>
-              </div>
-            </div>
+              );
+            })()}
 
             {/* Profit Factor */}
-            <div className="group relative rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 obsidian-card">
-              <div className="h-[1px] w-full"
-                style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.12), transparent)" }} />
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-[9px] text-foreground/30 font-mono uppercase tracking-widest">Profit Factor</span>
-                  <BarChart3 className="h-3.5 w-3.5 text-foreground/30" />
+            {(() => {
+              const pf = stats.profitFactor;
+              const c = { main: "#a78bfa", glow: "rgba(167,139,250,0.15)", bg: "rgba(167,139,250,0.04)", border: "rgba(167,139,250,0.16)", top: "rgba(167,139,250,0.45)" };
+              const pfLabel = pf >= 2 ? "מצוין" : pf >= 1.5 ? "טוב" : pf >= 1 ? "סביר" : "חלש";
+              return (
+                <div className="group relative rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] cursor-default"
+                  style={{ background: c.bg, border: `1px solid ${c.border}`, boxShadow: `0 4px 32px ${c.glow}` }}>
+                  <div className="h-[1.5px] w-full" style={{ background: `linear-gradient(to right, transparent, ${c.top}, transparent)` }} />
+                  <div className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[9px] font-black font-mono uppercase tracking-widest" style={{ color: c.main + "80" }}>Profit Factor</span>
+                      <div className="flex h-7 w-7 items-center justify-center rounded-lg" style={{ background: c.main + "15", border: `1px solid ${c.main}25` }}>
+                        <BarChart3 className="h-3.5 w-3.5" style={{ color: c.main }} />
+                      </div>
+                    </div>
+                    <p className="text-[26px] font-black font-mono tracking-tight leading-none mb-1"
+                      style={{ color: c.main, textShadow: `0 0 28px ${c.glow}` }}>
+                      {animatedPf.toFixed(2)}
+                    </p>
+                    <span className="inline-block rounded-md px-2 py-0.5 text-[8px] font-bold mb-3" style={{ background: c.main + "15", color: c.main, border: `1px solid ${c.main}20` }}>
+                      {pfLabel}
+                    </span>
+                    <div className="-mx-4 -mb-4">
+                      <Sparkline data={pfSparkline} color={c.main} gradientId="sg-pf" />
+                    </div>
+                  </div>
                 </div>
-                <p className="text-[22px] font-black text-foreground font-mono tracking-tight leading-none mb-1">
-                  {animatedPf.toFixed(2)}
-                </p>
-                <p className="text-[9px] text-foreground/25 font-mono mb-2">יחס סיכוי-סיכון</p>
-                <div className="-mx-4 -mb-4">
-                  <Sparkline data={pfSparkline} color={SPARKLINE_COLORS.muted} gradientId="sg-pf" />
-                </div>
-              </div>
-            </div>
+              );
+            })()}
 
             {/* Open Trades */}
-            <div className="group relative rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 obsidian-card"
-              style={{ boxShadow: stats.openTrades > 0 ? "0 4px 24px rgba(251,191,36,0.06)" : undefined }}>
-              <div className="h-[1px] w-full"
-                style={{ background: "linear-gradient(to right, transparent, rgba(251,191,36,0.35), transparent)" }} />
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-[9px] text-foreground/30 font-mono uppercase tracking-widest">פוזיציות</span>
-                  <Flame className="h-3.5 w-3.5 text-amber-400/60" />
+            {(() => {
+              const open = stats.openTrades;
+              const c = { main: "#fbbf24", glow: "rgba(251,191,36,0.15)", bg: "rgba(251,191,36,0.04)", border: "rgba(251,191,36,0.16)", top: "rgba(251,191,36,0.45)" };
+              return (
+                <div className="group relative rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] cursor-default"
+                  style={{ background: c.bg, border: `1px solid ${c.border}`, boxShadow: open > 0 ? `0 4px 32px ${c.glow}` : undefined }}>
+                  <div className="h-[1.5px] w-full" style={{ background: `linear-gradient(to right, transparent, ${c.top}, transparent)` }} />
+                  <div className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[9px] font-black font-mono uppercase tracking-widest" style={{ color: c.main + "80" }}>פוזיציות פתוחות</span>
+                      <div className="flex h-7 w-7 items-center justify-center rounded-lg" style={{ background: c.main + "15", border: `1px solid ${c.main}25` }}>
+                        <Flame className="h-3.5 w-3.5" style={{ color: c.main }} />
+                      </div>
+                    </div>
+                    <p className="text-[26px] font-black font-mono tracking-tight leading-none mb-1"
+                      style={{ color: open > 0 ? c.main : "rgba(255,255,255,0.25)", textShadow: open > 0 ? `0 0 28px ${c.glow}` : undefined }}>
+                      {Math.round(animatedOpen)}
+                    </p>
+                    <p className="text-[9px] font-mono mb-3" style={{ color: c.main + "50" }}>
+                      {open === 0 ? "אין פוזיציות" : `${open} עסקה${open !== 1 ? "ות" : ""} פתוחה`}
+                    </p>
+                    <div className="flex gap-1.5 flex-wrap min-h-[8px]">
+                      {Array.from({ length: Math.min(open, 8) }, (_, i) => (
+                        <span key={i} className="h-2 w-2 rounded-full animate-pulse"
+                          style={{ background: c.main, boxShadow: `0 0 6px ${c.main}`, animationDelay: `${i * 120}ms` }} />
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <p className="text-[22px] font-black text-foreground font-mono tracking-tight leading-none mb-1">{Math.round(animatedOpen)}</p>
-                <p className="text-[9px] text-foreground/25 font-mono mb-2">עסקאות פתוחות</p>
-                <div className="flex gap-1.5 flex-wrap">
-                  {Array.from({ length: Math.min(stats.openTrades, 10) }, (_, i) => (
-                    <span key={i} className="h-1.5 w-1.5 rounded-full animate-pulse"
-                      style={{ background: "#fbbf24", boxShadow: "0 0 4px rgba(251,191,36,0.6)", animationDelay: `${i * 100}ms` }} />
-                  ))}
-                  {stats.openTrades === 0 && <span className="text-[9px] text-foreground/25 font-mono">אין פוזיציות</span>}
-                </div>
-              </div>
-            </div>
+              );
+            })()}
           </div>
 
           {/* ═══════ MIDDLE ROW: Equity + Setups ═══════ */}
@@ -837,81 +901,82 @@ const HomeDashboard = ({ userName, onOpenTrade, onConnectBroker }: { userName: s
             </div>
           </div>
 
-          {/* ═══════ BOTTOM: Recent Trades Table ═══════ */}
+          {/* ═══════ BOTTOM: Recent Trades Cards ═══════ */}
           <div className="rounded-2xl border border-border/30 bg-card/40 backdrop-blur-md overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-border/20">
-              <div className="flex items-center gap-2">
-                <BarChart3 className="h-4 w-4 text-muted-foreground/60" />
-                <span className="text-sm font-bold text-foreground">עסקאות אחרונות</span>
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-border/15">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg"
+                  style={{ background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.2)" }}>
+                  <BarChart3 className="h-3.5 w-3.5" style={{ color: "#60a5fa" }} />
+                </div>
+                <span className="text-[13px] font-bold text-foreground">עסקאות אחרונות</span>
+                {recentTrades.length > 0 && (
+                  <span className="rounded-full px-2 py-0.5 text-[9px] font-bold font-mono"
+                    style={{ background: "rgba(59,130,246,0.1)", color: "#60a5fa", border: "1px solid rgba(59,130,246,0.2)" }}>
+                    {recentTrades.length}
+                  </span>
+                )}
               </div>
               {onOpenTrade && (
-                <button
-                  onClick={onOpenTrade}
-                  className="haptic-press flex items-center gap-1.5 rounded-lg border border-accent/20 bg-accent/[0.06] px-3 py-1.5 text-2xs font-bold text-accent hover:bg-accent/15 transition-all"
-                >
+                <button onClick={onOpenTrade}
+                  className="haptic-press flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-bold transition-all"
+                  style={{ background: "rgba(0,212,170,0.08)", border: "1px solid rgba(0,212,170,0.15)", color: "hsl(var(--primary))" }}>
                   <span>+ עסקה חדשה</span>
                 </button>
               )}
             </div>
 
-            <div className="hidden sm:grid grid-cols-5 gap-2 px-4 py-2 border-b border-border/10 text-2xs font-mono text-muted-foreground/40 uppercase tracking-wider">
-              <span>נכס</span><span>כיוון</span><span>סטאפ</span><span>תאריך</span><span className="text-left">רווח / הפסד</span>
-            </div>
-            <div className="grid sm:hidden grid-cols-3 gap-2 px-4 py-2 border-b border-border/10 text-2xs font-mono text-muted-foreground/40 uppercase tracking-wider">
-              <span>נכס</span><span>כיוון</span><span className="text-left">רווח / הפסד</span>
-            </div>
-
-            {recentTrades.length > 0 ? recentTrades.map((trade) => {
-              const positive = (trade.pnl ?? 0) >= 0;
-              return (
-                <div key={trade.id} className="border-b border-border/[0.06] hover:bg-card/40 transition-colors group">
-                  {/* Desktop row */}
-                  <div className="hidden sm:grid grid-cols-5 gap-2 px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <div className="flex h-6 w-6 items-center justify-center rounded-md bg-muted/30">
-                        <span className="text-2xs font-bold text-foreground/70 font-mono">{trade.symbol.slice(0, 2)}</span>
-                      </div>
-                      <span className="text-xs font-semibold text-foreground font-mono">{trade.symbol}</span>
+            <div className="divide-y divide-border/[0.08]">
+              {recentTrades.length > 0 ? recentTrades.map((trade) => {
+                const pos = (trade.pnl ?? 0) >= 0;
+                const pnlColor = pos ? "#4ade80" : "#f87171";
+                const dirColor = trade.direction === "long" ? "#60a5fa" : "#f87171";
+                return (
+                  <div key={trade.id}
+                    className="group flex items-center gap-3 px-4 py-3 hover:bg-white/[0.02] transition-all cursor-default"
+                    style={{ borderRight: `3px solid ${pnlColor}40` }}>
+                    {/* Symbol badge */}
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-black text-[12px] font-mono"
+                      style={{ background: pnlColor + "12", border: `1px solid ${pnlColor}20`, color: pnlColor }}>
+                      {trade.symbol.slice(0, 3)}
                     </div>
-                    <div className="flex items-center">
-                      <span className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-2xs font-bold ${trade.direction === "long" ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"}`}>
-                        {trade.direction === "long" ? <ArrowUpRight className="h-2.5 w-2.5" /> : <ArrowDownRight className="h-2.5 w-2.5" />}
-                        {trade.direction === "long" ? "Long" : "Short"}
+                    {/* Info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="text-[13px] font-bold text-foreground font-mono">{trade.symbol}</span>
+                        <span className="inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-[8px] font-bold"
+                          style={{ background: dirColor + "12", color: dirColor, border: `1px solid ${dirColor}20` }}>
+                          {trade.direction === "long" ? <ArrowUpRight className="h-2.5 w-2.5" /> : <ArrowDownRight className="h-2.5 w-2.5" />}
+                          {trade.direction === "long" ? "LONG" : "SHORT"}
+                        </span>
+                        {trade.setup_type && (
+                          <span className="hidden sm:inline text-[8px] text-foreground/25 font-mono border border-border/20 rounded px-1.5 py-0.5">
+                            {trade.setup_type}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[10px] text-foreground/30 font-mono">
+                        {new Date(trade.entry_time).toLocaleDateString("he-IL", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
                       </span>
                     </div>
-                    <span className="text-xs text-muted-foreground/60 flex items-center">{trade.setup_type || "—"}</span>
-                    <span className="text-xs text-muted-foreground/40 font-mono flex items-center">
-                      {new Date(trade.entry_time).toLocaleDateString("he-IL", { day: "numeric", month: "short" })}
-                    </span>
-                    <span className={`text-sm font-bold font-mono flex items-center ${positive ? "text-primary" : "text-destructive"}`}>
-                      {trade.pnl != null ? `${positive ? "+" : ""}$${Math.abs(trade.pnl).toLocaleString()}` : "—"}
-                    </span>
-                  </div>
-                  {/* Mobile row */}
-                  <div className="grid sm:hidden grid-cols-3 gap-2 px-4 py-3">
-                    <div className="flex items-center gap-1.5">
-                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-muted/30">
-                        <span className="text-2xs font-bold text-foreground/70 font-mono">{trade.symbol.slice(0, 2)}</span>
-                      </div>
-                      <span className="text-xs font-semibold text-foreground font-mono truncate">{trade.symbol}</span>
+                    {/* P&L */}
+                    <div className="text-right shrink-0">
+                      <p className="text-[17px] font-black font-mono"
+                        style={{ color: pnlColor, textShadow: `0 0 16px ${pnlColor}60` }}>
+                        {trade.pnl != null ? `${pos ? "+" : ""}$${Math.abs(trade.pnl).toFixed(0)}` : "—"}
+                      </p>
+                      <p className="text-[8px] font-mono" style={{ color: pnlColor + "60" }}>
+                        {pos ? "WIN" : "LOSS"}
+                      </p>
                     </div>
-                    <div className="flex items-center">
-                      <span className={`inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-2xs font-bold ${trade.direction === "long" ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"}`}>
-                        {trade.direction === "long" ? <ArrowUpRight className="h-2.5 w-2.5" /> : <ArrowDownRight className="h-2.5 w-2.5" />}
-                        {trade.direction === "long" ? "L" : "S"}
-                      </span>
-                    </div>
-                    <span className={`text-sm font-bold font-mono flex items-center ${positive ? "text-primary" : "text-destructive"}`}>
-                      {trade.pnl != null ? `${positive ? "+" : ""}$${Math.abs(trade.pnl).toLocaleString()}` : "—"}
-                    </span>
                   </div>
+                );
+              }) : (
+                <div className="py-12 text-center">
+                  <p className="text-[12px] text-foreground/25">אין עסקאות עדיין</p>
                 </div>
-              );
-            }) : (
-              <div className="py-10 text-center">
-                <p className="text-xs text-muted-foreground/30">אין עסקאות עדיין</p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </>
       )}

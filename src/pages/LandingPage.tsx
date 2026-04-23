@@ -1843,6 +1843,7 @@ const HowItWorksSection = ({ onStart }: { onStart: () => void }) => (
    MAIN
 ═══════════════════════════════════════════════════════════ */
 const LandingPage = () => {
+  const navigate = useNavigate();
   const [scrollY, setScrollY] = useState(0);
   const [authModal, setAuthModal] = useState<"login" | "register" | null>(null);
   const [demoOpen, setDemoOpen] = useState(false);
@@ -1999,7 +2000,7 @@ const LandingPage = () => {
                     <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/[0.08] to-transparent group-hover:translate-x-full transition-transform duration-700" />
                   </button>
                   <button
-                    onClick={() => setDemoOpen(true)}
+                    onClick={() => navigate("/demo")}
                     className="group flex items-center gap-2 rounded-xl border border-white/[0.10] bg-white/[0.04] px-5 py-[13px] text-[13px] font-semibold text-white/50 hover:text-white/90 hover:bg-white/[0.08] hover:border-white/[0.18] transition-all">
                     <Play className="h-3.5 w-3.5 fill-current" />
                     <span>צפה בדמו חי</span>
@@ -2125,11 +2126,6 @@ const LandingPage = () => {
 
         {/* ── LIVE PROOF + STATS ── */}
         <LiveProof />
-
-        <SectionDivider color="rgba(96,165,250,0.12)" />
-
-        {/* ── TESTIMONIALS CAROUSEL ── */}
-        <TestimonialsCarousel />
 
         <SectionDivider />
 
