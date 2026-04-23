@@ -578,7 +578,7 @@ const TickerTape = () => (
     <div className="absolute inset-y-0 right-0 w-32 z-10"
       style={{ background: "linear-gradient(to left, #06060f, transparent)" }} />
     <div className="flex animate-ticker whitespace-nowrap">
-      {[...TAPE, ...TAPE, ...TAPE].map((t, i) => (
+      {[...TAPE, ...TAPE].map((t, i) => (
         <span key={i}
           className={`mx-5 text-[10px] tracking-[0.25em] font-mono ${t === "•" ? "text-blue-500/30" : "font-semibold"}`}
           style={{ color: t === "•" ? undefined : "rgba(255,255,255,0.18)" }}>{t}</span>
@@ -1681,11 +1681,173 @@ const AuthModalInline = ({ mode, onClose }: { mode: "login" | "register"; onClos
 };
 
 /* ═══════════════════════════════════════════════════════════
+   TYPING TEXT  — reveals text char by char on scroll-in
+═══════════════════════════════════════════════════════════ */
+const TypingText = ({ text, delayMs = 0 }: { text: string; delayMs?: number }) => {
+  const [displayed, setDisplayed] = useState("");
+  const [started, setStarted] = useState(false);
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting && !started) setStarted(true);
+    }, { threshold: 0.5 });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, [started]);
+  useEffect(() => {
+    if (!started) return;
+    let i = 0;
+    const tid = setTimeout(() => {
+      const iv = setInterval(() => {
+        i++;
+        setDisplayed(text.slice(0, i));
+        if (i >= text.length) clearInterval(iv);
+      }, 38);
+      return () => clearInterval(iv);
+    }, delayMs);
+    return () => clearTimeout(tid);
+  }, [started, text, delayMs]);
+  return <span ref={ref}>{displayed || "\u200B"}</span>;
+};
+
+/* ═══════════════════════════════════════════════════════════
+   AVATAR STACK  — social proof row
+═══════════════════════════════════════════════════════════ */
+const AvatarStack = () => (
+  <div className="flex items-center gap-3">
+    <div className="flex" style={{ direction: "ltr" }}>
+      {["#3b82f6","#8b5cf6","#10b981","#f59e0b","#ef4444"].map((c, i) => (
+        <div key={i}
+          className="h-8 w-8 rounded-full border-2 border-[#06060f] flex items-center justify-center text-[11px] font-black text-white"
+          style={{ background: c, marginLeft: i === 0 ? 0 : -10, zIndex: 5 - i }}>
+          {["א","נ","י","ר","ד"][i]}
+        </div>
+      ))}
+    </div>
+    <div>
+      <p className="text-[11px] font-bold text-white/60">2,400+ סוחרים כבר בפנים</p>
+      <div className="flex gap-0.5 mt-0.5">
+        {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-2.5 w-2.5 fill-amber-400 text-amber-400" />)}
+      </div>
+    </div>
+  </div>
+);
+
+/* ═══════════════════════════════════════════════════════════
+   DEMO MODAL  — "צפה בדמו חי" opens this
+═══════════════════════════════════════════════════════════ */
+const DemoModal = ({ onClose }: { onClose: () => void }) => (
+  <>
+    <div className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-xl" onClick={onClose} />
+    <div className="fixed inset-0 z-[101] flex items-center justify-center p-4">
+      <div className="relative w-full max-w-md rounded-3xl border border-white/[0.08] bg-[#08080f] overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+        <div className="h-[2px] w-full holo-border" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-48 rounded-full blur-[80px] pointer-events-none"
+          style={{ background: "rgba(59,130,246,0.1)" }} />
+        <button onClick={onClose}
+          className="absolute top-4 left-4 h-8 w-8 flex items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.03] text-white/40 hover:text-white transition-colors z-10">
+          <X className="h-4 w-4" />
+        </button>
+        <div className="relative p-6 pt-4 text-center">
+          <p className="text-[9px] font-mono text-blue-400/50 uppercase tracking-widest mb-1">LIVE DEMO</p>
+          <h3 className="text-xl font-black text-white mb-1">ZenTrade בפעולה</h3>
+          <p className="text-[12px] text-white/30 mb-6">מחזור אוטומטי בין 3 מסכים — גרף חי, AI Mentor, סטטיסטיקות</p>
+          <div className="flex justify-center mb-6">
+            <PhoneMockup mouseX={0.5} mouseY={0.5} />
+          </div>
+          <button onClick={onClose}
+            className="w-full rounded-2xl py-3.5 text-[14px] font-bold text-white transition-all hover:brightness-110"
+            style={{ background: "linear-gradient(135deg, #1d4ed8, #4338ca)", boxShadow: "0 0 30px rgba(29,78,216,0.4)" }}>
+            רוצה לנסות — התחל בחינם ←
+          </button>
+        </div>
+      </div>
+    </div>
+  </>
+);
+
+/* ═══════════════════════════════════════════════════════════
+   HOW IT WORKS — 3 steps
+═══════════════════════════════════════════════════════════ */
+const HowItWorksSection = ({ onStart }: { onStart: () => void }) => (
+  <section className="py-24 px-6" data-reveal>
+    <div className="max-w-5xl mx-auto">
+      <div className="text-center mb-14">
+        <span className="text-[9px] font-mono uppercase tracking-widest" style={{ color: "rgba(96,165,250,0.45)" }}>HOW IT WORKS</span>
+        <h2 className="text-3xl md:text-4xl font-black text-white mt-2">3 צעדים לאמת</h2>
+        <p className="text-[14px] mt-3 max-w-md mx-auto" style={{ color: "rgba(255,255,255,0.35)" }}>
+          מחיבור הברוקר ועד insight ראשון — פחות מ-5 דקות
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+        {/* Connector line */}
+        <div className="hidden md:block absolute top-[52px] right-[20%] left-[20%] h-px pointer-events-none"
+          style={{ background: "linear-gradient(to left, transparent, rgba(59,130,246,0.25), transparent)" }} />
+
+        {[
+          {
+            step: "01", Icon: Zap, color: "#3b82f6",
+            title: "חבר את הברוקר",
+            desc: "30 שניות. MT5, Binance, TradingView, IBKR ועוד 8 פלטפורמות. חיבור API פשוט — ואז שכח ממנו.",
+          },
+          {
+            step: "02", Icon: TrendingUp, color: "#4ade80",
+            title: "סחר כרגיל",
+            desc: "ZenTrade מתעד אוטומטית כל עסקה — כניסה, יציאה, P&L, זמן, גודל לוט. אפס הקלדות ידניות.",
+          },
+          {
+            step: "03", Icon: Brain, color: "#a78bfa",
+            title: "AI חושף את האמת",
+            desc: "לאחר כל סשן ה-AI מזהה patterns פסיכולוגיים, חוזק ה-edge שלך, ואיפה הכסף נדלף.",
+          },
+        ].map(({ step, Icon, color, title, desc }, i) => (
+          <div key={i} className="relative flex flex-col items-center text-center group">
+            <div className="relative h-[104px] w-[104px] mb-6 flex items-center justify-center rounded-3xl transition-all duration-300 group-hover:scale-105"
+              style={{
+                border: `1px solid ${color}25`,
+                background: `${color}0a`,
+                boxShadow: `0 0 0 0 ${color}20`,
+              }}>
+              <Icon className="h-9 w-9" style={{ color }} />
+              <div className="absolute -top-3 -right-3 h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-black shadow-lg"
+                style={{ background: color, color: "#06060f" }}>
+                {step}
+              </div>
+              <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                style={{ boxShadow: `0 0 30px ${color}25` }} />
+            </div>
+            <h3 className="text-[18px] font-black text-white mb-2">{title}</h3>
+            <p className="text-[12px] leading-relaxed max-w-[220px]" style={{ color: "rgba(255,255,255,0.4)" }}>{desc}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex justify-center mt-12">
+        <button onClick={onStart}
+          className="group relative overflow-hidden rounded-2xl px-8 py-4 text-[14px] font-bold text-white transition-all hover:scale-[1.02]"
+          style={{ background: "linear-gradient(135deg, #1d4ed8, #4338ca)", boxShadow: "0 0 40px rgba(29,78,216,0.35)" }}>
+          <span className="relative z-10 flex items-center gap-2">
+            <Zap className="h-4 w-4" />
+            התחל עכשיו — חינם ל-7 ימים
+            <ChevronLeft className="h-4 w-4" />
+          </span>
+          <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/[0.08] to-transparent group-hover:translate-x-full transition-transform duration-700" />
+        </button>
+      </div>
+    </div>
+  </section>
+);
+
+/* ═══════════════════════════════════════════════════════════
    MAIN
 ═══════════════════════════════════════════════════════════ */
 const LandingPage = () => {
   const [scrollY, setScrollY] = useState(0);
   const [authModal, setAuthModal] = useState<"login" | "register" | null>(null);
+  const [demoOpen, setDemoOpen] = useState(false);
+  const [heroTraders, heroTradersRef] = useCountUp(2400, 2200);
+  const [heroWinRate, heroWinRateRef] = useCountUp(73, 2000);
   const mouse = useMousePos();
   useScrollReveal();
 
@@ -1702,6 +1864,7 @@ const LandingPage = () => {
 
       <SocialProofToasts />
       {authModal && <AuthModalInline mode={authModal} onClose={() => setAuthModal(null)} />}
+      {demoOpen && <DemoModal onClose={() => setDemoOpen(false)} />}
 
       <div className="relative" style={{ zIndex: 2 }}>
 
@@ -1747,13 +1910,15 @@ const LandingPage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 items-center">
               {/* Left */}
               <div className="space-y-6 lg:space-y-8 order-2 lg:order-1">
-                {/* Badge */}
+
+                {/* Badge — typing animation */}
                 <div className="inline-flex items-center gap-2.5 rounded-full border border-red-500/20 px-4 py-2"
                   style={{ background: "rgba(239,68,68,0.06)", backdropFilter: "blur(20px)" }}>
-                  <span className="h-1.5 w-1.5 rounded-full bg-red-400 animate-pulse" />
-                  <span className="text-[10px] font-bold text-red-400/80 font-mono tracking-[0.12em] uppercase">
-                    תפסיק לשקר לעצמך למה הגעת ל-Stop Loss
+                  <span className="h-1.5 w-1.5 rounded-full bg-red-400 animate-pulse flex-shrink-0" />
+                  <span className="text-[10px] font-bold text-red-400/80 font-mono tracking-[0.1em] uppercase min-w-0">
+                    <TypingText text="תפסיק לשקר לעצמך למה הגעת ל-Stop Loss" />
                   </span>
+                  <span className="h-[12px] w-[1.5px] bg-red-400/60 rounded-full animate-pulse flex-shrink-0" />
                 </div>
 
                 {/* Headline */}
@@ -1763,27 +1928,69 @@ const LandingPage = () => {
                     <br />
                     בגלל אסטרטגיה גרועה.
                   </h1>
-                  <h1 className="text-[32px] sm:text-[40px] md:text-[54px] font-black leading-[1.0] tracking-tight"
-                    style={{ WebkitTextFillColor: "transparent", WebkitTextStroke: "1.5px rgba(255,255,255,0.22)" }}>
-                    פוצצת אותו בגלל
-                    <br />
-                    רגע אחד של חולשה.
+                  <h1 className="text-[32px] sm:text-[40px] md:text-[54px] font-black leading-[1.0] tracking-tight">
+                    <span style={{ WebkitTextFillColor: "transparent", WebkitTextStroke: "1.5px rgba(255,255,255,0.22)" }}>
+                      פוצצת אותו בגלל רגע אחד של{" "}
+                    </span>
+                    <span className="relative inline-block" style={{
+                      background: "linear-gradient(90deg, #f87171 0%, #fb923c 25%, #fbbf24 50%, #f87171 75%, #fb923c 100%)",
+                      backgroundSize: "300% auto",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      animation: "shimmer-lr 3s linear infinite",
+                    }}>
+                      חולשה.
+                    </span>
                   </h1>
                 </div>
 
-                {/* Sub */}
-                <p className="text-[16px] leading-relaxed max-w-[460px]" style={{ color: "rgba(255,255,255,0.58)" }}>
-                  ZenTrade הוא יומן המסחר הראשון עם AI שמכריח אותך להתמודד עם האמת.
-                  לא עוד להסתתר מאחורי "תנאי שוק גרועים". הגיע הזמן לתקן את הדליפה האמיתית ב-edge שלך:{" "}
-                  <span style={{ color: "rgba(96,165,250,0.9)" }}>המוח שלך.</span>
-                </p>
+                {/* Sub — 3 bullet points */}
+                <ul className="space-y-2.5 max-w-[460px]">
+                  {[
+                    { icon: Brain,  color: "#60a5fa", text: "AI שמנתח כל עסקה ומגלה מה האמת מאחוריה" },
+                    { icon: Shield, color: "#4ade80", text: "Kill Switch שמגן עליך מ-Revenge Trading ברגע הכי קשה" },
+                    { icon: Target, color: "#a78bfa", text: "סטטיסטיקות שחושפות בדיוק איפה ה-edge שלך דולף" },
+                  ].map(({ icon: Icon, color, text }) => (
+                    <li key={text} className="flex items-center gap-3">
+                      <div className="h-7 w-7 rounded-lg flex-shrink-0 flex items-center justify-center"
+                        style={{ background: color + "15", border: `1px solid ${color}25` }}>
+                        <Icon className="h-3.5 w-3.5" style={{ color }} />
+                      </div>
+                      <span className="text-[13px]" style={{ color: "rgba(255,255,255,0.58)" }}>{text}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* Feature pills */}
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { label: "Kill Switch", color: "#ef4444" },
+                    { label: "AI Mentor", color: "#60a5fa" },
+                    { label: "Super Cards", color: "#a78bfa" },
+                    { label: "Auto Import", color: "#4ade80" },
+                    { label: "Prop Ready", color: "#f59e0b" },
+                  ].map(({ label, color }, i) => (
+                    <span key={label}
+                      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold font-mono"
+                      style={{
+                        border: `1px solid ${color}25`,
+                        background: color + "0d",
+                        color: color + "cc",
+                        animation: `pill-in 0.4s ease both`,
+                        animationDelay: `${i * 80}ms`,
+                      }}>
+                      <span className="h-1 w-1 rounded-full" style={{ background: color }} />
+                      {label}
+                    </span>
+                  ))}
+                </div>
 
                 {/* CTAs */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                   <button
                     onClick={() => setAuthModal("register")}
                     className="group relative overflow-hidden rounded-2xl px-8 py-4 text-[15px] font-bold text-white transition-all hover:scale-[1.02] hover:shadow-2xl"
-                    style={{ background: "linear-gradient(135deg, #1d4ed8, #4338ca)", boxShadow: "0 0 40px rgba(29,78,216,0.4), inset 0 1px 0 rgba(255,255,255,0.15)" }}>
+                    style={{ background: "linear-gradient(135deg, #1d4ed8, #4338ca)", boxShadow: "0 0 40px rgba(29,78,216,0.45), inset 0 1px 0 rgba(255,255,255,0.15)" }}>
                     <span className="relative z-10 flex items-center gap-2">
                       <Lock className="h-4 w-4" />
                       התחל לבנות משמעת — 7 ימים חינם
@@ -1791,30 +1998,47 @@ const LandingPage = () => {
                     </span>
                     <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/[0.08] to-transparent group-hover:translate-x-full transition-transform duration-700" />
                   </button>
-                  <Link to="/demo" className="group flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] px-5 py-3.5 text-[13px] font-semibold text-white/50 hover:text-white/80 hover:bg-white/[0.07] transition-all">
-                    <Eye className="h-4 w-4" />
+                  <button
+                    onClick={() => setDemoOpen(true)}
+                    className="group flex items-center gap-2 rounded-xl border border-white/[0.10] bg-white/[0.04] px-5 py-[13px] text-[13px] font-semibold text-white/50 hover:text-white/90 hover:bg-white/[0.08] hover:border-white/[0.18] transition-all">
+                    <Play className="h-3.5 w-3.5 fill-current" />
                     <span>צפה בדמו חי</span>
                     <ArrowUpRight className="h-3.5 w-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
-                  </Link>
+                  </button>
                 </div>
 
-                {/* Trust */}
-                <div className="flex items-center gap-1.5 text-[11px] font-mono" style={{ color: "rgba(255,255,255,0.18)" }}>
-                  <Lock className="h-3 w-3" />
-                  <span>SSL מוצפן · ללא כרטיס אשראי · ביטול בכל עת</span>
+                {/* Avatar stack + trust */}
+                <div className="flex flex-col gap-2">
+                  <AvatarStack />
+                  <div className="flex items-center gap-1.5 text-[11px] font-mono" style={{ color: "rgba(255,255,255,0.16)" }}>
+                    <Lock className="h-3 w-3" />
+                    <span>SSL מוצפן · ללא כרטיס אשראי · ביטול בכל עת</span>
+                  </div>
                 </div>
 
-                {/* Stats row */}
-                <div className="flex items-center gap-5 sm:gap-8 pt-2 border-t border-white/[0.04]">
-                  {[["2,400+","סוחרים פעילים"],["73%","שיפור Win Rate"],["7 ימים","ניסיון חינם"]].map(([v,l]) => (
-                    <div key={l}>
-                      <p className="text-[18px] sm:text-[22px] font-black font-mono"
-                        style={{ background: "linear-gradient(to bottom, #fff, rgba(255,255,255,0.4))", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                        {v}
-                      </p>
-                      <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.35)" }}>{l}</p>
-                    </div>
-                  ))}
+                {/* Stats row — animated countup */}
+                <div className="flex items-center gap-5 sm:gap-8 pt-3 border-t border-white/[0.05]">
+                  <div>
+                    <p className="text-[18px] sm:text-[22px] font-black font-mono"
+                      style={{ background: "linear-gradient(to bottom, #fff, rgba(255,255,255,0.4))", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                      <span ref={heroTradersRef}>{heroTraders.toLocaleString()}</span>+
+                    </p>
+                    <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.35)" }}>סוחרים פעילים</p>
+                  </div>
+                  <div>
+                    <p className="text-[18px] sm:text-[22px] font-black font-mono"
+                      style={{ background: "linear-gradient(to bottom, #4ade80, rgba(74,222,128,0.4))", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                      <span ref={heroWinRateRef}>{heroWinRate}</span>%
+                    </p>
+                    <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.35)" }}>שיפור Win Rate</p>
+                  </div>
+                  <div>
+                    <p className="text-[18px] sm:text-[22px] font-black font-mono"
+                      style={{ background: "linear-gradient(to bottom, #fbbf24, rgba(251,191,36,0.4))", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                      7 ימים
+                    </p>
+                    <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.35)" }}>ניסיון חינם</p>
+                  </div>
                 </div>
               </div>
 
@@ -1830,6 +2054,11 @@ const LandingPage = () => {
             </div>
           </div>
         </section>
+
+        {/* ── HOW IT WORKS ── */}
+        <HowItWorksSection onStart={() => setAuthModal("register")} />
+
+        <SectionDivider color="rgba(59,130,246,0.12)" />
 
         {/* ── TICKER ── */}
         <TickerTape />
