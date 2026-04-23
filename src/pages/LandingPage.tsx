@@ -1380,16 +1380,48 @@ const ALL_TESTIMONIALS = [
 ];
 
 const TestimonialsCarousel = () => {
-  // Triple-duplicate so the loop is always full, even on wide screens
-  const items = [...ALL_TESTIMONIALS, ...ALL_TESTIMONIALS, ...ALL_TESTIMONIALS];
+  // Exactly 2 identical sets → animate -50% → perfect seamless loop, zero blank space
+  const setA = ALL_TESTIMONIALS;
+  const setB = ALL_TESTIMONIALS;
+  const track = [...setA, ...setB];
+
+  const Card = ({ t, idx }: { t: typeof ALL_TESTIMONIALS[0]; idx: number }) => (
+    <div
+      key={idx}
+      className="rounded-2xl border border-white/[0.07] p-5 space-y-3"
+      style={{
+        background: "rgba(255,255,255,0.025)",
+        backdropFilter: "blur(20px)",
+        // 300px on desktop, 82vw on mobile so 1 fits nicely
+        width: "clamp(260px, 82vw, 320px)",
+        flexShrink: 0,
+        marginLeft: 8,
+        marginRight: 8,
+      }}
+    >
+      <div className="flex gap-0.5">
+        {Array.from({ length: t.stars }).map((_, n) => (
+          <Star key={n} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+        ))}
+      </div>
+      <p className="text-[12px] leading-relaxed text-white/55">"{t.text}"</p>
+      <div className="flex items-center justify-between pt-2 border-t border-white/[0.06]">
+        <div>
+          <p className="text-[12px] font-bold text-white/80">{t.name}</p>
+          <p className="text-[10px] font-mono text-white/30">{t.role}</p>
+        </div>
+        <span className="text-[15px] font-black text-profit font-mono">{t.pnl}</span>
+      </div>
+    </div>
+  );
 
   return (
     <section className="py-20 relative" style={{ overflow: "hidden" }}>
       {/* Fade edges */}
-      <div className="absolute inset-y-0 left-0 w-24 md:w-40 z-10 pointer-events-none"
-        style={{ background: "linear-gradient(to right, #06060f 60%, transparent)" }} />
-      <div className="absolute inset-y-0 right-0 w-24 md:w-40 z-10 pointer-events-none"
-        style={{ background: "linear-gradient(to left, #06060f 60%, transparent)" }} />
+      <div className="absolute inset-y-0 left-0 w-16 md:w-32 z-10 pointer-events-none"
+        style={{ background: "linear-gradient(to right, #06060f 50%, transparent)" }} />
+      <div className="absolute inset-y-0 right-0 w-16 md:w-32 z-10 pointer-events-none"
+        style={{ background: "linear-gradient(to left, #06060f 50%, transparent)" }} />
 
       <div className="max-w-6xl mx-auto px-6 mb-10" data-reveal>
         <div className="text-center">
@@ -1402,30 +1434,22 @@ const TestimonialsCarousel = () => {
       </div>
 
       {/*
-        The outer wrapper must be wider than viewport (overflow hidden on section).
-        The inner flex track animates translateX from 0 → -(1/3 of track width).
-        Since we have 3 copies, moving -1/3 brings us back to the same visual state.
+        Track = setA + setB (identical halves).
+        Keyframe moves 0% → -50% = scrolls exactly through setA.
+        At -50% the visual position is identical to 0% → seamless jump-reset.
+        Duration calc: 8 cards × ~336px ≈ 2688px at 60px/s ≈ 45s.
       */}
-      <div style={{ display: "flex", width: "max-content", animation: "carousel-loop 35s linear infinite", willChange: "transform" }}>
-        {items.map((t, i) => (
-          <div key={i}
-            className="rounded-2xl border border-white/[0.07] p-5 mx-2 space-y-3"
-            style={{ background: "rgba(255,255,255,0.025)", backdropFilter: "blur(20px)", width: 280, flexShrink: 0 }}>
-            <div className="flex gap-0.5">
-              {Array.from({ length: t.stars }).map((_, n) => (
-                <Star key={n} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-              ))}
-            </div>
-            <p className="text-[12px] leading-relaxed text-white/55">"{t.text}"</p>
-            <div className="flex items-center justify-between pt-2 border-t border-white/[0.06]">
-              <div>
-                <p className="text-[12px] font-bold text-white/80">{t.name}</p>
-                <p className="text-[10px] font-mono text-white/30">{t.role}</p>
-              </div>
-              <span className="text-[15px] font-black text-profit font-mono">{t.pnl}</span>
-            </div>
-          </div>
-        ))}
+      <div
+        style={{
+          display: "flex",
+          width: "max-content",
+          animation: "carousel-loop 45s linear infinite",
+          willChange: "transform",
+        }}
+        onMouseEnter={e => (e.currentTarget.style.animationPlayState = "paused")}
+        onMouseLeave={e => (e.currentTarget.style.animationPlayState = "running")}
+      >
+        {track.map((t, i) => <Card key={i} t={t} idx={i} />)}
       </div>
     </section>
   );
