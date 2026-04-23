@@ -230,7 +230,7 @@ const TaxCalculatorPage = () => {
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       setAiAdvice(data.advice);
-    } catch (e: any) {
+    } catch (e) {
       toast.error(e.message || "שגיאה בניתוח AI");
     } finally {
       setAiLoading(false);
@@ -242,8 +242,9 @@ const TaxCalculatorPage = () => {
       {/* Header */}
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent/10 border border-accent/20">
-            <Calculator className="h-5 w-5 text-accent" />
+          <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-accent/20 to-accent/5 border border-accent/25 shadow-[0_0_16px_rgba(245,158,11,0.12)]">
+            <div className="absolute inset-[-3px] rounded-2xl bg-accent/5 blur-md" />
+            <Calculator className="relative h-5 w-5 text-accent drop-shadow-[0_0_6px_rgba(245,158,11,0.5)]" />
           </div>
           <div>
             <h1 className="font-heading text-xl md:text-2xl font-bold text-foreground">מחשבון מס רווחי הון</h1>
@@ -254,7 +255,7 @@ const TaxCalculatorPage = () => {
         <button
           onClick={handleDownloadPDF}
           disabled={downloading}
-          className="inline-flex items-center gap-2 rounded-xl bg-accent/10 border border-accent/20 px-5 py-2.5 text-xs font-bold text-accent transition-all hover:bg-accent/20 active:scale-[0.97] disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-l from-accent to-yellow-400 px-5 py-2.5 text-xs font-black text-[#0a0a0a] shadow-lg shadow-accent/20 hover:shadow-accent/35 hover:brightness-110 active:scale-[0.97] disabled:opacity-50 transition-all"
         >
           {downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
           {downloading ? "מייצר PDF..." : "הורד דו״ח PDF"}
@@ -444,14 +445,31 @@ const InputField = ({ label, value, onChange, icon, borderColor, bgColor }: {
 const StatCard = ({ label, value, color, icon, sub, highlight }: {
   label: string; value: string; color: string; icon: React.ReactNode; sub?: string; highlight?: boolean;
 }) => (
-  <div className={`glass-card p-4 ${highlight ? "border-primary/20 ring-1 ring-primary/10" : ""}`}>
+  <div className={`relative overflow-hidden rounded-2xl border p-4 transition-all hover:-translate-y-0.5 hover:shadow-xl ${
+    highlight
+      ? "border-primary/20 bg-gradient-to-br from-primary/[0.08] to-transparent shadow-[0_0_20px_rgba(0,212,170,0.06)]"
+      : color.includes("profit")
+        ? "border-profit/12 bg-gradient-to-br from-profit/[0.05] to-transparent"
+        : color.includes("loss")
+          ? "border-loss/12 bg-gradient-to-br from-loss/[0.05] to-transparent"
+          : color.includes("accent")
+            ? "border-accent/12 bg-gradient-to-br from-accent/[0.05] to-transparent"
+            : "border-white/[0.06] bg-white/[0.02]"
+  }`}>
+    <div className={`absolute top-0 left-0 right-0 h-[2px] ${
+      highlight ? "bg-gradient-to-l from-transparent via-primary/50 to-transparent" :
+      color.includes("profit") ? "bg-gradient-to-l from-transparent via-profit/40 to-transparent" :
+      color.includes("loss") ? "bg-gradient-to-l from-transparent via-loss/40 to-transparent" :
+      color.includes("accent") ? "bg-gradient-to-l from-transparent via-accent/40 to-transparent" :
+      "bg-gradient-to-l from-transparent via-white/10 to-transparent"
+    }`} />
     <div className="flex items-center gap-2 mb-2">
       <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/[0.05]">
         {icon}
       </div>
       <span className="text-[10px] text-muted-foreground/50">{label}</span>
     </div>
-    <p className={`text-lg md:text-xl font-bold font-mono ${color}`}>{value}</p>
+    <p className={`text-lg md:text-xl font-black font-mono ${color}`}>{value}</p>
     {sub && <p className="text-2xs text-muted-foreground/30 mt-1">{sub}</p>}
   </div>
 );

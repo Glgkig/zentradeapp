@@ -9,8 +9,11 @@ import {
 } from "recharts";
 import { useTrades, useTradeStats } from "@/hooks/useTrades";
 
+interface TooltipEntry { value: number; name: string; payload: Record<string, unknown>; fill?: string; }
+interface ChartTooltipProps { active?: boolean; payload?: TooltipEntry[]; label?: string; }
+
 /* ===== Custom Tooltip ===== */
-const ChartTooltip = ({ active, payload, label }: any) => {
+const ChartTooltip = ({ active, payload, label }: ChartTooltipProps) => {
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-xl border border-white/[0.08] bg-[#111116] px-3 py-2 shadow-xl text-right">
@@ -20,7 +23,7 @@ const ChartTooltip = ({ active, payload, label }: any) => {
   );
 };
 
-const PieTooltip = ({ active, payload }: any) => {
+const PieTooltip = ({ active, payload }: ChartTooltipProps) => {
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-xl border border-white/[0.08] bg-[#111116] px-3 py-2 shadow-xl text-right">
@@ -33,13 +36,14 @@ const PieTooltip = ({ active, payload }: any) => {
 };
 
 const heatCellColor = (pnl: number) => {
+  if (pnl >= 500) return "bg-profit/80 shadow-[0_0_6px_rgba(0,212,170,0.4)]";
   if (pnl >= 250) return "bg-profit/55";
-  if (pnl >= 100) return "bg-profit/30";
-  if (pnl > 0) return "bg-profit/14";
-  if (pnl === 0) return "bg-white/[0.025]";
-  if (pnl >= -100) return "bg-loss/14";
-  if (pnl >= -200) return "bg-loss/28";
-  return "bg-loss/45";
+  if (pnl >= 100) return "bg-profit/32";
+  if (pnl > 0) return "bg-profit/16";
+  if (pnl === 0) return "bg-white/[0.03]";
+  if (pnl >= -100) return "bg-loss/16";
+  if (pnl >= -250) return "bg-loss/32";
+  return "bg-loss/55 shadow-[0_0_6px_rgba(239,68,68,0.3)]";
 };
 
 /* ===== Main Page ===== */
@@ -167,16 +171,29 @@ const StatsPage = () => {
       {/* 1. TOP METRICS */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {topMetrics.map((m) => (
-          <div key={m.sublabel} className="relative rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-md p-4 overflow-hidden group hover:border-white/[0.1] transition-all duration-300">
-            <div className={`absolute top-0 left-0 w-20 h-20 bg-${m.glow}/[0.04] rounded-full blur-[40px] pointer-events-none`} />
-            <div className="relative">
-              <div className="flex items-center gap-2 mb-3">
-                <div className={`${m.color} opacity-50`}>{m.icon}</div>
-                <span className="text-2xs text-muted-foreground/40 font-mono">{m.sublabel}</span>
+          <div key={m.sublabel} className={`relative rounded-2xl border overflow-hidden group transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl
+            ${m.glow === "profit" ? "border-profit/12 bg-gradient-to-br from-profit/[0.04] to-transparent hover:shadow-profit/10"
+            : m.glow === "loss" ? "border-loss/12 bg-gradient-to-br from-loss/[0.04] to-transparent hover:shadow-loss/10"
+            : "border-primary/12 bg-gradient-to-br from-primary/[0.04] to-transparent hover:shadow-primary/10"}`}
+          >
+            {/* Top accent line */}
+            <div className={`h-[2px] w-full ${
+              m.glow === "profit" ? "bg-gradient-to-l from-transparent via-profit/40 to-transparent"
+              : m.glow === "loss" ? "bg-gradient-to-l from-transparent via-loss/40 to-transparent"
+              : "bg-gradient-to-l from-transparent via-primary/40 to-transparent"
+            }`} />
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[9px] text-muted-foreground/35 font-mono uppercase tracking-wider">{m.sublabel}</span>
+                <div className={`flex h-7 w-7 items-center justify-center rounded-lg opacity-60 ${
+                  m.glow === "profit" ? "bg-profit/12" : m.glow === "loss" ? "bg-loss/12" : "bg-primary/12"
+                }`}>
+                  <div className={m.color}>{m.icon}</div>
+                </div>
               </div>
-              <p className={`text-xl md:text-2xl font-black font-mono ${m.color}`}>{m.value}</p>
-              <p className="text-2xs text-muted-foreground/35 mt-1">{m.sub}</p>
-              <p className="text-[10px] font-semibold text-foreground/60 mt-0.5">{m.label}</p>
+              <p className={`text-[18px] sm:text-[22px] font-black font-mono leading-none mb-1 truncate ${m.color}`}>{m.value}</p>
+              <p className="text-[10px] font-semibold text-foreground/55">{m.label}</p>
+              <p className="text-[9px] text-muted-foreground/30 mt-0.5 hidden sm:block">{m.sub}</p>
             </div>
           </div>
         ))}

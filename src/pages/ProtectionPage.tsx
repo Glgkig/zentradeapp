@@ -1,10 +1,12 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import {
   Shield, Lock, AlertTriangle, ShieldCheck, ShieldAlert, TrendingDown,
   Calculator, CheckSquare, Square, Target, Crosshair, Gauge,
-  Ban, Power, Zap, Flame, Eye,
+  Ban, Power, Zap, Flame, Eye, Activity, Cpu,
 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 /* ===== Gauge Component ===== */
 const DrawdownGauge = ({ current, limit }: { current: number; limit: number }) => {
@@ -14,18 +16,12 @@ const DrawdownGauge = ({ current, limit }: { current: number; limit: number }) =
     pct < 0.4 ? "hsl(var(--profit))" :
     pct < 0.7 ? "hsl(45, 100%, 50%)" :
     "hsl(var(--loss))";
-  const bgColor =
-    pct < 0.4 ? "hsl(var(--profit) / 0.08)" :
-    pct < 0.7 ? "hsla(45, 100%, 50%, 0.08)" :
-    "hsl(var(--loss) / 0.08)";
 
   return (
     <div className="flex flex-col items-center">
       <div className="relative w-[200px] h-[105px] overflow-hidden">
-        {/* Background arc */}
         <div className="absolute inset-0 w-[200px] h-[200px] rounded-full border-[12px] border-white/[0.04]"
           style={{ clipPath: "polygon(0 0, 100% 0, 100% 50%, 0 50%)" }} />
-        {/* Active arc */}
         <div
           className="absolute inset-0 w-[200px] h-[200px] rounded-full border-[12px] border-transparent transition-all duration-1000 ease-out"
           style={{
@@ -36,17 +32,13 @@ const DrawdownGauge = ({ current, limit }: { current: number; limit: number }) =
             filter: `drop-shadow(0 0 8px ${color})`,
           }}
         />
-        {/* Center text */}
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-center">
           <p className="text-2xl font-black font-mono" style={{ color }}>
-            -${Math.abs(current)}
+            -${Math.abs(current).toFixed(0)}
           </p>
-          <p className="text-2xs text-muted-foreground/40 font-mono">
-            מתוך -${limit}
-          </p>
+          <p className="text-2xs text-muted-foreground/40 font-mono">מתוך -${limit}</p>
         </div>
       </div>
-      {/* Status bar */}
       <div className="w-full mt-3 rounded-xl overflow-hidden h-2" style={{ background: "hsl(var(--muted) / 0.1)" }}>
         <div
           className="h-full rounded-xl transition-all duration-1000 ease-out"
@@ -66,9 +58,20 @@ const DrawdownGauge = ({ current, limit }: { current: number; limit: number }) =
 
 /* ===== Main Page ===== */
 const ProtectionPage = () => {
-  const [dailyLoss] = useState(-250);
-  const [drawdownLimit] = useState(500);
+  const { user } = useAuth();
+  const [dailyLoss, setDailyLoss] = useState(0);
+  const [drawdownLimit, setDrawdownLimit] = useState(500);
   const [killSwitchActive, setKillSwitchActive] = useState(false);
+
+  // Pre-emptive Strike settings
+  const [preemptiveEnabled, setPreemptiveEnabled] = useState(() =>
+    localStorage.getItem("zentrade-preemptive-enabled") === "true"
+  );
+  const [preemptiveThreshold, setPreemptiveThreshold] = useState(() =>
+    localStorage.getItem("zentrade-preemptive-threshold") || "450"
+  );
+  const [monitorActive, setMonitorActive] = useState(false);
+  const monitorRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Position calculator
   const [accountSize, setAccountSize] = useState("50000");
@@ -79,8 +82,7 @@ const ProtectionPage = () => {
     const acc = parseFloat(accountSize) || 0;
     const risk = parseFloat(riskPct) || 0;
     const stop = parseFloat(stopDistance) || 1;
-    const riskAmount = acc * (risk / 100);
-    return (riskAmount / stop).toFixed(2);
+    return ((acc * (risk / 100)) / stop).toFixed(2);
   }, [accountSize, riskPct, stopDistance]);
 
   // Iron rules
@@ -100,9 +102,65 @@ const ProtectionPage = () => {
   const allChecked = rules.every(r => r.checked);
   const checkedCount = rules.filter(r => r.checked).length;
 
+  // ── Fetch today's closed PnL from Supabase ──
+  const fetchDailyPnl = async () => {
+    if (!user) return 0;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const { data } = await supabase
+      .from("trades")
+      .select("pnl")
+      .eq("user_id", user.id)
+      .eq("status", "closed")
+      .gte("entry_time", today.toISOString());
+    if (!data) return 0;
+    return data.reduce((sum, t) => sum + (t.pnl ?? 0), 0);
+  };
+
+  // ── Load daily PnL on mount ──
+  useEffect(() => {
+    fetchDailyPnl().then(pnl => setDailyLoss(pnl));
+  }, [user]);
+
+  // ── Pre-emptive monitor ──
+  useEffect(() => {
+    if (!preemptiveEnabled || !user) {
+      if (monitorRef.current) clearInterval(monitorRef.current);
+      setMonitorActive(false);
+      return;
+    }
+
+    setMonitorActive(true);
+    const threshold = parseFloat(preemptiveThreshold) || 450;
+
+    const check = async () => {
+      const pnl = await fetchDailyPnl();
+      setDailyLoss(pnl);
+      if (pnl <= -threshold) {
+        // Trigger lockdown
+        const until = new Date(Date.now() + 24 * 3600 * 1000);
+        localStorage.setItem("zentrade-lockdown", until.toISOString());
+        localStorage.setItem("zentrade-lockdown-reason", "preemptive");
+        window.location.reload();
+      }
+    };
+
+    check();
+    monitorRef.current = setInterval(check, 30_000); // every 30 seconds
+    return () => { if (monitorRef.current) clearInterval(monitorRef.current); };
+  }, [preemptiveEnabled, preemptiveThreshold, user]);
+
+  const savePreemptive = () => {
+    localStorage.setItem("zentrade-preemptive-enabled", String(preemptiveEnabled));
+    localStorage.setItem("zentrade-preemptive-threshold", preemptiveThreshold);
+    toast.success(preemptiveEnabled ? `מגן פעיל — יינעל ב-$${preemptiveThreshold} הפסד` : "מגן כובה");
+  };
+
   const handleKillSwitch = () => {
     setKillSwitchActive(true);
-    toast.success("🔒 נעילת מסחר הופעלה — ללא עסקאות חדשות עד חצות", { duration: 5000 });
+    const until = new Date(Date.now() + 24 * 3600 * 1000);
+    localStorage.setItem("zentrade-lockdown", until.toISOString());
+    window.location.reload();
   };
 
   return (
@@ -120,16 +178,11 @@ const ProtectionPage = () => {
 
       {/* ===== KILL SWITCH ===== */}
       <div className="relative rounded-2xl border border-loss/10 bg-white/[0.02] backdrop-blur-md p-5 md:p-6 overflow-hidden">
-        {/* Subtle glow */}
         <div className="absolute top-0 right-0 w-48 h-48 bg-loss/[0.04] rounded-full blur-[80px] pointer-events-none" />
-
         <div className="relative flex flex-col md:flex-row items-center gap-6">
-          {/* Left: Gauge */}
           <div className="flex-1 w-full max-w-[260px]">
             <DrawdownGauge current={dailyLoss} limit={drawdownLimit} />
           </div>
-
-          {/* Right: Info + Kill Switch */}
           <div className="flex-1 space-y-4 w-full">
             <div>
               <div className="flex items-center gap-2 mb-2">
@@ -144,12 +197,10 @@ const ProtectionPage = () => {
                 המערכת תחסום אוטומטית כל פעולת מסחר חדשה עד חצות.
               </p>
             </div>
-
-            {/* Stats row */}
             <div className="grid grid-cols-3 gap-2">
               {[
-                { label: "הפסד היום", value: `-$${Math.abs(dailyLoss)}`, color: "text-loss" },
-                { label: "נותר", value: `$${drawdownLimit - Math.abs(dailyLoss)}`, color: "text-profit" },
+                { label: "הפסד היום", value: `${dailyLoss >= 0 ? "+" : ""}$${dailyLoss.toFixed(0)}`, color: dailyLoss < 0 ? "text-loss" : "text-profit" },
+                { label: "נותר", value: `$${Math.max(drawdownLimit - Math.abs(dailyLoss), 0).toFixed(0)}`, color: "text-profit" },
                 { label: "סטטוס", value: killSwitchActive ? "נעול 🔒" : "פעיל", color: killSwitchActive ? "text-loss" : "text-profit" },
               ].map((s, i) => (
                 <div key={i} className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-2.5 text-center">
@@ -158,8 +209,6 @@ const ProtectionPage = () => {
                 </div>
               ))}
             </div>
-
-            {/* Kill Switch Button */}
             <button
               onClick={handleKillSwitch}
               disabled={killSwitchActive}
@@ -169,25 +218,119 @@ const ProtectionPage = () => {
                   : "bg-loss/8 border border-loss/15 text-loss hover:bg-loss/15 hover:shadow-[0_0_30px_hsl(var(--loss)/0.15)] active:scale-[0.98]"
               }`}
             >
-              {killSwitchActive ? (
-                <><Lock className="h-4.5 w-4.5" /><span>יומן נעול להיום</span></>
-              ) : (
-                <><Power className="h-4.5 w-4.5" /><span>🔒 נעל יומן להיום (Kill Switch)</span></>
-              )}
+              {killSwitchActive
+                ? <><Lock className="h-4 w-4" /><span>יומן נעול להיום</span></>
+                : <><Power className="h-4 w-4" /><span>🔒 נעל יומן להיום (Kill Switch)</span></>
+              }
             </button>
-            {!killSwitchActive && (
-              <p className="text-2xs text-muted-foreground/25 text-center">
-                מונע הזנת עסקאות חדשות כדי למנוע Revenge Trading
-              </p>
-            )}
           </div>
+        </div>
+      </div>
+
+      {/* ===== PRE-EMPTIVE STRIKE ===== */}
+      <div className="relative rounded-2xl overflow-hidden"
+        style={{ border: "1px solid rgba(59,130,246,0.15)", background: "rgba(59,130,246,0.03)" }}>
+        <div className="absolute top-0 inset-x-0 h-[1px]"
+          style={{ background: "linear-gradient(to right, transparent, rgba(59,130,246,0.4), transparent)" }} />
+        <div className="absolute top-0 right-0 w-48 h-48 rounded-full blur-[80px] pointer-events-none"
+          style={{ background: "rgba(59,130,246,0.06)" }} />
+
+        <div className="relative p-5 md:p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl"
+                style={{ background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.2)" }}>
+                <Cpu className="h-4.5 w-4.5" style={{ color: "#60a5fa" }} />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-[14px] font-bold text-white">Pre-emptive Strike</h2>
+                  {monitorActive && (
+                    <div className="flex items-center gap-1 rounded-full px-2 py-0.5"
+                      style={{ background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.2)" }}>
+                      <Activity className="h-2.5 w-2.5 animate-pulse" style={{ color: "#60a5fa" }} />
+                      <span className="text-[8px] font-mono font-bold uppercase tracking-widest" style={{ color: "#60a5fa" }}>LIVE</span>
+                    </div>
+                  )}
+                </div>
+                <p className="text-2xs text-white/30 font-mono">מגן הון אוטומטי לפני הגבול</p>
+              </div>
+            </div>
+
+            {/* Toggle */}
+            <button
+              onClick={() => setPreemptiveEnabled(p => !p)}
+              className="relative h-6 w-11 rounded-full transition-all duration-300 shrink-0"
+              style={{
+                background: preemptiveEnabled ? "rgba(59,130,246,0.4)" : "rgba(255,255,255,0.08)",
+                border: preemptiveEnabled ? "1px solid rgba(59,130,246,0.5)" : "1px solid rgba(255,255,255,0.1)",
+                boxShadow: preemptiveEnabled ? "0 0 12px rgba(59,130,246,0.3)" : "none",
+              }}
+            >
+              <div className="absolute top-0.5 h-5 w-5 rounded-full bg-white transition-all duration-300 shadow-md"
+                style={{ right: preemptiveEnabled ? "2px" : "auto", left: preemptiveEnabled ? "auto" : "2px" }} />
+            </button>
+          </div>
+
+          <p className="text-[11px] text-white/40 leading-relaxed mb-4">
+            המערכת בודקת את ה-P&L שלך כל 30 שניות. ברגע שההפסד יגיע לסף שהגדרת — הפלטפורמה ננעלת אוטומטית לפני שתגיע לגבול הפראפ.
+          </p>
+
+          {/* Threshold input */}
+          <div className="flex items-end gap-3">
+            <div className="flex-1">
+              <label className="text-[10px] font-mono uppercase tracking-widest mb-1.5 block" style={{ color: "rgba(59,130,246,0.5)" }}>
+                סף נעילה ($)
+              </label>
+              <div className="relative">
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-mono" style={{ color: "rgba(59,130,246,0.4)" }}>$</span>
+                <input
+                  type="number"
+                  value={preemptiveThreshold}
+                  onChange={e => setPreemptiveThreshold(e.target.value)}
+                  className="w-full rounded-xl pr-7 pl-3 py-2.5 text-[13px] font-black font-mono text-white outline-none"
+                  style={{
+                    background: "rgba(59,130,246,0.06)",
+                    border: "1px solid rgba(59,130,246,0.18)",
+                  }}
+                  placeholder="450"
+                />
+              </div>
+              <p className="text-2xs mt-1" style={{ color: "rgba(255,255,255,0.2)" }}>
+                נעילה ב-${preemptiveThreshold} לפני מגבלת ה-${drawdownLimit}
+              </p>
+            </div>
+
+            <button
+              onClick={savePreemptive}
+              className="rounded-xl px-4 py-2.5 text-[12px] font-bold transition-all shrink-0"
+              style={{
+                background: "rgba(59,130,246,0.15)",
+                border: "1px solid rgba(59,130,246,0.3)",
+                color: "#60a5fa",
+                boxShadow: "0 0 16px rgba(59,130,246,0.1)",
+              }}
+            >
+              שמור
+            </button>
+          </div>
+
+          {/* Status */}
+          {monitorActive && (
+            <div className="mt-3 flex items-center gap-2 rounded-xl p-3"
+              style={{ background: "rgba(59,130,246,0.05)", border: "1px solid rgba(59,130,246,0.1)" }}>
+              <div className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: "#60a5fa" }} />
+              <span className="text-[10px] font-mono" style={{ color: "rgba(59,130,246,0.6)" }}>
+                ניטור פעיל — בדיקה כל 30 שניות · הפסד נוכחי: ${Math.abs(dailyLoss).toFixed(0)}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
       {/* ===== POSITION SIZE CALCULATOR ===== */}
       <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-md p-5 md:p-6 relative overflow-hidden">
         <div className="absolute bottom-0 left-0 w-40 h-40 bg-primary/[0.04] rounded-full blur-[60px] pointer-events-none" />
-
         <div className="relative">
           <div className="flex items-center gap-2 mb-4">
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/8 border border-primary/12">
@@ -198,35 +341,11 @@ const ProtectionPage = () => {
               <p className="text-2xs text-muted-foreground/30 font-mono">SMART POSITION SIZER</p>
             </div>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-            <CalcInput
-              label="גודל תיק"
-              sublabel="ACCOUNT SIZE"
-              value={accountSize}
-              onChange={setAccountSize}
-              prefix="$"
-              icon={<Target className="h-3.5 w-3.5 text-muted-foreground/30" />}
-            />
-            <CalcInput
-              label="סיכון באחוזים"
-              sublabel="RISK %"
-              value={riskPct}
-              onChange={setRiskPct}
-              prefix="%"
-              icon={<AlertTriangle className="h-3.5 w-3.5 text-muted-foreground/30" />}
-            />
-            <CalcInput
-              label="מרחק לסטופ"
-              sublabel="SL DISTANCE (PTS)"
-              value={stopDistance}
-              onChange={setStopDistance}
-              prefix="pts"
-              icon={<Crosshair className="h-3.5 w-3.5 text-muted-foreground/30" />}
-            />
+            <CalcInput label="גודל תיק" sublabel="ACCOUNT SIZE" value={accountSize} onChange={setAccountSize} prefix="$" icon={<Target className="h-3.5 w-3.5 text-muted-foreground/30" />} />
+            <CalcInput label="סיכון באחוזים" sublabel="RISK %" value={riskPct} onChange={setRiskPct} prefix="%" icon={<AlertTriangle className="h-3.5 w-3.5 text-muted-foreground/30" />} />
+            <CalcInput label="מרחק לסטופ" sublabel="SL DISTANCE (PTS)" value={stopDistance} onChange={setStopDistance} prefix="pts" icon={<Crosshair className="h-3.5 w-3.5 text-muted-foreground/30" />} />
           </div>
-
-          {/* Result */}
           <div className="rounded-xl border border-primary/15 bg-primary/[0.04] p-4 flex flex-col md:flex-row items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 border border-primary/15">
@@ -240,9 +359,7 @@ const ProtectionPage = () => {
               </div>
             </div>
             <div className="text-center md:text-left">
-              <p className="text-3xl font-black font-mono text-primary" style={{ textShadow: "0 0 20px hsl(var(--primary) / 0.3)" }}>
-                {positionSize}
-              </p>
+              <p className="text-3xl font-black font-mono text-primary" style={{ textShadow: "0 0 20px hsl(var(--primary) / 0.3)" }}>{positionSize}</p>
               <p className="text-2xs text-primary/50 font-mono font-bold">LOTS</p>
             </div>
           </div>
@@ -252,7 +369,6 @@ const ProtectionPage = () => {
       {/* ===== IRON RULES CHECKLIST ===== */}
       <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-md p-5 md:p-6 relative overflow-hidden">
         <div className="absolute top-0 left-1/2 w-60 h-32 bg-accent/[0.03] rounded-full blur-[80px] pointer-events-none" />
-
         <div className="relative">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -265,46 +381,29 @@ const ProtectionPage = () => {
               </div>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className={`text-2xs font-bold font-mono ${allChecked ? "text-profit" : "text-muted-foreground/30"}`}>
-                {checkedCount}/{rules.length}
-              </span>
+              <span className={`text-2xs font-bold font-mono ${allChecked ? "text-profit" : "text-muted-foreground/30"}`}>{checkedCount}/{rules.length}</span>
               <div className="w-16 h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-500"
-                  style={{
-                    width: `${(checkedCount / rules.length) * 100}%`,
-                    background: allChecked ? "hsl(var(--profit))" : "hsl(var(--accent))",
-                  }}
-                />
+                <div className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${(checkedCount / rules.length) * 100}%`, background: allChecked ? "hsl(var(--profit))" : "hsl(var(--accent))" }} />
               </div>
             </div>
           </div>
-
           <div className="space-y-1.5">
             {rules.map((rule) => (
-              <button
-                key={rule.id}
-                onClick={() => toggleRule(rule.id)}
+              <button key={rule.id} onClick={() => toggleRule(rule.id)}
                 className={`haptic-press w-full flex items-center gap-3 rounded-xl border px-4 py-3 text-right transition-all duration-200 min-h-[48px] group ${
-                  rule.checked
-                    ? "border-profit/12 bg-profit/[0.03] hover:bg-profit/[0.06]"
-                    : "border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/[0.1]"
-                }`}
-              >
-                {rule.checked ? (
-                  <CheckSquare className="h-4 w-4 text-profit shrink-0 transition-transform group-active:scale-90" />
-                ) : (
-                  <Square className="h-4 w-4 text-muted-foreground/20 shrink-0 transition-transform group-active:scale-90" />
-                )}
-                <span className={`text-[12px] font-medium transition-colors ${
-                  rule.checked ? "text-foreground/80 line-through decoration-profit/30" : "text-foreground/60"
+                  rule.checked ? "border-profit/12 bg-profit/[0.03] hover:bg-profit/[0.06]" : "border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/[0.1]"
                 }`}>
+                {rule.checked
+                  ? <CheckSquare className="h-4 w-4 text-profit shrink-0" />
+                  : <Square className="h-4 w-4 text-muted-foreground/20 shrink-0" />
+                }
+                <span className={`text-[12px] font-medium transition-colors ${rule.checked ? "text-foreground/80 line-through decoration-profit/30" : "text-foreground/60"}`}>
                   {rule.text}
                 </span>
               </button>
             ))}
           </div>
-
           {allChecked && (
             <div className="mt-4 rounded-xl border border-profit/15 bg-profit/[0.04] p-3 flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-2 duration-300">
               <ShieldCheck className="h-5 w-5 text-profit" />
@@ -331,7 +430,7 @@ const ProtectionPage = () => {
             </div>
           </div>
           <button
-            onClick={() => toast.error("🚨 חשבון נעול ל-24 שעות", { duration: 5000 })}
+            onClick={handleKillSwitch}
             className="haptic-press flex items-center gap-2 rounded-xl bg-loss/10 border border-loss/15 px-5 py-2.5 text-[11px] font-bold text-loss hover:bg-loss/20 hover:shadow-[0_0_20px_hsl(var(--loss)/0.15)] transition-all active:scale-95 min-h-[44px] whitespace-nowrap"
           >
             <Flame className="h-3.5 w-3.5" />
@@ -361,9 +460,7 @@ const CalcInput = ({
         onChange={e => onChange(e.target.value)}
         className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-[13px] font-bold text-foreground font-mono placeholder:text-muted-foreground/15 outline-none focus:border-primary/20 focus:ring-1 focus:ring-primary/10 transition-all min-h-[44px]"
       />
-      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-2xs font-bold text-muted-foreground/25 font-mono">
-        {prefix}
-      </span>
+      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-2xs font-bold text-muted-foreground/25 font-mono">{prefix}</span>
     </div>
     <p className="text-2xs text-muted-foreground/20 font-mono mt-0.5">{sublabel}</p>
   </div>

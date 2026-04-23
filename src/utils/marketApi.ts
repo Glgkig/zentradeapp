@@ -30,9 +30,10 @@ export function useMarketData() {
       if (error) throw error;
       if (resp?.error) throw new Error(resp.error);
 
+      type RawItem = { symbol?: string; price?: number | null; change?: number; changePct?: number };
       const items: TickerItem[] = (resp.data || [])
-        .filter((d: any) => d.price != null)
-        .map((d: any) => ({
+        .filter((d: RawItem) => d.price != null)
+        .map((d: RawItem) => ({
           symbol: d.symbol,
           price: d.price,
           change: d.change ?? 0,

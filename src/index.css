@@ -6,26 +6,27 @@
 
 @layer base {
   :root {
-    --background: 240 6% 4%;
-    --foreground: 220 15% 90%;
+    /* ── Obsidian Blueprint: True Black base ── */
+    --background: 0 0% 0%;
+    --foreground: 0 0% 95%;
 
-    --card: 240 5% 8%;
-    --card-foreground: 220 15% 90%;
+    --card: 0 0% 4%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 240 5% 8%;
-    --popover-foreground: 220 15% 90%;
+    --popover: 0 0% 4%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 160 100% 42%;
-    --primary-foreground: 240 6% 4%;
+    --primary: 213 94% 58%;
+    --primary-foreground: 0 0% 0%;
 
-    --secondary: 240 4% 12%;
-    --secondary-foreground: 220 15% 90%;
+    --secondary: 0 0% 8%;
+    --secondary-foreground: 0 0% 90%;
 
-    --muted: 220 6% 16%;
-    --muted-foreground: 220 10% 50%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 40%;
 
     --accent: 43 72% 52%;
-    --accent-foreground: 240 6% 4%;
+    --accent-foreground: 0 0% 0%;
 
     --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
@@ -33,25 +34,25 @@
     --profit: 160 70% 48%;
     --loss: 0 72% 55%;
 
-    --border: 220 6% 14%;
-    --input: 220 6% 16%;
-    --ring: 160 100% 42%;
+    --border: 0 0% 9%;
+    --input: 0 0% 10%;
+    --ring: 213 94% 58%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 240 6% 5%;
-    --sidebar-foreground: 220 15% 90%;
-    --sidebar-primary: 160 100% 42%;
-    --sidebar-primary-foreground: 240 6% 4%;
-    --sidebar-accent: 220 6% 12%;
-    --sidebar-accent-foreground: 220 15% 90%;
-    --sidebar-border: 220 6% 12%;
-    --sidebar-ring: 160 100% 42%;
+    --sidebar-background: 0 0% 0%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 213 94% 58%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 0 0% 7%;
+    --sidebar-accent-foreground: 0 0% 90%;
+    --sidebar-border: 0 0% 8%;
+    --sidebar-ring: 213 94% 58%;
 
     /* Elite Fintech tokens */
     --gold: 43 72% 52%;
-    --gold-foreground: 240 6% 4%;
-    --cyan-ai: 160 100% 42%;
+    --gold-foreground: 0 0% 0%;
+    --cyan-ai: 213 94% 58%;
   }
 
   .light {
@@ -64,7 +65,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 160 80% 38%;
+    --primary: 213 94% 58%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 220 14% 92%;
@@ -84,16 +85,16 @@
 
     --border: 214 20% 84%;
     --input: 214 20% 88%;
-    --ring: 160 80% 38%;
+    --ring: 213 94% 58%;
 
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222 47% 11%;
-    --sidebar-primary: 160 80% 38%;
+    --sidebar-primary: 213 94% 58%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 220 14% 95%;
     --sidebar-accent-foreground: 222 47% 11%;
     --sidebar-border: 214 20% 84%;
-    --sidebar-ring: 160 80% 38%;
+    --sidebar-ring: 213 94% 58%;
   }
 }
 
@@ -162,7 +163,7 @@
     box-shadow: 0 0 20px hsl(43 72% 52% / 0.15), 0 0 60px hsl(43 72% 52% / 0.05);
   }
   .cyan-glow {
-    box-shadow: 0 0 20px hsl(160 100% 42% / 0.15), 0 0 60px hsl(160 100% 42% / 0.05);
+    box-shadow: 0 0 20px hsl(213 94% 58% / 0.15), 0 0 60px hsl(213 94% 58% / 0.05);
   }
 }
 
@@ -190,7 +191,7 @@
     box-shadow: 0 0 12px hsl(43 72% 52% / 0.1);
   }
   & .cyan-glow {
-    box-shadow: 0 0 12px hsl(160 80% 38% / 0.1);
+    box-shadow: 0 0 12px hsl(213 94% 58% / 0.1);
   }
   /* select options */
   & select option {
@@ -212,51 +213,171 @@
   }
 }
 
-/* 
-  Light mode: override all white-alpha backgrounds/borders 
-  used for dark-mode glass effects throughout the app.
-  We use JS in the layout to add .light-depth to containers.
+/*
+  Light mode: override hardcoded dark backgrounds used in obsidian design
 */
-.light button,
-.light div,
-.light aside,
-.light header,
-.light nav,
-.light main,
-.light section,
-.light footer {
-  --tw-bg-opacity: 1;
+
+/* Terminal grid — invisible in light mode */
+.light .terminal-grid {
+  background-image:
+    linear-gradient(hsl(var(--border) / 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--border) / 0.5) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.4 !important;
 }
 
-/* In light mode, ensure borders are visible */
-.light [style*="border"] {
-  border-color: hsl(214 20% 84%);
+/* Obsidian panel → white card in light */
+.light .obsidian-panel {
+  background: hsl(0 0% 100% / 0.9) !important;
+  border-color: hsl(var(--border)) !important;
 }
 
-/* Light mode: all rounded containers with backdrop get card treatment */
-.light .rounded-2xl,
-.light .rounded-xl {
-  box-shadow: 0 1px 3px hsl(0 0% 0% / 0.04), 0 1px 2px hsl(0 0% 0% / 0.03);
+/* Obsidian card → white card */
+.light .obsidian-card {
+  background: hsl(0 0% 100%) !important;
+  border-color: hsl(var(--border)) !important;
+  border-top-color: hsl(var(--primary) / 0.3) !important;
 }
 
-/* Light mode: user menu dropdown */
+/* Neon text → normal primary in light */
+.light .neon-blue {
+  color: hsl(var(--primary));
+  text-shadow: none;
+}
+
+/* Main content area — ensure light bg even if inline style sets black */
+.light main {
+  background-color: hsl(var(--background)) !important;
+}
+
+/* Header — force light bg */
+.light header {
+  background-color: hsl(0 0% 100% / 0.97) !important;
+  border-bottom-color: hsl(var(--border)) !important;
+}
+
+/* Any element with hardcoded rgba(0,0,0,...) backgrounds via inline style */
+.light [style*="background: \"#000"] {
+  background-color: hsl(var(--background)) !important;
+}
+
+/* Suspense skeleton loaders in light mode */
+.light [style*="rgba(255,255,255,0.02)"],
+.light [style*="rgba(255,255,255,0.03)"],
+.light [style*="rgba(255,255,255,0.04)"],
+.light [style*="rgba(255,255,255,0.05)"] {
+  background-color: hsl(var(--muted) / 0.5) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* User menu dropdown fix */
 .light [class*="bg-\\[#111"] {
   background-color: hsl(0 0% 100%) !important;
   border-color: hsl(214 20% 84%) !important;
   box-shadow: 0 4px 16px hsl(0 0% 0% / 0.1) !important;
 }
 
+/* ─── Dark hex background overrides ─── */
+/* All these are dark "obsidian" backgrounds used throughout pages */
+.light .bg-\[\#0A0A0F\],
+.light .bg-\[\#0a0a0f\],
+.light .bg-\[\#0B0B12\],
+.light .bg-\[\#0C0C14\],
+.light .bg-\[\#08080E\],
+.light .bg-\[\#08080f\],
+.light .bg-\[\#06060f\] {
+  background-color: hsl(var(--background)) !important;
+}
+
+/* Dark bg with opacity modifiers like bg-[#0a0a0f]/60, /90 */
+.light [class*="bg-[#0a0a0f]"],
+.light [class*="bg-[#0A0A0F]"],
+.light [class*="bg-[#0B0B12]"],
+.light [class*="bg-[#08080E]"],
+.light [class*="bg-[#0C0C14]"] {
+  background-color: hsl(var(--card)) !important;
+}
+
+/* MentorPage and other pages: rgba(0,0,0,...) container backgrounds */
+.light .mentor-panel,
+.light .mentor-input,
+.light .mentor-sidebar {
+  background: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* PaywallModal dark bg */
+.light .paywall-modal {
+  background: hsl(var(--card)) !important;
+}
+
+/* ForensicTradeDrawer and other panels with near-black hex backgrounds */
+.light [class*="bg-[#0d0d"],
+.light [class*="bg-[#0D0D"] {
+  background-color: hsl(var(--background)) !important;
+}
+
+
+/* ===================================================
+   LIGHT MODE: text-white/* → foreground equivalents
+   These Tailwind classes produce rgba(255,255,255,X)
+   which is invisible on white backgrounds.
+   =================================================== */
+.light .text-white { color: hsl(var(--foreground)) !important; }
+.light .text-white\/5  { color: hsl(var(--foreground) / 0.08) !important; }
+.light .text-white\/10 { color: hsl(var(--foreground) / 0.12) !important; }
+.light .text-white\/15 { color: hsl(var(--foreground) / 0.18) !important; }
+.light .text-white\/20 { color: hsl(var(--foreground) / 0.28) !important; }
+.light .text-white\/25 { color: hsl(var(--foreground) / 0.32) !important; }
+.light .text-white\/30 { color: hsl(var(--foreground) / 0.42) !important; }
+.light .text-white\/40 { color: hsl(var(--foreground) / 0.52) !important; }
+.light .text-white\/50 { color: hsl(var(--foreground) / 0.60) !important; }
+.light .text-white\/60 { color: hsl(var(--foreground) / 0.68) !important; }
+.light .text-white\/70 { color: hsl(var(--foreground) / 0.75) !important; }
+.light .text-white\/80 { color: hsl(var(--foreground) / 0.82) !important; }
+.light .text-white\/90 { color: hsl(var(--foreground) / 0.90) !important; }
+
+/* bg-white/* dark glass panels → light card backgrounds */
+.light .bg-white\/\[0\.01\]  { background-color: hsl(var(--muted) / 0.3) !important; }
+.light .bg-white\/\[0\.02\]  { background-color: hsl(var(--muted) / 0.4) !important; }
+.light .bg-white\/\[0\.03\]  { background-color: hsl(var(--muted) / 0.5) !important; }
+.light .bg-white\/\[0\.04\]  { background-color: hsl(var(--muted) / 0.6) !important; }
+.light .bg-white\/\[0\.05\]  { background-color: hsl(var(--muted) / 0.7) !important; }
+.light .bg-white\/\[0\.06\]  { background-color: hsl(var(--muted) / 0.8) !important; }
+.light .bg-white\/\[0\.07\]  { background-color: hsl(var(--muted)) !important; }
+.light .bg-white\/\[0\.08\]  { background-color: hsl(var(--muted)) !important; }
+
+/* border-white/* → visible borders in light mode */
+.light .border-white\/\[0\.04\] { border-color: hsl(var(--border) / 0.6) !important; }
+.light .border-white\/\[0\.05\] { border-color: hsl(var(--border) / 0.7) !important; }
+.light .border-white\/\[0\.06\] { border-color: hsl(var(--border)) !important; }
+.light .border-white\/\[0\.07\] { border-color: hsl(var(--border)) !important; }
+.light .border-white\/\[0\.08\] { border-color: hsl(var(--border)) !important; }
+.light .border-white\/\[0\.1\]  { border-color: hsl(var(--border)) !important; }
+.light .border-white\/\[0\.12\] { border-color: hsl(var(--border)) !important; }
+
+/* hover:bg-white/* → muted hover in light mode */
+.light .hover\:bg-white\/\[0\.04\]:hover { background-color: hsl(var(--muted) / 0.7) !important; }
+.light .hover\:bg-white\/\[0\.06\]:hover { background-color: hsl(var(--muted)) !important; }
+.light .hover\:bg-white\/\[0\.07\]:hover { background-color: hsl(var(--muted)) !important; }
+
+/* Command bar & obsidian panels with inline dark background */
+.light .obsidian-command-bar {
+  background: hsl(0 0% 100% / 0.95) !important;
+  border-color: hsl(var(--border)) !important;
+  box-shadow: 0 4px 24px hsl(0 0% 0% / 0.06) !important;
+}
 
 /* ===== AI Breathing Animation ===== */
 @keyframes ai-breathe {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 hsl(160 100% 42% / 0.1);
+    box-shadow: 0 0 0 0 hsl(213 94% 58% / 0.1);
     opacity: 0.8;
   }
   50% {
     transform: scale(1.04);
-    box-shadow: 0 0 20px 4px hsl(160 100% 42% / 0.2);
+    box-shadow: 0 0 20px 4px hsl(213 94% 58% / 0.2);
     opacity: 1;
   }
 }
@@ -305,7 +426,7 @@
   width: 50%;
   height: 50%;
   border-radius: 50%;
-  background: radial-gradient(circle, hsl(160 100% 42% / 0.03) 0%, transparent 70%);
+  background: radial-gradient(circle, hsl(213 94% 58% / 0.03) 0%, transparent 70%);
   animation: ambient-shift 12s ease-in-out infinite;
 }
 
@@ -368,6 +489,11 @@
   animation-play-state: paused;
 }
 
+@keyframes carousel-loop {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-33.3333%); }
+}
+
 @keyframes waveform {
   0% { transform: scaleY(0.4); opacity: 0.4; }
   100% { transform: scaleY(1); opacity: 0.8; }
@@ -402,10 +528,10 @@ select option {
 /* ===== Pulse glow for mic ===== */
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 0 0 hsl(160 100% 42% / 0.3);
+    box-shadow: 0 0 0 0 hsl(213 94% 58% / 0.3);
   }
   50% {
-    box-shadow: 0 0 24px 8px hsl(160 100% 42% / 0.15);
+    box-shadow: 0 0 24px 8px hsl(213 94% 58% / 0.15);
   }
 }
 
@@ -433,4 +559,144 @@ select option {
   outline: none;
   box-shadow: 0 0 0 1px hsl(var(--primary) / 0.15);
   background: hsl(var(--primary) / 0.02);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LANDING PAGE — Premium Animations
+═══════════════════════════════════════════════════════════ */
+
+/* Waveform / equalizer bars */
+@keyframes waveform-rise {
+  0%, 100% { transform: scaleY(0.07); opacity: 0.25; }
+  50%       { transform: scaleY(1);    opacity: 1;    }
+}
+
+/* Floating trade-win notification */
+@keyframes float-win-card {
+  0%   { opacity: 0; transform: translateY(24px) scale(0.88); }
+  12%  { opacity: 1; transform: translateY(0)    scale(1);    }
+  80%  { opacity: 1; transform: translateY(-52px) scale(1);   }
+  100% { opacity: 0; transform: translateY(-72px) scale(0.95);}
+}
+
+/* Scanner sweep line */
+@keyframes scan-line {
+  0%   { top: -4%; opacity: 0; }
+  6%   { opacity: 0.8; }
+  94%  { opacity: 0.8; }
+  100% { top: 104%; opacity: 0; }
+}
+
+/* Gradient text shift */
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%;   }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%;   }
+}
+.gradient-animated {
+  background-size: 200% 200%;
+  animation: gradient-shift 4s ease infinite;
+}
+
+/* Cursor outer ring pulse */
+@keyframes cursor-ring {
+  0%, 100% { transform: translate(-50%,-50%) scale(1);   opacity: 0.6; }
+  50%       { transform: translate(-50%,-50%) scale(1.6); opacity: 0.2; }
+}
+
+/* Section reveal from bottom */
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+.reveal-up { animation: reveal-up 0.7s cubic-bezier(0.16,1,0.3,1) forwards; }
+
+/* EKG heartbeat path draw */
+@keyframes ekg-draw {
+  from { stroke-dashoffset: 900; }
+  to   { stroke-dashoffset: 0;   }
+}
+
+/* Number flicker on count */
+@keyframes num-flicker {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.7; }
+}
+
+/* Holographic shimmer */
+@keyframes holo-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center;  }
+}
+.holo-border {
+  background: linear-gradient(
+    90deg,
+    rgba(59,130,246,0.15) 0%,
+    rgba(139,92,246,0.25) 25%,
+    rgba(59,130,246,0.4)  50%,
+    rgba(139,92,246,0.25) 75%,
+    rgba(59,130,246,0.15) 100%
+  );
+  background-size: 200% 100%;
+  animation: holo-shimmer 3s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   OBSIDIAN BLUEPRINT — Global Utilities
+═══════════════════════════════════════════════════════════ */
+
+/* Terminal grid texture overlay */
+.terminal-grid {
+  background-image:
+    linear-gradient(rgba(59,130,246,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.025) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Obsidian glass panel */
+.obsidian-panel {
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Neon blue glow on text/elements */
+.neon-blue {
+  color: hsl(213 94% 65%);
+  text-shadow: 0 0 20px hsl(213 94% 58% / 0.6), 0 0 40px hsl(213 94% 58% / 0.25);
+}
+
+.neon-blue-border {
+  border-color: hsl(213 94% 58% / 0.4);
+  box-shadow: 0 0 16px hsl(213 94% 58% / 0.12), inset 0 0 16px hsl(213 94% 58% / 0.04);
+}
+
+/* Blue pulse glow animation */
+@keyframes blue-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(213 94% 58% / 0.3); }
+  50% { box-shadow: 0 0 24px 6px hsl(213 94% 58% / 0.12); }
+}
+.blue-pulse {
+  animation: blue-pulse 3s ease-in-out infinite;
+}
+
+/* Equity line glow (used on SVG strokes via filter) */
+.equity-glow {
+  filter: drop-shadow(0 0 6px hsl(213 94% 58% / 0.7)) drop-shadow(0 0 14px hsl(213 94% 58% / 0.35));
+}
+
+/* Obsidian card: black glass with blue accent top line */
+.obsidian-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0) 100%);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-top-color: rgba(59,130,246,0.25);
+}
+
+/* Screen transition */
+.page-enter {
+  animation: pageEnter 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

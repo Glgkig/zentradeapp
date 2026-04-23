@@ -1,29 +1,38 @@
 import React, { useState, useEffect, useRef } from "react";
+import Footer from "@/components/Footer";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useSubscription, POLAR_URL } from "@/contexts/SubscriptionContext";
+import { useSubscription } from "@/contexts/SubscriptionContext";
+import { useDemo } from "@/contexts/DemoContext";
 import { useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, BookOpen, Bot, ShieldCheck, ChevronLeft,
-  LogOut, ChevronDown, Plug, Menu, X, Settings, Sun, Moon, Zap, EyeOff,
+  LogOut, ChevronDown, Plug, Menu, X, Settings, Sun, Moon, Zap, EyeOff, Camera,
   Crosshair, PieChart, History, CheckCircle2, Flame, Eye, Crown, Star, Sparkles, Newspaper,
   Calculator, Plus, ShieldAlert, TrendingUp, Brain, Clock, CandlestickChart, BarChart3, CalendarClock, LineChart, Shield,
+  RefreshCw, Loader2, Building2,
 } from "lucide-react";
-import zentradeLogo from "@/assets/zentrade-z-logo.png";
-import SettingsPage from "@/pages/SettingsPage";
-import SetupsPage from "@/pages/SetupsPage";
-import StatsPage from "@/pages/StatsPage";
-import JournalPage from "@/pages/JournalPage";
-import MentorPage from "@/pages/MentorPage";
+import ZenTradeLogo from "@/components/ZenTradeLogo";
+import FirstLoginScreen from "@/components/FirstLoginScreen";
 import HomeDashboard from "@/components/dashboard/HomeDashboard";
 import OnboardingModal from "@/components/dashboard/OnboardingModal";
-import BacktestingPage from "@/pages/BacktestingPage";
-import ProtectionPage from "@/pages/ProtectionPage";
-import TaxCalculatorPage from "@/pages/TaxCalculatorPage";
-import EconomicNewsPage from "@/pages/EconomicNewsPage";
+import PostOnboardingPricingModal from "@/components/dashboard/PostOnboardingPricingModal";
+
+const SettingsPage = React.lazy(() => import("@/pages/SettingsPage"));
+const SetupsPage = React.lazy(() => import("@/pages/SetupsPage"));
+const StatsPage = React.lazy(() => import("@/pages/StatsPage"));
+const JournalPage = React.lazy(() => import("@/pages/JournalPage"));
+const MentorPage = React.lazy(() => import("@/pages/MentorPage"));
+const BacktestingPage = React.lazy(() => import("@/pages/BacktestingPage"));
+const ProtectionPage = React.lazy(() => import("@/pages/ProtectionPage"));
+const TaxCalculatorPage = React.lazy(() => import("@/pages/TaxCalculatorPage"));
+const EconomicNewsPage = React.lazy(() => import("@/pages/EconomicNewsPage"));
+const NostroHubPage = React.lazy(() => import("@/pages/NostroHubPage"));
 import ForensicTradeDrawer from "@/components/dashboard/ForensicTradeDrawer";
+import LockdownScreen from "@/components/dashboard/LockdownScreen";
+import TradingViewChartPage from "@/pages/TradingViewChartPage";
 import LiveTicker from "@/components/dashboard/LiveTicker";
 import AvatarPicker, { UserAvatar } from "@/components/AvatarPicker";
 
@@ -44,7 +53,7 @@ const navSections = [
     items: [
       { id: "dashboard", label: "דשבורד", icon: TrendingUp },
       { id: "setups", label: "סטאפים", icon: CandlestickChart },
-      { id: "journal", label: "יומן פורנזי", icon: BookOpen },
+      { id: "journal", label: "יומן מסחר חכם", icon: BookOpen },
       { id: "tax", label: "מחשבון מס", icon: Calculator },
       { id: "stats", label: "סטטיסטיקות", icon: BarChart3 },
       { id: "news", label: "חדשות כלכליות", icon: CalendarClock },
@@ -53,9 +62,10 @@ const navSections = [
   {
     label: "כלים",
     items: [
+      { id: "nostro", label: "Nostro Hub", icon: Building2 },
       { id: "tradingview", label: "גרף מסחר", icon: LineChart },
       { id: "mentor", label: "מנטור AI", icon: Brain },
-      { id: "backtesting", label: "סימולטור", icon: Clock },
+      { id: "backtesting", label: "בקטסט", icon: Clock },
       { id: "protection", label: "הגנה", icon: Shield },
       { id: "settings", label: "הגדרות", icon: Settings },
     ],
@@ -80,15 +90,26 @@ const brokers = [
 const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   const navigate = useNavigate();
   const { profile, user, signOut, refreshProfile } = useAuth();
-  const { isPro, showPaywall } = useSubscription();
+  const { isPro: isProReal, showPaywall } = useSubscription();
+  const { isDemoMode } = useDemo();
+  const isPro = isDemoMode ? true : isProReal;
+  const [showFirstLogin, setShowFirstLogin] = useState(true);
   const [activeNav, setActiveNav] = useState("dashboard");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [brokerModal, setBrokerModal] = useState(false);
   const [userMenu, setUserMenu] = useState(false);
+  const [showPricingModal, setShowPricingModal] = useState(false);
   const [zenMode, setZenMode] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const onboardingDismissed = useRef(false);
   const [upgradeModal, setUpgradeModal] = useState(false);
   const [tradeDrawerOpen, setTradeDrawerOpen] = useState(false);
+  const [avatarPickerOpen, setAvatarPickerOpen] = useState(false);
+  const [lockdownUntil, setLockdownUntil] = useState<Date | null>(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    if (typeof window !== "undefined") return localStorage.getItem("zentrade-sidebar") === "collapsed";
+    return false;
+  });
   const userMenuRef = useRef<HTMLDivElement | null>(null);
   const [dark, setDark] = useState(() => {
     if (typeof window !== "undefined") {
@@ -98,15 +119,23 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
   });
 
   useEffect(() => {
-    if (profile && !profile.onboarding_completed) {
+    if (!profile || isDemoMode) return;
+    if (onboardingDismissed.current) return;
+    const key = `zentrade-onboarded-${profile.id}`;
+    if (localStorage.getItem(key)) return;
+    if (profile.onboarding_completed !== true) {
       setShowOnboarding(true);
     }
-  }, [profile]);
+  }, [profile?.id, profile?.onboarding_completed, isDemoMode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     document.documentElement.classList.toggle("light", !dark);
     localStorage.setItem("zentrade-theme", dark ? "dark" : "light");
   }, [dark]);
+
+  useEffect(() => {
+    localStorage.setItem("zentrade-sidebar", sidebarCollapsed ? "collapsed" : "expanded");
+  }, [sidebarCollapsed]);
 
   useEffect(() => {
     if (!userMenu) return;
@@ -135,9 +164,11 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
     };
   }, [userMenu]);
 
-  const completeOnboarding = async () => {
+  const completeOnboarding = () => {
+    onboardingDismissed.current = true;
+    if (profile?.id) localStorage.setItem(`zentrade-onboarded-${profile.id}`, "1");
     setShowOnboarding(false);
-    await refreshProfile();
+    setShowPricingModal(true);
   };
 
   const handleNav = (id: string) => {
@@ -146,8 +177,8 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
     setUserMenu(false);
   };
 
-  const userName = profile?.full_name || "סוחר";
-  const userEmail = user?.email || "";
+  const userName = isDemoMode ? "סוחר דמו" : (profile?.full_name || "סוחר");
+  const userEmail = isDemoMode ? "demo@zentrade.io" : (user?.email || "");
 
   const renderContent = () => {
     if (activeNav === "dashboard") return <HomeDashboard userName={userName} onOpenTrade={() => setTradeDrawerOpen(true)} onConnectBroker={() => setBrokerModal(true)} />;
@@ -156,51 +187,89 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
     if (activeNav === "journal") return <JournalPage />;
     if (activeNav === "settings") return <SettingsPage />;
     if (activeNav === "mentor") {
-      if (!isPro) { showPaywall("מנטור AI"); setActiveNav("dashboard"); return <HomeDashboard userName={userName} onOpenTrade={() => setTradeDrawerOpen(true)} />; }
+      if (!isPro && import.meta.env.VITE_DEV_PRO !== "true") { showPaywall("מנטור AI"); setActiveNav("dashboard"); return <HomeDashboard userName={userName} onOpenTrade={() => setTradeDrawerOpen(true)} />; }
       return <MentorPage />;
     }
     if (activeNav === "backtesting") return <BacktestingPage />;
     if (activeNav === "protection") {
-      if (!isPro) { showPaywall("הגנת הון — Kill Switch"); setActiveNav("dashboard"); return <HomeDashboard userName={userName} onOpenTrade={() => setTradeDrawerOpen(true)} />; }
+      if (!isPro && import.meta.env.VITE_DEV_PRO !== "true") { showPaywall("הגנת הון — Kill Switch"); setActiveNav("dashboard"); return <HomeDashboard userName={userName} onOpenTrade={() => setTradeDrawerOpen(true)} />; }
       return <ProtectionPage />;
     }
     if (activeNav === "tax") return <TaxCalculatorPage />;
     if (activeNav === "news") return <EconomicNewsPage />;
-    if (activeNav === "tradingview") return (
-      <div className="flex items-center justify-center h-full min-h-[60vh] text-muted-foreground text-lg">
-        בקרוב — גרף TradingView
-      </div>
-    );
+    if (activeNav === "tradingview") return <TradingViewChartPage />;
+    if (activeNav === "nostro") return <NostroHubPage />;
     return children || null;
   };
 
+  const activateLockdown = (hours = 24) => {
+    const until = new Date(Date.now() + hours * 3600 * 1000);
+    localStorage.setItem("zentrade-lockdown", until.toISOString());
+    setLockdownUntil(until);
+  };
+
   return (
-    <div className="flex h-screen w-full overflow-hidden relative" dir="rtl">
+    <div className="flex flex-col h-screen w-full overflow-hidden relative" dir="rtl">
+      {lockdownUntil && (
+        <LockdownScreen
+          unlocksAt={lockdownUntil}
+          onUnlock={() => { setLockdownUntil(null); localStorage.removeItem("zentrade-lockdown"); }}
+        />
+      )}
       <div className="ambient-bg" />
 
-      {/* ===== Desktop Sidebar ===== */}
-      <aside className={`hidden md:flex h-full w-[240px] flex-col bg-card/95 backdrop-blur-xl border-l border-border/50 shrink-0 relative z-10 ${zenMode ? "zen-hidden" : "zen-visible"}`}>
-        {/* Brand */}
-        <div className="flex items-center px-5 py-4 border-b border-border/50">
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <div className="absolute inset-[-3px] rounded-xl bg-primary/8 ai-breathe" />
-              <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 border border-primary/15 overflow-hidden">
-                <img src={zentradeLogo} alt="ZenTrade" className="h-7 w-7 object-contain" />
-              </div>
-            </div>
-            <div>
-              <span className="font-heading text-sm font-bold text-foreground tracking-tight block">ZenTrade</span>
-              <span className="text-2xs text-muted-foreground/40 font-mono">v3.0 Elite</span>
-            </div>
+      {/* ===== Demo Banner ===== */}
+      {isDemoMode && (
+        <div className="relative z-50 flex items-center justify-between gap-3 bg-gradient-to-l from-amber-500/20 via-amber-400/10 to-amber-500/20 border-b border-amber-500/30 px-4 py-2 shrink-0">
+          <div className="flex items-center gap-2">
+            <span className="flex h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
+            <span className="text-[11px] font-bold text-amber-400">מצב דמו — כל הנתונים לדוגמה בלבד</span>
           </div>
+          <button
+            onClick={() => navigate("/")}
+            className="text-[10px] font-bold text-white bg-amber-500 hover:bg-amber-400 transition-colors rounded-lg px-3 py-1.5"
+          >
+            הירשם בחינם ←
+          </button>
+        </div>
+      )}
+
+      <div className="flex flex-1 overflow-hidden">
+
+      {/* ===== Desktop Sidebar ===== */}
+      <aside className={`hidden md:flex h-full flex-col shrink-0 relative z-10 transition-all duration-300 ease-in-out
+        bg-sidebar border-l border-sidebar-border
+        ${sidebarCollapsed ? "w-[64px]" : "w-[230px]"} ${zenMode ? "zen-hidden" : "zen-visible"}`}
+        style={{ boxShadow: "2px 0 24px rgba(0,0,0,0.4)" }}>
+
+        {/* Terminal grid texture */}
+        <div className="absolute inset-0 terminal-grid opacity-100 pointer-events-none" />
+        {/* Blue top glow */}
+        <div className="absolute top-0 inset-x-0 h-[1px] pointer-events-none"
+          style={{ background: "linear-gradient(to right, transparent, rgba(59,130,246,0.4), transparent)" }} />
+
+        {/* Brand */}
+        <div className={`relative flex items-center border-b h-[56px] shrink-0 ${sidebarCollapsed ? "justify-center px-0" : "px-4 gap-3"}`}
+          style={{ borderColor: "rgba(59,130,246,0.1)" }}>
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl overflow-hidden blue-pulse"
+            style={{ background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.25)" }}>
+            <ZenTradeLogo size={28} transparent />
+          </div>
+          {!sidebarCollapsed && (
+            <div className="flex-1 min-w-0">
+              <span className="font-heading text-[14px] font-extrabold text-sidebar-foreground block leading-none tracking-tight">ZenTrade</span>
+              <span className="text-[9px] font-mono leading-none mt-0.5 block uppercase tracking-widest" style={{ color: "rgba(59,130,246,0.5)" }}>Obsidian Platform</span>
+            </div>
+          )}
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto scrollbar-none">
-          {navSections.map((section) => (
-            <div key={section.label} className="mb-4">
-              <p className="text-2xs font-semibold text-muted-foreground/30 uppercase tracking-[0.12em] px-3 mb-2">{section.label}</p>
+        <nav className="relative flex-1 py-4 overflow-y-auto scrollbar-none px-2.5 space-y-0.5">
+          {navSections.map((section, si) => (
+            <div key={section.label} className={si > 0 ? "mt-3 pt-3 border-t border-sidebar-border/40" : ""}>
+              {!sidebarCollapsed && (
+                <p className="text-[9px] font-bold text-muted-foreground/20 uppercase tracking-[0.2em] px-2 mb-2">{section.label}</p>
+              )}
               <div className="space-y-0.5">
                 {section.items.map((item) => {
                   const active = activeNav === item.id;
@@ -208,16 +277,30 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                     <button
                       key={item.id}
                       onClick={() => handleNav(item.id)}
-                      className={`haptic-press group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[12px] font-medium transition-all duration-200 ${
-                        active
-                          ? "bg-primary/10 text-primary border border-primary/15"
-                          : "text-muted-foreground/60 hover:bg-secondary/50 hover:text-foreground border border-transparent"
-                      }`}
+                      title={sidebarCollapsed ? item.label : undefined}
+                      className={`haptic-press group relative flex w-full items-center rounded-xl transition-all duration-200 overflow-hidden
+                        ${sidebarCollapsed ? "h-10 w-10 mx-auto justify-center" : "gap-3 px-3 py-2.5"}`}
+                      style={active ? {
+                        background: "rgba(59,130,246,0.08)",
+                        border: "1px solid rgba(59,130,246,0.2)",
+                        boxShadow: "0 0 20px rgba(59,130,246,0.08), inset 0 1px 0 rgba(59,130,246,0.1)",
+                      } : {
+                        border: "1px solid transparent",
+                      }}
                     >
-                      <div className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${active ? "bg-primary/15" : "bg-secondary/50 group-hover:bg-secondary"}`}>
-                        <item.icon className={`h-3.5 w-3.5 ${active ? "text-primary" : "text-muted-foreground/40 group-hover:text-foreground/60"}`} />
-                      </div>
-                      <span className="flex-1 text-right">{item.label}</span>
+                      {active && (
+                        <>
+                          <span className="absolute right-0 top-1/2 -translate-y-1/2 w-[3px] h-6 rounded-l-full"
+                            style={{ background: "#3b82f6", boxShadow: "0 0 12px rgba(59,130,246,0.9), 0 0 24px rgba(59,130,246,0.4)" }} />
+                          <span className="absolute inset-0 rounded-xl" style={{ background: "rgba(59,130,246,0.04)" }} />
+                        </>
+                      )}
+                      <item.icon className={`relative h-4 w-4 shrink-0 transition-all duration-200 ${active ? "" : "text-sidebar-foreground/20 group-hover:text-sidebar-foreground/60"}`}
+                        style={active ? { color: "#60a5fa", filter: "drop-shadow(0 0 6px rgba(59,130,246,0.7))" } : undefined} />
+                      {!sidebarCollapsed && (
+                        <span className={`relative text-[12.5px] flex-1 text-right leading-none ${active ? "font-bold" : "font-medium text-sidebar-foreground/40 group-hover:text-sidebar-foreground/70"}`}
+                          style={active ? { color: "#93c5fd" } : undefined}>{item.label}</span>
+                      )}
                     </button>
                   );
                 })}
@@ -226,29 +309,52 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
           ))}
 
           {/* Broker Connect */}
-          <div className="pt-2 border-t border-border/30">
-            <button
-              onClick={() => setBrokerModal(true)}
-              className="haptic-press group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[12px] font-medium text-muted-foreground/60 hover:bg-secondary/50 hover:text-primary transition-all"
-            >
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-secondary/50 group-hover:bg-primary/10">
-                <Plug className="h-3.5 w-3.5 text-muted-foreground/40 group-hover:text-primary" />
-              </div>
-              <span className="flex-1 text-right">חבר ברוקר</span>
-              <span className="rounded-lg bg-primary/10 border border-primary/15 px-1.5 py-0.5 text-2xs font-bold text-primary font-mono">0</span>
-            </button>
+          <div className="mt-3 pt-3 border-t border-sidebar-border/40">
+            {sidebarCollapsed ? (
+              <button onClick={() => setBrokerModal(true)} title="חבר ברוקר"
+                className="haptic-press flex h-10 w-10 mx-auto items-center justify-center rounded-xl text-muted-foreground/30 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all border border-transparent hover:border-sidebar-border">
+                <Plug className="h-4 w-4" />
+              </button>
+            ) : (
+              <button onClick={() => setBrokerModal(true)}
+                className="haptic-press group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[12px] font-medium text-muted-foreground/35 hover:bg-sidebar-accent hover:text-sidebar-foreground/70 transition-all border border-transparent hover:border-sidebar-border/50">
+                <Plug className="h-4 w-4" />
+                <span className="flex-1 text-right">חבר ברוקר</span>
+              </button>
+            )}
           </div>
         </nav>
 
-
         {/* Footer */}
-        <div className="border-t border-white/[0.04] px-3 py-3">
+        <div className="relative border-t border-sidebar-border/50 p-2.5 space-y-1">
+          {/* User row */}
+          {!sidebarCollapsed && (
+            <div className="flex items-center gap-2.5 rounded-xl px-2.5 py-2 mb-0.5 bg-sidebar-accent/50 border border-sidebar-border/40">
+              <UserAvatar avatarUrl={profile?.avatar_url} userName={userName} size="sm" />
+              <div className="flex-1 min-w-0">
+                <p className="text-[11.5px] font-bold text-foreground truncate leading-none">{userName}</p>
+                <p className={`text-[9px] font-mono font-bold leading-none mt-0.5 ${isPro ? "text-primary" : "text-muted-foreground/30"}`}>{isPro ? "✦ PRO" : "LITE"}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Collapse toggle */}
+          <button
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            className={`haptic-press flex w-full items-center rounded-lg py-1.5 text-muted-foreground/25 hover:bg-sidebar-accent hover:text-muted-foreground/60 transition-all ${sidebarCollapsed ? "justify-center" : "gap-2 px-2"}`}
+          >
+            <ChevronLeft className={`h-3.5 w-3.5 transition-transform duration-300 ${sidebarCollapsed ? "rotate-180" : ""}`} />
+            {!sidebarCollapsed && <span className="text-[10px]">כווץ</span>}
+          </button>
+
+          {/* Logout */}
           <button
             onClick={async () => { await signOut(); navigate("/"); }}
-            className="haptic-press flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[12px] font-medium text-muted-foreground/40 hover:bg-destructive/[0.06] hover:text-destructive transition-all"
+            title={sidebarCollapsed ? "התנתק" : undefined}
+            className={`haptic-press flex w-full items-center rounded-lg py-1.5 text-[11px] font-medium text-muted-foreground/25 hover:bg-destructive/[0.08] hover:text-destructive/70 transition-all ${sidebarCollapsed ? "justify-center" : "gap-2 px-2"}`}
           >
             <LogOut className="h-3.5 w-3.5" />
-            התנתק
+            {!sidebarCollapsed && <span>התנתק</span>}
           </button>
         </div>
       </aside>
@@ -256,98 +362,82 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
       {/* ===== Main Area ===== */}
       <div className="flex flex-1 flex-col overflow-hidden relative z-10">
         {/* Top Header */}
-        <header className={`flex items-center justify-between glass-header px-3 py-2 md:px-5 md:py-3 shrink-0 relative z-50 ${zenMode ? "zen-hidden" : "zen-visible"}`}>
-          <div className="flex items-center gap-2.5">
-            {/* Mobile hamburger */}
-            <button
-              onClick={() => {
-                navigator.vibrate?.(10);
-                setUserMenu(false);
-                setMobileNavOpen((prev) => !prev);
-              }}
-              aria-expanded={mobileNavOpen}
-              aria-label={mobileNavOpen ? "סגור תפריט ניווט" : "פתח תפריט ניווט"}
-              className="md:hidden haptic-press flex h-10 w-10 items-center justify-center rounded-xl border border-border/50 bg-secondary/50 text-muted-foreground hover:text-primary hover:border-primary/15 transition-all duration-200 active:scale-95"
-            >
-              {mobileNavOpen ? <X className="h-4.5 w-4.5" /> : <Menu className="h-4.5 w-4.5" />}
-            </button>
+        <header className={`relative flex items-center justify-between h-[56px] bg-background/95 backdrop-blur-2xl border-b border-border/50 px-3 md:px-5 shrink-0 z-50 ${zenMode ? "zen-hidden" : "zen-visible"}`}>
+          {/* Blue bottom line */}
+          <div className="absolute bottom-0 left-0 right-0 h-[1px]"
+            style={{ background: "linear-gradient(to right, transparent, rgba(59,130,246,0.25), transparent)" }} />
+
+          <div className="flex items-center gap-3">
             {/* Mobile brand */}
             <div className="flex md:hidden items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 border border-primary/15 overflow-hidden">
-                <img src={zentradeLogo} alt="ZenTrade" className="h-6 w-6 object-contain" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 shadow-[0_0_10px_rgba(0,212,170,0.15)] overflow-hidden">
+                <ZenTradeLogo size={28} transparent />
               </div>
-              <span className="font-heading text-[13px] font-bold text-foreground">ZenTrade</span>
+              <div>
+                <span className="font-heading text-[13px] font-extrabold text-foreground tracking-tight">ZenTrade</span>
+              </div>
             </div>
-            <h1 className="hidden md:block font-heading text-sm font-semibold text-foreground/70">
-              {allNavItems.find((n) => n.id === activeNav)?.label}
-            </h1>
+            {/* Page title — desktop */}
+            {(() => {
+              const cur = allNavItems.find(n => n.id === activeNav);
+              if (!cur) return null;
+              return (
+                <div className="hidden md:flex items-center gap-2.5">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg"
+                    style={{ background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.2)" }}>
+                    <cur.icon className="h-3.5 w-3.5" style={{ color: "#60a5fa" }} />
+                  </div>
+                  <span className="text-[13px] font-bold text-foreground/60">{cur.label}</span>
+                </div>
+              );
+            })()}
           </div>
 
-          <div className="flex items-center gap-2">
-            {/* Bodyguard Badge — desktop only */}
-            <div className="hidden md:flex items-center gap-1.5 rounded-xl border border-primary/15 bg-primary/[0.06] px-3 py-1.5 cyan-glow">
-              <ShieldAlert className="h-3 w-3 text-primary" />
-              <span className="text-2xs font-bold text-primary font-mono">Bodyguard: ACTIVE 🛡️</span>
-            </div>
-
-            {/* Upgrade CTA — desktop only */}
+          <div className="flex items-center gap-1.5">
+            {/* Upgrade CTA */}
             {!isPro && (
-              <button
-                onClick={() => navigate("/pricing")}
-                className="hidden md:flex haptic-press items-center gap-1 rounded-lg border border-accent/20 bg-accent/[0.06] px-2 py-1 text-[10px] font-bold text-accent transition-all hover:bg-accent/15 hover:border-accent/30"
-              >
-                <Crown className="h-2.5 w-2.5" />
+              <button onClick={() => navigate("/pricing")}
+                className="hidden md:flex haptic-press items-center gap-1.5 rounded-lg border border-accent/20 bg-accent/[0.07] px-2.5 py-1.5 text-[10px] font-bold text-accent transition-all hover:bg-accent/12 hover:border-accent/30">
+                <Crown className="h-3 w-3" />
                 <span>שדרג PRO</span>
               </button>
             )}
 
-            {/* New Trade CTA */}
-            <button
-              onClick={() => setTradeDrawerOpen(true)}
-              className="haptic-press flex items-center gap-1.5 rounded-xl bg-accent/15 border border-accent/25 px-2.5 py-1.5 md:px-3 text-2xs font-bold text-accent transition-all hover:bg-accent/25 gold-glow"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">עסקה חדשה</span>
+            {/* New Trade — desktop */}
+            <button onClick={() => setTradeDrawerOpen(true)}
+              className="haptic-press hidden md:flex items-center gap-1.5 rounded-xl bg-primary text-[#0d1a17] px-3.5 py-2 text-[12px] font-black transition-all hover:brightness-110 shadow-[0_0_14px_rgba(0,212,170,0.25)] hover:shadow-[0_0_20px_rgba(0,212,170,0.4)]">
+              <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
+              עסקה חדשה
             </button>
 
-            {/* Zen — desktop only (mobile gets floating btn) */}
-            <button
-              onClick={() => setZenMode(!zenMode)}
-              className={`hidden md:flex haptic-press h-9 w-9 items-center justify-center rounded-xl border transition-all ${
-                zenMode
-                  ? "border-primary/30 bg-primary/10 text-primary"
-                  : "border-border/50 bg-secondary/50 text-muted-foreground hover:text-primary hover:border-primary/15"
-              }`}
-              title={zenMode ? "צא ממצב פוקוס" : "מצב פוקוס"}
-            >
-              <Eye className="h-4 w-4" />
+            {/* Zen */}
+            <button onClick={() => setZenMode(!zenMode)} title={zenMode ? "צא ממצב פוקוס" : "מצב פוקוס"}
+              className={`hidden md:flex haptic-press h-8 w-8 items-center justify-center rounded-lg border transition-all ${
+                zenMode ? "border-primary/30 bg-primary/12 text-primary" : "border-border/60 text-muted-foreground/35 hover:text-foreground hover:border-border"
+              }`}>
+              <Eye className="h-3.5 w-3.5" />
             </button>
 
-            {/* Theme — desktop only */}
-            <button
-              onClick={() => setDark(!dark)}
-              className="hidden md:flex haptic-press h-9 w-9 items-center justify-center rounded-xl border border-border/50 bg-secondary/50 text-muted-foreground hover:text-primary hover:border-primary/20 transition-all duration-300"
-            >
-              {dark ? <Sun className="h-4 w-4 transition-transform duration-300 rotate-0" /> : <Moon className="h-4 w-4 transition-transform duration-300 rotate-0" />}
+            {/* Theme */}
+            <button onClick={() => setDark(!dark)}
+              className="hidden md:flex haptic-press h-8 w-8 items-center justify-center rounded-lg border border-border/60 text-muted-foreground/35 hover:text-foreground hover:border-border transition-all">
+              {dark ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
             </button>
 
             {/* User */}
             <div ref={userMenuRef} className="relative">
               <button
-                onClick={() => {
-                  setMobileNavOpen(false);
-                  setUserMenu((prev) => !prev);
-                }}
+                onClick={() => { setMobileNavOpen(false); setUserMenu(prev => !prev); }}
                 aria-expanded={userMenu}
                 aria-haspopup="menu"
-                className="flex items-center gap-2 rounded-xl border border-border/50 bg-secondary/30 px-2 py-1.5 hover:bg-secondary/60 transition-all"
+                className="flex items-center gap-2 rounded-xl border border-border/60 bg-background/40 px-2 py-1.5 hover:bg-muted/60 transition-all"
               >
                 <UserAvatar avatarUrl={profile?.avatar_url} userName={userName} size="sm" />
                 <div className="hidden md:block text-right">
-                  <p className="text-[11px] font-semibold text-foreground leading-none">{userName}</p>
-                  {isPro && <p className="text-2xs text-accent font-mono font-bold">PRO</p>}
+                  <p className="text-[11px] font-bold text-foreground leading-none">{userName}</p>
+                  {isPro && <p className="text-[9px] text-primary font-mono font-bold">✦ PRO</p>}
                 </div>
-                <ChevronDown className={`h-3 w-3 text-muted-foreground/30 hidden md:block transition-transform ${userMenu ? "rotate-180" : ""}`} />
+                <ChevronDown className={`h-3 w-3 text-muted-foreground/30 hidden md:block transition-transform duration-200 ${userMenu ? "rotate-180" : ""}`} />
               </button>
 
               {userMenu && (
@@ -366,6 +456,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                     onSettings={() => { setUserMenu(false); setActiveNav("settings"); }}
                     onLogout={async () => { setUserMenu(false); await signOut(); navigate("/"); }}
                     onUpgrade={() => { setUserMenu(false); navigate("/pricing"); }}
+                    onChangeAvatar={() => { setUserMenu(false); setAvatarPickerOpen(true); }}
                   />
                   <div className="px-4 pb-4 pt-2">
                     <button
@@ -485,12 +576,38 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
                 התנתק
               </button>
             </div>
+
+            {/* Legal links — mobile only footer */}
+            <div className={`mt-3 pt-3 border-t border-border/30 flex items-center justify-center gap-4 transition-all duration-300 ${mobileNavOpen ? "opacity-100" : "opacity-0"}`}>
+              <button onClick={() => { setMobileNavOpen(false); navigate("/privacy"); }} className="text-[10px] text-muted-foreground/25 hover:text-muted-foreground/50 transition-colors">מדיניות פרטיות</button>
+              <span className="text-muted-foreground/15 text-[10px]">·</span>
+              <button onClick={() => { setMobileNavOpen(false); navigate("/terms"); }} className="text-[10px] text-muted-foreground/25 hover:text-muted-foreground/50 transition-colors">תנאי שימוש</button>
+              <span className="text-muted-foreground/15 text-[10px]">·</span>
+              <button onClick={() => { setMobileNavOpen(false); navigate("/contact"); }} className="text-[10px] text-muted-foreground/25 hover:text-muted-foreground/50 transition-colors">יצירת קשר</button>
+            </div>
           </div>
         </div>
 
         <LiveTicker />
-        <main className="relative flex-1 overflow-y-auto bg-background p-3 md:p-6">
-          {renderContent()}
+        <main className="relative flex-1 overflow-y-auto p-3 pb-4 md:p-6 flex flex-col min-h-0 bg-background">
+          {/* Subtle terminal grid on main bg */}
+          <div className="pointer-events-none fixed inset-0 terminal-grid opacity-30" style={{ zIndex: 0 }} />
+          <React.Suspense fallback={
+            <div className="space-y-4 animate-pulse p-1 relative z-10">
+              <div className="h-8 w-48 rounded-xl" style={{ background: "rgba(255,255,255,0.03)" }} />
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                {[...Array(4)].map((_, i) => <div key={i} className="h-24 rounded-2xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }} />)}
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
+                <div className="lg:col-span-3 h-48 rounded-2xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }} />
+                <div className="lg:col-span-2 h-48 rounded-2xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }} />
+              </div>
+            </div>
+          }>
+            <div key={activeNav} className="relative z-10 h-full page-enter">
+              {renderContent()}
+            </div>
+          </React.Suspense>
           {zenMode && (
             <button
               onClick={() => setZenMode(false)}
@@ -502,12 +619,107 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
           )}
         </main>
 
+        <div className="hidden md:block"><Footer minimal /></div>
+
         <div
           className={`md:hidden absolute inset-0 z-30 bg-background/55 transition-opacity duration-300 ${
             mobileNavOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
           }`}
           onClick={() => setMobileNavOpen(false)}
         />
+
+        {/* ===== Mobile Bottom Tab Bar ===== */}
+        {!zenMode && (
+          <nav
+            className="md:hidden shrink-0 relative border-t border-border/50 bg-background/95 backdrop-blur-2xl"
+            style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
+          >
+            {/* Top gradient line */}
+            <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+
+            <div className="flex items-end justify-around px-2 pt-2">
+              {/* Left tabs: dashboard, journal */}
+              {[
+                { id: "dashboard", label: "בית", icon: TrendingUp },
+                { id: "journal", label: "יומן", icon: BookOpen },
+              ].map((tab) => {
+                const active = activeNav === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => handleNav(tab.id)}
+                    className="haptic-press flex flex-col items-center justify-center gap-1 min-w-[60px] py-1 transition-all duration-200"
+                  >
+                    <div className={`relative flex h-9 w-9 items-center justify-center rounded-2xl transition-all duration-200 ${
+                      active ? "bg-primary/18 shadow-[0_0_14px_rgba(0,212,170,0.25)]" : ""
+                    }`}>
+                      {active && <span className="absolute inset-0 rounded-2xl bg-gradient-to-b from-primary/20 to-transparent" />}
+                      <tab.icon className={`relative h-4.5 w-4.5 transition-all duration-200 ${active ? "text-primary drop-shadow-[0_0_6px_rgba(0,212,170,0.7)]" : "text-muted-foreground/35"}`} />
+                    </div>
+                    <span className={`text-[9px] leading-none font-medium transition-all duration-200 ${active ? "text-primary font-bold" : "text-muted-foreground/30"}`}>{tab.label}</span>
+                    {active && <span className="h-0.5 w-5 rounded-full bg-primary shadow-[0_0_8px_rgba(0,212,170,0.6)]" />}
+                    {!active && <span className="h-0.5 w-0" />}
+                  </button>
+                );
+              })}
+
+              {/* Center FAB — New Trade */}
+              <button
+                onClick={() => setTradeDrawerOpen(true)}
+                className="haptic-press relative flex flex-col items-center justify-center -mt-4 mb-0"
+              >
+                <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-primary shadow-[0_0_24px_rgba(0,212,170,0.45),0_4px_16px_rgba(0,0,0,0.4)] transition-all duration-200 active:scale-90 hover:shadow-[0_0_32px_rgba(0,212,170,0.6)]">
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-white/20 to-transparent" />
+                  <Plus className="relative h-6 w-6 text-[#0d1a17] stroke-[2.5]" />
+                </div>
+                <span className="text-[9px] font-bold text-primary mt-1 leading-none">עסקה</span>
+                <span className="h-0.5 w-0" />
+              </button>
+
+              {/* Right tabs: stats, more */}
+              {[
+                { id: "stats", label: "סטטס", icon: BarChart3 },
+                { id: "more", label: "עוד", icon: Menu },
+              ].map((tab) => {
+                if (tab.id === "more") {
+                  return (
+                    <button
+                      key="more"
+                      onClick={() => { setUserMenu(false); setMobileNavOpen(prev => !prev); }}
+                      className="haptic-press flex flex-col items-center justify-center gap-1 min-w-[60px] py-1 transition-all duration-200"
+                    >
+                      <div className={`flex h-9 w-9 items-center justify-center rounded-2xl transition-all duration-200 ${mobileNavOpen ? "bg-primary/18" : ""}`}>
+                        {mobileNavOpen
+                          ? <X className="h-4.5 w-4.5 text-primary" />
+                          : <Menu className="h-4.5 w-4.5 text-muted-foreground/35" />}
+                      </div>
+                      <span className={`text-[9px] leading-none font-medium transition-all ${mobileNavOpen ? "text-primary font-bold" : "text-muted-foreground/30"}`}>עוד</span>
+                      <span className="h-0.5 w-0" />
+                    </button>
+                  );
+                }
+                const active = activeNav === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => handleNav(tab.id)}
+                    className="haptic-press flex flex-col items-center justify-center gap-1 min-w-[60px] py-1 transition-all duration-200"
+                  >
+                    <div className={`relative flex h-9 w-9 items-center justify-center rounded-2xl transition-all duration-200 ${
+                      active ? "bg-primary/18 shadow-[0_0_14px_rgba(0,212,170,0.25)]" : ""
+                    }`}>
+                      {active && <span className="absolute inset-0 rounded-2xl bg-gradient-to-b from-primary/20 to-transparent" />}
+                      <tab.icon className={`relative h-4.5 w-4.5 transition-all duration-200 ${active ? "text-primary drop-shadow-[0_0_6px_rgba(0,212,170,0.7)]" : "text-muted-foreground/35"}`} />
+                    </div>
+                    <span className={`text-[9px] leading-none font-medium transition-all duration-200 ${active ? "text-primary font-bold" : "text-muted-foreground/30"}`}>{tab.label}</span>
+                    {active && <span className="h-0.5 w-5 rounded-full bg-primary shadow-[0_0_8px_rgba(0,212,170,0.6)]" />}
+                    {!active && <span className="h-0.5 w-0" />}
+                  </button>
+                );
+              })}
+            </div>
+          </nav>
+        )}
       </div>
 
       {/* ===== Forensic Trade Drawer ===== */}
@@ -520,7 +732,7 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
           <div className="hidden md:flex fixed inset-0 z-[61] items-center justify-center p-4">
             <BrokerModalContent onClose={() => setBrokerModal(false)} />
           </div>
-          <div className="md:hidden fixed inset-x-0 bottom-0 z-[61] max-h-[85vh] rounded-t-3xl border-t border-white/[0.08] bg-card animate-in slide-in-from-bottom duration-200 overflow-y-auto">
+          <div className="md:hidden fixed inset-x-0 bottom-0 z-[61] max-h-[85vh] rounded-t-3xl border-t border-border bg-card animate-in slide-in-from-bottom duration-200 overflow-y-auto">
             <div className="flex justify-center pt-3 pb-1"><div className="w-10 h-1 rounded-full bg-muted-foreground/15" /></div>
             <BrokerModalContent onClose={() => setBrokerModal(false)} mobile />
           </div>
@@ -534,31 +746,49 @@ const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
           <div className="hidden md:flex fixed inset-0 z-[61] items-center justify-center p-4">
             <UpgradeModalContent onClose={() => setUpgradeModal(false)} />
           </div>
-          <div className="md:hidden fixed inset-x-0 bottom-0 z-[61] max-h-[90vh] rounded-t-3xl border-t border-white/[0.08] bg-card animate-in slide-in-from-bottom duration-200 overflow-y-auto">
+          <div className="md:hidden fixed inset-x-0 bottom-0 z-[61] max-h-[90vh] rounded-t-3xl border-t border-border bg-card animate-in slide-in-from-bottom duration-200 overflow-y-auto">
             <div className="flex justify-center pt-3 pb-1"><div className="w-10 h-1 rounded-full bg-muted-foreground/15" /></div>
             <UpgradeModalContent onClose={() => setUpgradeModal(false)} mobile />
           </div>
         </>
       )}
 
+      {showFirstLogin && (
+        <FirstLoginScreen onComplete={() => setShowFirstLogin(false)} />
+      )}
+
       {showOnboarding && (
         <OnboardingModal userName={userName} onComplete={completeOnboarding} />
       )}
+
+      {showPricingModal && (
+        <PostOnboardingPricingModal onClose={() => setShowPricingModal(false)} />
+      )}
+
+      <AvatarPicker open={avatarPickerOpen} onOpenChange={setAvatarPickerOpen} />
+
+      </div>{/* end flex-1 overflow-hidden */}
     </div>
   );
 };
 
 /* ===== User Menu ===== */
-const UserMenuContent = ({ userName, userEmail, avatarUrl, onClose, onSettings, onLogout, onUpgrade }: { userName: string; userEmail: string; avatarUrl?: string | null; onClose: () => void; onSettings: () => void; onLogout: () => void; onUpgrade: () => void }) => {
+const UserMenuContent = ({ userName, userEmail, avatarUrl, onClose, onSettings, onLogout, onUpgrade, onChangeAvatar }: { userName: string; userEmail: string; avatarUrl?: string | null; onClose: () => void; onSettings: () => void; onLogout: () => void; onUpgrade: () => void; onChangeAvatar: () => void }) => {
   const { isPro } = useSubscription();
   return (
   <>
     <div className="border-b border-border/60 px-4 py-3">
       <div className="flex items-center gap-2.5">
-        <UserAvatar avatarUrl={avatarUrl} userName={userName} size="md" />
+        <button onClick={onChangeAvatar} className="relative group shrink-0" title="שנה אווטר">
+          <UserAvatar avatarUrl={avatarUrl} userName={userName} size="md" />
+          <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Camera className="h-3.5 w-3.5 text-white" />
+          </div>
+        </button>
         <div className="min-w-0 flex-1">
           <p className="text-[12px] font-bold text-foreground">{userName}</p>
           <p className="truncate text-2xs font-mono text-muted-foreground">{userEmail}</p>
+          <button onClick={onChangeAvatar} className="text-[9px] text-primary/60 hover:text-primary transition-colors font-medium mt-0.5">שנה אווטר</button>
         </div>
         <button
           onClick={onClose}
@@ -656,12 +886,12 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
   React.useEffect(() => {
     if (!user?.id) return;
     supabase
-      .from("broker_accounts" as any)
+      .from("broker_accounts")
       .select("*")
       .eq("user_id", user.id)
       .then(({ data }) => {
         if (data && Array.isArray(data)) {
-          setConnectedAccounts(data.map((a: any) => ({
+          setConnectedAccounts(data.map((a) => ({
             id: a.metaapi_account_id || a.id,
             name: a.account_name || `ZenTrade-${a.login}`,
             login: a.login,
@@ -672,6 +902,31 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
       });
   }, [user?.id]);
 
+  const [syncing, setSyncing] = useState<string | null>(null);
+
+  const handleSync = async (accountId: string, accountName: string) => {
+    setSyncing(accountId);
+    try {
+      const { data, error } = await supabase.functions.invoke("metaapi-sync", {
+        body: { accountId, userId: user?.id, days: 90 },
+      });
+      if (error) throw new Error(error.message || "שגיאת תקשורת עם השרת");
+      if (data?.error) throw new Error(data.error);
+      if (data?.pending) {
+        toast.info(data.message || "החשבון מתחבר — נסה שוב בעוד כמה שניות");
+      } else if (data?.imported === 0) {
+        toast.info(data.message || "אין עסקאות חדשות לייבוא");
+      } else {
+        toast.success(`יובאו ${data.imported} עסקאות מ-${accountName} 🎉`);
+        queryClient.invalidateQueries({ queryKey: ["trades"] });
+      }
+    } catch (err: any) {
+      toast.error(err?.message || "יבוא נכשל");
+    } finally {
+      setSyncing(null);
+    }
+  };
+
   const connected = brokers.filter(b => b.connected);
   const disconnected = brokers.filter(b => !b.connected);
 
@@ -680,10 +935,58 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
       toast.error("נא למלא את כל השדות");
       return;
     }
+    if (form.platform === "ctrader") {
+      toast.error("cTrader אינו נתמך עדיין — נסה MT4 או MT5");
+      return;
+    }
     setConnecting(true);
     try {
-      // TODO: Implement new broker connection (Social Trader Tools)
-      toast.info("חיבור ברוקר יהיה זמין בקרוב עם Social Trader Tools");
+      const { data, error } = await supabase.functions.invoke("metaapi-connect", {
+        body: {
+          action: "add-account",
+          login: form.login,
+          password: form.password,
+          serverName: form.serverName,
+          platform: form.platform as "mt4" | "mt5",
+          name: `ZenTrade-${form.login}`,
+        },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      const account = data.account;
+      const metaapiId = account._id || account.id;
+      const accountName = account.name || `ZenTrade-${form.login}`;
+
+      // Save to DB
+      const { error: dbErr } = await supabase.from("broker_accounts").upsert({
+        user_id: user!.id,
+        metaapi_account_id: metaapiId,
+        account_name: accountName,
+        login: form.login,
+        server_name: form.serverName,
+        platform: form.platform,
+      }, { onConflict: "metaapi_account_id" });
+      if (dbErr) console.warn("broker_accounts save warning:", dbErr.message);
+
+      setConnectedAccounts(prev => {
+        const exists = prev.some(a => a.id === metaapiId);
+        if (exists) return prev;
+        return [...prev, {
+          id: metaapiId,
+          name: accountName,
+          login: form.login,
+          server: form.serverName,
+          platform: form.platform,
+        }];
+      });
+
+      toast.success("החשבון חובר בהצלחה! 🎉 מיבא עסקאות...");
+      setForm({ platform: "mt5", serverName: "", login: "", password: "" });
+      setView("list");
+
+      // Auto-sync trades immediately after connecting
+      setTimeout(() => handleSync(metaapiId, accountName), 500);
     } catch (err: any) {
       toast.error(err?.message || "חיבור נכשל. בדוק את הפרטים ונסה שוב.");
     } finally {
@@ -725,7 +1028,7 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
           <div>
             <label className="block text-[11px] font-semibold text-foreground/60 mb-1.5">פלטפורמה</label>
             <div className="flex gap-2">
-              {[{ value: "mt4", label: "MT4" }, { value: "mt5", label: "MT5" }, { value: "ctrader", label: "cTrader" }].map(p => (
+              {[{ value: "mt4", label: "MT4" }, { value: "mt5", label: "MT5" }].map(p => (
                 <button key={p.value} onClick={() => setForm(f => ({ ...f, platform: p.value, serverName: "" }))} className={`flex-1 rounded-xl border py-2.5 text-[11px] font-bold transition-all ${form.platform === p.value ? "border-primary/40 bg-primary/10 text-primary" : "border-border/30 bg-secondary/20 text-muted-foreground/40 hover:bg-secondary/30"}`}>
                   {p.label}
                 </button>
@@ -859,6 +1162,19 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleSync(a.id, a.name)}
+                        disabled={syncing === a.id}
+                        className="flex items-center gap-1.5 rounded-lg bg-primary/10 border border-primary/20 px-2.5 py-1.5 text-[10px] font-bold text-primary hover:bg-primary/20 transition-all disabled:opacity-50"
+                        title="יבא עסקאות מהברוקר"
+                      >
+                        {syncing === a.id ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <RefreshCw className="h-3 w-3" />
+                        )}
+                        {syncing === a.id ? "מיבא..." : "יבא"}
+                      </button>
                       <span className="rounded-lg bg-profit/10 px-2 py-1 text-[9px] font-bold text-profit font-mono uppercase">Active</span>
                       <CheckCircle2 className="h-4.5 w-4.5 text-profit" />
                     </div>
@@ -880,8 +1196,8 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
                 {connected.map((b) => (
                   <div key={b.name} className="group flex items-center justify-between rounded-2xl border border-profit/15 bg-profit/[0.04] px-4 py-3.5 transition-all hover:bg-profit/[0.06]">
                     <div className="flex items-center gap-3.5">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden border border-border/30 bg-card shadow-sm">
-                        <img src={b.logo} alt={b.name} className="h-10 w-10 object-cover rounded-xl" />
+                      <div className="flex h-8 w-[72px] items-center justify-center rounded-xl overflow-hidden border border-border/30 bg-card shadow-sm px-1.5">
+                        <img src={b.logo} alt={b.name} className="max-h-5 w-full object-contain" />
                       </div>
                       <div>
                         <p className="text-[13px] font-semibold text-foreground">{b.name}</p>
@@ -925,8 +1241,8 @@ const BrokerModalContent = ({ onClose, mobile }: { onClose: () => void; mobile?:
               {disconnected.map((b) => (
                 <div key={b.name} className="group flex items-center justify-between rounded-xl border border-border/30 bg-secondary/20 px-4 py-3 hover:bg-secondary/40 hover:border-border/50 transition-all duration-200">
                   <div className="flex items-center gap-3.5">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-lg overflow-hidden border border-border/20 bg-card shadow-sm">
-                      <img src={b.logo} alt={b.name} className="h-9 w-9 object-cover rounded-lg" />
+                    <div className="flex h-8 w-[72px] items-center justify-center rounded-lg overflow-hidden border border-border/20 bg-card shadow-sm px-1.5">
+                      <img src={b.logo} alt={b.name} className="max-h-5 w-full object-contain" />
                     </div>
                     <p className="text-[12px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">{b.name}</p>
                   </div>

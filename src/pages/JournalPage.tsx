@@ -1,230 +1,624 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
-  Search, ChevronDown, ArrowUpRight, ArrowDownRight,
-  Sparkles, Brain, AlertTriangle, Clock, Target,
-  BarChart3, Mic, Play, Volume2, FolderOpen, Plug,
+  ArrowUpRight, ArrowDownRight, X, ChevronRight,
+  DollarSign, Target, Brain, Zap,
+  Image as ImageIcon, CheckCircle2, AlertTriangle, Loader2,
+  Star, Shield, BarChart2, Save, TrendingUp, Building2,
 } from "lucide-react";
-import { useTrades } from "@/hooks/useTrades";
+import { loadChallenge, type ActiveChallenge } from "@/pages/NostroHubPage";
+import { useTrades, useUpdateTrade } from "@/hooks/useTrades";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
-type FilterType = "all" | "long" | "short" | "win" | "loss";
+/* ── Helpers ── */
+const fmtDate = (s: string) =>
+  new Date(s).toLocaleDateString("he-IL", { weekday: "long", day: "2-digit", month: "long", year: "numeric" });
+const fmtTime = (s: string) =>
+  new Date(s).toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
+const fmtShortDate = (s: string) =>
+  new Date(s).toLocaleDateString("he-IL", { day: "2-digit", month: "short" });
+const fmtPnl = (n: number | null) =>
+  n != null ? `${n >= 0 ? "+" : ""}$${Math.abs(n).toFixed(2)}` : "—";
 
-const filterLabels: { key: FilterType; label: string }[] = [
-  { key: "all", label: "הכל" },
-  { key: "long", label: "לונג" },
-  { key: "short", label: "שורט" },
-  { key: "win", label: "מרוויחות" },
-  { key: "loss", label: "מפסידות" },
-];
+/* ── Mini Sparkline (SVG) ── */
+const MiniSparkline = ({ isWin }: { isWin: boolean }) => {
+  const color = isWin ? "#22c55e" : "#ef4444";
+  const points = isWin
+    ? "0,20 10,15 20,18 30,10 40,12 50,5 60,8 70,3"
+    : "0,5 10,8 20,6 30,12 40,10 50,16 60,14 70,20";
+  return (
+    <svg width="70" height="24" viewBox="0 0 70 24" fill="none">
+      <polyline points={points} stroke={color} strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
+      <polyline points={`${points} 70,24 0,24`} fill={color} opacity="0.08" />
+    </svg>
+  );
+};
 
+/* ── Folder Card (Level 1) ── */
+const FolderCard = ({ trade, onClick }: { trade: any; onClick: () => void }) => {
+  const isWin = (trade.pnl ?? 0) >= 0;
+  const isOpen = trade.status === "open";
+  const needsJournal = !trade.setup_type && !trade.psychology_notes;
+
+  const borderColor = isOpen
+    ? "rgba(59,130,246,0.25)"
+    : isWin ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.18)";
+  const glowColor = isOpen
+    ? "rgba(59,130,246,0.06)"
+    : isWin ? "rgba(34,197,94,0.05)" : "rgba(239,68,68,0.04)";
+  const pnlColor = isOpen ? "#3b82f6" : isWin ? "#22c55e" : "#ef4444";
+
+  return (
+    <button
+      onClick={onClick}
+      className="group relative rounded-2xl text-right transition-all duration-300 hover:scale-[1.02] overflow-hidden w-full"
+      style={{
+        border: `1px solid ${borderColor}`,
+        background: `linear-gradient(135deg, ${glowColor}, rgba(10,10,20,0.6))`,
+        backdropFilter: "blur(20px)",
+        boxShadow: `0 2px 20px rgba(0,0,0,0.3)`,
+      }}
+    >
+      {/* Hover glow */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400 rounded-2xl"
+        style={{ background: `radial-gradient(circle at 30% 50%, ${glowColor}, transparent 70%)` }} />
+
+      {/* Top strip */}
+      <div className="relative flex items-center justify-between px-3.5 pt-3 pb-0">
+        {/* Direction icon */}
+        <div className="flex items-center gap-2">
+          <div className="h-7 w-7 rounded-lg flex items-center justify-center border"
+            style={{ background: pnlColor + "18", borderColor: pnlColor + "35" }}>
+            {trade.direction === "long"
+              ? <ArrowUpRight className="h-3.5 w-3.5" style={{ color: pnlColor }} />
+              : <ArrowDownRight className="h-3.5 w-3.5" style={{ color: pnlColor }} />}
+          </div>
+          <div className="text-right">
+            <p className="text-[13px] font-black text-white font-mono leading-none tracking-tight">{trade.symbol}</p>
+            <p className="text-[9px] text-white/25 font-mono mt-0.5">{fmtShortDate(trade.entry_time)}</p>
+          </div>
+        </div>
+
+        {/* Status badges */}
+        <div className="flex items-center gap-1">
+          {isOpen && (
+            <span className="rounded-full px-2 py-0.5 text-[8px] font-bold animate-pulse"
+              style={{ background: "rgba(59,130,246,0.15)", border: "1px solid rgba(59,130,246,0.3)", color: "#3b82f6" }}>
+              ● פתוח
+            </span>
+          )}
+          {needsJournal && !isOpen && (
+            <span className="rounded-full px-2 py-0.5 text-[8px] font-bold"
+              style={{ background: "rgba(251,146,60,0.15)", border: "1px solid rgba(251,146,60,0.25)", color: "#fb923c" }}>
+              ✍ ממתין
+            </span>
+          )}
+          <ChevronRight className="h-3.5 w-3.5 text-white/15 group-hover:text-white/40 transition-colors" />
+        </div>
+      </div>
+
+      {/* Sparkline */}
+      <div className="px-3.5 pt-2 pb-0 opacity-60">
+        <MiniSparkline isWin={isOpen ? true : isWin} />
+      </div>
+
+      {/* Bottom: PnL + stars */}
+      <div className="relative flex items-center justify-between px-3.5 pb-3 pt-1">
+        <p className="text-[17px] font-black font-mono" style={{ color: pnlColor }}>
+          {isOpen ? "—" : fmtPnl(trade.pnl)}
+        </p>
+        {trade.rating ? (
+          <div className="flex gap-0.5">
+            {[1,2,3,4,5].map(n => (
+              <Star key={n} className={cn("h-2.5 w-2.5", trade.rating >= n ? "fill-amber-400 text-amber-400" : "text-white/10")} />
+            ))}
+          </div>
+        ) : (
+          <p className="text-[9px] text-white/15 font-mono">{fmtTime(trade.entry_time)}</p>
+        )}
+      </div>
+
+      {/* Bottom accent line */}
+      <div className="absolute bottom-0 inset-x-0 h-[2px] rounded-b-2xl opacity-0 group-hover:opacity-100 transition-opacity"
+        style={{ background: `linear-gradient(to left, transparent, ${pnlColor}60, transparent)` }} />
+    </button>
+  );
+};
+
+/* ── Text Area Glass ── */
+const GlassTextArea = ({
+  label, icon: Icon, placeholder, value, onChange, color = "primary"
+}: {
+  label: string; icon: any; placeholder: string;
+  value: string; onChange: (v: string) => void; color?: string;
+}) => (
+  <div className={cn(
+    "rounded-2xl border p-4 space-y-2",
+    color === "profit" ? "border-profit/15 bg-gradient-to-br from-profit/[0.03] to-transparent" :
+    color === "loss" ? "border-loss/15 bg-gradient-to-br from-loss/[0.03] to-transparent" :
+    color === "accent" ? "border-accent/15 bg-gradient-to-br from-accent/[0.03] to-transparent" :
+    "border-primary/15 bg-gradient-to-br from-primary/[0.03] to-transparent"
+  )}>
+    <div className="flex items-center gap-2">
+      <Icon className={cn("h-3.5 w-3.5", color === "profit" ? "text-profit" : color === "loss" ? "text-loss" : color === "accent" ? "text-accent" : "text-primary")} />
+      <span className={cn("text-[10px] font-bold font-mono uppercase tracking-widest",
+        color === "profit" ? "text-profit/70" : color === "loss" ? "text-loss/70" : color === "accent" ? "text-accent/70" : "text-primary/70"
+      )}>{label}</span>
+    </div>
+    <textarea
+      rows={3}
+      value={value}
+      onChange={e => onChange(e.target.value)}
+      placeholder={placeholder}
+      className="w-full bg-transparent text-[12px] text-foreground/80 placeholder:text-muted-foreground/20 outline-none resize-none leading-relaxed"
+    />
+  </div>
+);
+
+/* ── Trade Room (Level 2) ── */
+const TradeRoom = ({ trade, onClose, onSaved }: { trade: any; onClose: () => void; onSaved: () => void }) => {
+  const isWin = (trade.pnl ?? 0) >= 0;
+  const isOpen = trade.status === "open";
+  const updateTrade = useUpdateTrade();
+
+  const [outcome, setOutcome] = useState(trade.notes || "");
+  const [audit, setAudit] = useState(trade.psychology_notes || "");
+  const [fix, setFix] = useState(trade.tags?.find((t: string) => t.startsWith("fix:"))?.replace("fix:", "") || "");
+  const [saving, setSaving] = useState(false);
+
+  const rrRatio = trade.entry_price && trade.stop_loss && trade.take_profit
+    ? Math.abs((trade.take_profit - trade.entry_price) / (trade.entry_price - trade.stop_loss)).toFixed(1)
+    : null;
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const existingTags = (trade.tags || []).filter((t: string) => !t.startsWith("fix:"));
+      await updateTrade.mutateAsync({
+        id: trade.id,
+        notes: outcome || null,
+        tags: fix ? [...existingTags, `fix:${fix}`] : existingTags,
+      } as any);
+      toast.success("הרפלקציה נשמרה ✓");
+      onSaved();
+    } catch (e: any) {
+      toast.error("שגיאה: " + e.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[80] overflow-y-auto" dir="rtl">
+      {/* Backdrop */}
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} />
+
+      {/* Room */}
+      <div className="relative z-10 min-h-screen p-4 md:p-6 max-w-4xl mx-auto">
+
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6 pt-2">
+          <div className="flex items-center gap-3">
+            <button onClick={onClose} className="haptic-press flex h-9 w-9 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.04] text-muted-foreground hover:text-foreground transition-all">
+              <X className="h-4 w-4" />
+            </button>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-2xl font-black text-foreground font-mono">{trade.symbol}</span>
+                <span className={cn(
+                  "rounded-full px-2.5 py-0.5 text-[10px] font-bold border",
+                  isOpen ? "bg-primary/10 border-primary/25 text-primary" :
+                  isWin ? "bg-profit/10 border-profit/25 text-profit" : "bg-loss/10 border-loss/25 text-loss"
+                )}>
+                  {isOpen ? "פתוח" : isWin ? "WIN ✓" : "LOSS ✗"}
+                </span>
+              </div>
+              <p className="text-[11px] text-muted-foreground/40 font-mono">{fmtDate(trade.entry_time)}</p>
+            </div>
+          </div>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="haptic-press flex items-center gap-2 rounded-xl border border-primary/25 bg-primary/10 px-4 py-2 text-[12px] font-bold text-primary hover:bg-primary/20 transition-all disabled:opacity-40"
+          >
+            {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+            שמור רפלקציה
+          </button>
+        </div>
+
+        {/* Bento Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          {/* ── Identity Box ── */}
+          <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] backdrop-blur-xl p-5 space-y-4">
+            <div className="flex items-center gap-2 mb-1">
+              <Target className="h-3.5 w-3.5 text-primary/60" />
+              <span className="text-[10px] font-bold font-mono uppercase tracking-widest text-muted-foreground/40">זהות העסקה</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { label: "נכס", value: trade.symbol, mono: true },
+                { label: "כיוון", value: trade.direction === "long" ? "לונג ↑" : "שורט ↓", mono: false },
+                { label: "תאריך", value: fmtShortDate(trade.entry_time), mono: true },
+                { label: "שעה", value: fmtTime(trade.entry_time), mono: true },
+                { label: "טיים-פריים", value: trade.timeframe || "—", mono: true },
+                { label: "סטאפ", value: trade.setup_type || "—", mono: false },
+              ].map(item => (
+                <div key={item.label} className="rounded-xl bg-white/[0.02] border border-white/[0.04] px-3 py-2.5">
+                  <p className="text-[9px] text-muted-foreground/30 font-mono mb-1">{item.label}</p>
+                  <p className={cn("text-[12px] font-bold text-foreground/80", item.mono && "font-mono")}>{item.value}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Financials Box ── */}
+          <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] backdrop-blur-xl p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <DollarSign className="h-3.5 w-3.5 text-accent/60" />
+              <span className="text-[10px] font-bold font-mono uppercase tracking-widest text-muted-foreground/40">פיננסים</span>
+            </div>
+
+            {/* Big PnL */}
+            <div className={cn(
+              "rounded-2xl border p-4 mb-4 text-center",
+              isOpen ? "border-primary/20 bg-primary/[0.05]" :
+              isWin ? "border-profit/20 bg-profit/[0.05]" : "border-loss/20 bg-loss/[0.05]"
+            )}>
+              <p className="text-[10px] text-muted-foreground/40 font-mono mb-1">רווח / הפסד נקי</p>
+              <p className={cn(
+                "text-4xl font-black font-mono",
+                isOpen ? "text-primary" : isWin ? "text-profit" : "text-loss"
+              )}>
+                {isOpen ? "—" : fmtPnl(trade.pnl)}
+              </p>
+              {rrRatio && (
+                <p className={cn("text-[11px] font-mono mt-1", parseFloat(rrRatio) >= 2 ? "text-profit/60" : "text-loss/60")}>
+                  R:R 1:{rrRatio}
+                </p>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { label: "כניסה", value: trade.entry_price?.toFixed(5) || "—" },
+                { label: "יציאה", value: trade.exit_price?.toFixed(5) || "—" },
+                { label: "Stop Loss", value: trade.stop_loss?.toFixed(5) || "—" },
+                { label: "Take Profit", value: trade.take_profit?.toFixed(5) || "—" },
+                { label: "לוט / כמות", value: `${trade.lot_size}` },
+                { label: "סטטוס", value: isOpen ? "פתוח" : "סגור" },
+              ].map(item => (
+                <div key={item.label} className="rounded-xl bg-white/[0.02] border border-white/[0.04] px-3 py-2">
+                  <p className="text-[9px] text-muted-foreground/30 font-mono mb-0.5">{item.label}</p>
+                  <p className="text-[11px] font-bold text-foreground/70 font-mono">{item.value}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Visual Box (Chart Screenshot) ── */}
+          <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] backdrop-blur-xl p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <BarChart2 className="h-3.5 w-3.5 text-primary/60" />
+              <span className="text-[10px] font-bold font-mono uppercase tracking-widest text-muted-foreground/40">גרף הסטאפ</span>
+            </div>
+            {trade.screenshots?.length > 0 ? (
+              <div className="grid grid-cols-1 gap-2">
+                {trade.screenshots.map((url: string, i: number) => (
+                  <img
+                    key={i}
+                    src={url}
+                    alt={`גרף ${i + 1}`}
+                    className="w-full rounded-xl border border-white/[0.06] object-cover"
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-32 rounded-xl border border-dashed border-white/[0.08] text-center">
+                <ImageIcon className="h-6 w-6 text-muted-foreground/15 mb-2" />
+                <p className="text-[11px] text-muted-foreground/25">אין צילום גרף</p>
+                <p className="text-[9px] text-muted-foreground/15 mt-0.5">הוסף גרף ביומן מסחר חכם</p>
+              </div>
+            )}
+
+            {/* Confluences */}
+            {trade.confirmations?.length > 0 && (
+              <div className="mt-3">
+                <p className="text-[9px] text-muted-foreground/30 font-mono mb-2">אישורים</p>
+                <div className="flex flex-wrap gap-1">
+                  {trade.confirmations.map((c: string) => (
+                    <span key={c} className="rounded-lg border border-primary/15 bg-primary/8 px-2 py-0.5 text-[10px] text-primary/70">
+                      {c}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* ── Rules + Emotion Box ── */}
+          <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] backdrop-blur-xl p-5 space-y-4">
+            <div className="flex items-center gap-2">
+              <Shield className="h-3.5 w-3.5 text-accent/60" />
+              <span className="text-[10px] font-bold font-mono uppercase tracking-widest text-muted-foreground/40">משמעת ורגש</span>
+            </div>
+            <div className="flex items-center gap-3">
+              {(trade as any).followed_rules === true && (
+                <div className="flex items-center gap-1.5 rounded-xl border border-profit/20 bg-profit/[0.06] px-3 py-2">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-profit" />
+                  <span className="text-[11px] font-bold text-profit">כל החוקים נשמרו</span>
+                </div>
+              )}
+              {(trade as any).followed_rules === false && (
+                <div className="flex items-center gap-1.5 rounded-xl border border-loss/20 bg-loss/[0.06] px-3 py-2">
+                  <AlertTriangle className="h-3.5 w-3.5 text-loss" />
+                  <span className="text-[11px] font-bold text-loss">חוקים הופרו</span>
+                </div>
+              )}
+              {trade.psychology_notes && (
+                <div className="flex items-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2">
+                  <Brain className="h-3.5 w-3.5 text-primary/50" />
+                  <span className="text-[11px] text-foreground/60">{trade.psychology_notes}</span>
+                </div>
+              )}
+            </div>
+            {trade.rating && (
+              <div className="flex items-center gap-2">
+                <p className="text-[10px] text-muted-foreground/30 font-mono">דירוג:</p>
+                <div className="flex gap-0.5">
+                  {[1,2,3,4,5].map(n => (
+                    <Star key={n} className={cn("h-4 w-4", trade.rating >= n ? "fill-accent text-accent" : "text-muted-foreground/15")} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* ── Truth & Reflection Boxes ── */}
+          <GlassTextArea
+            label="התוצאה — למה ניצחתי / הפסדתי?"
+            icon={TrendingUp}
+            placeholder="מה קרה בפועל? למה העסקה הלכה לכיוון הזה? האם הייתה הפתעה?"
+            value={outcome}
+            onChange={setOutcome}
+            color={isWin ? "profit" : "loss"}
+          />
+
+          <GlassTextArea
+            label="הביקורת — מה עשיתי טוב ומה לא?"
+            icon={Zap}
+            placeholder="מה בוצע בצורה מושלמת? מה היה אפשר לעשות טוב יותר?"
+            value={audit}
+            onChange={setAudit}
+            color="accent"
+          />
+
+          <div className="md:col-span-2">
+            <GlassTextArea
+              label="התיקון — מה אני עושה אחרת בסשן הבא?"
+              icon={Brain}
+              placeholder="מה השיעור הספציפי מהעסקה הזו? מה לשנות בגישה, בכניסה, ביציאה?"
+              value={fix}
+              onChange={setFix}
+              color="primary"
+            />
+          </div>
+        </div>
+
+        {/* Bottom save */}
+        <div className="mt-6 pb-8">
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="haptic-press w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-primary to-primary/70 py-4 text-[14px] font-bold text-black transition-all hover:brightness-110 disabled:opacity-40 shadow-lg shadow-primary/20"
+          >
+            {saving ? <><Loader2 className="h-5 w-5 animate-spin" /> שומר...</> : <><Save className="h-5 w-5" /> שמור רפלקציה</>}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ── Nostro Account Status Bar ── */
+const NostroStatusBar = ({ trades }: { trades: any[] }) => {
+  const [challenge, setChallenge] = useState<ActiveChallenge | null>(null);
+  const [dismissed, setDismissed] = useState(false);
+
+  useEffect(() => { setChallenge(loadChallenge()); }, []);
+
+  if (!challenge || dismissed) return null;
+
+  const closedToday = trades.filter(t => {
+    if (t.status !== "closed") return false;
+    const d = new Date(t.created_at || t.entry_time || "");
+    const now = new Date();
+    return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+  });
+  const dailyPnL = closedToday.reduce((s, t) => s + (t.pnl ?? 0), 0);
+  const totalPnL = trades.filter(t => t.status === "closed").reduce((s, t) => s + (t.pnl ?? 0), 0);
+
+  const dailyLossUsedPct  = Math.min(100, Math.abs(Math.min(0, dailyPnL)) / challenge.dailyLossLimit * 100);
+  const totalDrawdownPct  = Math.min(100, Math.abs(Math.min(0, totalPnL))  / challenge.maxDrawdownLimit * 100);
+  const profitProgressPct = Math.min(100, Math.max(0, totalPnL / challenge.profitTarget * 100));
+
+  const barColor = (pct: number, type: "profit" | "loss") => {
+    if (type === "profit") return pct >= 100 ? "#22c55e" : "#a78bfa";
+    return pct >= 80 ? "#ef4444" : pct >= 50 ? "#f59e0b" : "#22c55e";
+  };
+
+  const dailyAlert = dailyLossUsedPct >= 80;
+  const ddAlert    = totalDrawdownPct >= 80;
+
+  return (
+    <div className={`shrink-0 rounded-2xl border overflow-hidden transition-all`}
+      style={{
+        borderColor: (dailyAlert || ddAlert) ? "rgba(239,68,68,0.35)" : challenge.accentHex + "35",
+        background: (dailyAlert || ddAlert) ? "rgba(239,68,68,0.05)" : challenge.accentHex + "08",
+      }}>
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-2.5 border-b" style={{ borderColor: challenge.accentHex + "20" }}>
+        <div className="flex items-center gap-2">
+          <Building2 className="h-3.5 w-3.5" style={{ color: challenge.accentHex }} />
+          <span className="text-[10px] font-bold font-mono uppercase tracking-wider text-white/50">
+            אתגר פעיל · {challenge.firmName} {challenge.tierSize}
+          </span>
+          <span className="flex h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: challenge.accentHex }} />
+        </div>
+        <div className="flex items-center gap-3">
+          {(dailyAlert || ddAlert) && (
+            <div className="flex items-center gap-1 text-[9px] font-bold text-red-400 font-mono">
+              <AlertTriangle className="h-3 w-3" />
+              {dailyAlert ? "מגבלת הפסד יומי!" : "Drawdown גבוה!"}
+            </div>
+          )}
+          <button onClick={() => setDismissed(true)} className="text-white/15 hover:text-white/40 transition-colors">
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Gauges */}
+      <div className="grid grid-cols-3 gap-4 px-4 py-3">
+        {[
+          { label: "יעד רווח",     pct: profitProgressPct, amt: `${totalPnL >= 0 ? "+" : ""}$${Math.abs(totalPnL).toFixed(0)} / $${Math.round(challenge.profitTarget)}`, type: "profit" as const },
+          { label: "הפסד יומי",    pct: dailyLossUsedPct,  amt: `$${Math.abs(dailyPnL).toFixed(0)} / $${Math.round(challenge.dailyLossLimit)}`, type: "loss" as const },
+          { label: "Max Drawdown", pct: totalDrawdownPct,   amt: `$${Math.abs(Math.min(0, totalPnL)).toFixed(0)} / $${Math.round(challenge.maxDrawdownLimit)}`, type: "loss" as const },
+        ].map(({ label, pct, amt, type }) => (
+          <div key={label} className="space-y-1.5">
+            <div className="flex items-center justify-between text-[9px] font-mono">
+              <span className="text-white/25">{label}</span>
+              <span className={type === "profit" ? "text-blue-400/70" : pct >= 80 ? "text-red-400/70" : "text-white/30"}>{pct.toFixed(0)}%</span>
+            </div>
+            <div className="h-2 rounded-full bg-white/[0.05] overflow-hidden">
+              <div className="h-full rounded-full transition-all duration-700"
+                style={{ width: `${pct}%`, background: barColor(pct, type) }} />
+            </div>
+            <p className="text-[8px] text-white/15 font-mono">{amt}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* ── Stats Bar ── */
+const StatsBar = ({ trades }: { trades: any[] }) => {
+  const closed = trades.filter(t => t.status === "closed");
+  const wins = closed.filter(t => (t.pnl ?? 0) > 0);
+  const totalPnl = closed.reduce((s, t) => s + (t.pnl ?? 0), 0);
+  const winRate = closed.length > 0 ? Math.round((wins.length / closed.length) * 100) : 0;
+
+  return (
+    <div className="grid grid-cols-3 gap-2 shrink-0">
+      {[
+        { label: "עסקאות", value: closed.length, mono: true, color: "text-foreground" },
+        { label: "Win Rate", value: `${winRate}%`, mono: true, color: winRate >= 50 ? "text-profit" : "text-loss" },
+        { label: "P&L", value: fmtPnl(totalPnl), mono: true, color: totalPnl >= 0 ? "text-profit" : "text-loss" },
+      ].map(s => (
+        <div key={s.label} className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-2 sm:px-4 py-3 text-center">
+          <p className="text-[8px] sm:text-[9px] text-muted-foreground/30 font-mono mb-1 truncate">{s.label}</p>
+          <p className={cn("text-[15px] sm:text-lg font-black font-mono truncate", s.color)}>{s.value}</p>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+/* ── Main Page ── */
 const JournalPage = () => {
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [filter, setFilter] = useState<FilterType>("all");
-  const [search, setSearch] = useState("");
-  const { data: trades = [], isLoading } = useTrades();
+  const { data: trades = [], isLoading, refetch } = useTrades();
+  const [selectedTrade, setSelectedTrade] = useState<any>(null);
+  const [filter, setFilter] = useState<"all" | "open" | "win" | "loss">("all");
 
   const filtered = trades.filter(t => {
-    if (filter === "long" && t.direction !== "long") return false;
-    if (filter === "short" && t.direction !== "short") return false;
-    if (filter === "win" && (t.pnl ?? 0) <= 0) return false;
-    if (filter === "loss" && (t.pnl ?? 0) >= 0) return false;
-    if (search) {
-      const q = search.toLowerCase();
-      if (!t.symbol.toLowerCase().includes(q) && !(t.tags || []).some(tag => tag.toLowerCase().includes(q))) return false;
-    }
+    if (filter === "open") return t.status === "open";
+    if (filter === "win") return (t.pnl ?? 0) > 0 && t.status === "closed";
+    if (filter === "loss") return (t.pnl ?? 0) <= 0 && t.status === "closed";
     return true;
   });
 
   return (
-    <div className="mx-auto max-w-[960px]" dir="rtl">
-      {/* ── Header ── */}
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6">
-        <div>
-          <h1 className="font-heading text-2xl md:text-3xl font-black text-foreground tracking-tight mb-1">
-            יומן מסחר חכם
-          </h1>
-          <p className="text-xs text-muted-foreground/50">כל עסקה מנותחת אוטומטית · AI תובנות · דפוסים פסיכולוגיים</p>
-        </div>
-        <button className="haptic-press group flex items-center gap-2 self-start rounded-xl bg-primary/10 border border-primary/20 px-4 py-2.5 text-xs font-bold text-primary hover:bg-primary/20 transition-all min-h-[44px]">
-          <Mic className="h-4 w-4" />
-          הקלט יומן קולי
-        </button>
-      </div>
+    <div className="flex flex-col gap-4 p-2 md:p-4 h-full">
 
-      {/* ── Search & Filters ── */}
-      <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.03] backdrop-blur-md p-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/30" />
-          <input
-            type="text"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="חפש נכס או סטאפ..."
-            className="w-full bg-white/[0.04] border border-white/[0.06] rounded-xl pr-10 pl-4 py-2.5 text-xs text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary/30 transition-colors"
-          />
-        </div>
-        <div className="flex items-center gap-1.5 flex-wrap">
-          {filterLabels.map(f => (
-            <button
-              key={f.key}
-              onClick={() => setFilter(f.key)}
-              className={`rounded-full px-3.5 py-1.5 text-[10px] font-bold transition-all duration-200 ${
-                filter === f.key
-                  ? "bg-primary/15 text-primary border border-primary/25"
-                  : "bg-white/[0.04] text-muted-foreground/50 border border-white/[0.06] hover:text-foreground/70"
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
-      </div>
+      {/* Nostro challenge tracker */}
+      <NostroStatusBar trades={trades} />
 
-      {/* ── Loading ── */}
-      {isLoading && (
-        <div className="flex items-center justify-center py-20">
-          <div className="h-6 w-6 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
-        </div>
-      )}
-
-      {/* ── Empty State ── */}
-      {!isLoading && trades.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="relative mb-6">
-            <div className="absolute -inset-4 rounded-full bg-primary/[0.08] blur-[30px] animate-pulse" />
-            <div className="relative flex h-20 w-20 items-center justify-center rounded-3xl bg-white/[0.04] border border-white/[0.08] backdrop-blur-md">
-              <FolderOpen className="h-9 w-9 text-primary/40" />
+      {/* Header */}
+      <div className="flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <div className="absolute inset-[-4px] rounded-xl bg-primary/8 animate-pulse" style={{ animationDuration: "3s" }} />
+            <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 border border-primary/20">
+              <BarChart2 className="h-5 w-5 text-primary" />
             </div>
           </div>
-          <h2 className="text-lg font-bold text-foreground mb-2">היומן שלכם ריק</h2>
-          <p className="text-sm text-muted-foreground/50 max-w-md mb-6 leading-relaxed">
-            הגיע הזמן להתחיל לתעד את המסע שלכם. הוסיפו עסקה ידנית או חברו את חשבון המסחר.
-          </p>
-        </div>
-      )}
-
-      {/* ── Trade Feed ── */}
-      {!isLoading && filtered.length > 0 && (
-        <div className="space-y-3">
-          {filtered.map((t, index) => {
-            const expanded = expandedId === t.id;
-            const isWin = (t.pnl ?? 0) > 0;
-            const edgeColor = isWin ? "bg-accent" : "bg-destructive";
-
-            return (
-              <div
-                key={t.id}
-                className={`group relative rounded-2xl border overflow-hidden transition-all duration-300 animate-in fade-in slide-in-from-bottom-2 fill-mode-both ${
-                  expanded
-                    ? "border-white/[0.1] bg-white/[0.04] backdrop-blur-md"
-                    : "border-white/[0.06] bg-white/[0.025] backdrop-blur-md hover:border-white/[0.1] hover:bg-white/[0.04]"
-                }`}
-                style={{ animationDelay: `${index * 50}ms`, animationDuration: "400ms" }}
-              >
-                {/* Color Edge */}
-                <div className={`absolute top-0 bottom-0 right-0 w-[3px] ${edgeColor} rounded-r-full`} />
-
-                {/* Main Row */}
-                <button
-                  onClick={() => setExpandedId(expanded ? null : t.id)}
-                  className="w-full flex items-center gap-3 md:gap-5 px-5 pr-7 py-4 text-right"
-                >
-                  {/* P&L */}
-                  <div className="shrink-0 w-20 md:w-24 text-left">
-                    <p className={`text-lg md:text-xl font-black tracking-tight ${isWin ? "text-accent" : "text-destructive"}`}>
-                      {t.pnl != null ? `${isWin ? "+" : ""}$${Math.abs(t.pnl).toLocaleString()}` : "—"}
-                    </p>
-                    {t.pnl_pct != null && (
-                      <p className="text-[8px] text-muted-foreground/30 font-medium mt-0.5">{t.pnl_pct.toFixed(1)}%</p>
-                    )}
-                  </div>
-
-                  {/* Asset + Date */}
-                  <div className="min-w-0 flex-shrink-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <div className={`flex h-6 w-6 items-center justify-center rounded-lg ${isWin ? "bg-accent/10" : "bg-destructive/10"}`}>
-                        {t.direction === "long"
-                          ? <ArrowUpRight className={`h-3.5 w-3.5 ${isWin ? "text-accent" : "text-destructive"}`} />
-                          : <ArrowDownRight className={`h-3.5 w-3.5 ${isWin ? "text-accent" : "text-destructive"}`} />
-                        }
-                      </div>
-                      <p className="text-sm font-bold text-foreground">
-                        {t.symbol} <span className="text-muted-foreground/40 font-medium">• {t.direction === "long" ? "לונג" : "שורט"}</span>
-                      </p>
-                    </div>
-                    <p className="text-[10px] text-muted-foreground/40 font-medium flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {new Date(t.entry_time).toLocaleDateString("he-IL", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}
-                    </p>
-                  </div>
-
-                  {/* Tags */}
-                  <div className="hidden md:flex flex-wrap gap-1.5 flex-1 justify-center">
-                    {(t.tags || []).map(tag => (
-                      <span key={tag} className="rounded-full bg-white/[0.05] border border-white/[0.07] px-2.5 py-0.5 text-[9px] font-semibold text-muted-foreground/50 backdrop-blur-sm">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Chevron */}
-                  <div className={`shrink-0 transition-transform duration-300 ${expanded ? "rotate-180" : ""} text-muted-foreground/25`}>
-                    <ChevronDown className="h-4 w-4" />
-                  </div>
-                </button>
-
-                {/* Mobile tags */}
-                {(t.tags || []).length > 0 && (
-                  <div className="flex md:hidden flex-wrap gap-1.5 px-5 pr-7 pb-2 -mt-1">
-                    {(t.tags || []).map(tag => (
-                      <span key={tag} className="rounded-full bg-white/[0.05] border border-white/[0.07] px-2 py-0.5 text-[8px] font-semibold text-muted-foreground/50">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                {/* ── Expanded Detail ── */}
-                {expanded && (
-                  <div className="border-t border-white/[0.06] px-5 pr-7 py-5 animate-in slide-in-from-top-2 fade-in duration-300 space-y-4">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                      {[
-                        { label: "מחיר כניסה", value: t.entry_price.toLocaleString(), icon: <Target className="h-3 w-3" /> },
-                        { label: "מחיר יציאה", value: t.exit_price?.toLocaleString() || "—", icon: <Target className="h-3 w-3" /> },
-                        { label: "לוט", value: t.lot_size.toString(), icon: <BarChart3 className="h-3 w-3" /> },
-                        { label: "סטאפ", value: t.setup_type || "—", icon: <Sparkles className="h-3 w-3" /> },
-                      ].map(d => (
-                        <div key={d.label} className="rounded-xl border border-white/[0.06] bg-white/[0.03] p-3">
-                          <div className="flex items-center gap-1.5 text-muted-foreground/35 mb-1.5">
-                            {d.icon}
-                            <span className="text-[8px] font-medium">{d.label}</span>
-                          </div>
-                          <p className="text-xs font-bold text-foreground/80">{d.value}</p>
-                        </div>
-                      ))}
-                    </div>
-
-                    {t.notes && (
-                      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-muted-foreground/30 mb-1 font-medium">הערות</p>
-                        <p className="text-xs text-foreground/70 leading-relaxed">{t.notes}</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* No search results */}
-      {!isLoading && trades.length > 0 && filtered.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/[0.05] border border-white/[0.08] mb-4">
-            <Search className="h-6 w-6 text-muted-foreground/25" />
+          <div>
+            <h1 className="font-heading text-lg font-bold text-foreground">יומן מסחר חכם</h1>
+            <p className="text-2xs text-muted-foreground/50">הכספת שלך · {trades.length} עסקאות</p>
           </div>
-          <p className="text-sm text-muted-foreground/40 font-medium">אין עסקאות שמתאימות לחיפוש</p>
         </div>
+      </div>
+
+      {/* Stats */}
+      <StatsBar trades={trades} />
+
+      {/* Filters */}
+      <div className="flex items-center gap-1.5 shrink-0">
+        {(["all", "open", "win", "loss"] as const).map(f => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={cn(
+              "haptic-press rounded-xl border px-3 py-1.5 text-[11px] font-semibold transition-all",
+              filter === f
+                ? f === "win" ? "border-profit/30 bg-profit/10 text-profit"
+                  : f === "loss" ? "border-loss/30 bg-loss/10 text-loss"
+                  : f === "open" ? "border-primary/30 bg-primary/10 text-primary"
+                  : "border-white/[0.12] bg-white/[0.06] text-foreground"
+                : "border-white/[0.06] bg-white/[0.02] text-muted-foreground/50 hover:bg-white/[0.04]"
+            )}
+          >
+            {f === "all" ? "הכל" : f === "open" ? "פתוחות" : f === "win" ? "✓ רווח" : "✗ הפסד"}
+          </button>
+        ))}
+        <span className="text-[10px] text-muted-foreground/25 font-mono mr-auto">{filtered.length} עסקאות</span>
+      </div>
+
+      {/* Vault Grid */}
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center flex-1 py-12">
+          <Loader2 className="h-8 w-8 text-primary/30 animate-spin mb-3" />
+          <p className="text-xs text-muted-foreground/30">טוען כספת...</p>
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="flex flex-col items-center justify-center flex-1 py-12 text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/[0.06] bg-white/[0.02] mb-4">
+            <BarChart2 className="h-7 w-7 text-muted-foreground/15" />
+          </div>
+          <p className="text-sm font-semibold text-foreground/40 mb-1">הכספת ריקה</p>
+          <p className="text-xs text-muted-foreground/25">פתח עסקה ראשונה דרך יומן מסחר חכם</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 pb-6 overflow-y-auto">
+          {filtered.map(trade => (
+            <FolderCard
+              key={trade.id}
+              trade={trade}
+              onClick={() => setSelectedTrade(trade)}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Trade Room */}
+      {selectedTrade && (
+        <TradeRoom
+          trade={selectedTrade}
+          onClose={() => setSelectedTrade(null)}
+          onSaved={() => { refetch(); setSelectedTrade(null); }}
+        />
       )}
     </div>
   );

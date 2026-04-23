@@ -8,6 +8,7 @@ import { UserProfileProvider } from "@/contexts/UserProfileContext";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import PaywallModal from "@/components/PaywallModal";
+import { DemoProvider } from "@/contexts/DemoContext";
 import Index from "./pages/Index.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import TermsPage from "./pages/TermsPage.tsx";
@@ -29,8 +30,8 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <PaywallModal />
         <BrowserRouter>
+          <PaywallModal />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/index" element={<Index />} />
@@ -46,6 +47,14 @@ const App = () => (
                 <ProtectedRoute>
                   <Dashboard />
                 </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/demo"
+              element={
+                <DemoProvider>
+                  <Dashboard />
+                </DemoProvider>
               }
             />
             <Route path="/terms" element={<TermsPage />} />

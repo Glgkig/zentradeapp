@@ -2,16 +2,29 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 
 export interface UserProfileData {
   name: string;
-  tradingStyle: "smc" | "ict" | "price-action" | "indicators" | "";
-  accountType: "funded" | "personal" | "demo" | "";
-  weakness: "overtrading" | "fomo" | "cutting-winners" | "moving-sl" | "";
+  tradingMethods: string[];       // SMC, ICT, Price Action …
+  instruments: string[];          // Forex, Indices, Crypto …
+  sessions: string[];             // London, NY AM …
+  minConfirmations: number | null;
+  accountType: string;            // funded | personal | demo | prop
+  experienceYears: string;        // "0-1" | "1-3" | "3-5" | "5+"
+  weaknesses: string[];           // multi-select psychological
+  riskPerTrade: string;           // "0.5" | "1" | "2" | "3" | "5+"
+  // legacy (kept for AI mentor context)
+  tradingStyle: string;
 }
 
 const defaultProfile: UserProfileData = {
   name: "",
-  tradingStyle: "",
+  tradingMethods: [],
+  instruments: [],
+  sessions: [],
+  minConfirmations: null,
   accountType: "",
-  weakness: "",
+  experienceYears: "",
+  weaknesses: [],
+  riskPerTrade: "",
+  tradingStyle: "",
 };
 
 interface UserProfileContextType {
@@ -49,7 +62,11 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     setUserProfileState(prev => ({ ...prev, [key]: value }));
   };
 
-  const isProfileComplete = !!(userProfile.tradingStyle && userProfile.accountType && userProfile.weakness);
+  const isProfileComplete = !!(
+    userProfile.tradingMethods.length > 0 &&
+    userProfile.accountType &&
+    userProfile.weaknesses.length > 0
+  );
 
   return (
     <UserProfileContext.Provider value={{ userProfile, setUserProfile, updateField, isProfileComplete }}>

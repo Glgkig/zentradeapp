@@ -1,4 +1,7 @@
-import { corsHeaders } from "npm:@supabase/supabase-js/cors";
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 const MASSIVE_API_KEY = Deno.env.get("MASSIVE_API_KEY") || "";
 
@@ -44,8 +47,8 @@ Deno.serve(async (req) => {
           }
 
           return { symbol: sym.label, price: null, change: null, changePct: null };
-        } catch (e: any) {
-          console.log(`${sym.ticker} fetch error: ${e.message}`);
+        } catch (e) {
+          console.log(`${sym.ticker} fetch error: ${(e as Error).message}`);
           return { symbol: sym.label, price: null, change: null, changePct: null };
         }
       })
@@ -54,8 +57,8 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ data: results }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (e: any) {
-    return new Response(JSON.stringify({ error: e.message }), {
+  } catch (e) {
+    return new Response(JSON.stringify({ error: (e as Error).message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

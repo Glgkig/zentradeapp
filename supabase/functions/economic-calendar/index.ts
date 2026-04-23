@@ -1,6 +1,11 @@
-import { corsHeaders } from "npm:@supabase/supabase-js/cors";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-// Forex Factory feeds — current week + next week
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+// Forex Factory CDN — only provides current week + next week
 const FF_THIS_WEEK = "https://nfs.faireconomy.media/ff_calendar_thisweek.json";
 const FF_NEXT_WEEK = "https://nfs.faireconomy.media/ff_calendar_nextweek.json";
 
@@ -87,22 +92,36 @@ const categoryMap: Record<string, string> = {
 };
 
 const impactMap: Record<string, string> = {
-  High: "high",
-  Medium: "medium",
-  Low: "low",
-  Holiday: "low",
+  High: "high", Medium: "medium", Low: "low", Holiday: "low",
 };
 
-function mapEvents(rawEvents: any[]) {
+interface RawEvent {
+  title: string;
+  impact: string;
+  country: string;
+  date: string;
+  forecast?: string | null;
+  previous?: string | null;
+  actual?: string | null;
+}
+
+// Deterministic ID from event key fields
+function eventId(e: RawEvent): string {
+  const str = `${e.title}|${e.date}|${e.country}`;
+  return btoa(new TextEncoder().encode(str).reduce((s, b) => s + String.fromCharCode(b), "")).slice(0, 40);
+}
+
+function mapEvents(rawEvents: RawEvent[]) {
   return rawEvents
-    .filter((e: any) => e.impact === "High" || e.impact === "Medium")
-    .map((e: any) => ({
+    .filter((e) => e.impact === "High" || e.impact === "Medium")
+    .map((e) => ({
+      id: eventId(e),
       title: e.title,
-      titleHe: hebrewTitles[e.title] || e.title,
+      title_he: hebrewTitles[e.title] || e.title,
       country: e.country,
       flag: countryFlags[e.country] || "🌍",
       region: categoryMap[e.country] || e.country,
-      date: e.date,
+      event_date: e.date,
       impact: impactMap[e.impact] || "low",
       forecast: e.forecast || null,
       previous: e.previous || null,
@@ -110,38 +129,74 @@ function mapEvents(rawEvents: any[]) {
     }));
 }
 
-Deno.serve(async (req) => {
+// @ts-ignore — Deno global, not visible to VSCode's Node TS checker
+Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
+  const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+  const SERVICE_KEY  = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const db = createClient(SUPABASE_URL, SERVICE_KEY);
+
   try {
-    // Fetch both weeks in parallel
-    const [thisWeekRes, nextWeekRes] = await Promise.all([
-      fetch(FF_THIS_WEEK, { signal: AbortSignal.timeout(8000) }),
-      fetch(FF_NEXT_WEEK, { signal: AbortSignal.timeout(8000) }).catch(() => null),
+    // ── 1. Fetch live data from Forex Factory (this week + next week) ──
+    const [thisRes, nextRes] = await Promise.all([
+      fetch(FF_THIS_WEEK,  { signal: AbortSignal.timeout(8000) }),
+      fetch(FF_NEXT_WEEK,  { signal: AbortSignal.timeout(8000) }).catch(() => null),
     ]);
 
-    if (!thisWeekRes.ok) throw new Error(`FF API returned ${thisWeekRes.status}`);
+    let rawLive: RawEvent[] = [];
+    if (thisRes.ok) rawLive = [...rawLive, ...(await thisRes.json())];
+    if (nextRes?.ok) rawLive = [...rawLive, ...(await nextRes.json())];
 
-    const thisWeekRaw = await thisWeekRes.json();
-    let allRaw = [...thisWeekRaw];
+    const freshEvents = mapEvents(rawLive);
 
-    if (nextWeekRes?.ok) {
-      const nextWeekRaw = await nextWeekRes.json();
-      allRaw = [...allRaw, ...nextWeekRaw];
+    // ── 2. Upsert fresh events into cache ──────────────────────────────
+    if (freshEvents.length > 0) {
+      await db.from("economic_events_cache").upsert(
+        freshEvents.map((e) => ({ ...e, fetched_at: new Date().toISOString() })),
+        { onConflict: "id" },
+      );
     }
 
-    const events = mapEvents(allRaw)
-      .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    // ── 3. Read 30-day window from cache (past 3 days → +30 days) ──────
+    const from = new Date();
+    from.setDate(from.getDate() - 3);
+    const to = new Date();
+    to.setDate(to.getDate() + 30);
 
-    return new Response(JSON.stringify({ events, source: "live" }), {
+    const { data: cached, error: dbErr } = await db
+      .from("economic_events_cache")
+      .select("*")
+      .gte("event_date", from.toISOString())
+      .lte("event_date", to.toISOString())
+      .order("event_date", { ascending: true });
+
+    if (dbErr) throw dbErr;
+
+    // Shape the response to match what the frontend expects
+    const events = (cached ?? []).map((r: Record<string, string | null>) => ({
+      title:    r.title,
+      titleHe:  r.title_he,
+      country:  r.country,
+      flag:     r.flag,
+      region:   r.region,
+      date:     r.event_date,
+      impact:   r.impact,
+      forecast: r.forecast,
+      previous: r.previous,
+      actual:   r.actual,
+    }));
+
+    return new Response(JSON.stringify({ events, source: "cache+live" }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (e: any) {
+
+  } catch (e) {
     console.error("economic-calendar error:", e);
     return new Response(
-      JSON.stringify({ error: e.message || "Unknown error", source: "error" }),
+      JSON.stringify({ error: (e as Error).message || "Unknown error", source: "error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }

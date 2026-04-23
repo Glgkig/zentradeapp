@@ -12,7 +12,6 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Authenticate user
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       return new Response(JSON.stringify({ error: "Missing auth" }), {
@@ -43,53 +42,69 @@ Deno.serve(async (req) => {
       });
     }
 
-    const polarToken = Deno.env.get("POLAR_ACCESS_TOKEN");
-    if (!polarToken) {
-      return new Response(JSON.stringify({ error: "Polar not configured" }), {
+    const apiKey = Deno.env.get("LEMONSQUEEZY_API_KEY");
+    const storeId = Deno.env.get("LEMONSQUEEZY_STORE_ID");
+    if (!apiKey || !storeId) {
+      return new Response(JSON.stringify({ error: "Lemon Squeezy not configured" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Get product ID from secrets
-    const productId = plan === "pro" 
-      ? Deno.env.get("POLAR_product_PRO") 
-      : Deno.env.get("POLAR_product_MAX");
+    const variantId = plan === "pro"
+      ? Deno.env.get("LEMONSQUEEZY_VARIANT_PRO")
+      : Deno.env.get("LEMONSQUEEZY_VARIANT_PROMAX");
 
-    if (!productId) {
-      console.error(`Missing secret for plan: ${plan}`);
+    if (!variantId) {
+      console.error(`Missing variant ID for plan: ${plan}`);
       return new Response(JSON.stringify({ error: "Product not configured" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    console.log(`Creating checkout for plan: ${plan}, product: ${productId}, user: ${user.id}`);
-
     const origin = req.headers.get("origin") || "https://zentradeapp.lovable.app";
 
-    // Use the Polar checkout API - products array format
-    const checkoutRes = await fetch("https://api.polar.sh/v1/checkouts/", {
+    console.log(`Creating Lemon Squeezy checkout for plan: ${plan}, variant: ${variantId}, user: ${user.id}`);
+
+    const checkoutRes = await fetch("https://api.lemonsqueezy.com/v1/checkouts", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${polarToken}`,
-        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/vnd.api+json",
+        Accept: "application/vnd.api+json",
       },
       body: JSON.stringify({
-        products: [productId],
-        success_url: `${origin}/success?checkout_id={CHECKOUT_ID}`,
-        customer_email: user.email,
-        metadata: {
-          supabase_user_id: user.id,
+        data: {
+          type: "checkouts",
+          attributes: {
+            checkout_data: {
+              email: user.email,
+              custom: {
+                user_id: user.id,
+              },
+            },
+            product_options: {
+              redirect_url: `${origin}/success`,
+            },
+          },
+          relationships: {
+            store: {
+              data: { type: "stores", id: storeId },
+            },
+            variant: {
+              data: { type: "variants", id: variantId },
+            },
+          },
         },
       }),
     });
 
     const responseText = await checkoutRes.text();
-    console.log(`Polar response status: ${checkoutRes.status}`);
-    console.log(`Polar response: ${responseText}`);
+    console.log(`Lemon Squeezy response status: ${checkoutRes.status}`);
 
     if (!checkoutRes.ok) {
+      console.error(`Lemon Squeezy error: ${responseText}`);
       return new Response(JSON.stringify({ error: "Failed to create checkout", details: responseText }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -97,8 +112,9 @@ Deno.serve(async (req) => {
     }
 
     const checkout = JSON.parse(responseText);
+    const checkoutUrl = checkout?.data?.attributes?.url;
 
-    return new Response(JSON.stringify({ url: checkout.url }), {
+    return new Response(JSON.stringify({ url: checkoutUrl }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

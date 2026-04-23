@@ -38,6 +38,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       .eq("id", userId)
       .single();
     setProfile(data);
+    setLoading(false);
   }, []);
 
   const refreshProfile = useCallback(async () => {
@@ -49,8 +50,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     supabase.auth.getSession().then(({ data: { session: s } }) => {
       setSession(s);
       setUser(s?.user ?? null);
-      if (s?.user) fetchProfile(s.user.id);
-      setLoading(false);
+      if (s?.user) {
+        fetchProfile(s.user.id); // sets loading=false when done
+      } else {
+        setLoading(false);
+      }
     });
 
     // Listen for auth changes — NEVER await inside this callback (causes deadlocks)
@@ -59,12 +63,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setSession(s);
         setUser(s?.user ?? null);
         if (s?.user) {
-          // Fire-and-forget to avoid blocking auth state processing
-          fetchProfile(s.user.id);
+          fetchProfile(s.user.id); // sets loading=false when done
         } else {
           setProfile(null);
+          setLoading(false);
         }
-        setLoading(false);
       }
     );
 

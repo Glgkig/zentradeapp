@@ -1,0 +1,1145 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head id="head">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
+    
+
+<title>Page Not Found | NinjaTrader</title>
+
+
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Page Not Found">
+    <meta property="og:description" content="" />
+        <meta property="og:image" itemprop="image" content="/getmedia/4d88ea03-98e8-4b4f-9ef8-b1c4e0ff707d/image.jpeg">
+    <meta property="og:site_name" content="NT">
+        <meta property="og:url" content="/pagenotfound">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="KXtwitteraccount" />
+    <meta name="twitter:title" content="Page Not Found" />
+    <meta name="twitter:description" content="" />
+        <meta name="twitter:image" content="/getmedia/4d88ea03-98e8-4b4f-9ef8-b1c4e0ff707d/image.jpeg" />
+    <meta name="twitter:image:alt" content="KXtwitteraccount" />
+
+
+    <!-- Add Favicons here -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/dist/images/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/dist/images/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/dist/images/favicons/favicon-16x16.png">
+    <link rel="manifest" href="/assets/dist/images/favicons/site.webmanifest">
+    <link rel="mask-icon" href="/assets/dist/images/favicons/safari-pinned-tab.svg" color="#ff4200">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    <!-- Add Favicons here -->
+    <link href="/assets/dist/css/main.min.css?v=gv3dHIQg1trmpzWkq0XewNGwgDTe_6i7G6XTrwgTC4M" rel="stylesheet" media="all" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+          rel="stylesheet" />
+    
+    
+
+        
+
+        
+    <!-- OneTrust Cookies Consent Notice start for ninjatrader.com -->
+    <script src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js"
+            type="text/javascript"
+            charset="UTF-8"
+            data-domain-script="019bbcec-5a61-77ca-ac17-4d8a0c83a1c4"></script>
+    <script type="text/javascript">
+        function OptanonWrapper() {
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({
+                'event': 'OneTrustGroupsUpdated',
+                'OnetrustActiveGroups': window.OnetrustActiveGroups || ''
+            });
+        }
+    </script>
+    <!-- OneTrust Cookies Consent Notice end for ninjatrader.com -->
+    <!--Google Tag Manager -->
+    <script>
+    (function (w, d, s, l, i) {
+                w[l] = w[l] || []; w[l].push({
+                    'gtm.start':
+                        new Date().getTime(), event: 'gtm.js'
+                }); var f = d.getElementsByTagName(s)[0],
+                    j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                        'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+            })(window, document, 'script', 'dataLayer', 'GTM-5H2422D');
+    </script>
+    <!-- End Google Tag Manager -->
+
+
+    <link href="/_content/Kentico.Content.Web.Rcl/Content/Bundles/Public/systemPageComponents.min.css" rel="stylesheet" />
+
+    
+
+    <script>
+        window.adaSettings = {
+            language: "en",
+            align: "right"
+        }
+    </script>
+    <script id="__ada"
+        data-handle="ninjatrader-eap"
+        src=https://static.ada.support/embed2.js>
+    </script>
+
+    
+	<link rel="alternate" hreflang="es" href="https://ninjatrader.com/es-es/pagenotfound/" />
+	<link rel="alternate" hreflang="en" href="https://ninjatrader.com/pagenotfound/" />
+	<link rel="alternate" hreflang="de" href="https://ninjatrader.com/de-de/pagenotfound/" />
+	<link rel="alternate" hreflang="ru" href="https://ninjatrader.com/ru-ru/pagenotfound/" />
+	<link rel="alternate" hreflang="pt" href="https://ninjatrader.com/pt-pt/pagenotfound/" />
+	<link rel="alternate" hreflang="fr" href="https://ninjatrader.com/fr-fr/pagenotfound/" />
+	<link rel="alternate" hreflang="it" href="https://ninjatrader.com/it-it/pagenotfound/" />
+	<link rel="alternate" hreflang="x-default" href="https://ninjatrader.com/pagenotfound/" />
+
+
+	<link rel="canonical" href="https://ninjatrader.com/pagenotfound/" />
+
+	<meta property="og:locale" content="en_US" />
+
+    <script src="https://cdn.optimizely.com/js/24396460556.js"></script>
+</head>
+<body>
+    <div class="site-container">
+        
+        
+
+
+
+<header id="site-header" class="site-header site-header sticky-header sticky-header-desktop sticky-header-mobile  " role="banner">
+    <a class="visually-hidden focusable" href="#maincontent">Skip to Main Content</a>
+
+    <div class="header-container container">
+        <div class="header-container__top">
+            <a href="/" class="header-logo">
+                        <svg class="header-logo__icon header-logo__icon--svg" aria-hidden="true" focusable="false"><use xlink:href='/assets/dist/images/svg-legend.svg#ninjatrader-v2'></use></svg>
+                    <span class="sr-only">NT.Svg.Logo</span>
+            </a>
+            <div class="header-container__col2">
+                    
+    <div class="js-culture-selector culture-selector">
+        <button class="culture-select-btn" aria-label="NT.Expand.Culture.Select">
+            <svg class="culture-select__icon culture-select__globe">
+                <use xlink:href="/assets/src/images/svg-legend.svg#globe2"></use>
+            </svg>
+        </button>
+    </div>
+    <div class="cultureModal-overlay" id="cultureModal">
+        <div class="cultureModal">
+            <div class="cultureModal-header">
+                <h2>Change language and country/region</h2>
+                <button class="close-button" id="cultureModal-close">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 16 15" fill="none">
+                        <path d="M1.66675 0.833328L15.0001 14.1667M1.66675 14.1667L15.0001 0.833328" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+            <div class="cultureModal-body">
+                <div class="cultureModal-countrySelector cultureModal-selector">
+                    <div class="cultureModal-dropdown">
+                        <label>Country</label>
+                        <button id="cultureModal-countryDropdown" class="cultureModal-dropdown-toggle">
+                            <span id="countrySelection">United States</span>
+                            <span class="dropdown-arrow">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none">
+                                    <path d="M7.99996 10.6667C7.93426 10.667 7.86917 10.6542 7.8085 10.629C7.74782 10.6038 7.69279 10.5667 7.64662 10.52L4.31329 7.18666C4.24681 7.0894 4.21681 6.97178 4.22858 6.85455C4.24035 6.73733 4.29314 6.62802 4.37763 6.54592C4.46213 6.46382 4.5729 6.41419 4.69042 6.40578C4.80793 6.39738 4.92464 6.43075 5.01996 6.5L7.99996 9.46L10.98 6.5C11.0739 6.43907 11.1856 6.41145 11.2972 6.42158C11.4087 6.4317 11.5136 6.47898 11.5951 6.55583C11.6765 6.63269 11.7298 6.73466 11.7464 6.84542C11.763 6.95618 11.742 7.0693 11.6866 7.16666L8.35329 10.5C8.30885 10.5504 8.25458 10.5911 8.19382 10.6198C8.13307 10.6485 8.0671 10.6644 7.99996 10.6667Z" fill="black" />
+                                </svg>
+                            </span>
+                        </button>
+                        <ul id="countryMenu" class="cultureModal-dropdown-menu">
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="cultureModal-languageSelector cultureModal-selector">
+                    <div class="cultures-modal" hidden>
+                                <a href="/pagenotfound/" hreflang="en-US">English</a>
+                                <a href="/fr-fr/pagenotfound/" hreflang="fr-FR">French</a>
+                                <a href="/de-de/pagenotfound/" hreflang="de-DE">German</a>
+                                <a href="/it-it/pagenotfound/" hreflang="it-IT">Italian</a>
+                                <a href="/pt-pt/pagenotfound/" hreflang="pt-PT">Portuguese</a>
+                                <a href="/ru-ru/pagenotfound/" hreflang="ru-RU">Russian</a>
+                                <a href="/es-es/pagenotfound/" hreflang="es-ES">Spanish</a>
+                    </div>
+                    <div class="cultureModal-dropdown">
+                        <label>Language</label>
+                        <button id="cultureModal-languageDropdown" class="cultureModal-dropdown-toggle">
+                            <span id="languageSelection">English</span>
+                            <span class="dropdown-arrow">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none">
+                                    <path d="M7.99996 10.6667C7.93426 10.667 7.86917 10.6542 7.8085 10.629C7.74782 10.6038 7.69279 10.5667 7.64662 10.52L4.31329 7.18666C4.24681 7.0894 4.21681 6.97178 4.22858 6.85455C4.24035 6.73733 4.29314 6.62802 4.37763 6.54592C4.46213 6.46382 4.5729 6.41419 4.69042 6.40578C4.80793 6.39738 4.92464 6.43075 5.01996 6.5L7.99996 9.46L10.98 6.5C11.0739 6.43907 11.1856 6.41145 11.2972 6.42158C11.4087 6.4317 11.5136 6.47898 11.5951 6.55583C11.6765 6.63269 11.7298 6.73466 11.7464 6.84542C11.763 6.95618 11.742 7.0693 11.6866 7.16666L8.35329 10.5C8.30885 10.5504 8.25458 10.5911 8.19382 10.6198C8.13307 10.6485 8.0671 10.6644 7.99996 10.6667Z" fill="black" />
+                                </svg>
+                            </span>
+                        </button>
+                        <ul id="languageMenu" class="cultureModal-dropdown-menu">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cultureModal-footer">
+                <button id="cultureModal-continue">Continue</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.cultures = {"English":[{"country":"United States","url":"/pagenotfound/"}],"French":[{"country":"United States","url":"/fr-fr/pagenotfound/"}],"German":[{"country":"United States","url":"/de-de/pagenotfound/"}],"Italian":[{"country":"United States","url":"/it-it/pagenotfound/"}],"Portuguese":[{"country":"United States","url":"/pt-pt/pagenotfound/"}],"Russian":[{"country":"United States","url":"/ru-ru/pagenotfound/"}],"Spanish":[{"country":"United States","url":"/es-es/pagenotfound/"}]};
+    </script>
+
+						<a href="https://account.ninjatrader.com/welcome?locale=en" class="header-container__login">Log In</a>
+                    <a href="https://account.ninjatrader.com/register?locale=en" class="header-container__cta">Open account</a>
+            </div>
+                <button class="header-mobile-btn hamburger"
+                        data-expander="header-nav"
+                        data-expander-css
+                        data-expander-nofocus
+                        aria-label="NT.Expand.Mobile.Menu" >
+                    <svg class="header-menu--open">
+                        <use xlink:href="/assets/src/images/svg-legend.svg#mobile-menu-icon"></use>
+                    </svg>
+                    <div class="header-menu-close">
+                        <svg class="header-menu--close">
+                            <use xlink:href="/assets/src/images/svg-legend.svg#cross2"></use>
+                        </svg>
+                    </div>
+                </button>
+        </div>
+        <div class="header-container__bottom">
+             
+                <div id="header-nav" class="header-bottom">
+                    <div class="header-bottom__top">
+                            <nav id="main-navigation" class="main-navigation" role="navigation" aria-label="Site Navigation">
+                                <ul>
+                                    
+
+
+    <li data-expander data-expander-css data-expander-nofocus >
+            <button type="button" data-expander-toggle data-top-nav="toggle-Futures">
+                <span>Futures</span>
+                    <svg class="nav-direction nav-down">
+                        <use xlink:href="/assets/src/images/svg-legend.svg#chev-down2"></use>
+                    </svg>
+                    <svg class="nav-direction nav-up">
+                        <use xlink:href="/assets/src/images/svg-legend.svg#chev-up2"></use>
+                    </svg>
+            </button>
+                <ul data-expander-target>
+                    
+
+
+    <li  >
+            <a href="/futures/" target="_self" data-top-nav>
+                    <span>Intro to futures</span>
+            </a>
+    </li>
+    <li  >
+            <a href="/futures/futures-contracts/" target="_self" data-top-nav>
+                    <span>Futures contracts</span>
+            </a>
+    </li>
+    <li  >
+            <a href="/futures/why-trade-futures/" target="_self" data-top-nav>
+                    <span>Why trade futures?</span>
+            </a>
+    </li>
+    <li  >
+            <a href="/futures/futures-trading-basics/" target="_self" data-top-nav>
+                    <span>Futures trading basics</span>
+            </a>
+    </li>
+    <li  >
+            <a href="/futures/futures-trading-basics/futures-trading-plan/" target="_self" data-top-nav>
+                    <span>Futures trading plan</span>
+            </a>
+    </li>
+    <li  >
+            <a href="/futures/futures-trading-basics/risk-management/" target="_self" data-top-nav>
+                    <span>Futures risk management</span>
+            </a>
+    </li>
+    <li  >
+            <a href="/futures/why-trade-futures/futures-vs-stocks/" target="_self" data-top-nav>
+                    <span>Compare to stocks</span>
+            </a>
+    </li>
+
+                </ul>
+    </li>
+    <li data-expander data-expander-css data-expander-nofocus >
+            <button type="button" data-expander-toggle data-top-nav="toggle-Platforms">
+                <span>Platforms</span>
+                    <svg class="nav-direction nav-down">
+                        <use xlink:href="/assets/src/images/svg-legend.svg#chev-down2"></use>
+                    </svg>
+                    <svg class="nav-direction nav-up">
+                        <use xlink:href="/assets/src/images/svg-legend.svg#chev-up2"></use>
+                    </svg>
+            </button>
+                <ul data-expander-target>
+                    
+
+
+    <li  >
+            <a href="/trading-platform/" target="_self" data-top-nav>
+                    <span>Platform overview</span>
+            </a>
+    </li>
+    <li  >
+            <a href="/learn/platform-training/" target="_self" data-top-nav>
+                    <span>Platform training</span>
+            </a>
+    </li>
+    <li  >
+            <a href="/trading-platform/free-trading-charts/" target="_self" data-top-nav>
+                    <span>Free trading charts</span>
+            </a>
+    </li>
+    <li  >
+            <a href="/trading-platform/trading-simulator/" target="_self" data-top-nav>
+                    <span>Trading simulator</span>
+            </a>
+    </li>
+    <li  >
+            <a href="/trading-platform/mobile-trading/" target="_self" data-top-nav>
+                    <span>Mobile app</span>
+            </a>
+    </li>
+    <li  >
+            <a href="/trading-platform/customize/" target="_self" data-top-nav>
+                    <span>Customization</span>
+            </a>
+    </li>
+    <li  >
+            <a href="/trading-platform/customize/market-data-brokerage-options/" target="_self" data-top-nav>
+                    <span>Market data &amp; brokerage options</span>
+            </a>
+    </li>
+    <li  >
+            <a href="/trading-platform/ninjatrader-pulse/" target="_self" data-top-nav>
+                    <span>NinjaTrader Pulse</span>
+            </a>
+    </li>
+    <li  >
+            <a href="/trading-platform/ninjascript-tutorial/" target="_self" data-top-nav>
+                    <span>NinjaScript</span>
+            </a>
+    </li>
+    <li  >
+            <a href="https://prop.ninjatrader.com/" target="_self" data-top-nav>
+                    <span>Prop trading</span>
+            </a>
+    </li>
+
+                </ul>
+    </li>
+    <li  >
+            <a href="/pricing/" target="_self" data-top-nav>
+                    <span>Pricing</span>
+            </a>
+    </li>
+    <li data-expander data-expander-css data-expander-nofocus >
+            <button type="button" data-expander-toggle data-top-nav="toggle-Learn">
+                <span>Learn</span>
+                    <svg class="nav-direction nav-down">
+                        <use xlink:href="/assets/src/images/svg-legend.svg#chev-down2"></use>
+                    </svg>
+                    <svg class="nav-direction nav-up">
+                        <use xlink:href="/assets/src/images/svg-legend.svg#chev-up2"></use>
+                    </svg>
+            </button>
+                <ul data-expander-target>
+                    
+
+
+    <li  >
+            <a href="/learn/" target="_self" data-top-nav>
+                    <span>How to start futures trading</span>
+            </a>
+    </li>
+    <li  >
+            <a href="/learn/livestreams/" target="_self" data-top-nav>
+                    <span>Daily livestreams</span>
+            </a>
+    </li>
+    <li  >
+            <a href="/learn/how-to-trade-futures/" target="_self" data-top-nav>
+                    <span>How to trade futures</span>
+            </a>
+    </li>
+    <li  >
+            <a href="/learn/technical-analysis/" target="_self" data-top-nav>
+                    <span>Technical analysis basics</span>
+            </a>
+    </li>
+    <li  >
+            <a href="/ninjatrader-arena/" target="_self" data-top-nav>
+                    <span>Arena: Futures Competitions</span>
+            </a>
+    </li>
+    <li  >
+            <a href="/learn/day-trading-strategy-leaders/" target="_self" data-top-nav>
+                    <span>Day trading leaders</span>
+            </a>
+    </li>
+
+                </ul>
+    </li>
+    <li  >
+            <a href="/futures/blogs/" target="_self" data-top-nav>
+                    <span>Blog</span>
+            </a>
+    </li>
+    <li  >
+            <a href="/support/" target="_self" data-top-nav>
+                    <span>Support</span>
+            </a>
+    </li>
+
+                                </ul>
+                            </nav>
+                        <div class="header-bottom__top-utility">
+                                <a href="https://apps.apple.com/us/app/ninjatrader-trade-futures/id6473653053" class="header-bottom__download">
+
+                                        <svg class="header-bottom__download-svg">
+                                            <use xlink:href="/assets/src/images/svg-legend.svg#download"></use>
+                                        </svg>
+                                    <span>Download The App</span>
+                                </a>
+                            
+    <div class="js-culture-selector culture-selector">
+        <button class="culture-select-btn" aria-label="NT.Expand.Culture.Select">
+            <svg class="culture-select__icon culture-select__globe">
+                <use xlink:href="/assets/src/images/svg-legend.svg#globe2"></use>
+            </svg>
+        </button>
+    </div>
+    <div class="cultureModal-overlay" id="cultureModal">
+        <div class="cultureModal">
+            <div class="cultureModal-header">
+                <h2>Change language and country/region</h2>
+                <button class="close-button" id="cultureModal-close">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 16 15" fill="none">
+                        <path d="M1.66675 0.833328L15.0001 14.1667M1.66675 14.1667L15.0001 0.833328" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+            <div class="cultureModal-body">
+                <div class="cultureModal-countrySelector cultureModal-selector">
+                    <div class="cultureModal-dropdown">
+                        <label>Country</label>
+                        <button id="cultureModal-countryDropdown" class="cultureModal-dropdown-toggle">
+                            <span id="countrySelection">United States</span>
+                            <span class="dropdown-arrow">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none">
+                                    <path d="M7.99996 10.6667C7.93426 10.667 7.86917 10.6542 7.8085 10.629C7.74782 10.6038 7.69279 10.5667 7.64662 10.52L4.31329 7.18666C4.24681 7.0894 4.21681 6.97178 4.22858 6.85455C4.24035 6.73733 4.29314 6.62802 4.37763 6.54592C4.46213 6.46382 4.5729 6.41419 4.69042 6.40578C4.80793 6.39738 4.92464 6.43075 5.01996 6.5L7.99996 9.46L10.98 6.5C11.0739 6.43907 11.1856 6.41145 11.2972 6.42158C11.4087 6.4317 11.5136 6.47898 11.5951 6.55583C11.6765 6.63269 11.7298 6.73466 11.7464 6.84542C11.763 6.95618 11.742 7.0693 11.6866 7.16666L8.35329 10.5C8.30885 10.5504 8.25458 10.5911 8.19382 10.6198C8.13307 10.6485 8.0671 10.6644 7.99996 10.6667Z" fill="black" />
+                                </svg>
+                            </span>
+                        </button>
+                        <ul id="countryMenu" class="cultureModal-dropdown-menu">
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="cultureModal-languageSelector cultureModal-selector">
+                    <div class="cultures-modal" hidden>
+                                <a href="/pagenotfound/" hreflang="en-US">English</a>
+                                <a href="/fr-fr/pagenotfound/" hreflang="fr-FR">French</a>
+                                <a href="/de-de/pagenotfound/" hreflang="de-DE">German</a>
+                                <a href="/it-it/pagenotfound/" hreflang="it-IT">Italian</a>
+                                <a href="/pt-pt/pagenotfound/" hreflang="pt-PT">Portuguese</a>
+                                <a href="/ru-ru/pagenotfound/" hreflang="ru-RU">Russian</a>
+                                <a href="/es-es/pagenotfound/" hreflang="es-ES">Spanish</a>
+                    </div>
+                    <div class="cultureModal-dropdown">
+                        <label>Language</label>
+                        <button id="cultureModal-languageDropdown" class="cultureModal-dropdown-toggle">
+                            <span id="languageSelection">English</span>
+                            <span class="dropdown-arrow">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none">
+                                    <path d="M7.99996 10.6667C7.93426 10.667 7.86917 10.6542 7.8085 10.629C7.74782 10.6038 7.69279 10.5667 7.64662 10.52L4.31329 7.18666C4.24681 7.0894 4.21681 6.97178 4.22858 6.85455C4.24035 6.73733 4.29314 6.62802 4.37763 6.54592C4.46213 6.46382 4.5729 6.41419 4.69042 6.40578C4.80793 6.39738 4.92464 6.43075 5.01996 6.5L7.99996 9.46L10.98 6.5C11.0739 6.43907 11.1856 6.41145 11.2972 6.42158C11.4087 6.4317 11.5136 6.47898 11.5951 6.55583C11.6765 6.63269 11.7298 6.73466 11.7464 6.84542C11.763 6.95618 11.742 7.0693 11.6866 7.16666L8.35329 10.5C8.30885 10.5504 8.25458 10.5911 8.19382 10.6198C8.13307 10.6485 8.0671 10.6644 7.99996 10.6667Z" fill="black" />
+                                </svg>
+                            </span>
+                        </button>
+                        <ul id="languageMenu" class="cultureModal-dropdown-menu">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cultureModal-footer">
+                <button id="cultureModal-continue">Continue</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.cultures = {"English":[{"country":"United States","url":"/pagenotfound/"}],"French":[{"country":"United States","url":"/fr-fr/pagenotfound/"}],"German":[{"country":"United States","url":"/de-de/pagenotfound/"}],"Italian":[{"country":"United States","url":"/it-it/pagenotfound/"}],"Portuguese":[{"country":"United States","url":"/pt-pt/pagenotfound/"}],"Russian":[{"country":"United States","url":"/ru-ru/pagenotfound/"}],"Spanish":[{"country":"United States","url":"/es-es/pagenotfound/"}]};
+    </script>
+
+                        </div>
+                    </div>
+
+                    <div class="header-utility__bottom" id="mobile-header-utility">
+							<a href="https://account.ninjatrader.com/welcome?locale=en" class="mobile-login">Log In</a>
+
+                            <a href="https://account.ninjatrader.com/register?locale=en" class="mobile-account__cta">Open account</a>
+                    </div>
+
+                </div>
+        </div>
+    </div>
+</header>
+
+
+        <main id="site-main" class="site-main" role="main">
+            
+
+
+<div class="interior-top">
+    <div class="standard-banner">
+        <div class="standard-banner__static">
+
+            <div class="container">
+                <div class="standard-banner__content">
+
+                    <h1 class="standard-banner__title">Page Not Found</h1>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+<div>
+    
+
+<div class="section-container section-container--white section-container section-container">
+   
+    
+
+
+    
+    
+    
+    <div class="container container">
+        <div class="row">
+            <div class="col-md-6">
+                
+
+
+
+
+
+
+
+    <div class="fr-view">
+        <p id="isPasted">This page may not be available in your selected language. Please use the language selector in the upper right hand corner &amp; select "English" to access the page.</p><p>Additionally, you can use the site menu or choose from the links below to enter the site.</p><ul><li id="isPasted"><a href="/" title="">Home</a></li><li id="isPasted"><a href="https://account.ninjatrader.com/register" rel="noopener noreferrer" target="_blank" title="">Get Started with UNLIMITED FREE USE!</a></li><li><a href="/Platform" title="">Ready for Live Trading?</a></li><li><a href="/Futures" title="">Trade Futures for Less</a></li><li><a href="/Support" title="">Have Questions? Contact Support</a></li></ul>
+    </div>
+
+
+    
+
+
+            </div>
+            <div class="col-md-6">
+                
+
+
+
+
+
+
+
+    <div class="fr-view">
+        <p><img src="/getmedia/768ea6ca-4fcd-4dd3-a64e-535f9b918ba0/desktop.png" alt="Desktop Platform" style="width: 500px" class="fr-fic fr-dib"></p>
+    </div>
+
+
+    
+
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+</div>
+    
+
+</div>
+
+        </main>
+        
+
+<footer id="site-footer" class="site-footer " role="contentinfo">
+
+    <div class="container ">
+            <div class="footer-top">
+                
+
+<ul class="footer__nav">
+        <li class="footer__nav-box" data-expander data-expander-css>
+         
+                 <button
+            type="button"
+            data-expander-toggle
+            role="button"
+            aria-expanded="true"
+            class="footer__nav-button"
+          >
+                <h2 class="footer__nav-heading">   Futures  </h2>
+                    <div class="footer__status-icon">
+                        <svg class="footer__status-icon--plus">
+                            <use xlink:href="/assets/src/images/svg-legend.svg#plus2" />
+                        </svg>
+                        <svg class="footer__status-icon--minus">
+                            <use xlink:href="/assets/src/images/svg-legend.svg#minus2" />
+                        </svg>
+                    </div>
+
+                </button>
+
+
+<ul data-expander-target>
+        <li>
+         
+                <a href="/futures/" target="_self" class="footer__nav-item small">
+               
+                        <span>Overview</span>
+                </a>
+           
+        </li>
+        <li>
+         
+                <a href="/futures/why-trade-futures/" target="_self" class="footer__nav-item small">
+               
+                        <span>Why Trade Futures?</span>
+                </a>
+           
+        </li>
+        <li>
+         
+                <a href="/futures/futures-contracts/" target="_self" class="footer__nav-item small">
+               
+                        <span>Futures Contracts</span>
+                </a>
+           
+        </li>
+        <li>
+         
+                <a href="/futures/futures-contracts/index/e-mini-s-p-500/" target="_self" class="footer__nav-item small">
+               
+                        <span>E-mini S&amp;P Futures</span>
+                </a>
+           
+        </li>
+        <li>
+         
+                <a href="/futures/futures-contracts/micro-emini-futures/" target="_self" class="footer__nav-item small">
+               
+                        <span>Micro E-Mini Futures</span>
+                </a>
+           
+        </li>
+        <li>
+         
+                <a href="/futures/learn/futures-trading-basics/" target="_self" class="footer__nav-item small">
+               
+                        <span>Futures Basics</span>
+                </a>
+           
+        </li>
+        <li>
+         
+                <a href="/futures/blogs/" target="_self" class="footer__nav-item small">
+               
+                        <span>Blog</span>
+                </a>
+           
+        </li>
+</ul>        </li>
+        <li class="footer__nav-box" data-expander data-expander-css>
+         
+                 <button
+            type="button"
+            data-expander-toggle
+            role="button"
+            aria-expanded="true"
+            class="footer__nav-button"
+          >
+                <h2 class="footer__nav-heading">   Learn  </h2>
+                    <div class="footer__status-icon">
+                        <svg class="footer__status-icon--plus">
+                            <use xlink:href="/assets/src/images/svg-legend.svg#plus2" />
+                        </svg>
+                        <svg class="footer__status-icon--minus">
+                            <use xlink:href="/assets/src/images/svg-legend.svg#minus2" />
+                        </svg>
+                    </div>
+
+                </button>
+
+
+<ul data-expander-target>
+        <li>
+         
+                <a href="/learn/" target="_self" class="footer__nav-item small">
+               
+                        <span>Overview</span>
+                </a>
+           
+        </li>
+        <li>
+         
+                <a href="/futures/livestreams/" target="_self" class="footer__nav-item small">
+               
+                        <span>Daily Livestreams</span>
+                </a>
+           
+        </li>
+        <li>
+         
+                <a href="/learn/platform-training/" target="_self" class="footer__nav-item small">
+               
+                        <span>Platform Training</span>
+                </a>
+           
+        </li>
+        <li>
+         
+                <a href="/learn/how-to-trade-futures/" target="_self" class="footer__nav-item small">
+               
+                        <span>How to Trade Futures</span>
+                </a>
+           
+        </li>
+        <li>
+         
+                <a href="/learn/how-to-trade-futures/place-a-futures-order/" target="_self" class="footer__nav-item small">
+               
+                        <span>Futures Order Types</span>
+                </a>
+           
+        </li>
+        <li>
+         
+                <a href="/learn/how-to-trade-futures/place-a-futures-order/" target="_self" class="footer__nav-item small">
+               
+                        <span>Place a Futures Order</span>
+                </a>
+           
+        </li>
+        <li>
+         
+                <a href="/learn/how-to-trade-futures/using-margin/" target="_self" class="footer__nav-item small">
+               
+                        <span>Margin in Futures</span>
+                </a>
+           
+        </li>
+        <li>
+         
+                <a href="/learn/technical-analysis/" target="_self" class="footer__nav-item small">
+               
+                        <span>Technical Analysis</span>
+                </a>
+           
+        </li>
+</ul>        </li>
+        <li class="footer__nav-box" data-expander data-expander-css>
+         
+                 <button
+            type="button"
+            data-expander-toggle
+            role="button"
+            aria-expanded="true"
+            class="footer__nav-button"
+          >
+                <h2 class="footer__nav-heading">   Platform  </h2>
+                    <div class="footer__status-icon">
+                        <svg class="footer__status-icon--plus">
+                            <use xlink:href="/assets/src/images/svg-legend.svg#plus2" />
+                        </svg>
+                        <svg class="footer__status-icon--minus">
+                            <use xlink:href="/assets/src/images/svg-legend.svg#minus2" />
+                        </svg>
+                    </div>
+
+                </button>
+
+
+<ul data-expander-target>
+        <li>
+         
+                <a href="/platform/" target="_self" class="footer__nav-item small">
+               
+                        <span>Overview</span>
+                </a>
+           
+        </li>
+        <li>
+         
+                <a href="/platform/charting/" target="_self" class="footer__nav-item small">
+               
+                        <span>Charting</span>
+                </a>
+           
+        </li>
+        <li>
+         
+                <a href="/platform/simulation/" target="_self" class="footer__nav-item small">
+               
+                        <span>Simulation</span>
+                </a>
+           
+        </li>
+        <li>
+         
+                <a href="/platform/mobile-trading/" target="_self" class="footer__nav-item small">
+               
+                        <span>Mobile Apps</span>
+                </a>
+           
+        </li>
+        <li>
+         
+                <a href="https://prop.ninjatrader.com" target="_self" class="footer__nav-item small">
+               
+                        <span>NinjaTrader Prop</span>
+                </a>
+           
+        </li>
+</ul>        </li>
+        <li class="footer__nav-box" data-expander data-expander-css>
+         
+                 <button
+            type="button"
+            data-expander-toggle
+            role="button"
+            aria-expanded="true"
+            class="footer__nav-button"
+          >
+                <h2 class="footer__nav-heading">   Pricing  </h2>
+                    <div class="footer__status-icon">
+                        <svg class="footer__status-icon--plus">
+                            <use xlink:href="/assets/src/images/svg-legend.svg#plus2" />
+                        </svg>
+                        <svg class="footer__status-icon--minus">
+                            <use xlink:href="/assets/src/images/svg-legend.svg#minus2" />
+                        </svg>
+                    </div>
+
+                </button>
+
+
+<ul data-expander-target>
+        <li>
+         
+                <a href="/pricing/" target="_self" class="footer__nav-item small">
+               
+                        <span>Overview</span>
+                </a>
+           
+        </li>
+        <li>
+         
+                <a href="/pricing/margins-position-management/" target="_self" class="footer__nav-item small">
+               
+                        <span>Margins</span>
+                </a>
+           
+        </li>
+</ul>        </li>
+        <li class="footer__nav-box" data-expander data-expander-css>
+         
+                 <button
+            type="button"
+            data-expander-toggle
+            role="button"
+            aria-expanded="true"
+            class="footer__nav-button"
+          >
+                <h2 class="footer__nav-heading">   Support  </h2>
+                    <div class="footer__status-icon">
+                        <svg class="footer__status-icon--plus">
+                            <use xlink:href="/assets/src/images/svg-legend.svg#plus2" />
+                        </svg>
+                        <svg class="footer__status-icon--minus">
+                            <use xlink:href="/assets/src/images/svg-legend.svg#minus2" />
+                        </svg>
+                    </div>
+
+                </button>
+
+
+<ul data-expander-target>
+        <li>
+         
+                <a href="/support/" target="_self" class="footer__nav-item small">
+               
+                        <span>Overview</span>
+                </a>
+           
+        </li>
+        <li>
+         
+                <a href="https://support.ninjatrader.com/" target="_blank" class="footer__nav-item small">
+               
+                        <span>Contact Support</span>
+                </a>
+           
+        </li>
+        <li>
+         
+                <a href="https://discourse.ninjatrader.com/" target="_self" class="footer__nav-item small">
+               
+                        <span>Support Forum</span>
+                </a>
+           
+        </li>
+</ul>        </li>
+        <li class="footer__nav-box" data-expander data-expander-css>
+         
+                 <button
+            type="button"
+            data-expander-toggle
+            role="button"
+            aria-expanded="true"
+            class="footer__nav-button"
+          >
+                <h2 class="footer__nav-heading">   About us  </h2>
+                    <div class="footer__status-icon">
+                        <svg class="footer__status-icon--plus">
+                            <use xlink:href="/assets/src/images/svg-legend.svg#plus2" />
+                        </svg>
+                        <svg class="footer__status-icon--minus">
+                            <use xlink:href="/assets/src/images/svg-legend.svg#minus2" />
+                        </svg>
+                    </div>
+
+                </button>
+
+
+<ul data-expander-target>
+        <li>
+         
+                <a href="/news/" target="_self" class="footer__nav-item small">
+               
+                        <span>Newsroom</span>
+                </a>
+           
+        </li>
+        <li>
+         
+                <a href="/careers/" target="_self" class="footer__nav-item small">
+               
+                        <span>Careers</span>
+                </a>
+           
+        </li>
+        <li>
+         
+                <a href="/homepage/contact-us/" target="_self" class="footer__nav-item small">
+               
+                        <span>Contact Us</span>
+                </a>
+           
+        </li>
+</ul>        </li>
+</ul>
+                <div class="footer-contact">
+                    <h2 class="footer-contact__title">Connect with us</h2>
+                    <div class="footer-contact__phone">
+<p class="footer-contact__phone-title">Support:</p>
+<a href="tel:+1-800-496-1683" target="_blank">800-496-1683</a><br />
+<a href="http://account.ninjatrader.com/support" target="_blank">Open a support request here</a></div>
+
+<div class="footer-contact__phone">
+<p class="footer-contact__phone-title">Trade Desk:</p>
+<a class="footer-contact__phone-number" href="tel:+1-312-423-2234" target="_blank">312-423-2234</a></div>
+
+<p>Follow Us on Social</p>
+
+                    
+
+<ul class="footer-socials">
+        <li class="footer-socials__item">
+                <a class="footer-socials__link" href="https://twitter.com/NinjaTrader" target="_blank">
+                    <svg class="social-list__icon" aria-hidden="true" focusable="false"><use xlink:href='/assets/dist/images/svg-legend.svg#icon-twitter'></use></svg> 
+                    <span class="visually-hidden">X</span>
+            </a>
+        </li>
+        <li class="footer-socials__item">
+                <a class="footer-socials__link" href="https://www.facebook.com/NinjaTraderGroup/" target="_blank">
+                    <svg class="social-list__icon" aria-hidden="true" focusable="false"><use xlink:href='/assets/dist/images/svg-legend.svg#icon-facebook'></use></svg> 
+                    <span class="visually-hidden">Facebook</span>
+            </a>
+        </li>
+        <li class="footer-socials__item">
+                <a class="footer-socials__link" href="https://www.youtube.com/user/NinjaTraderLLC" target="_blank">
+                    <svg class="social-list__icon" aria-hidden="true" focusable="false"><use xlink:href='/assets/dist/images/svg-legend.svg#icon-youtube'></use></svg> 
+                    <span class="visually-hidden">Youtube</span>
+            </a>
+        </li>
+        <li class="footer-socials__item">
+                <a class="footer-socials__link" href="https://www.linkedin.com/company/ninjatrader-group-llc" target="_blank">
+                    <svg class="social-list__icon" aria-hidden="true" focusable="false"><use xlink:href='/assets/dist/images/svg-legend.svg#icon-linkedin'></use></svg> 
+                    <span class="visually-hidden">LinkedIn</span>
+            </a>
+        </li>
+        <li class="footer-socials__item">
+                <a class="footer-socials__link" href="https://www.instagram.com/ninjatrader/?hl=en" target="_blank">
+                    <svg class="social-list__icon" aria-hidden="true" focusable="false"><use xlink:href='/assets/dist/images/svg-legend.svg#icon-instagram'></use></svg> 
+                    <span class="visually-hidden">Instagram</span>
+            </a>
+        </li>
+</ul>
+                        <div class="footer-contact__seal">
+                            <iframe border="0" frameborder="0" scrolling="no" src="https://seal-chicago.bbb.org/frame/black-seal-293-61-whitetxt-bbb-88648744.png?chk=DC16977C8E" style="border: 0; height:61px; width:293px;"></iframe>
+                        </div>
+                </div>
+            </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <p data-local-id="082cdba1-380f-409c-9621-85aeb5b2f6c4" data-renderer-start-pos="4970"><a href="/customer-funds/"><strong data-renderer-mark="true">Disclosures</strong></a> | <a href="/privacy-policy-clearing/"><strong data-renderer-mark="true">Privacy Policy</strong></a> | <a href="/privacy-policy-eu/"><strong data-renderer-mark="true">GDPR</strong></a> | <a href="/sitemap/"><strong data-renderer-mark="true">Sitemap</strong></a><br />
+<br />
+&copy; 2026 NinjaTrader Group, LLC. All rights reserved.<br />
+<br />
+NinjaTrader is a group of affiliated companies operating under NinjaTrader Group, LLC (&ldquo;NTG&rdquo;), including NinjaTrader, LLC (&ldquo;NT&rdquo;) and NinjaTrader Clearing, LLC d/b/a NinjaTrader, Kraken Derivatives US, and Tradovate (&ldquo;NTC&rdquo;). NT owns and supports the proprietary NinjaTrader trading platform as a software development company, while NTC provides brokerage services. <a href="/customer-funds/"><strong data-renderer-mark="true">View Disclosures</strong>.</a><br />
+<br />
+NTC is registered with the Commodity Futures Trading Commission (&ldquo;CFTC&rdquo;) as a futures commission merchant (&ldquo;FCM&rdquo;) and is a National Futures Association (&ldquo;NFA&rdquo;) Member (NFA ID: 0309379). Questions related to brokerage accounts should be directed to your broker.<br />
+<br />
+Futures, options, foreign currency, digital asset, and event contract trading involves substantial risk and is not suitable for everyone. An investor may lose all or more than the initial investment. Trading should be undertaken only with risk capital&mdash;funds that can be lost without jeopardizing one&rsquo;s financial security or lifestyle&mdash;and only by those who can afford such losses. Past performance is not necessarily indicative of future results. Prior to trading digital assets, review the CFTC and NFA advisories for additional information regarding the significant risks involved. <a href="/risk/"><strong data-renderer-mark="true">View Risk Disclosure Statement</strong>.</a><br />
+<br />
+This website is provided by NinjaTrader on an &ldquo;as-is&rdquo; basis for informational purposes only and does not constitute investment advice, a recommendation, or an offer or solicitation to buy, sell, or hold any commodity interest or financial product or engage in any investment strategy. Content may include statements or opinions of NTG and its affiliates or third-party information; no representation or warranty, express or implied, is made as to the accuracy or completeness of the information herein. NinjaTrader disclaims all liability arising from use of or reliance on such information.</p>
+
+            </div>
+        </div>
+    </div>
+
+
+        <svg aria-hidden="true" focusable="false" class="footer__dots--mobile">
+            <use xlink:href="/assets/dist/images/svg-legend.svg#footer-dots-mobile"></use>
+        </svg>
+        <svg aria-hidden="true" focusable="false" class="footer__dots--desktop" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1920" height="355" viewBox="0 0 1920 355" fill="none">
+            <mask id="mask0_3761_441" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="355">
+                <path d="M5.5043 109.421V0H31.0242V42.5802H64.05V74.2678H99.0774V42.5802H134.105V74.2678H168.632V109.421H99.0774V146.06H202.658V183.194H73.0571V213.891H238.686V288.159H345.27V251.025H416.325V187.65H519.906V109.421H555.434V146.06H589.461V245.579H728.069V288.159H944.238V251.025H981.267V217.852H1046.82V181.709H1155.4V146.06H1256.48V213.891H1364.57V74.2678H1501.67V109.421H1610.76V213.891H1640.28V280.237H1678.31V181.709H1749.87V109.421H1786.4V181.709H1859.45V109.421H1892.48V42.5802H1920V355H1501.67V280.237H1466.15V217.852H1434.12V288.159H1400.09V355H1155.4V319.847H1046.82V355H0V174.282H34.0266V109.421H5.5043Z" fill="#D9D9D9" />
+            </mask>
+            <g mask="url(#mask0_3761_441)">
+                <mask id="mask1_3761_441" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="13" y="22" width="1893" height="319">
+                    <rect x="13" y="22.5" width="1893" height="318" fill="url(#pattern0)" />
+                </mask>
+                <g mask="url(#mask1_3761_441)">
+                    <rect x="13" y="22.5" width="1893" height="318" fill="#FF4200" />
+                </g>
+            </g>
+            <defs>
+                <pattern id="pattern0" patternContentUnits="objectBoundingBox" width="0.0369783" height="0.220126">
+                    <use xlink:href="#image0_3761_441" transform="scale(0.000528262 0.00314465)" />
+                </pattern>
+                <image id="image0_3761_441" width="70" height="70" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEYAAABGCAYAAABxLuKEAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAABJSURBVHgB7dqxDQAhEANB35f2hdMaJIQQg8RMBZbjrf6nZ6qWykE3bfnCkmMAAAAAAAAAAOBBJTVbU1RtOAYAAAAAAAAAAB40AKZdDAtpztX9AAAAAElFTkSuQmCC" />
+            </defs>
+        </svg>
+
+</footer>
+
+
+
+    </div>
+    
+    
+
+        
+
+        
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5H2422D"
+                height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+        
+
+
+    <script src="/_content/Kentico.Content.Web.Rcl/Scripts/jquery-3.5.1.js"></script>
+<script src="/_content/Kentico.Content.Web.Rcl/Scripts/jquery.unobtrusive-ajax.js"></script>
+<script type="text/javascript">
+window.kentico = window.kentico || {};
+window.kentico.builder = {}; 
+window.kentico.builder.useJQuery = true;</script><script src="/_content/Kentico.Content.Web.Rcl/Content/Bundles/Public/systemFormComponents.min.js"></script>
+
+    
+<script>
+    let closeIcon = 'x-cross'
+    let speedbumpUrl = function (url, target, triggerClass) {
+        $('.' + triggerClass).modaal({
+            type: 'confirm',
+            start_open: true,
+            confirm_button_text: 'Continue',
+            confirm_cancel_button_text: `
+                        <svg aria-hidden="true" focusable="false">
+                            <use xlink:href="/assets/dist/images/svg-legend.svg#${closeIcon}"></use>
+                        </svg>`,
+            confirm_title: 'Attention!',
+            confirm_content: 'You are now leaving a NinjaTrader website and will be redirected to a third-party site. Neither NinjaTrader nor its affiliated entities has endorsed or recommended for use any product, service, or statement offered or presented on the site you are about to visit. Third-party vendors and their websites, products, and services are independent and not affiliated with NinjaTrader or its affiliated entities.<br /><br />By clicking the button below, I confirm to have read and understood the statement above.',
+            confirm_callback: function () {
+                // Always open in new tab
+                window.open(url);
+
+                /*
+                if (target == '_blank') {
+                    window.open(url);
+                } else {
+                    window.location.href = url;
+                }*/
+            },
+            confirm_cancel_callback: function () {
+                $('.' + triggerClass).modaal('close');
+            }
+        });
+    }
+
+    const blacklistedDomains = JSON.parse('["ninjatraderecosystem.com","youtube.com","anthonycrudele.com","daytradetowin.com","thelabtrading.com","livestreamtrading.com","moneylinetradingco.com","thepaxgroup.org","stratalerts.ai","x.com","vipertradingsystems.com","crowdedmarketsreport.com","idta.com.au","jtrader.co","microefutures.wordpress.com","crowdedmarketreport.com","try.takeprofittrader.com","alpha-futures.com","blusky.pro","emergeprofit.com","elitetraderfunding.com","fundedfuturesfamily.com","checkout.fundingfutures.com","app.fundingticks.com","tradefundrr.com","fxifyfutures.com","ninjatrader.thelegendstrading.com","lifeuptrading.com","myfundedfutures.com","purdia.com","client-area.thetradingpit.com","tickticktrader.com","tradeday.com","fundingtrading.com","tradeify.co","apextraderfunding.com","fundednext.com","goatfundedfutures.com","thelegendstrading.com","lucidtrading.com","takeprofittrader.com","fundingfutures.com","thetradingpit.com","app.fxifyfutures.com","facebook.com","x.com","linkedin.com","instagram.com"]');
+    const anchorTags = document.getElementsByTagName('a');
+    var count = 0;
+
+    for (const element of anchorTags) {
+        const domain = element.host.replace('www.', '').toLowerCase();
+
+        if ((blacklistedDomains.includes(domain) || element.classList.contains('js-globalspeedbump')) && !element.classList.contains('js-noglobalspeedbump')) {
+            var triggerClass = 'speedbump-trigger-' + count;
+
+            element.classList.add(triggerClass);
+            element.href = 'javascript: speedbumpUrl("' + element.href + '","' + element.target + '","' + triggerClass + '");';
+            element.target = '_self';
+            count++;
+        }
+    }
+</script>
+
+    <script src="/assets/dist/js/all.min.js?v=sXE0-SPGp_Nwvi3nE1MRKW5k8uJH1QSHLzs4SSvv3kU"></script>
+
+     
+    
+</body>
+</html>

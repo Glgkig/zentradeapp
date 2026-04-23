@@ -37,8 +37,9 @@ const SettingsPage = () => {
     <div className="mx-auto max-w-[1100px]">
       {/* Header */}
       <div className="flex items-center gap-3 mb-5">
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 border border-primary/15">
-          <Settings2 className="h-5 w-5 text-primary" />
+        <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 shadow-[0_0_16px_rgba(0,212,170,0.12)]">
+          <div className="absolute inset-[-3px] rounded-2xl bg-primary/5 blur-md" />
+          <Settings2 className="relative h-5 w-5 text-primary drop-shadow-[0_0_6px_rgba(0,212,170,0.5)]" />
         </div>
         <div>
           <h1 className="font-heading text-lg md:text-xl font-bold text-foreground">מרכז שליטה</h1>
@@ -51,23 +52,27 @@ const SettingsPage = () => {
       <div className="flex flex-col md:flex-row gap-3 md:gap-4">
         {/* Sidebar Tabs */}
         <div className="md:w-[210px] shrink-0">
-          <div className="flex md:flex-col rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-md p-1.5 md:p-2 gap-0.5 overflow-x-auto scrollbar-none">
+          <div className="flex md:flex-col rounded-2xl border border-white/[0.06] bg-[#0a0a0f]/60 backdrop-blur-md p-1.5 md:p-2 gap-0.5 overflow-x-auto scrollbar-none">
             {tabs.map((tab) => {
               const active = activeTab === tab.id;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`haptic-press flex items-center gap-2 md:gap-2.5 rounded-xl px-2.5 md:px-3 py-2 md:py-2.5 text-[11px] md:text-[12px] font-medium transition-all duration-200 whitespace-nowrap md:w-full ${
+                  className={`haptic-press relative flex items-center gap-2 md:gap-2.5 rounded-xl px-3 md:px-3 py-2.5 md:py-2.5 min-h-[44px] text-[11px] md:text-[12px] font-medium transition-all duration-200 whitespace-nowrap md:w-full overflow-hidden ${
                     active
-                      ? "bg-primary/10 text-primary border border-primary/12"
+                      ? "bg-gradient-to-l from-primary/15 to-primary/5 text-primary border border-primary/15 shadow-[inset_0_1px_0_rgba(0,212,170,0.08)]"
                       : "text-foreground/40 hover:bg-white/[0.04] hover:text-foreground/70 border border-transparent"
                   }`}
                 >
-                  <div className={`flex h-6 w-6 md:h-7 md:w-7 items-center justify-center rounded-lg transition-colors ${
-                    active ? "bg-primary/15" : "bg-white/[0.04]"
+                  {/* Active left indicator bar */}
+                  {active && (
+                    <span className="absolute right-0 top-1/2 -translate-y-1/2 w-[3px] h-[65%] rounded-l-full bg-primary shadow-[0_0_8px_rgba(0,212,170,0.8)]" />
+                  )}
+                  <div className={`flex h-6 w-6 md:h-7 md:w-7 items-center justify-center rounded-lg transition-all ${
+                    active ? "bg-primary/20 shadow-[0_0_10px_rgba(0,212,170,0.2)]" : "bg-white/[0.04]"
                   }`}>
-                    <tab.icon className={`h-3.5 w-3.5 ${active ? "text-primary" : "text-foreground/30"}`} />
+                    <tab.icon className={`h-3.5 w-3.5 transition-all ${active ? "text-primary drop-shadow-[0_0_4px_rgba(0,212,170,0.6)]" : "text-foreground/30"}`} />
                   </div>
                   <span className="flex-1 text-right hidden md:inline">{tab.label}</span>
                   <span className="md:hidden">{tab.label}</span>
@@ -78,14 +83,16 @@ const SettingsPage = () => {
           </div>
 
           {/* Quick Info Card */}
-          <div className="hidden md:block mt-3 rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-md p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
-                <Zap className="h-3.5 w-3.5 text-accent" />
+          <div className="hidden md:block mt-3 rounded-2xl border border-accent/15 bg-gradient-to-br from-accent/[0.06] to-transparent backdrop-blur-md p-4 overflow-hidden relative">
+            <div className="h-[2px] w-full bg-gradient-to-l from-transparent via-accent/50 to-transparent absolute top-0 left-0" />
+            <div className="absolute top-0 right-0 w-24 h-16 bg-accent/[0.06] rounded-full blur-[30px] pointer-events-none" />
+            <div className="flex items-center gap-2 mb-3 relative">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/15 shadow-[0_0_12px_rgba(245,158,11,0.2)]">
+                <Zap className="h-3.5 w-3.5 text-accent drop-shadow-[0_0_4px_rgba(245,158,11,0.6)]" />
               </div>
               <div>
                 <p className="text-[11px] font-semibold text-foreground">ZenTrade Pro</p>
-                <p className="text-[8px] text-foreground/30">כל הפיצ׳רים פתוחים</p>
+                <p className="text-[8px] text-accent/40 font-mono">כל הפיצ׳רים פתוחים</p>
               </div>
             </div>
             <div className="space-y-1.5">

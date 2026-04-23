@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useDemo } from "@/contexts/DemoContext";
+import { MOCK_TRADES } from "@/data/mockTrades";
 import type { Database } from "@/integrations/supabase/types";
 
 type Trade = Database["public"]["Tables"]["trades"]["Row"];
@@ -9,10 +11,17 @@ type TradeUpdate = Database["public"]["Tables"]["trades"]["Update"];
 
 export const useTrades = (filters?: { status?: string; symbol?: string }) => {
   const { user } = useAuth();
+  const { isDemoMode } = useDemo();
 
   return useQuery({
-    queryKey: ["trades", user?.id, filters],
+    queryKey: ["trades", isDemoMode ? "demo" : user?.id, filters],
     queryFn: async () => {
+      if (isDemoMode) {
+        let data = [...MOCK_TRADES];
+        if (filters?.status) data = data.filter(t => t.status === filters.status);
+        if (filters?.symbol) data = data.filter(t => t.symbol === filters.symbol);
+        return data;
+      }
       if (!user?.id) return [];
       let query = supabase
         .from("trades")
@@ -27,7 +36,7 @@ export const useTrades = (filters?: { status?: string; symbol?: string }) => {
       if (error) throw error;
       return data as Trade[];
     },
-    enabled: !!user?.id,
+    enabled: isDemoMode || !!user?.id,
   });
 };
 

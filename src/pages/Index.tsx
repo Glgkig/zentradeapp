@@ -1,16 +1,15 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import AuthPage from "./AuthPage";
+import LandingPage from "./LandingPage";
 
 const Index = () => {
   const { session, loading } = useAuth();
 
-  // Redirect to dashboard if already logged in
   if (!loading && session) {
     return <Navigate to="/dashboard" replace />;
   }
 
-  return <AuthPage />;
+  return <LandingPage />;
 };
 
 export default Index;
