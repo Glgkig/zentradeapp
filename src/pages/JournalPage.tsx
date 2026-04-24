@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import {
   ArrowUpRight, ArrowDownRight, X, Search,
   DollarSign, Target, Brain, Zap,
@@ -272,20 +272,35 @@ const GlassTextArea = ({
   </div>
 );
 
-/* ── Trade Room (detail drawer) ── */
+/* ── Trade Room — Side Drawer ── */
 const TradeRoom = ({ trade, onClose, onSaved }: { trade: any; onClose: () => void; onSaved: () => void }) => {
   const isWin = (trade.pnl ?? 0) >= 0;
   const isOpen = trade.status === "open";
   const updateTrade = useUpdateTrade();
+  const [visible, setVisible] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const [outcome, setOutcome] = useState(trade.notes || "");
   const [audit, setAudit] = useState(trade.psychology_notes || "");
   const [fix, setFix] = useState(trade.tags?.find((t: string) => t.startsWith("fix:"))?.replace("fix:", "") || "");
   const [saving, setSaving] = useState(false);
 
+  // Animate in on mount
+  useEffect(() => {
+    const t = requestAnimationFrame(() => setVisible(true));
+    return () => cancelAnimationFrame(t);
+  }, []);
+
+  const handleClose = () => {
+    setVisible(false);
+    setTimeout(onClose, 320);
+  };
+
   const rrRatio = trade.entry_price && trade.stop_loss && trade.take_profit
     ? Math.abs((trade.take_profit - trade.entry_price) / (trade.entry_price - trade.stop_loss)).toFixed(1)
     : null;
+
+  const pnlColor = isOpen ? "#60a5fa" : isWin ? "#22c55e" : "#ef4444";
 
   const handleSave = async () => {
     setSaving(true);
@@ -306,177 +321,171 @@ const TradeRoom = ({ trade, onClose, onSaved }: { trade: any; onClose: () => voi
   };
 
   return (
-    <div className="fixed inset-0 z-[80] overflow-y-auto" dir="rtl">
-      <div className="fixed inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} />
-      <div className="relative z-10 min-h-screen p-3 md:p-6 max-w-4xl mx-auto">
+    <div className="fixed inset-0 z-[80]" dir="rtl">
+      {/* Backdrop — dims but doesn't block the page */}
+      <div
+        className="absolute inset-0 transition-opacity duration-300"
+        style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)", opacity: visible ? 1 : 0 }}
+        onClick={handleClose}
+      />
 
-        {/* Header */}
-        <div className="flex items-center justify-between mb-5 pt-2 gap-2">
-          <div className="flex items-center gap-3 min-w-0">
-            <button onClick={onClose}
-              className="haptic-press flex h-9 w-9 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.04] text-muted-foreground hover:text-foreground transition-all shrink-0">
-              <X className="h-4 w-4" />
-            </button>
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xl font-black text-foreground font-mono">{trade.symbol}</span>
-                <span className={cn(
-                  "rounded-full px-2.5 py-0.5 text-[10px] font-bold border",
-                  isOpen ? "bg-primary/10 border-primary/25 text-primary" :
-                  isWin ? "bg-profit/10 border-profit/25 text-profit" : "bg-loss/10 border-loss/25 text-loss"
-                )}>
-                  {isOpen ? "פתוח" : isWin ? "WIN ✓" : "LOSS ✗"}
-                </span>
+      {/* Drawer panel — slides in from right */}
+      <div
+        ref={scrollRef}
+        className="absolute top-0 right-0 h-full overflow-y-auto"
+        style={{
+          width: "min(520px, 100vw)",
+          background: "rgba(8,8,14,0.97)",
+          borderLeft: "1px solid rgba(255,255,255,0.07)",
+          boxShadow: "-24px 0 80px rgba(0,0,0,0.6)",
+          transform: visible ? "translateX(0)" : "translateX(100%)",
+          transition: "transform 0.32s cubic-bezier(0.32, 0.72, 0, 1)",
+        }}
+      >
+        {/* Colored top strip */}
+        <div className="sticky top-0 z-10" style={{ background: "rgba(8,8,14,0.97)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+          {/* accent line */}
+          <div className="h-[2px] w-full" style={{ background: `linear-gradient(to left, transparent, ${pnlColor}70, transparent)` }} />
+
+          {/* Header */}
+          <div className="flex items-center justify-between px-5 py-4 gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              {/* direction icon */}
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl"
+                style={{ background: pnlColor + "18", border: `1px solid ${pnlColor}35` }}>
+                {trade.direction === "long"
+                  ? <ArrowUpRight className="h-5 w-5" style={{ color: pnlColor }} />
+                  : <ArrowDownRight className="h-5 w-5" style={{ color: pnlColor }} />}
               </div>
-              <p className="text-[11px] text-muted-foreground/40 font-mono truncate">{fmtDate(trade.entry_time)}</p>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[20px] font-black font-mono text-white leading-none">{trade.symbol}</span>
+                  <span className="rounded-full px-2.5 py-0.5 text-[10px] font-bold border"
+                    style={{
+                      background: pnlColor + "15",
+                      borderColor: pnlColor + "35",
+                      color: pnlColor,
+                    }}>
+                    {isOpen ? "פתוח" : isWin ? "WIN ✓" : "LOSS ✗"}
+                  </span>
+                </div>
+                <p className="text-[11px] text-white/30 font-mono mt-0.5 truncate">{fmtDate(trade.entry_time)}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <button onClick={handleSave} disabled={saving}
+                className="haptic-press flex items-center gap-1.5 rounded-xl px-3 py-2 text-[12px] font-bold transition-all disabled:opacity-40"
+                style={{ background: pnlColor + "15", border: `1px solid ${pnlColor}30`, color: pnlColor }}>
+                {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+                <span className="hidden sm:inline">שמור</span>
+              </button>
+              <button onClick={handleClose}
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-white/40 hover:text-white/80 transition-all">
+                <X className="h-4 w-4" />
+              </button>
             </div>
           </div>
-          <button onClick={handleSave} disabled={saving}
-            className="haptic-press flex items-center gap-2 rounded-xl border border-primary/25 bg-primary/10 px-3 md:px-4 py-2 text-[12px] font-bold text-primary hover:bg-primary/20 transition-all disabled:opacity-40 shrink-0">
-            {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-            <span className="hidden sm:inline">שמור רפלקציה</span>
-            <span className="sm:hidden">שמור</span>
-          </button>
         </div>
 
-        {/* Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {/* ── Content ── */}
+        <div className="px-5 py-4 space-y-4 pb-10">
 
-          {/* Identity */}
-          <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] backdrop-blur-xl p-4 space-y-3">
-            <div className="flex items-center gap-2">
-              <Target className="h-3.5 w-3.5 text-primary/60" />
-              <span className="text-[10px] font-bold font-mono uppercase tracking-widest text-muted-foreground/40">זהות העסקה</span>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { label: "נכס", value: trade.symbol, mono: true },
-                { label: "כיוון", value: trade.direction === "long" ? "לונג ↑" : "שורט ↓", mono: false },
-                { label: "תאריך", value: fmtShortDate(trade.entry_time), mono: true },
-                { label: "שעה", value: fmtTime(trade.entry_time), mono: true },
-                { label: "טיים-פריים", value: trade.timeframe || "—", mono: true },
-                { label: "סטאפ", value: trade.setup_type || "—", mono: false },
-              ].map(item => (
-                <div key={item.label} className="rounded-xl bg-white/[0.02] border border-white/[0.04] px-3 py-2.5">
-                  <p className="text-[9px] text-muted-foreground/30 font-mono mb-1">{item.label}</p>
-                  <p className={cn("text-[12px] font-bold text-foreground/80", item.mono && "font-mono")}>{item.value}</p>
-                </div>
-              ))}
-            </div>
+          {/* Big PnL hero */}
+          <div className="rounded-2xl p-4 text-center"
+            style={{ background: pnlColor + "0d", border: `1px solid ${pnlColor}25` }}>
+            <p className="text-[9px] text-white/25 font-mono mb-1">רווח / הפסד נקי</p>
+            <p className="text-[42px] font-black font-mono leading-none" style={{ color: pnlColor }}>
+              {isOpen ? "—" : fmtPnl(trade.pnl)}
+            </p>
+            {rrRatio && (
+              <p className="text-[12px] font-mono mt-2" style={{ color: parseFloat(rrRatio) >= 2 ? "#22c55e99" : "#ef444499" }}>
+                R:R 1:{rrRatio}
+              </p>
+            )}
           </div>
 
-          {/* Financials */}
-          <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] backdrop-blur-xl p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <DollarSign className="h-3.5 w-3.5 text-accent/60" />
-              <span className="text-[10px] font-bold font-mono uppercase tracking-widest text-muted-foreground/40">פיננסים</span>
-            </div>
-            <div className={cn(
-              "rounded-2xl border p-3 mb-3 text-center",
-              isOpen ? "border-primary/20 bg-primary/[0.05]" :
-              isWin ? "border-profit/20 bg-profit/[0.05]" : "border-loss/20 bg-loss/[0.05]"
-            )}>
-              <p className="text-[9px] text-muted-foreground/40 font-mono mb-1">רווח / הפסד נקי</p>
-              <p className={cn("text-3xl font-black font-mono", isOpen ? "text-primary" : isWin ? "text-profit" : "text-loss")}>
-                {isOpen ? "—" : fmtPnl(trade.pnl)}
-              </p>
-              {rrRatio && (
-                <p className={cn("text-[11px] font-mono mt-1", parseFloat(rrRatio) >= 2 ? "text-profit/60" : "text-loss/60")}>
-                  R:R 1:{rrRatio}
-                </p>
-              )}
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { label: "כניסה", value: trade.entry_price?.toFixed(5) || "—" },
-                { label: "יציאה", value: trade.exit_price?.toFixed(5) || "—" },
-                { label: "Stop Loss", value: trade.stop_loss?.toFixed(5) || "—" },
-                { label: "Take Profit", value: trade.take_profit?.toFixed(5) || "—" },
-                { label: "לוט / כמות", value: `${trade.lot_size}` },
-                { label: "סטטוס", value: isOpen ? "פתוח" : "סגור" },
-              ].map(item => (
-                <div key={item.label} className="rounded-xl bg-white/[0.02] border border-white/[0.04] px-3 py-2">
-                  <p className="text-[9px] text-muted-foreground/30 font-mono mb-0.5">{item.label}</p>
-                  <p className="text-[11px] font-bold text-foreground/70 font-mono">{item.value}</p>
+          {/* Details grid */}
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { label: "כניסה", value: trade.entry_price?.toFixed(5) || "—" },
+              { label: "יציאה", value: trade.exit_price?.toFixed(5) || "—" },
+              { label: "לוט", value: `${trade.lot_size ?? "—"}` },
+              { label: "SL", value: trade.stop_loss?.toFixed(5) || "—" },
+              { label: "TP", value: trade.take_profit?.toFixed(5) || "—" },
+              { label: "TF", value: trade.timeframe || "—" },
+            ].map(item => (
+              <div key={item.label} className="rounded-xl bg-white/[0.025] border border-white/[0.05] px-3 py-2.5 text-right">
+                <p className="text-[9px] text-white/20 font-mono mb-1">{item.label}</p>
+                <p className="text-[11px] font-bold text-white/70 font-mono">{item.value}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Identity row */}
+          <div className="flex flex-wrap gap-2">
+            {[
+              { label: "כיוון", value: trade.direction === "long" ? "לונג ↑" : "שורט ↓" },
+              { label: "תאריך", value: fmtShortDate(trade.entry_time) },
+              { label: "שעה", value: fmtTime(trade.entry_time) },
+              ...(trade.setup_type ? [{ label: "סטאפ", value: trade.setup_type }] : []),
+            ].map(item => (
+              <div key={item.label} className="flex items-center gap-1.5 rounded-xl bg-white/[0.03] border border-white/[0.06] px-3 py-1.5">
+                <span className="text-[9px] text-white/25 font-mono">{item.label}:</span>
+                <span className="text-[11px] font-bold text-white/70">{item.value}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Rules + rating */}
+          <div className="flex flex-wrap gap-2 items-center">
+            {(trade as any).followed_rules === true && (
+              <div className="flex items-center gap-1.5 rounded-xl border border-green-500/20 bg-green-500/[0.07] px-3 py-2">
+                <CheckCircle2 className="h-3.5 w-3.5 text-green-400" />
+                <span className="text-[11px] font-bold text-green-400">כל החוקים נשמרו</span>
+              </div>
+            )}
+            {(trade as any).followed_rules === false && (
+              <div className="flex items-center gap-1.5 rounded-xl border border-red-500/20 bg-red-500/[0.06] px-3 py-2">
+                <AlertTriangle className="h-3.5 w-3.5 text-red-400" />
+                <span className="text-[11px] font-bold text-red-400">חוקים הופרו</span>
+              </div>
+            )}
+            {trade.rating && (
+              <div className="flex items-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2">
+                <div className="flex gap-0.5">
+                  {[1, 2, 3, 4, 5].map(n => (
+                    <Star key={n} className={cn("h-3.5 w-3.5", trade.rating >= n ? "fill-amber-400 text-amber-400" : "text-white/10")} />
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
           </div>
 
           {/* Chart screenshot */}
-          <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] backdrop-blur-xl p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <BarChart2 className="h-3.5 w-3.5 text-primary/60" />
-              <span className="text-[10px] font-bold font-mono uppercase tracking-widest text-muted-foreground/40">גרף הסטאפ</span>
+          {trade.screenshots?.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-[9px] text-white/20 font-mono uppercase tracking-wider flex items-center gap-2">
+                <BarChart2 className="h-3 w-3" /> גרף הסטאפ
+              </p>
+              {trade.screenshots.map((url: string, i: number) => (
+                <img key={i} src={url} alt={`גרף ${i + 1}`}
+                  className="w-full rounded-2xl border border-white/[0.06] object-cover" />
+              ))}
             </div>
-            {trade.screenshots?.length > 0 ? (
-              <div className="grid grid-cols-1 gap-2">
-                {trade.screenshots.map((url: string, i: number) => (
-                  <img key={i} src={url} alt={`גרף ${i + 1}`}
-                    className="w-full rounded-xl border border-white/[0.06] object-cover" />
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-28 rounded-xl border border-dashed border-white/[0.08] text-center">
-                <ImageIcon className="h-5 w-5 text-muted-foreground/15 mb-2" />
-                <p className="text-[11px] text-muted-foreground/25">אין צילום גרף</p>
-              </div>
-            )}
-            {trade.confirmations?.length > 0 && (
-              <div className="mt-3">
-                <p className="text-[9px] text-muted-foreground/30 font-mono mb-2">אישורים</p>
-                <div className="flex flex-wrap gap-1">
-                  {trade.confirmations.map((c: string) => (
-                    <span key={c} className="rounded-lg border border-primary/15 bg-primary/8 px-2 py-0.5 text-[10px] text-primary/70">{c}</span>
-                  ))}
-                </div>
-              </div>
-            )}
+          )}
+
+          {/* Divider */}
+          <div className="flex items-center gap-3">
+            <div className="h-[1px] flex-1 bg-white/[0.05]" />
+            <span className="text-[9px] text-white/20 font-mono uppercase tracking-widest">רפלקציה</span>
+            <div className="h-[1px] flex-1 bg-white/[0.05]" />
           </div>
 
-          {/* Rules + emotion */}
-          <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] backdrop-blur-xl p-4 space-y-3">
-            <div className="flex items-center gap-2">
-              <Shield className="h-3.5 w-3.5 text-accent/60" />
-              <span className="text-[10px] font-bold font-mono uppercase tracking-widest text-muted-foreground/40">משמעת ורגש</span>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              {(trade as any).followed_rules === true && (
-                <div className="flex items-center gap-1.5 rounded-xl border border-profit/20 bg-profit/[0.06] px-3 py-2">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-profit" />
-                  <span className="text-[11px] font-bold text-profit">כל החוקים נשמרו</span>
-                </div>
-              )}
-              {(trade as any).followed_rules === false && (
-                <div className="flex items-center gap-1.5 rounded-xl border border-loss/20 bg-loss/[0.06] px-3 py-2">
-                  <AlertTriangle className="h-3.5 w-3.5 text-loss" />
-                  <span className="text-[11px] font-bold text-loss">חוקים הופרו</span>
-                </div>
-              )}
-              {trade.psychology_notes && (
-                <div className="flex items-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2">
-                  <Brain className="h-3.5 w-3.5 text-primary/50" />
-                  <span className="text-[11px] text-foreground/60">{trade.psychology_notes}</span>
-                </div>
-              )}
-            </div>
-            {trade.rating && (
-              <div className="flex items-center gap-2">
-                <p className="text-[10px] text-muted-foreground/30 font-mono">דירוג:</p>
-                <div className="flex gap-0.5">
-                  {[1, 2, 3, 4, 5].map(n => (
-                    <Star key={n} className={cn("h-4 w-4", trade.rating >= n ? "fill-accent text-accent" : "text-muted-foreground/15")} />
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Reflection boxes */}
+          {/* Reflection areas */}
           <GlassTextArea
             label="התוצאה — למה ניצחתי / הפסדתי?"
             icon={TrendingUp}
-            placeholder="מה קרה בפועל? למה העסקה הלכה לכיוון הזה? האם הייתה הפתעה?"
+            placeholder="מה קרה בפועל? למה העסקה הלכה לכיוון הזה?"
             value={outcome}
             onChange={setOutcome}
             color={isWin ? "profit" : "loss"}
@@ -484,27 +493,24 @@ const TradeRoom = ({ trade, onClose, onSaved }: { trade: any; onClose: () => voi
           <GlassTextArea
             label="הביקורת — מה עשיתי טוב ומה לא?"
             icon={Zap}
-            placeholder="מה בוצע בצורה מושלמת? מה היה אפשר לעשות טוב יותר?"
+            placeholder="מה בוצע מושלם? מה היה אפשר לעשות טוב יותר?"
             value={audit}
             onChange={setAudit}
             color="accent"
           />
-          <div className="md:col-span-2">
-            <GlassTextArea
-              label="התיקון — מה אני עושה אחרת בסשן הבא?"
-              icon={Brain}
-              placeholder="מה השיעור הספציפי מהעסקה הזו? מה לשנות בגישה, בכניסה, ביציאה?"
-              value={fix}
-              onChange={setFix}
-              color="primary"
-            />
-          </div>
-        </div>
+          <GlassTextArea
+            label="התיקון — מה אני עושה אחרת בסשן הבא?"
+            icon={Brain}
+            placeholder="מה השיעור הספציפי? מה לשנות בגישה, בכניסה, ביציאה?"
+            value={fix}
+            onChange={setFix}
+            color="primary"
+          />
 
-        {/* Save button */}
-        <div className="mt-5 pb-8">
+          {/* Save */}
           <button onClick={handleSave} disabled={saving}
-            className="haptic-press w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-primary to-primary/70 py-4 text-[14px] font-bold text-black transition-all hover:brightness-110 disabled:opacity-40 shadow-lg shadow-primary/20">
+            className="haptic-press w-full flex items-center justify-center gap-2 rounded-2xl py-4 text-[14px] font-bold text-black transition-all hover:brightness-110 disabled:opacity-40"
+            style={{ background: `linear-gradient(to left, ${pnlColor}, ${pnlColor}bb)`, boxShadow: `0 8px 24px ${pnlColor}30` }}>
             {saving
               ? <><Loader2 className="h-5 w-5 animate-spin" /> שומר...</>
               : <><Save className="h-5 w-5" /> שמור רפלקציה</>}
