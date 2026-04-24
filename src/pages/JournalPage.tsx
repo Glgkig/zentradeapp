@@ -621,7 +621,7 @@ const JournalPage = () => {
   }, [filtered]);
 
   return (
-    <div className="flex flex-col gap-3 p-2 md:p-4 h-full" dir="rtl">
+    <div className="space-y-3 p-2 md:p-4" dir="rtl">
 
       {/* Nostro challenge tracker */}
       <NostroStatusBar trades={trades} />
@@ -686,7 +686,7 @@ const JournalPage = () => {
       </div>
 
       {/* Trade list grouped by month */}
-      <div className="flex-1 overflow-y-auto pb-6 min-h-0">
+      <div className="pb-6">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-16">
             <Loader2 className="h-8 w-8 text-blue-400/30 animate-spin mb-3" />
