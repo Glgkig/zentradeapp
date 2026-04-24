@@ -140,11 +140,13 @@ const FolderCard = ({ trade, onClick }: { trade: any; onClick: () => void }) => 
   const isWin = (trade.pnl ?? 0) >= 0;
   const isOpen = trade.status === "open";
   const hasReflection = !!(trade.notes || trade.psychology_notes);
+  const followedRules = (trade as any).followed_rules;
+  const riskOk = trade.lot_size != null && trade.stop_loss != null;
 
   const pnlColor = isOpen ? "#60a5fa" : isWin ? "#22c55e" : "#ef4444";
   const borderColor = isOpen
-    ? "rgba(96,165,250,0.18)"
-    : isWin ? "rgba(34,197,94,0.16)" : "rgba(239,68,68,0.13)";
+    ? "rgba(96,165,250,0.2)"
+    : isWin ? "rgba(34,197,94,0.18)" : "rgba(239,68,68,0.16)";
 
   const rrRatio = trade.entry_price && trade.stop_loss && trade.take_profit
     ? Math.abs((trade.take_profit - trade.entry_price) / (trade.entry_price - trade.stop_loss)).toFixed(1)
@@ -153,90 +155,162 @@ const FolderCard = ({ trade, onClick }: { trade: any; onClick: () => void }) => 
   return (
     <button
       onClick={onClick}
-      className="group relative rounded-2xl text-right transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] overflow-hidden w-full"
+      className="group relative rounded-2xl text-right transition-all duration-200 hover:scale-[1.015] active:scale-[0.98] overflow-hidden w-full"
       style={{
         border: `1px solid ${borderColor}`,
-        background: "rgba(12,12,20,0.75)",
+        background: "rgba(10,10,18,0.85)",
         backdropFilter: "blur(20px)",
       }}
     >
-      {/* Top colored accent bar */}
-      <div className="absolute top-0 inset-x-0 h-[2px] rounded-t-2xl"
-        style={{ background: `linear-gradient(to left, transparent, ${pnlColor}80, transparent)` }} />
+      {/* Left colored accent bar */}
+      <div className="absolute top-0 right-0 w-[3px] h-full rounded-r-2xl"
+        style={{ background: `linear-gradient(to bottom, ${pnlColor}90, ${pnlColor}20)` }} />
 
       {/* Hover glow */}
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl pointer-events-none"
-        style={{ background: `radial-gradient(circle at 20% 50%, ${pnlColor}09, transparent 65%)` }} />
+        style={{ background: `radial-gradient(circle at 80% 30%, ${pnlColor}08, transparent 60%)` }} />
 
-      <div className="relative p-3.5 space-y-3">
-        {/* Row 1: Symbol + direction + status */}
+      <div className="relative pr-4 pl-3.5 py-3.5 space-y-2.5">
+
+        {/* ── Row 1: Symbol + Direction + Status ── */}
         <div className="flex items-center justify-between gap-1">
           <div className="flex items-center gap-2 min-w-0">
             <div className="h-7 w-7 rounded-xl flex items-center justify-center shrink-0"
-              style={{ background: pnlColor + "18", border: `1px solid ${pnlColor}30` }}>
+              style={{ background: pnlColor + "18", border: `1px solid ${pnlColor}35` }}>
               {trade.direction === "long"
                 ? <ArrowUpRight className="h-3.5 w-3.5" style={{ color: pnlColor }} />
                 : <ArrowDownRight className="h-3.5 w-3.5" style={{ color: pnlColor }} />}
             </div>
-            <p className="text-[14px] font-black text-white font-mono leading-none truncate">{trade.symbol}</p>
+            <div className="min-w-0">
+              <p className="text-[15px] font-black text-white font-mono leading-none">{trade.symbol}</p>
+              <p className="text-[9px] text-white/25 font-mono mt-0.5">{fmtShortDate(trade.entry_time)} · {fmtTime(trade.entry_time)}</p>
+            </div>
           </div>
           {/* Status badge */}
           {isOpen ? (
             <span className="rounded-full px-2 py-0.5 text-[8px] font-bold shrink-0 animate-pulse"
-              style={{ background: "rgba(96,165,250,0.12)", border: "1px solid rgba(96,165,250,0.25)", color: "#60a5fa" }}>
-              ● פתוח
-            </span>
+              style={{ background: "rgba(96,165,250,0.12)", border: "1px solid rgba(96,165,250,0.3)", color: "#60a5fa" }}>● פתוח</span>
           ) : hasReflection ? (
             <span className="rounded-full px-2 py-0.5 text-[8px] font-bold shrink-0"
-              style={{ background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.2)", color: "#22c55e" }}>
-              ✓ יומן
-            </span>
+              style={{ background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.22)", color: "#22c55e" }}>✓ יומן</span>
           ) : (
             <span className="rounded-full px-2 py-0.5 text-[8px] font-bold shrink-0"
-              style={{ background: "rgba(251,146,60,0.1)", border: "1px solid rgba(251,146,60,0.2)", color: "#fb923c" }}>
-              ✍ ממתין
-            </span>
+              style={{ background: "rgba(251,146,60,0.1)", border: "1px solid rgba(251,146,60,0.22)", color: "#fb923c" }}>✍ ממתין</span>
           )}
         </div>
 
-        {/* Row 2: PnL large + R:R */}
-        <div className="flex items-baseline justify-between">
-          <p className="text-[22px] font-black font-mono leading-none" style={{ color: pnlColor }}>
+        {/* ── Row 2: PnL + R:R ── */}
+        <div className="flex items-center justify-between">
+          <p className="text-[24px] font-black font-mono leading-none" style={{ color: pnlColor }}>
             {isOpen ? "—" : fmtPnl(trade.pnl)}
           </p>
-          {rrRatio && !isOpen && (
-            <span className="text-[9px] font-mono font-bold rounded-lg px-1.5 py-0.5"
-              style={{
-                background: parseFloat(rrRatio) >= 2 ? "rgba(34,197,94,0.08)" : "rgba(239,68,68,0.06)",
-                color: parseFloat(rrRatio) >= 2 ? "rgba(34,197,94,0.7)" : "rgba(239,68,68,0.5)",
-                border: `1px solid ${parseFloat(rrRatio) >= 2 ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.1)"}`,
-              }}>
-              1:{rrRatio}R
+          <div className="flex items-center gap-1.5 flex-wrap justify-end">
+            {rrRatio && !isOpen && (
+              <span className="text-[9px] font-mono font-bold rounded-lg px-1.5 py-0.5"
+                style={{
+                  background: parseFloat(rrRatio) >= 2 ? "rgba(34,197,94,0.08)" : "rgba(239,68,68,0.06)",
+                  color: parseFloat(rrRatio) >= 2 ? "rgba(34,197,94,0.8)" : "rgba(239,68,68,0.6)",
+                  border: `1px solid ${parseFloat(rrRatio) >= 2 ? "rgba(34,197,94,0.18)" : "rgba(239,68,68,0.12)"}`,
+                }}>1:{rrRatio}R</span>
+            )}
+            {trade.rating && (
+              <div className="flex gap-0.5">
+                {[1, 2, 3, 4, 5].map(n => (
+                  <Star key={n} className={cn("h-2.5 w-2.5", trade.rating >= n ? "fill-amber-400 text-amber-400" : "text-white/10")} />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ── Divider ── */}
+        <div className="h-[1px] bg-white/[0.04]" />
+
+        {/* ── Row 3: Info pills ── */}
+        <div className="flex flex-wrap gap-1.5">
+          {/* Direction */}
+          <span className="text-[9px] font-bold px-2 py-1 rounded-lg"
+            style={{
+              background: trade.direction === "long" ? "rgba(96,165,250,0.08)" : "rgba(239,68,68,0.07)",
+              color: trade.direction === "long" ? "rgba(96,165,250,0.8)" : "rgba(239,68,68,0.7)",
+            }}>
+            {trade.direction === "long" ? "↑ לונג" : "↓ שורט"}
+          </span>
+          {/* Timeframe */}
+          {trade.timeframe && (
+            <span className="text-[9px] font-bold px-2 py-1 rounded-lg bg-white/[0.04] text-white/40">
+              {trade.timeframe}
+            </span>
+          )}
+          {/* Setup */}
+          {trade.setup_type && (
+            <span className="text-[9px] font-bold px-2 py-1 rounded-lg bg-white/[0.04] text-white/40 max-w-[90px] truncate">
+              {trade.setup_type}
+            </span>
+          )}
+          {/* Lot size */}
+          {trade.lot_size != null && (
+            <span className="text-[9px] font-mono font-bold px-2 py-1 rounded-lg bg-white/[0.04] text-white/35">
+              {trade.lot_size} lot
             </span>
           )}
         </div>
 
-        {/* Row 3: Date + stars/direction */}
-        <div className="flex items-center justify-between">
-          <p className="text-[9px] text-white/20 font-mono">
-            {fmtShortDate(trade.entry_time)} · {fmtTime(trade.entry_time)}
-          </p>
-          {trade.rating ? (
-            <div className="flex gap-0.5">
-              {[1, 2, 3, 4, 5].map(n => (
-                <Star key={n} className={cn("h-2.5 w-2.5", trade.rating >= n ? "fill-amber-400 text-amber-400" : "text-white/10")} />
-              ))}
+        {/* ── Row 4: Rules compliance + Risk ── */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {/* Followed rules */}
+          {followedRules === true && (
+            <div className="flex items-center gap-1 rounded-lg px-2 py-1"
+              style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.18)" }}>
+              <CheckCircle2 className="h-3 w-3 text-green-400" />
+              <span className="text-[9px] font-bold text-green-400">חוקים ✓</span>
             </div>
-          ) : (
-            <span className="text-[8px] font-mono font-bold px-1.5 py-0.5 rounded-md"
-              style={{
-                background: trade.direction === "long" ? "rgba(96,165,250,0.08)" : "rgba(239,68,68,0.07)",
-                color: trade.direction === "long" ? "rgba(96,165,250,0.6)" : "rgba(239,68,68,0.5)",
-              }}>
-              {trade.direction === "long" ? "LONG ↑" : "SHORT ↓"}
-            </span>
+          )}
+          {followedRules === false && (
+            <div className="flex items-center gap-1 rounded-lg px-2 py-1"
+              style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.18)" }}>
+              <AlertTriangle className="h-3 w-3 text-red-400" />
+              <span className="text-[9px] font-bold text-red-400">חוקים ✗</span>
+            </div>
+          )}
+          {/* Risk indicator */}
+          {riskOk && (
+            <div className="flex items-center gap-1 rounded-lg px-2 py-1"
+              style={{ background: "rgba(167,139,250,0.07)", border: "1px solid rgba(167,139,250,0.15)" }}>
+              <Shield className="h-3 w-3 text-purple-400" />
+              <span className="text-[9px] font-bold text-purple-400">סיכון מוגדר</span>
+            </div>
+          )}
+          {/* Psychology note preview */}
+          {trade.psychology_notes && (
+            <div className="flex items-center gap-1 rounded-lg px-2 py-1 min-w-0 max-w-full"
+              style={{ background: "rgba(96,165,250,0.06)", border: "1px solid rgba(96,165,250,0.12)" }}>
+              <Brain className="h-3 w-3 text-blue-400 shrink-0" />
+              <span className="text-[9px] text-blue-300/70 truncate">{trade.psychology_notes}</span>
+            </div>
           )}
         </div>
+
+        {/* ── Row 5: Reflection note preview (if exists) ── */}
+        {trade.notes && (
+          <div className="rounded-xl px-3 py-2"
+            style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)" }}>
+            <p className="text-[10px] text-white/35 leading-relaxed line-clamp-2 text-right">{trade.notes}</p>
+          </div>
+        )}
+
+        {/* ── Row (last): Entry/Exit prices ── */}
+        <div className="flex items-center justify-between text-[9px] font-mono text-white/20">
+          <span>כניסה: <span className="text-white/35">{trade.entry_price?.toFixed(4) ?? "—"}</span></span>
+          {!isOpen && <span>יציאה: <span className="text-white/35">{trade.exit_price?.toFixed(4) ?? "—"}</span></span>}
+          {isOpen && <span className="text-blue-400/50 animate-pulse">● פעיל כרגע</span>}
+        </div>
+
+        {/* Bottom: click hint */}
+        <div className="flex items-center justify-center gap-1 pt-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+          <span className="text-[9px] text-white/20">לחץ לרפלקציה מלאה ←</span>
+        </div>
+
       </div>
     </button>
   );
@@ -715,7 +789,7 @@ const JournalPage = () => {
             {grouped.map(([key, group]) => (
               <div key={key}>
                 <MonthHeader label={group.label} trades={group.trades} />
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2.5 mt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-2">
                   {group.trades.map(trade => (
                     <FolderCard key={trade.id} trade={trade} onClick={() => setSelectedTrade(trade)} />
                   ))}
