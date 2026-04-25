@@ -5,6 +5,7 @@ import {
   Image as ImageIcon, CheckCircle2, AlertTriangle, Loader2,
   Star, Shield, BarChart2, Save, TrendingUp, Building2, BookOpen,
   Smile, Wind, Flame, Crosshair, Moon, SlidersHorizontal, ChevronLeft, ChevronRight, Lightbulb, TriangleAlert,
+  FlaskConical, ChevronDown, ChevronUp, TrendingDown, Clock, Activity,
 } from "lucide-react";
 import { loadChallenge, type ActiveChallenge } from "@/pages/NostroHubPage";
 import { useTrades, useUpdateTrade } from "@/hooks/useTrades";
@@ -766,6 +767,243 @@ const TradeRoom = ({ trade, onClose, onSaved }: { trade: any; onClose: () => voi
   );
 };
 
+/* ══════════════════════════════════════════════════════
+   KNOWLEDGE VAULT — Pattern Recognition Engine
+══════════════════════════════════════════════════════ */
+const KnowledgeVault = ({ trades }: { trades: any[] }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  const closed = trades.filter(t => t.status === "closed");
+  if (closed.length < 3) return null; // need enough data
+
+  // ── Helper ──
+  const winRate = (arr: any[]) => {
+    if (!arr.length) return 0;
+    return Math.round((arr.filter(t => (t.pnl ?? 0) > 0).length / arr.length) * 100);
+  };
+
+  // ── 1. Mistake frequency ──
+  const mistakeCount: Record<string, { total: number; losses: number }> = {};
+  const MISTAKE_LABELS: Record<string, string> = {
+    early_entry: "כניסה מוקדמת", late_entry: "כניסה מאוחרת",
+    missed_exit: "יציאה מפוספסת", oversize: "גודל גדול מדי",
+    no_sl: "ללא Stop Loss", revenge: "מסחר נקמה",
+    fomo: "FOMO", no_plan: "ללא תוכנית",
+  };
+  closed.forEach(t => {
+    (t.tags || []).filter((tag: string) => tag.startsWith("mistake:")).forEach((tag: string) => {
+      const key = tag.slice(8);
+      if (!mistakeCount[key]) mistakeCount[key] = { total: 0, losses: 0 };
+      mistakeCount[key].total++;
+      if ((t.pnl ?? 0) <= 0) mistakeCount[key].losses++;
+    });
+  });
+  const topMistakes = Object.entries(mistakeCount)
+    .sort((a, b) => b[1].total - a[1].total)
+    .slice(0, 3);
+
+  // ── 2. Symbol performance ──
+  const bySymbol: Record<string, any[]> = {};
+  closed.forEach(t => {
+    if (!bySymbol[t.symbol]) bySymbol[t.symbol] = [];
+    bySymbol[t.symbol].push(t);
+  });
+  const symbolInsights = Object.entries(bySymbol)
+    .filter(([, arr]) => arr.length >= 2)
+    .map(([sym, arr]) => ({ sym, wr: winRate(arr), count: arr.length, pnl: arr.reduce((s, t) => s + (t.pnl ?? 0), 0) }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 4);
+
+  // ── 3. Time of day ──
+  const byHour: Record<string, any[]> = {};
+  closed.forEach(t => {
+    const h = new Date(t.entry_time).getHours();
+    const slot = h < 10 ? "לפני 10:00" : h < 14 ? "10:00–14:00" : h < 18 ? "14:00–18:00" : "אחרי 18:00";
+    if (!byHour[slot]) byHour[slot] = [];
+    byHour[slot].push(t);
+  });
+  const timeInsights = Object.entries(byHour)
+    .filter(([, arr]) => arr.length >= 2)
+    .map(([slot, arr]) => ({ slot, wr: winRate(arr), count: arr.length }))
+    .sort((a, b) => b.count - a.count);
+
+  // ── 4. Mood correlations ──
+  const byMood: Record<string, any[]> = {};
+  closed.forEach(t => {
+    const moodTag = (t.tags || []).find((tag: string) => tag.startsWith("mood:"));
+    if (moodTag) {
+      const mood = moodTag.slice(5);
+      if (!byMood[mood]) byMood[mood] = [];
+      byMood[mood].push(t);
+    }
+  });
+  const moodInsights = Object.entries(byMood)
+    .filter(([, arr]) => arr.length >= 2)
+    .map(([mood, arr]) => ({ mood, wr: winRate(arr), count: arr.length }));
+
+  // ── 5. Pre-checklist correlation ──
+  const withChecklist = closed.filter(t => (t.tags || []).includes("pre:slept") && (t.tags || []).includes("pre:plan"));
+  const withoutChecklist = closed.filter(t => !(t.tags || []).includes("pre:slept") || !(t.tags || []).includes("pre:plan"));
+  const checklistWr = winRate(withChecklist);
+  const noChecklistWr = winRate(withoutChecklist);
+  const checklistLift = withChecklist.length >= 2 && withoutChecklist.length >= 2 ? checklistWr - noChecklistWr : null;
+
+  // ── 6. Direction bias ──
+  const longs = closed.filter(t => t.direction === "long");
+  const shorts = closed.filter(t => t.direction === "short");
+  const longWr = winRate(longs);
+  const shortWr = winRate(shorts);
+
+  // ── Build insight cards ──
+  type Insight = { icon: any; color: string; title: string; body: string; severity: "warn" | "good" | "info" };
+  const insights: Insight[] = [];
+
+  // Top mistake
+  if (topMistakes[0]) {
+    const [key, { total, losses }] = topMistakes[0];
+    const lossPct = Math.round((losses / total) * 100);
+    insights.push({
+      icon: TriangleAlert,
+      color: lossPct >= 70 ? "#ef4444" : "#f59e0b",
+      severity: lossPct >= 70 ? "warn" : "info",
+      title: `הטעות הכי נפוצה שלך: ${MISTAKE_LABELS[key] || key}`,
+      body: `חזרה ${total} פעמים — ${lossPct}% מהמקרים הסתיימו בהפסד`,
+    });
+  }
+
+  // Weak symbol
+  const weakSymbol = symbolInsights.filter(s => s.wr < 40 && s.count >= 3)[0];
+  if (weakSymbol) {
+    insights.push({
+      icon: TrendingDown, color: "#ef4444", severity: "warn",
+      title: `זהירות עם ${weakSymbol.sym}`,
+      body: `WR ${weakSymbol.wr}% על ${weakSymbol.count} עסקאות · P&L: ${weakSymbol.pnl >= 0 ? "+" : ""}$${weakSymbol.pnl.toFixed(0)}`,
+    });
+  }
+
+  // Strong symbol
+  const strongSymbol = symbolInsights.filter(s => s.wr >= 60 && s.count >= 3)[0];
+  if (strongSymbol) {
+    insights.push({
+      icon: TrendingUp, color: "#22c55e", severity: "good",
+      title: `${strongSymbol.sym} — כוח שלך`,
+      body: `WR ${strongSymbol.wr}% על ${strongSymbol.count} עסקאות · P&L: +$${strongSymbol.pnl.toFixed(0)}`,
+    });
+  }
+
+  // Time of day
+  const weakTime = timeInsights.filter(t => t.wr < 40 && t.count >= 3)[0];
+  if (weakTime) {
+    insights.push({
+      icon: Clock, color: "#f59e0b", severity: "warn",
+      title: `${weakTime.slot} — שעה חלשה`,
+      body: `WR ${weakTime.wr}% על ${weakTime.count} עסקאות בשעות האלו`,
+    });
+  }
+
+  // Mood correlation
+  const badMood = moodInsights.filter(m => m.wr < 35 && m.count >= 2)[0];
+  if (badMood) {
+    const moodLabel = MOODS.find(m => m.id === badMood.mood);
+    insights.push({
+      icon: Brain, color: "#ef4444", severity: "warn",
+      title: `כשאתה ${moodLabel?.label || badMood.mood} — ${moodLabel?.emoji || ""} תיזהר`,
+      body: `WR ${badMood.wr}% על ${badMood.count} עסקאות במצב הזה`,
+    });
+  }
+
+  // Checklist lift
+  if (checklistLift !== null && checklistLift > 10) {
+    insights.push({
+      icon: CheckCircle2, color: "#22c55e", severity: "good",
+      title: `הצ'קליסט עובד`,
+      body: `WR ${checklistWr}% עם צ'קליסט לעומת ${noChecklistWr}% בלעדיו (+${checklistLift}%)`,
+    });
+  }
+
+  // Direction bias
+  if (longs.length >= 3 && shorts.length >= 3) {
+    const better = longWr >= shortWr ? "לונג" : "שורט";
+    const betterWr = longWr >= shortWr ? longWr : shortWr;
+    const worseWr = longWr >= shortWr ? shortWr : longWr;
+    if (Math.abs(longWr - shortWr) >= 15) {
+      insights.push({
+        icon: Activity, color: "#60a5fa", severity: "info",
+        title: `${better} — הכיוון החזק שלך`,
+        body: `WR ${betterWr}% vs ${worseWr}% בכיוון ההפוך`,
+      });
+    }
+  }
+
+  if (!insights.length) return null;
+
+  const visibleInsights = expanded ? insights : insights.slice(0, 2);
+
+  return (
+    <div className="rounded-2xl border border-white/[0.07] overflow-hidden"
+      style={{ background: "rgba(8,8,16,0.8)", backdropFilter: "blur(20px)" }}>
+
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.05]">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-7 w-7 items-center justify-center rounded-xl"
+            style={{ background: "rgba(167,139,250,0.12)", border: "1px solid rgba(167,139,250,0.2)" }}>
+            <FlaskConical className="h-3.5 w-3.5 text-purple-400" />
+          </div>
+          <div>
+            <p className="text-[12px] font-black text-white">Knowledge Vault</p>
+            <p className="text-[9px] text-white/25 font-mono">{insights.length} תובנות מ-{closed.length} עסקאות</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[9px] font-mono text-purple-400/60 rounded-lg px-2 py-0.5"
+            style={{ background: "rgba(167,139,250,0.08)", border: "1px solid rgba(167,139,250,0.15)" }}>
+            AI Pattern
+          </span>
+          {insights.length > 2 && (
+            <button onClick={() => setExpanded(!expanded)}
+              className="flex h-7 w-7 items-center justify-center rounded-xl border border-white/[0.07] bg-white/[0.03] text-white/40 hover:text-white/70 transition-all">
+              {expanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Insight cards */}
+      <div className="p-3 space-y-2">
+        {visibleInsights.map((ins, i) => (
+          <div key={i} className="flex items-start gap-3 rounded-xl px-3 py-3 transition-all"
+            style={{
+              background: ins.color + "08",
+              border: `1px solid ${ins.color}22`,
+              boxShadow: ins.severity === "warn" ? `0 0 16px ${ins.color}0a` : "none",
+            }}>
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg mt-0.5"
+              style={{ background: ins.color + "15", border: `1px solid ${ins.color}30` }}>
+              <ins.icon className="h-3.5 w-3.5" style={{ color: ins.color }} />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[12px] font-bold text-white/85 leading-snug">{ins.title}</p>
+              <p className="text-[10px] text-white/35 font-mono mt-0.5">{ins.body}</p>
+            </div>
+            {ins.severity === "warn" && (
+              <span className="shrink-0 text-[8px] font-bold rounded-md px-1.5 py-0.5 mt-0.5"
+                style={{ background: ins.color + "15", color: ins.color }}>!</span>
+            )}
+          </div>
+        ))}
+
+        {!expanded && insights.length > 2 && (
+          <button onClick={() => setExpanded(true)}
+            className="w-full text-center text-[10px] text-white/20 py-1.5 hover:text-white/40 transition-colors font-mono">
+            + {insights.length - 2} תובנות נוספות
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
 /* ── Nostro Account Status Bar ── */
 const NostroStatusBar = ({ trades }: { trades: any[] }) => {
   const [challenge, setChallenge] = useState<ActiveChallenge | null>(null);
@@ -876,6 +1114,9 @@ const JournalPage = () => {
 
       {/* Nostro challenge tracker */}
       <NostroStatusBar trades={trades} />
+
+      {/* Knowledge Vault */}
+      <KnowledgeVault trades={trades} />
 
       {/* Page Header */}
       <div className="relative rounded-2xl border border-white/[0.06] overflow-hidden px-4 py-3.5 shrink-0"
