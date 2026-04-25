@@ -9,15 +9,8 @@ import {
   Eye, EyeOff, Palette, Key, Zap, Link2, Plus, Check,
   Sun, Moon, LogOut, Trash2, Settings2, Crown, WifiOff, ArrowUpRight,
 } from "lucide-react";
-import logoTradingView from "@/assets/logos/tradingview-full.png";
-import logoTradeLocker from "@/assets/logos/tradelocker-full.png";
+import logoMt4 from "@/assets/logos/mt4-full.png";
 import logoMt5 from "@/assets/logos/mt5-full.png";
-import logoBinance from "@/assets/logos/binance-full.png";
-import logoTopstep from "@/assets/logos/topstepx-full.png";
-import logoRithmic from "@/assets/logos/rithmic-full.png";
-import logoNinjaTrader from "@/assets/logos/ninjatrader-full.png";
-import logoIbkr from "@/assets/logos/ibkr-full.png";
-import logoForex from "@/assets/logos/forex-full.png";
 
 /* ─────────────────────────────────────────────
    TAB CONFIG — each tab has its own color
@@ -305,15 +298,8 @@ const ProfileTab = () => {
    CONNECTIVITY TAB
 ───────────────────────────────────────────── */
 const brokersData = [
-  { name: "TradingView",          color: "#2962FF", logo: logoTradingView },
-  { name: "TradeLocker",          color: "#00E676", logo: logoTradeLocker },
-  { name: "MetaTrader 5",         color: "#4A90D9", logo: logoMt5 },
-  { name: "Binance",              color: "#F0B90B", logo: logoBinance },
-  { name: "TopstepX",             color: "#1DB954", logo: logoTopstep },
-  { name: "Rithmic",              color: "#FF6B35", logo: logoRithmic },
-  { name: "NinjaTrader",          color: "#E84E0F", logo: logoNinjaTrader },
-  { name: "Interactive Brokers",  color: "#DC143C", logo: logoIbkr },
-  { name: "Forex.com",            color: "#0891B2", logo: logoForex },
+  { name: "MetaTrader 4", color: "#1a73e8", logo: logoMt4 },
+  { name: "MetaTrader 5", color: "#4A90D9", logo: logoMt5 },
 ];
 
 const ConnectivityTab = () => {
@@ -336,27 +322,30 @@ const ConnectivityTab = () => {
       </div>
 
       {/* Broker grid */}
-      <Section color="#4ade80" icon={Link2} title="פלטפורמות מסחר" sub="חבר עד 9 ברוקרים שונים">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      <Section color="#4A90D9" icon={Link2} title="פלטפורמות מסחר" sub="MetaTrader 4 ו-MetaTrader 5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {brokersData.map((broker) => (
             <div key={broker.name}
-              className="group flex items-center gap-3 rounded-xl border px-3 py-3 transition-all hover:border-white/[0.1] cursor-pointer"
-              style={{ background: "rgba(255,255,255,0.01)", borderColor: "rgba(255,255,255,0.05)" }}>
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border overflow-hidden"
-                style={{ background: broker.color + "22", borderColor: broker.color + "30" }}>
-                <img src={broker.logo} alt={broker.name} className="h-7 w-7 object-contain" loading="lazy" />
+              className="group flex flex-col items-center gap-3 rounded-2xl border p-5 transition-all hover:scale-[1.02] cursor-pointer relative overflow-hidden"
+              style={{ background: broker.color + "08", borderColor: broker.color + "25" }}>
+              {/* glow */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+                style={{ background: `radial-gradient(circle at 50% 0%, ${broker.color}10, transparent 70%)` }} />
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border overflow-hidden"
+                style={{ background: broker.color + "18", borderColor: broker.color + "35" }}>
+                <img src={broker.logo} alt={broker.name} className="h-10 w-10 object-contain" loading="lazy" />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[12px] font-semibold text-foreground/80 truncate">{broker.name}</p>
-                <div className="flex items-center gap-1 mt-0.5">
+              <div className="text-center">
+                <p className="text-[14px] font-black text-foreground/90">{broker.name}</p>
+                <div className="flex items-center justify-center gap-1 mt-1">
                   <WifiOff className="h-2.5 w-2.5 text-foreground/20" />
                   <p className="text-[9px] text-foreground/25">לא מחובר</p>
                 </div>
               </div>
-              <button className="haptic-press shrink-0 flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[9px] font-bold transition-all opacity-0 group-hover:opacity-100"
-                style={{ background: "#4ade8015", border: "1px solid #4ade8025", color: "#4ade80" }}
+              <button className="haptic-press w-full flex items-center justify-center gap-1.5 rounded-xl py-2 text-[11px] font-bold transition-all"
+                style={{ background: broker.color + "15", border: `1px solid ${broker.color}30`, color: broker.color }}
                 onClick={() => toast.info(`חיבור ל-${broker.name} בקרוב`)}>
-                <Plus className="h-2.5 w-2.5" />
+                <Plus className="h-3 w-3" />
                 חבר
               </button>
             </div>
