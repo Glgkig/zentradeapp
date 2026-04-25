@@ -4,6 +4,7 @@ import {
   DollarSign, Target, Brain, Zap,
   Image as ImageIcon, CheckCircle2, AlertTriangle, Loader2,
   Star, Shield, BarChart2, Save, TrendingUp, Building2, BookOpen,
+  Smile, Wind, Flame, Crosshair, Moon, SlidersHorizontal, ChevronLeft, ChevronRight, Lightbulb, TriangleAlert,
 } from "lucide-react";
 import { loadChallenge, type ActiveChallenge } from "@/pages/NostroHubPage";
 import { useTrades, useUpdateTrade } from "@/hooks/useTrades";
@@ -346,7 +347,82 @@ const GlassTextArea = ({
   </div>
 );
 
-/* ── Trade Room — Side Drawer ── */
+/* ── Section Divider ── */
+const SectionTitle = ({ icon: Icon, label, color = "#60a5fa" }: { icon: any; label: string; color?: string }) => (
+  <div className="flex items-center gap-2.5 pt-1">
+    <div className="flex h-6 w-6 items-center justify-center rounded-lg shrink-0"
+      style={{ background: color + "18", border: `1px solid ${color}30` }}>
+      <Icon className="h-3 w-3" style={{ color }} />
+    </div>
+    <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: color + "bb" }}>{label}</span>
+    <div className="flex-1 h-[1px]" style={{ background: color + "15" }} />
+  </div>
+);
+
+/* ── Mood Selector ── */
+const MOODS = [
+  { id: "calm",    label: "רגוע",    icon: Wind,      color: "#22c55e", emoji: "😌" },
+  { id: "focused", label: "ממוקד",   icon: Crosshair, color: "#60a5fa", emoji: "🎯" },
+  { id: "anxious", label: "חרדתי",   icon: Zap,       color: "#f59e0b", emoji: "😰" },
+  { id: "greedy",  label: "חמדן",    icon: Flame,     color: "#ef4444", emoji: "🔥" },
+] as const;
+
+/* ── Mistakes List ── */
+const MISTAKES = [
+  { id: "early_entry",  label: "כניסה מוקדמת" },
+  { id: "late_entry",   label: "כניסה מאוחרת" },
+  { id: "missed_exit",  label: "יציאה מפוספסת" },
+  { id: "oversize",     label: "גודל גדול מדי" },
+  { id: "no_sl",        label: "ללא Stop Loss" },
+  { id: "revenge",      label: "מסחר נקמה" },
+  { id: "fomo",         label: "FOMO" },
+  { id: "no_plan",      label: "ללא תוכנית" },
+] as const;
+
+/* ── Screenshot Carousel ── */
+const ScreenshotCarousel = ({ urls }: { urls: string[] }) => {
+  const [idx, setIdx] = useState(0);
+  if (!urls?.length) return (
+    <div className="flex flex-col items-center justify-center h-32 rounded-2xl border border-dashed border-white/[0.07]">
+      <ImageIcon className="h-5 w-5 text-white/10 mb-2" />
+      <p className="text-[10px] text-white/20">אין צילום גרף</p>
+    </div>
+  );
+  const labels = ["Setup", "Trigger", "Result"];
+  return (
+    <div className="space-y-2">
+      <div className="relative rounded-2xl overflow-hidden border border-white/[0.07]">
+        <img src={urls[idx]} alt={labels[idx] || `גרף ${idx + 1}`} className="w-full object-cover" />
+        {urls.length > 1 && (
+          <>
+            <button onClick={() => setIdx(i => Math.max(0, i - 1))} disabled={idx === 0}
+              className="absolute left-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white/60 hover:text-white disabled:opacity-20 transition-all">
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <button onClick={() => setIdx(i => Math.min(urls.length - 1, i + 1))} disabled={idx === urls.length - 1}
+              className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white/60 hover:text-white disabled:opacity-20 transition-all">
+              <ChevronRight className="h-4 w-4" />
+            </button>
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full px-2.5 py-1 text-[9px] font-bold bg-black/60 text-white/50">
+              {labels[idx] || `${idx + 1}/${urls.length}`}
+            </div>
+          </>
+        )}
+      </div>
+      {urls.length > 1 && (
+        <div className="flex gap-1.5 justify-center">
+          {urls.map((_, i) => (
+            <button key={i} onClick={() => setIdx(i)}
+              className="rounded-full transition-all"
+              style={{ width: i === idx ? 16 : 6, height: 4, background: i === idx ? "#60a5fa" : "rgba(255,255,255,0.15)" }} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ── Trade Room — Deep-Dive Side Drawer ── */
 const TradeRoom = ({ trade, onClose, onSaved }: { trade: any; onClose: () => void; onSaved: () => void }) => {
   const isWin = (trade.pnl ?? 0) >= 0;
   const isOpen = trade.status === "open";
@@ -354,12 +430,30 @@ const TradeRoom = ({ trade, onClose, onSaved }: { trade: any; onClose: () => voi
   const [visible, setVisible] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const [outcome, setOutcome] = useState(trade.notes || "");
-  const [audit, setAudit] = useState(trade.psychology_notes || "");
-  const [fix, setFix] = useState(trade.tags?.find((t: string) => t.startsWith("fix:"))?.replace("fix:", "") || "");
+  // ── Parse existing tags ──
+  const existingTags: string[] = trade.tags || [];
+  const getTag = (prefix: string) => existingTags.find(t => t.startsWith(prefix + ":"))?.slice(prefix.length + 1) || "";
+  const hasTag = (val: string) => existingTags.includes(val);
+
+  // ── State ──
+  const [mood, setMood] = useState<string>(getTag("mood"));
+  const [preSlept, setPreSlept] = useState(hasTag("pre:slept"));
+  const [prePlan, setPrePlan] = useState(hasTag("pre:plan"));
+  const [preNoRevenge, setPreNoRevenge] = useState(hasTag("pre:norevenge"));
+  const [story, setStory] = useState(trade.notes || "");
+  const [selectedMistakes, setSelectedMistakes] = useState<string[]>(
+    existingTags.filter(t => t.startsWith("mistake:")).map(t => t.slice(8))
+  );
+  const [mistakeNote, setMistakeNote] = useState(getTag("mistake_note"));
+  const [lesson, setLesson] = useState(getTag("lesson"));
+  const [lessonSaved, setLessonSaved] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // Animate in on mount
+  const pnlColor = isOpen ? "#60a5fa" : isWin ? "#22c55e" : "#ef4444";
+  const rrRatio = trade.entry_price && trade.stop_loss && trade.take_profit
+    ? Math.abs((trade.take_profit - trade.entry_price) / (trade.entry_price - trade.stop_loss)).toFixed(1)
+    : null;
+
   useEffect(() => {
     const t = requestAnimationFrame(() => setVisible(true));
     return () => cancelAnimationFrame(t);
@@ -370,22 +464,35 @@ const TradeRoom = ({ trade, onClose, onSaved }: { trade: any; onClose: () => voi
     setTimeout(onClose, 320);
   };
 
-  const rrRatio = trade.entry_price && trade.stop_loss && trade.take_profit
-    ? Math.abs((trade.take_profit - trade.entry_price) / (trade.entry_price - trade.stop_loss)).toFixed(1)
-    : null;
-
-  const pnlColor = isOpen ? "#60a5fa" : isWin ? "#22c55e" : "#ef4444";
+  const toggleMistake = (id: string) => {
+    setSelectedMistakes(prev => prev.includes(id) ? prev.filter(m => m !== id) : [...prev, id]);
+  };
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      const existingTags = (trade.tags || []).filter((t: string) => !t.startsWith("fix:"));
+      // Rebuild tags: keep unrelated tags, replace structured ones
+      const keepTags = existingTags.filter(t =>
+        !t.startsWith("mood:") && !t.startsWith("pre:") &&
+        !t.startsWith("mistake:") && !t.startsWith("mistake_note:") && !t.startsWith("lesson:")
+      );
+      const newTags = [
+        ...keepTags,
+        ...(mood ? [`mood:${mood}`] : []),
+        ...(preSlept ? ["pre:slept"] : []),
+        ...(prePlan ? ["pre:plan"] : []),
+        ...(preNoRevenge ? ["pre:norevenge"] : []),
+        ...selectedMistakes.map(m => `mistake:${m}`),
+        ...(mistakeNote ? [`mistake_note:${mistakeNote}`] : []),
+        ...(lesson ? [`lesson:${lesson.slice(0, 200)}`] : []),
+      ];
       await updateTrade.mutateAsync({
         id: trade.id,
-        notes: outcome || null,
-        tags: fix ? [...existingTags, `fix:${fix}`] : existingTags,
+        notes: story || null,
+        tags: newTags,
       } as any);
-      toast.success("הרפלקציה נשמרה ✓");
+      if (lesson) { setLessonSaved(true); setTimeout(() => setLessonSaved(false), 2500); }
+      toast.success("היומן נשמר ✓");
       onSaved();
     } catch (e: any) {
       toast.error("שגיאה: " + e.message);
@@ -396,35 +503,27 @@ const TradeRoom = ({ trade, onClose, onSaved }: { trade: any; onClose: () => voi
 
   return (
     <div className="fixed inset-0 z-[80]" dir="rtl">
-      {/* Backdrop — dims but doesn't block the page */}
-      <div
-        className="absolute inset-0 transition-opacity duration-300"
-        style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)", opacity: visible ? 1 : 0 }}
-        onClick={handleClose}
-      />
+      {/* Backdrop */}
+      <div className="absolute inset-0 transition-opacity duration-300"
+        style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)", opacity: visible ? 1 : 0 }}
+        onClick={handleClose} />
 
-      {/* Drawer panel — slides in from right */}
-      <div
-        ref={scrollRef}
-        className="absolute top-0 right-0 h-full overflow-y-auto"
+      {/* Drawer */}
+      <div ref={scrollRef} className="absolute top-0 right-0 h-full overflow-y-auto"
         style={{
-          width: "min(520px, 100vw)",
-          background: "rgba(8,8,14,0.97)",
+          width: "min(540px, 100vw)",
+          background: "rgba(7,7,13,0.98)",
           borderLeft: "1px solid rgba(255,255,255,0.07)",
-          boxShadow: "-24px 0 80px rgba(0,0,0,0.6)",
+          boxShadow: "-32px 0 80px rgba(0,0,0,0.7)",
           transform: visible ? "translateX(0)" : "translateX(100%)",
           transition: "transform 0.32s cubic-bezier(0.32, 0.72, 0, 1)",
-        }}
-      >
-        {/* Colored top strip */}
-        <div className="sticky top-0 z-10" style={{ background: "rgba(8,8,14,0.97)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-          {/* accent line */}
-          <div className="h-[2px] w-full" style={{ background: `linear-gradient(to left, transparent, ${pnlColor}70, transparent)` }} />
+        }}>
 
-          {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 gap-3">
+        {/* ── Sticky Header ── */}
+        <div className="sticky top-0 z-10" style={{ background: "rgba(7,7,13,0.98)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+          <div className="h-[2px]" style={{ background: `linear-gradient(to left, transparent, ${pnlColor}80, transparent)` }} />
+          <div className="flex items-center justify-between px-5 py-3.5 gap-3">
             <div className="flex items-center gap-3 min-w-0">
-              {/* direction icon */}
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl"
                 style={{ background: pnlColor + "18", border: `1px solid ${pnlColor}35` }}>
                 {trade.direction === "long"
@@ -435,159 +534,231 @@ const TradeRoom = ({ trade, onClose, onSaved }: { trade: any; onClose: () => voi
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-[20px] font-black font-mono text-white leading-none">{trade.symbol}</span>
                   <span className="rounded-full px-2.5 py-0.5 text-[10px] font-bold border"
-                    style={{
-                      background: pnlColor + "15",
-                      borderColor: pnlColor + "35",
-                      color: pnlColor,
-                    }}>
+                    style={{ background: pnlColor + "15", borderColor: pnlColor + "35", color: pnlColor }}>
                     {isOpen ? "פתוח" : isWin ? "WIN ✓" : "LOSS ✗"}
                   </span>
+                  {mood && <span className="text-[16px]">{MOODS.find(m => m.id === mood)?.emoji}</span>}
                 </div>
-                <p className="text-[11px] text-white/30 font-mono mt-0.5 truncate">{fmtDate(trade.entry_time)}</p>
+                <p className="text-[10px] text-white/25 font-mono mt-0.5 truncate">{fmtDate(trade.entry_time)}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <button onClick={handleSave} disabled={saving}
-                className="haptic-press flex items-center gap-1.5 rounded-xl px-3 py-2 text-[12px] font-bold transition-all disabled:opacity-40"
-                style={{ background: pnlColor + "15", border: `1px solid ${pnlColor}30`, color: pnlColor }}>
+                className="haptic-press flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-[12px] font-bold transition-all disabled:opacity-40"
+                style={{ background: pnlColor + "15", border: `1px solid ${pnlColor}35`, color: pnlColor }}>
                 {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-                <span className="hidden sm:inline">שמור</span>
+                שמור
               </button>
               <button onClick={handleClose}
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-white/40 hover:text-white/80 transition-all">
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/[0.07] bg-white/[0.03] text-white/40 hover:text-white/80 transition-all">
                 <X className="h-4 w-4" />
               </button>
             </div>
           </div>
         </div>
 
-        {/* ── Content ── */}
-        <div className="px-5 py-4 space-y-4 pb-10">
+        {/* ── Body ── */}
+        <div className="px-5 py-5 space-y-5 pb-12">
 
-          {/* Big PnL hero */}
-          <div className="rounded-2xl p-4 text-center"
-            style={{ background: pnlColor + "0d", border: `1px solid ${pnlColor}25` }}>
-            <p className="text-[9px] text-white/25 font-mono mb-1">רווח / הפסד נקי</p>
-            <p className="text-[42px] font-black font-mono leading-none" style={{ color: pnlColor }}>
+          {/* ── 1. PnL Hero ── */}
+          <div className="rounded-2xl p-4 text-center relative overflow-hidden"
+            style={{ background: pnlColor + "0c", border: `1px solid ${pnlColor}22` }}>
+            <div className="absolute inset-0 pointer-events-none"
+              style={{ background: `radial-gradient(ellipse at 50% 0%, ${pnlColor}10, transparent 70%)` }} />
+            <p className="text-[9px] text-white/20 font-mono mb-1">רווח / הפסד נקי</p>
+            <p className="text-[44px] font-black font-mono leading-none" style={{ color: pnlColor }}>
               {isOpen ? "—" : fmtPnl(trade.pnl)}
             </p>
             {rrRatio && (
-              <p className="text-[12px] font-mono mt-2" style={{ color: parseFloat(rrRatio) >= 2 ? "#22c55e99" : "#ef444499" }}>
-                R:R 1:{rrRatio}
-              </p>
+              <div className="flex items-center justify-center gap-3 mt-2">
+                <span className="text-[11px] font-mono font-bold rounded-lg px-2 py-0.5"
+                  style={{
+                    background: parseFloat(rrRatio) >= 2 ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.08)",
+                    color: parseFloat(rrRatio) >= 2 ? "#22c55e" : "#ef4444",
+                  }}>R:R 1:{rrRatio}</span>
+              </div>
             )}
           </div>
 
-          {/* Details grid */}
+          {/* ── 2. Stats Grid ── */}
           <div className="grid grid-cols-3 gap-2">
             {[
-              { label: "כניסה", value: trade.entry_price?.toFixed(5) || "—" },
-              { label: "יציאה", value: trade.exit_price?.toFixed(5) || "—" },
+              { label: "כניסה", value: trade.entry_price?.toFixed(4) || "—" },
+              { label: "יציאה", value: trade.exit_price?.toFixed(4) || "—" },
               { label: "לוט", value: `${trade.lot_size ?? "—"}` },
-              { label: "SL", value: trade.stop_loss?.toFixed(5) || "—" },
-              { label: "TP", value: trade.take_profit?.toFixed(5) || "—" },
+              { label: "SL", value: trade.stop_loss?.toFixed(4) || "—" },
+              { label: "TP", value: trade.take_profit?.toFixed(4) || "—" },
               { label: "TF", value: trade.timeframe || "—" },
             ].map(item => (
-              <div key={item.label} className="rounded-xl bg-white/[0.025] border border-white/[0.05] px-3 py-2.5 text-right">
+              <div key={item.label} className="rounded-xl bg-white/[0.03] border border-white/[0.05] px-3 py-2.5">
                 <p className="text-[9px] text-white/20 font-mono mb-1">{item.label}</p>
-                <p className="text-[11px] font-bold text-white/70 font-mono">{item.value}</p>
+                <p className="text-[11px] font-bold text-white/65 font-mono">{item.value}</p>
               </div>
             ))}
           </div>
 
-          {/* Identity row */}
-          <div className="flex flex-wrap gap-2">
-            {[
-              { label: "כיוון", value: trade.direction === "long" ? "לונג ↑" : "שורט ↓" },
-              { label: "תאריך", value: fmtShortDate(trade.entry_time) },
-              { label: "שעה", value: fmtTime(trade.entry_time) },
-              ...(trade.setup_type ? [{ label: "סטאפ", value: trade.setup_type }] : []),
-            ].map(item => (
-              <div key={item.label} className="flex items-center gap-1.5 rounded-xl bg-white/[0.03] border border-white/[0.06] px-3 py-1.5">
-                <span className="text-[9px] text-white/25 font-mono">{item.label}:</span>
-                <span className="text-[11px] font-bold text-white/70">{item.value}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Rules + rating */}
-          <div className="flex flex-wrap gap-2 items-center">
-            {(trade as any).followed_rules === true && (
-              <div className="flex items-center gap-1.5 rounded-xl border border-green-500/20 bg-green-500/[0.07] px-3 py-2">
-                <CheckCircle2 className="h-3.5 w-3.5 text-green-400" />
-                <span className="text-[11px] font-bold text-green-400">כל החוקים נשמרו</span>
-              </div>
-            )}
-            {(trade as any).followed_rules === false && (
-              <div className="flex items-center gap-1.5 rounded-xl border border-red-500/20 bg-red-500/[0.06] px-3 py-2">
-                <AlertTriangle className="h-3.5 w-3.5 text-red-400" />
-                <span className="text-[11px] font-bold text-red-400">חוקים הופרו</span>
-              </div>
-            )}
-            {trade.rating && (
-              <div className="flex items-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2">
-                <div className="flex gap-0.5">
-                  {[1, 2, 3, 4, 5].map(n => (
+          {/* Rules + Rating */}
+          {((trade as any).followed_rules != null || trade.rating) && (
+            <div className="flex flex-wrap gap-2">
+              {(trade as any).followed_rules === true && (
+                <div className="flex items-center gap-1.5 rounded-xl border border-green-500/20 bg-green-500/[0.07] px-3 py-1.5">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-green-400" />
+                  <span className="text-[11px] font-bold text-green-400">חוקים נשמרו</span>
+                </div>
+              )}
+              {(trade as any).followed_rules === false && (
+                <div className="flex items-center gap-1.5 rounded-xl border border-red-500/20 bg-red-500/[0.06] px-3 py-1.5">
+                  <AlertTriangle className="h-3.5 w-3.5 text-red-400" />
+                  <span className="text-[11px] font-bold text-red-400">חוקים הופרו</span>
+                </div>
+              )}
+              {trade.rating && (
+                <div className="flex items-center gap-1 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-1.5">
+                  {[1,2,3,4,5].map(n => (
                     <Star key={n} className={cn("h-3.5 w-3.5", trade.rating >= n ? "fill-amber-400 text-amber-400" : "text-white/10")} />
                   ))}
                 </div>
+              )}
+            </div>
+          )}
+
+          {/* ── 3. Screenshot Carousel ── */}
+          <div className="space-y-2">
+            <SectionTitle icon={BarChart2} label="גרף הסטאפ" color="#60a5fa" />
+            <ScreenshotCarousel urls={trade.screenshots || []} />
+          </div>
+
+          {/* ══════════════════════════════════════
+              PRE-TRADE SECTION
+          ══════════════════════════════════════ */}
+          <SectionTitle icon={Moon} label="לפני הכניסה — מצב הראש" color="#a78bfa" />
+
+          {/* Mood Selector */}
+          <div className="space-y-2">
+            <p className="text-[10px] text-white/30 font-mono">איך הרגשתי לפני שנכנסתי?</p>
+            <div className="grid grid-cols-4 gap-2">
+              {MOODS.map(m => (
+                <button key={m.id} onClick={() => setMood(mood === m.id ? "" : m.id)}
+                  className="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 border transition-all duration-200"
+                  style={{
+                    borderColor: mood === m.id ? m.color + "60" : "rgba(255,255,255,0.06)",
+                    background: mood === m.id ? m.color + "12" : "rgba(255,255,255,0.02)",
+                    boxShadow: mood === m.id ? `0 0 16px ${m.color}20` : "none",
+                  }}>
+                  <span className="text-[20px] leading-none">{m.emoji}</span>
+                  <span className="text-[9px] font-bold" style={{ color: mood === m.id ? m.color : "rgba(255,255,255,0.3)" }}>
+                    {m.label}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Pre-trade checklist */}
+          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-3">
+            <p className="text-[10px] text-white/30 font-mono">צ'קליסט לפני כניסה</p>
+            {[
+              { state: preSlept,     setState: setPreSlept,     label: "ישנתי לפחות 6 שעות" },
+              { state: prePlan,      setState: setPrePlan,      label: "העסקה לפי התוכנית שלי" },
+              { state: preNoRevenge, setState: setPreNoRevenge, label: "לא מסחר נקמה" },
+            ].map(({ state, setState, label }) => (
+              <button key={label} onClick={() => setState(!state)}
+                className="flex items-center gap-3 w-full text-right transition-all">
+                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all"
+                  style={{
+                    borderColor: state ? "#22c55e60" : "rgba(255,255,255,0.12)",
+                    background: state ? "rgba(34,197,94,0.12)" : "transparent",
+                  }}>
+                  {state && <CheckCircle2 className="h-3 w-3 text-green-400" />}
+                </div>
+                <span className="text-[12px]" style={{ color: state ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.3)" }}>
+                  {label}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* ══════════════════════════════════════
+              THE STORY
+          ══════════════════════════════════════ */}
+          <SectionTitle icon={BookOpen} label="הסיפור של העסקה" color="#60a5fa" />
+
+          <div className="rounded-2xl border border-blue-400/15 bg-blue-400/[0.03] p-4 space-y-2">
+            <p className="text-[10px] text-blue-400/60 font-mono">למה נכנסתי? מה ראיתי? מה חשבתי?</p>
+            <textarea rows={5} value={story} onChange={e => setStory(e.target.value)}
+              placeholder="ה-1H הראה לי ... ראיתי rejection ב... החלטתי להיכנס כי ..."
+              className="w-full bg-transparent text-[12px] text-white/70 placeholder:text-white/15 outline-none resize-none leading-relaxed" />
+          </div>
+
+          {/* ══════════════════════════════════════
+              MISTAKES
+          ══════════════════════════════════════ */}
+          <SectionTitle icon={TriangleAlert} label="טעויות שעשיתי" color="#f59e0b" />
+
+          <div className="space-y-3">
+            <div className="flex flex-wrap gap-2">
+              {MISTAKES.map(m => {
+                const selected = selectedMistakes.includes(m.id);
+                return (
+                  <button key={m.id} onClick={() => toggleMistake(m.id)}
+                    className="rounded-xl border px-3 py-1.5 text-[11px] font-bold transition-all duration-200"
+                    style={{
+                      borderColor: selected ? "rgba(245,158,11,0.5)" : "rgba(255,255,255,0.07)",
+                      background: selected ? "rgba(245,158,11,0.1)" : "rgba(255,255,255,0.02)",
+                      color: selected ? "#f59e0b" : "rgba(255,255,255,0.3)",
+                      boxShadow: selected ? "0 0 12px rgba(245,158,11,0.15)" : "none",
+                    }}>
+                    {selected ? "✓ " : ""}{m.label}
+                  </button>
+                );
+              })}
+            </div>
+            {selectedMistakes.length > 0 && (
+              <div className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.04] p-3 space-y-2"
+                style={{ boxShadow: "0 0 20px rgba(245,158,11,0.06)" }}>
+                <p className="text-[10px] text-amber-400/60 font-mono">הסבר — מה בדיוק קרה?</p>
+                <textarea rows={3} value={mistakeNote} onChange={e => setMistakeNote(e.target.value)}
+                  placeholder="הכנסתי כי ראיתי תנועה חדה אבל לא ציפיתי ל..."
+                  className="w-full bg-transparent text-[12px] text-white/70 placeholder:text-amber-400/15 outline-none resize-none leading-relaxed" />
               </div>
             )}
           </div>
 
-          {/* Chart screenshot */}
-          {trade.screenshots?.length > 0 && (
-            <div className="space-y-2">
-              <p className="text-[9px] text-white/20 font-mono uppercase tracking-wider flex items-center gap-2">
-                <BarChart2 className="h-3 w-3" /> גרף הסטאפ
-              </p>
-              {trade.screenshots.map((url: string, i: number) => (
-                <img key={i} src={url} alt={`גרף ${i + 1}`}
-                  className="w-full rounded-2xl border border-white/[0.06] object-cover" />
-              ))}
-            </div>
-          )}
+          {/* ══════════════════════════════════════
+              LESSON — LETTER TO FUTURE SELF
+          ══════════════════════════════════════ */}
+          <SectionTitle icon={Lightbulb} label="מכתב לעצמי בעתיד" color="#a78bfa" />
 
-          {/* Divider */}
-          <div className="flex items-center gap-3">
-            <div className="h-[1px] flex-1 bg-white/[0.05]" />
-            <span className="text-[9px] text-white/20 font-mono uppercase tracking-widest">רפלקציה</span>
-            <div className="h-[1px] flex-1 bg-white/[0.05]" />
+          <div className={cn(
+            "rounded-2xl border p-4 space-y-2 transition-all duration-500 relative",
+            lessonSaved ? "border-blue-400/40" : "border-purple-400/15"
+          )} style={{
+            background: lessonSaved ? "rgba(96,165,250,0.05)" : "rgba(167,139,250,0.03)",
+            boxShadow: lessonSaved ? "0 0 24px rgba(96,165,250,0.12)" : "none",
+          }}>
+            {lessonSaved && (
+              <div className="absolute top-3 left-3 flex items-center gap-1.5 rounded-lg px-2 py-1 text-[9px] font-bold text-blue-400"
+                style={{ background: "rgba(96,165,250,0.12)", border: "1px solid rgba(96,165,250,0.2)" }}>
+                <Lightbulb className="h-3 w-3" />
+                Knowledge Saved ✓
+              </div>
+            )}
+            <p className="text-[10px] text-purple-400/60 font-mono">
+              "אני מבטיח לעצמי ש..."
+            </p>
+            <textarea rows={4} value={lesson} onChange={e => setLesson(e.target.value)}
+              placeholder="בעסקה הבאה על זהב לפני חדשות — אני לא אכנס. אני אזכור ש..."
+              className="w-full bg-transparent text-[12px] text-white/70 placeholder:text-purple-400/15 outline-none resize-none leading-relaxed" />
+            <p className="text-[9px] text-white/15 font-mono text-left">{lesson.length}/200</p>
           </div>
 
-          {/* Reflection areas */}
-          <GlassTextArea
-            label="התוצאה — למה ניצחתי / הפסדתי?"
-            icon={TrendingUp}
-            placeholder="מה קרה בפועל? למה העסקה הלכה לכיוון הזה?"
-            value={outcome}
-            onChange={setOutcome}
-            color={isWin ? "profit" : "loss"}
-          />
-          <GlassTextArea
-            label="הביקורת — מה עשיתי טוב ומה לא?"
-            icon={Zap}
-            placeholder="מה בוצע מושלם? מה היה אפשר לעשות טוב יותר?"
-            value={audit}
-            onChange={setAudit}
-            color="accent"
-          />
-          <GlassTextArea
-            label="התיקון — מה אני עושה אחרת בסשן הבא?"
-            icon={Brain}
-            placeholder="מה השיעור הספציפי? מה לשנות בגישה, בכניסה, ביציאה?"
-            value={fix}
-            onChange={setFix}
-            color="primary"
-          />
-
-          {/* Save */}
+          {/* ── Save Button ── */}
           <button onClick={handleSave} disabled={saving}
             className="haptic-press w-full flex items-center justify-center gap-2 rounded-2xl py-4 text-[14px] font-bold text-black transition-all hover:brightness-110 disabled:opacity-40"
-            style={{ background: `linear-gradient(to left, ${pnlColor}, ${pnlColor}bb)`, boxShadow: `0 8px 24px ${pnlColor}30` }}>
+            style={{ background: `linear-gradient(to left, ${pnlColor}, ${pnlColor}cc)`, boxShadow: `0 8px 28px ${pnlColor}35` }}>
             {saving
               ? <><Loader2 className="h-5 w-5 animate-spin" /> שומר...</>
-              : <><Save className="h-5 w-5" /> שמור רפלקציה</>}
+              : <><Save className="h-5 w-5" /> שמור יומן</>}
           </button>
         </div>
       </div>
