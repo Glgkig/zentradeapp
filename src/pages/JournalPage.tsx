@@ -1,10 +1,10 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import {
   ArrowUpRight, ArrowDownRight, X, Search,
-  DollarSign, Target, Brain, Zap,
+  Brain, Zap,
   Image as ImageIcon, CheckCircle2, AlertTriangle, Loader2,
   Star, Shield, BarChart2, Save, TrendingUp, Building2, BookOpen,
-  Smile, Wind, Flame, Crosshair, Moon, SlidersHorizontal, ChevronLeft, ChevronRight, Lightbulb, TriangleAlert,
+  Wind, Flame, Crosshair, Moon, ChevronLeft, ChevronRight, Lightbulb, TriangleAlert,
   FlaskConical, ChevronDown, ChevronUp, TrendingDown, Clock, Activity,
 } from "lucide-react";
 import { loadChallenge, type ActiveChallenge } from "@/pages/NostroHubPage";
@@ -318,36 +318,6 @@ const FolderCard = ({ trade, onClick }: { trade: any; onClick: () => void }) => 
   );
 };
 
-/* ── Glass Text Area ── */
-const GlassTextArea = ({
-  label, icon: Icon, placeholder, value, onChange, color = "primary"
-}: {
-  label: string; icon: any; placeholder: string;
-  value: string; onChange: (v: string) => void; color?: string;
-}) => (
-  <div className={cn(
-    "rounded-2xl border p-4 space-y-2",
-    color === "profit" ? "border-profit/15 bg-gradient-to-br from-profit/[0.03] to-transparent" :
-    color === "loss" ? "border-loss/15 bg-gradient-to-br from-loss/[0.03] to-transparent" :
-    color === "accent" ? "border-accent/15 bg-gradient-to-br from-accent/[0.03] to-transparent" :
-    "border-primary/15 bg-gradient-to-br from-primary/[0.03] to-transparent"
-  )}>
-    <div className="flex items-center gap-2">
-      <Icon className={cn("h-3.5 w-3.5", color === "profit" ? "text-profit" : color === "loss" ? "text-loss" : color === "accent" ? "text-accent" : "text-primary")} />
-      <span className={cn("text-[10px] font-bold font-mono uppercase tracking-widest",
-        color === "profit" ? "text-profit/70" : color === "loss" ? "text-loss/70" : color === "accent" ? "text-accent/70" : "text-primary/70"
-      )}>{label}</span>
-    </div>
-    <textarea
-      rows={3}
-      value={value}
-      onChange={e => onChange(e.target.value)}
-      placeholder={placeholder}
-      className="w-full bg-transparent text-[12px] text-foreground/80 placeholder:text-muted-foreground/20 outline-none resize-none leading-relaxed"
-    />
-  </div>
-);
-
 /* ── Section Divider ── */
 const SectionTitle = ({ icon: Icon, label, color = "#60a5fa" }: { icon: any; label: string; color?: string }) => (
   <div className="flex items-center gap-2.5 pt-1">
@@ -512,7 +482,7 @@ const TradeRoom = ({ trade, onClose, onSaved }: { trade: any; onClose: () => voi
       {/* Drawer */}
       <div ref={scrollRef} className="absolute top-0 right-0 h-full overflow-y-auto"
         style={{
-          width: "min(540px, 100vw)",
+          width: "min(max(50vw, 360px), 100vw)",
           background: "rgba(7,7,13,0.98)",
           borderLeft: "1px solid rgba(255,255,255,0.07)",
           boxShadow: "-32px 0 80px rgba(0,0,0,0.7)",
